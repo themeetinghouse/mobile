@@ -13,7 +13,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.0",
+    "version": "6.0.1",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -30,10 +30,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
-      "buildNumber": "10"
+      "buildNumber": "1"
     },
     "android": {
-      "package": "com.themeetinghouse.androidapp"
+      "package": "r"
     }
   }
 }
