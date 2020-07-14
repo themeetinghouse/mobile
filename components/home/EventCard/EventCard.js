@@ -55,7 +55,7 @@ export default function EventCard( { event, handlePress }){
                 <Thumbnail style={style.icon} source={Theme.icons.white.arrow}></Thumbnail>
             </TouchableOpacity>
             <Text style={style.descriptionContainer} numberOfLines={5}>{event.description}</Text>
-            <Text style={style.locationContainer}>{event.place.name}, {event.place.location.street}</Text>
+            <Text style={style.locationContainer}>{event.place?.name?event.place.name:null}, {event.place?.location?.street?event.place.location.street:null}</Text>
             <Text style={style.dateTimeContainer}>{moment(event.start_time).format("h:mm a")} - {moment(event.end_time).format("h:mm a")}</Text>
         </View>
     );

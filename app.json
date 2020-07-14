@@ -12,10 +12,10 @@
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#000000"
-    },    
-    "version": "1.0.0",
+    },
+    "version": "6.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/house-black@3x.png",
+    "icon": "./assets/icons/icon.png",
     "splash": {
       "image": "./assets/icons/splash-black.png",
       "resizeMode": "contain",
@@ -28,7 +28,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
+      "buildNumber": "10"
+    },
+    "android": {
+      "package": "com.themeetinghouse.androidapp"
     }
   }
 }
