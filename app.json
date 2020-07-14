@@ -33,7 +33,7 @@
       "buildNumber": "1"
     },
     "android": {
-      "package": "r"
+      "package": "com.themeetinghouse.androidapp"
     }
   }
 }
