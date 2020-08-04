@@ -92,7 +92,11 @@ const style = {
     } as TextStyle
 }
 
-export default function AllSeriesScreen({ navigation }: any): JSX.Element {
+interface Params {
+    navigation: any;
+}
+
+export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
     const allYear = { id: "All" };
 

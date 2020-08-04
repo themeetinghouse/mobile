@@ -12,7 +12,12 @@ const env = {
 }
 const settings = env.dev;
 
-export async function runGraphQLQuery(queryRequest: any): Promise<any> {
+type QueryRequest = {
+    variables: any;
+    query: any;
+}
+
+export async function runGraphQLQuery(queryRequest: QueryRequest): Promise<any> {
     const response = await axios.post(
         settings.url, 
         queryRequest,

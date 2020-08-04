@@ -3,6 +3,7 @@ import { Text, Thumbnail } from 'native-base';
 import Theme, { Style } from '../../../Theme.style';
 //import WhiteButton from '../../buttons/WhiteButton';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Announcement } from '../../../services/AnnouncementService';
 
 const style = {
     cardContainer: {
@@ -28,7 +29,7 @@ const style = {
 }
 
 type AnnouncementCardInput = {
-    announcement: any;
+    announcement: Announcement;
     handlePress(): any;
 }
 

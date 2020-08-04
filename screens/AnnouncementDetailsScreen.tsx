@@ -1,6 +1,6 @@
 import React from 'react';
 import { Theme, Style } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body, Title } from 'native-base';
+import { Container, Text, Button, Icon, Content, Left, Right, Header, Body } from 'native-base';
 //import IconButton from '../components/buttons/IconButton';
 //import moment from 'moment';
 import WhiteButton from '../components/buttons/WhiteButton';
@@ -39,7 +39,11 @@ const style = {
     }],
 }
 
-export default function AnnouncementDetailScreen(props: any) {
+interface Props {
+    navigation: any;
+}
+
+export default function AnnouncementDetailScreen(props: Props): JSX.Element {
 
     const announcementItem = props.navigation.getParam("item");
 

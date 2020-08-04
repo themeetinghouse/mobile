@@ -1,7 +1,11 @@
 import React from 'react';
 import { Container, Text, Button, Icon, Content, Header } from 'native-base';
 
-export default function DetailsScreen(props: any): JSX.Element {
+interface Props {
+    navigation: any;
+}
+
+export default function DetailsScreen(props: Props): JSX.Element {
     console.log("Showing details screen");
     return (
         <Container style={{ backgroundColor: "#FFFFFF" }}>

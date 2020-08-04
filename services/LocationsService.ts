@@ -15,12 +15,12 @@ export interface Location {
 
 export default class LocationsService {
 
-    static getLocationById = async(locationId: string) => {
+    static getLocationById = async (locationId: string): Promise<Location | undefined> => {
       const allLocations: Location[] = await LocationsService.loadLocations();
       return allLocations.find(loc => loc.id === locationId);
     }
 
-    static loadLocations = async () => {
+    static loadLocations = async (): Promise<Location[]> => {
         return [
           {
               

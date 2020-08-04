@@ -84,7 +84,7 @@ interface Params {
     dispatch: any;
 }
 
-function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Params) {
+function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Params): JSX.Element {
 
     let currentYear = moment().get("year");
     const startYear = moment(startDate || "2005-01-01").get("year");

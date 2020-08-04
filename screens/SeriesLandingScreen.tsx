@@ -4,7 +4,7 @@ import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body
 import moment from 'moment';
 import { Dimensions, StatusBar, ViewStyle } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import { connect } from 'react-redux';
+//import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
 //import IconButton from '../components/buttons/IconButton';
 //import LinearGradient from 'react-native-linear-gradient';
@@ -75,7 +75,11 @@ const style = {
     seriesContainer: {}
 }
 
-function SeriesLandingScreen({ navigation }: any) {
+interface Params {
+    navigation: any;
+}
+
+function SeriesLandingScreen({ navigation }: Params): JSX.Element {
 
     const seriesParam = navigation.getParam("item");
     const seriesId = navigation.getParam("seriesId");

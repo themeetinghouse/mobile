@@ -132,7 +132,7 @@ const NotesScreen = function ({ sermonId, navigation }: Params) {
     useEffect(() => {
         const loadContentAsync = async () => {
             const { notes, verses } = await (notesMode === 'notes' ? NotesService.loadNotes(sermonId) : NotesService.loadQuestions(sermonId));
-            for (let note of notes) {
+            for (const note of notes) {
                 console.log("NotesScreen.loadContentAsync(): processing : ", note);
                 note.content = "<root>" + note.content + "</root>";
                 parser.parseString(note.content, (err: any, result: any) => {

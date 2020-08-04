@@ -1,15 +1,13 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Button } from 'react-native';
-import { ExpoLinksView } from '@expo/samples';
 
-export default function LinksScreen(props: any) {
+interface Props {
+  navigation: any
+}
+
+export default function LinksScreen(props: Props): JSX.Element {
   return (
     <ScrollView style={styles.container}>
-      {/**
-       * Go ahead and delete ExpoLinksView and replace it with your content;
-       * we just wanted to provide you with some helpful links.
-       */}
-      <ExpoLinksView />
       <Button color="blue" title="Click me!" onPress={() => {
         console.log('Navigating to details.  props.navigation = %o', props.navigation);
         // Works:

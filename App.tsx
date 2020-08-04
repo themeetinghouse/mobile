@@ -1,16 +1,13 @@
-<script src="http://localhost:8097"></script>
+//<script src="http://localhost:8097"></script>
 
 import { AppLoading } from 'expo';
-import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
-import React, { useState, useEffect } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import React, { useState } from 'react';
+import { Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Theme, Style } from './Theme.style';
-
 import AppNavigator from './navigation/AppNavigator';
 import { Root } from 'native-base';
-import { Provider, connect } from 'react-redux'
+import { Provider } from 'react-redux'
 import { createStore, combineReducers } from 'redux';
 import { locationReducer, selectLocation } from './reducers/locationReducer';
 import LocationsService from './services/LocationsService';
@@ -28,10 +25,10 @@ const initApp = async () => {
 initApp();
 
 interface Props {
-  skipLoadingScreen: boolean;
+  skipLoadingScreen?: boolean;
 }
 
-function App(props: Props) {
+function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
 
   // useEffect(() => {
@@ -63,7 +60,6 @@ function App(props: Props) {
     );
   }
 }
-
 
 export default App;
 

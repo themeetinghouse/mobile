@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
@@ -71,7 +71,7 @@ interface Params {
     dispatch: any;
 }
 
-function MoreScreen({ navigation, location, dispatch }: Params) {
+function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
 
     const items = [
         { id: "give", text: "Give", subtext: "Donate to The Meeting House via PushPay", icon: Theme.icons.white.give },

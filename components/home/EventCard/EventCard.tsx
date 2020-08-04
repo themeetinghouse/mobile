@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, Thumbnail, View } from 'native-base';
 import moment from 'moment';
-
+import { EventQueryResult } from '../../../services/EventsService';
 import { Style, Theme } from '../../../Theme.style';
 import { TouchableOpacity, ViewStyle } from 'react-native';
 
@@ -47,22 +47,22 @@ const style = {
 }
 
 type EventCardInput = {
-    event: any;
+    event: NonNullable<EventQueryResult>[0];
     handlePress?(): any;
 }
 
 export default function EventCard({ event, handlePress }: EventCardInput): JSX.Element {
-    const dateStr = moment(event.start_time).format('MMM D');
+    const dateStr = moment(event?.start_time ?? undefined).format('MMM D');
     return (
         <View style={style.container}>
             <Text style={style.dateTitleContainer}>{dateStr}</Text>
             <TouchableOpacity style={style.titleButtonContainer} onPress={handlePress}>
-                <Text uppercase={false} style={style.title}>{event.name}</Text>
+                <Text uppercase={false} style={style.title}>{event?.name}</Text>
                 <Thumbnail style={style.icon} source={Theme.icons.white.arrow}></Thumbnail>
             </TouchableOpacity>
-            <Text style={style.descriptionContainer} numberOfLines={5}>{event.description}</Text>
-            <Text style={style.locationContainer}>{event.place?.name ? event.place.name : null}, {event.place?.location?.street ? event.place.location.street : null}</Text>
-            <Text style={style.dateTimeContainer}>{moment(event.start_time).format("h:mm a")} - {moment(event.end_time).format("h:mm a")}</Text>
+            <Text style={style.descriptionContainer} numberOfLines={5}>{event?.description}</Text>
+            <Text style={style.locationContainer}>{event?.place?.name ? event.place.name : null}, {event?.place?.location?.street ? event.place.location.street : null}</Text>
+            <Text style={style.dateTimeContainer}>{moment(event?.start_time ?? undefined).format("h:mm a")} - {moment(event?.end_time ?? undefined).format("h:mm a")}</Text>
         </View>
     );
 }

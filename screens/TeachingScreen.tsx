@@ -12,6 +12,7 @@ import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
 import SpeakersService from '../services/SpeakersService';
 import { loadSomeAsync } from '../utils/loading';
+import { LoadSeriesListData } from '../services/SeriesService';
 
 const style = {
     content: [Style.cardContainer, {
@@ -127,10 +128,18 @@ const style = {
     } as TextStyle,
 }
 
-export default function TeachingScreen({ navigation }): JSX.Element {
+interface Params {
+    navigation: any;
+}
+
+interface SeriesData extends LoadSeriesListData {
+    loading: boolean;
+}
+
+export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
-    const [recentSeries, setRecentSeries] = useState<any>({ loading: true, items: [], nextToken: null });
+    const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
 
@@ -211,7 +220,7 @@ export default function TeachingScreen({ navigation }): JSX.Element {
                 <View style={style.categorySection}>
                     <SideSwipe
                         contentContainerStyle={style.horizontalListContentContainer}
-                        data={recentSeries.items.concat({ loading: true })}
+                        data={recentSeries?.items?.concat({ loading: true })}
                         itemWidth={315}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}

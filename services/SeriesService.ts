@@ -1,16 +1,29 @@
 import { runGraphQLQuery } from './ApiService';
+import { GetSeriesBySeriesTypeQuery, GetSeriesQuery } from './API';
+
+type SeriesByTypeQueryResult = NonNullable<GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']>;
+
+export interface LoadSeriesListData {
+  items: Array<NonNullable<SeriesByTypeQueryResult['items']>[0] | { loading: boolean }>;
+  nextToken: SeriesByTypeQueryResult['nextToken'];
+}
+
+type SeriesData = NonNullable<GetSeriesQuery['getSeries']>
+
+interface SeriesDataWithHeroImage extends SeriesData {
+  heroImage?: string;
+}
 
 export default class SeriesService {
 
-    static loadSeriesList = async (limit: number, nextToken = null) => {
+    static loadSeriesList = async (limit: number, nextToken?: string): Promise<LoadSeriesListData> => {
       const queryResult = await runGraphQLQuery({ 
         query: getSeriesBySeriesType,
         variables: { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken },
       });
       console.log("SeriesService.loadSeriesList(): loaded.  nextToken = ", queryResult.getSeriesBySeriesType.nextToken);
       const items = queryResult.getSeriesBySeriesType.items;
-      let item;
-      for (item of items) {
+      for (const item of items) {
         SeriesService.updateSeriesImage(item);
       }
       return {
@@ -19,7 +32,7 @@ export default class SeriesService {
       };
     }
 
-    static loadSeriesById = async (seriesId: string) => {
+    static loadSeriesById = async (seriesId: string): Promise<SeriesDataWithHeroImage> => {
       const queryResult = await runGraphQLQuery({ 
         query: getSeries,
         variables: { id: seriesId },
@@ -30,7 +43,7 @@ export default class SeriesService {
       return series;
     }
 
-    static updateSeriesImage = async (series) => {
+    static updateSeriesImage = async (series: SeriesDataWithHeroImage): Promise<void> => {
       if (series.title){
         series.image = `https://themeetinghouse.com/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
         series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(/ /g, "%20")}.jpg`;

@@ -3,11 +3,11 @@ import { runGraphQLQuery } from './ApiService';
 import { Location } from './LocationsService'; 
 import { GetFbEventsQuery } from './API'
 
-type QueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['data']
+export type EventQueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['data']
 
 export default class EventsService {
 
-  static loadEventsList = async (location: Location): Promise<QueryResult> => {
+  static loadEventsList = async (location: Location): Promise<EventQueryResult> => {
     const query = { 
       query: getFbEvents,
       variables: { pageId: location.facebookEvents[0] },

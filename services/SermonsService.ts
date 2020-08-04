@@ -1,10 +1,14 @@
 import { runGraphQLQuery } from './ApiService';
+import { GetVideoByVideoTypeQuery } from './API';
 
-
+export interface LoadSermonResult {
+  items: NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items'];
+  nextToken: NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['nextToken'];
+}
 
 export default class SermonsService {
 
-    static loadSermonsList = async (count = 20, nextToken = null): Promise<any> => {
+    static loadSermonsList = async (count = 20, nextToken?: string ): Promise<LoadSermonResult> => {
       const queryResult = await runGraphQLQuery({ 
         query: getVideoByVideoType,
         variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, nextToken: nextToken },
@@ -15,11 +19,11 @@ export default class SermonsService {
       };
     }
 
-    static loadRecentSermonsList = async (count = 20, nextToken = null): Promise<any> => {
+    static loadRecentSermonsList = async (count = 20, nextToken?: string ): Promise<LoadSermonResult> => {
       return SermonsService.loadSermonsList(count, nextToken)
     }
 
-    static loadSermonsInSeriesList = async (seriesTitle: string, count = 99999, nextToken = null): Promise<any> => {
+    static loadSermonsInSeriesList = async (seriesTitle: string, count = 99999, nextToken?: string ): Promise<LoadSermonResult> => {
       const query = { 
         query: getVideoByVideoType,
         variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, filter: { seriesTitle: { eq: seriesTitle } } },
@@ -31,7 +35,7 @@ export default class SermonsService {
       };
     }
 
-    static loadHighlightsList = async (count = 20, nextToken = null): Promise<any> => {
+    static loadHighlightsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
       const query = { 
         query: getVideoByVideoType,
         variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday-shortcut", publishedDate: { lt: "a" }, nextToken: nextToken },

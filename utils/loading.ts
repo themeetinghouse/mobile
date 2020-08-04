@@ -6,7 +6,7 @@ const appendLoaded = (loadResult: any, stateObj: any, forceEnd = false): any => 
     }
 }
 
-export const loadSomeAsync = async (loaderFn, stateObj, setterFn, count = 99999): Promise<any> => {
+export const loadSomeAsync = async (loaderFn: (count: number, nextToken?: any) => Promise<any>, stateObj: any, setterFn: (data: any) => any, count = 99999): Promise<void> => {
     if (stateObj.nextToken === "END") return;
     setterFn({...stateObj, loading: true});
     const loadedItems = await loaderFn(count, stateObj.nextToken);
