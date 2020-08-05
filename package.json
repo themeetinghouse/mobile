@@ -14,8 +14,11 @@
   "dependencies": {
     "@expo/samples": "~36.0.0",
     "@expo/vector-icons": "~10.0.0",
+    "@react-native-community/netinfo": "^5.9.5",
     "@react-navigation/web": "~1.0.0-alpha.9",
     "@types/react-redux": "^7.1.9",
+    "aws-amplify": "^3.0.22",
+    "aws-amplify-react-native": "^4.2.3",
     "axios": "^0.19.2",
     "expo": "^36.0.0",
     "expo-asset": "^8.0.0",

@@ -12,6 +12,16 @@ import { createStore, combineReducers } from 'redux';
 import { locationReducer, selectLocation } from './reducers/locationReducer';
 import LocationsService from './services/LocationsService';
 import { viewNavReducer } from './reducers/viewNavReducer';
+import Amplify from 'aws-amplify';
+
+Amplify.configure({
+  Auth: {
+    identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    region: 'us-east-1',
+    userPoolId: 'us-east-1_KiJzP2dH5',
+    userPoolWebClientId: 'us-east-1_KiJzP2dH5',
+  }
+});
 
 const store = createStore(combineReducers({
   location: locationReducer,
@@ -53,7 +63,7 @@ function App(props: Props): JSX.Element {
     return (
       <Provider store={store}>
         <Root>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
           <AppNavigator />
         </Root>
       </Provider>

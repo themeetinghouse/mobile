@@ -31,7 +31,7 @@ interface Params {
 function HomeScreen({ navigation, location, dispatch }: Params) {
 
   const [announcements, setAnnouncements] = useState<any>([]);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any>([]);
   const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
 
   useEffect(() => {

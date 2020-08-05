@@ -2,14 +2,12 @@ import React from 'react';
 //import { Platform } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
-
 import HomeScreen from '../screens/HomeScreen';
 import TeachingScreen from '../screens/TeachingScreen';
 import AllSeriesScreen from '../screens/AllSeriesScreen';
 import AllSermonsScreen from '../screens/AllSermonsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { Thumbnail } from 'native-base';
-
 import TabHomeImage from '../assets/icons/tab-home.png';
 import TabHomeActiveImage from '../assets/icons/tab-home-active.png';
 import TabTeachingImage from '../assets/icons/tab-teaching.png';
@@ -60,7 +58,7 @@ const style = {
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Home',
-  tabBarIcon: (focused: boolean) => {
+  tabBarIcon: function render(focused: boolean) {
     return <Thumbnail square source={focused ? TabHomeActiveImage : TabHomeImage} style={style.tabIcon}></Thumbnail>
   }
 
@@ -125,7 +123,7 @@ const TeachingStack = createStackNavigator(
 
 TeachingStack.navigationOptions = {
   tabBarLabel: 'Teaching',
-  tabBarIcon: (focused: boolean) => {
+  tabBarIcon: function render(focused: boolean) {
     return <Thumbnail square source={focused ? TabTeachingActiveImage : TabTeachingImage} style={style.tabIcon}></Thumbnail>
   }
 };
@@ -140,7 +138,7 @@ const SearchStack = createStackNavigator(
 
 SearchStack.navigationOptions = {
   tabBarLabel: 'Search',
-  tabBarIcon: (focused: boolean) => {
+  tabBarIcon: function render(focused: boolean) {
     return <Thumbnail square source={focused ? TabSearchActiveImage : TabSearchImage} style={style.tabIcon}></Thumbnail>
   }
 };
@@ -160,18 +158,17 @@ const MoreStack = createStackNavigator(
 
 MoreStack.navigationOptions = {
   tabBarLabel: 'More',
-  tabBarIcon: (focused: boolean) => {
+  tabBarIcon: function render(focused: boolean) {
     return <Thumbnail square source={focused ? TabMoreActiveImage : TabMoreImage} style={style.tabIcon}></Thumbnail>
   }
 };
 
 MoreStack.path = '';
 
-let tabNavigator;
-let tabs = { HomeStack, TeachingStack, /*SearchStack,*/ MoreStack }
+const tabs = { HomeStack, TeachingStack, /*SearchStack,*/ MoreStack }
 
 //if (Platform.OS === "ios"){
-tabNavigator = createBottomTabNavigator(tabs,
+const tabNavigator = createBottomTabNavigator(tabs,
   {
     tabBarOptions: {
       activeBackgroundColor: "#000000",
@@ -179,15 +176,10 @@ tabNavigator = createBottomTabNavigator(tabs,
       showLabel: false,
       style: {
         height: 65
-      }
-    },
-    labeled: false,
-    activeColor: "#FFFFFF",
-    inactiveColor: "#FFFFFF",
-    barStyle: {
-      backgroundColor: '#000000',
-      overflow: "visible",
-    },
+      },
+      activeTintColor: "#FFFFFF",
+      inactiveTintColor: "#FFFFFF",
+    }
   }
 );
 
@@ -204,6 +196,6 @@ tabNavigator = createBottomTabNavigator(tabs,
 //   });
 // }
 
-tabNavigator.path = '';
+//tabNavigator.path = '';
 
 export default tabNavigator;

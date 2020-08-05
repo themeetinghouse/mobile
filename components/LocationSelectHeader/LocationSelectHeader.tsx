@@ -4,6 +4,7 @@ import { Style, Theme } from '../../Theme.style';
 import { StatusBar, ViewStyle } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
+import { Location } from '../../services/LocationsService';
 //import LocationsService from '../../services/LocationsService';
 
 const style = {
@@ -52,7 +53,7 @@ const style = {
 interface LocationSelectHeaderInput {
     navigation: any;
     children: string;
-    location: any;
+    location: Location;
 }
 
 function LocationSelectHeader({ navigation, children, location }: LocationSelectHeaderInput): JSX.Element {

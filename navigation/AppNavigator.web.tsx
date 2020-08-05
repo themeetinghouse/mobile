@@ -1,13 +1,12 @@
 import { createBrowserApp } from '@react-navigation/web';
 import { createSwitchNavigator } from 'react-navigation';
+import Auth from '../screens/Auth/Auth';
 
 import MainTabNavigator from './MainTabNavigator';
 
 const switchNavigator = createSwitchNavigator({
-  // You could add another route here for authentication.
-  // Read more at https://reactnavigation.org/docs/en/auth-flow.html
+  Auth: Auth,
   Main: MainTabNavigator,
-});
-switchNavigator.path = '';
+}, { initialRouteName: 'Auth' });
 
 export default createBrowserApp(switchNavigator, { history: 'hash' });
