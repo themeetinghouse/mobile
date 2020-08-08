@@ -4,6 +4,7 @@ import { Image, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 import { Theme, Style } from '../../../Theme.style';
 import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
+import { useNavigation } from '@react-navigation/native';
 
 const style = {
     container: {
@@ -58,14 +59,14 @@ const style = {
 
 interface RecentTeachingInput {
     teaching: any;
-    navigation: any;
 }
 
-export default function RecentTeaching({ teaching, navigation }: RecentTeachingInput): JSX.Element {
+export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.Element {
     //console.log("RecentTeaching.render(): props = ", props)
 
+    const navigation = useNavigation();
     if (!teaching) {
-        return (<View></View>);
+        return <View/>;
     }
 
     const series = teaching.series || { title: "" };
@@ -80,7 +81,7 @@ export default function RecentTeaching({ teaching, navigation }: RecentTeachingI
 
     const openNotes = (teachingId: string) => {
         console.log("RecentTeaching.openNotes(): teachingId = ", teachingId);
-        navigation.navigate("NotesScreen")
+        navigation.navigate("Teaching", {screen: "NotesScreen"})
     }
 
     return (

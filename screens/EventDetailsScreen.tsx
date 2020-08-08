@@ -56,11 +56,12 @@ const style = {
 
 interface Props {
     navigation: any;
+    route: any;
 }
 
 export default function EventDetailsScreen(props: Props): JSX.Element {
 
-    const eventItem = props.navigation.getParam("item");
+    const eventItem = props.route.params?.item;
 
     return (
         <Container>

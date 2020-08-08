@@ -1,10 +1,17 @@
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
+import React from 'react';
 import MainTabNavigator from './MainTabNavigator';
-import Auth from '../screens/Auth/Auth';
+import AuthNavigator from './AuthNavigator';
+import CheckUser from '../screens/Auth/CheckUser';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default createAppContainer(
-  createSwitchNavigator({
-    Auth: Auth,
-    Main: MainTabNavigator,
-  }, { initialRouteName: 'Auth' })
-);
+const Main = createStackNavigator();
+
+export default function NavigationRoot(): JSX.Element {
+  return (
+      <Main.Navigator screenOptions={{ headerShown: false }} initialRouteName="CheckUser">
+        <Main.Screen name={"Main"} component={MainTabNavigator}></Main.Screen>
+        <Main.Screen name={"CheckUser"} component={CheckUser} ></Main.Screen>
+        <Main.Screen name={"Auth"} component={AuthNavigator} ></Main.Screen>
+      </Main.Navigator>
+  )
+}

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
+import { NavigationScreenProp } from 'react-navigation';
 
 const style = {
     title: [Style.cardTitle, {
@@ -18,7 +19,6 @@ const style = {
         height: 56,
         color: 'white',
         fontSize: 16,
-        lineHeight: 24,
         paddingHorizontal: 20
     },
     inputSelected: {
@@ -29,56 +29,62 @@ const style = {
         height: 56,
         color: 'white',
         fontSize: 16,
-        lineHeight: 24,
         paddingHorizontal: 20
-    }
+    },
+    headerTextActive: {
+        color: 'white',
+        fontSize: 16,
+        lineHeight: 24,
+        fontFamily: Theme.fonts.fontFamilyBold,
+        paddingHorizontal: 16,
+    },
 }
 
 interface Props {
-    authState: string;
-    onStateChange: (state: string) => any;
+    navigation: NavigationScreenProp<any, any>;
 }
 
-export default function Login(props: Props): JSX.Element | null {
+export default function Login(props: Props): JSX.Element {
     const [user, setUser] = useState('');
-    const [pass, setPass] = useState('');
+    const [code, setCode] = useState('');
     const [error, setError] = useState('');
 
-    function changeAuthState(state: string): void {
+    function toLogin(): void {
         setUser('');
-        setPass('');
         setError('');
-        props.onStateChange(state);
+        props.navigation.navigate('LoginScreen')
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>): void {
         if (keyEvent.nativeEvent.key === 'Enter')
-            signUp();
+        confirm();
     }
 
-    const signUp = async () => {
+    const confirm = async () => {
         try {
-            const result = await Auth.signUp(user, pass).then(() => changeAuthState('SignIn'))
-            console.log(result)
+            await Auth.confirmSignUp(user, code).then(() => toLogin())
         } catch (e) {
+            console.error(e)
             setError(e.message)
         }
     }
 
-    return (props.authState === 'confirmSignUp' ?
-        <View style={{ minHeight: '100%', width: '100%' }}>
-            <View style={{ backgroundColor: 'black', minHeight: '100%', width: '100%', paddingHorizontal: '5%' }}>
-                <Text style={style.title}>Email</Text>
-                <TextInput autoCompleteType="email" textContentType="emailAddress" autoFocus keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
-                <Text style={style.title}>Password</Text>
-                <TextInput autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input}></TextInput>
-                <WhiteButton label="Create Account" onPress={signUp} style={{ marginTop: 24, height: 56 }} />
-                <Text style={{ color: Theme.colors.grey5 }}>Verify a Code</Text>
+    return <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}> 
+        <View style={{ width: '100%', flex: 1 }}>
+            <SafeAreaView style={{ backgroundColor: 'black' }} />
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
+                <Text style={style.headerTextActive}>Confirm your account</Text>
             </View>
-            <View style={{ position: 'absolute', width: '100%', bottom: 0, paddingBottom: 39, paddingTop: 16, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                <Text style={{ color: Theme.colors.grey5 }}>Already an account?</Text>
-                <WhiteButton outlined label="Login" onPress={() => changeAuthState('signIn')} style={{ marginTop: 24, height: 56 }} />
+            <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
+                <Text style={style.title}>Email</Text>
+                <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+                <Text style={style.title}>One-Time Security Code</Text>
+                <TextInput onKeyPress={(e)=>handleEnter(e)} keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
+                <WhiteButton label={"Submit"} onPress={confirm} style={{ marginTop: 24, height: 56 }} />
+            </View>
+            <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
+                <WhiteButton outlined label="Back to login" onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />
             </View>
         </View>
-        : null)
+    </TouchableWithoutFeedback>
 } 

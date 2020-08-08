@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import UserContext from '../../contexts/UserContext';
 import { Header, Body, Icon, View, Button, Text, Right, Left, Thumbnail } from "native-base";
 import { Style, Theme } from '../../Theme.style';
 import { StatusBar, ViewStyle } from 'react-native';
-import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Location } from '../../services/LocationsService';
+import { useNavigation } from '@react-navigation/native' 
 //import LocationsService from '../../services/LocationsService';
 
 const style = {
@@ -51,12 +52,14 @@ const style = {
 }
 
 interface LocationSelectHeaderInput {
-    navigation: any;
     children: string;
     location: Location;
 }
 
-function LocationSelectHeader({ navigation, children, location }: LocationSelectHeaderInput): JSX.Element {
+function LocationSelectHeader({ children, location }: LocationSelectHeaderInput): JSX.Element {
+
+    const navigation = useNavigation();
+    const user = useContext(UserContext);
 
     return (
         <Header style={Style.header}>
@@ -65,24 +68,21 @@ function LocationSelectHeader({ navigation, children, location }: LocationSelect
             <Left style={style.left}></Left>
 
             <Body style={style.body}>
-                <Button style={style.headerButton} onPress={() => navigation.push('LocationSelectionScreen')}>
+                <Button style={style.headerButton} onPress={() => navigation.navigate('LocationSelectionScreen')}>
                     <View style={style.buttonContentsContainer}>
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
                             <Text style={[style.subtitle, style.locationName]}>{location.name}</Text>
                             <Icon style={style.subtitle} name='arrow-dropdown'></Icon>
                         </View>
-
                     </View>
                 </Button>
             </Body>
-
             <Right style={style.right}>
-                <Button icon transparent style={{}} onPress={() => console.log('profile clicked')}>
-                    <Thumbnail source={Theme.icons.white.user} style={style.icon}></Thumbnail>
+                <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                    <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
                 </Button>
             </Right>
-
         </Header>
     )
 }
@@ -93,4 +93,4 @@ function mapStateToProps(state: any) {
     }
 }
 
-export default connect(mapStateToProps)(withNavigation(LocationSelectHeader));
+export default connect(mapStateToProps)(LocationSelectHeader);

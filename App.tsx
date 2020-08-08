@@ -2,7 +2,7 @@
 
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
@@ -12,14 +12,16 @@ import { createStore, combineReducers } from 'redux';
 import { locationReducer, selectLocation } from './reducers/locationReducer';
 import LocationsService from './services/LocationsService';
 import { viewNavReducer } from './reducers/viewNavReducer';
-import Amplify from 'aws-amplify';
+import Amplify, { Auth } from 'aws-amplify';
+import UserContext, { UserData } from './contexts/UserContext'; 
+import { NavigationContainer } from '@react-navigation/native'
 
 Amplify.configure({
   Auth: {
-    identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',
+    identityPoolId: 'us-east-1:d3da58ee-46b8-4b00-aa3a-a14c37b64aa7',
     region: 'us-east-1',
     userPoolId: 'us-east-1_KiJzP2dH5',
-    userPoolWebClientId: 'us-east-1_KiJzP2dH5',
+    userPoolWebClientId: '3pf37ngd57hsk9ld12aha9bm2f',
   }
 });
 
@@ -40,6 +42,7 @@ interface Props {
 
 function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+  const [userData, setUserData] = useState<UserData>(null)
 
   // useEffect(() => {
   //   const setInitialAppState = async () => {
@@ -48,6 +51,19 @@ function App(props: Props): JSX.Element {
   //   }
   //   setInitialAppState();
   // }, [])
+
+  useEffect(()=> {
+    async function checkForUser() {
+        try {
+        const user = await Auth.currentAuthenticatedUser()
+        if (user.attributes.email_verified)
+          setUserData(user.attributes)
+        } catch (e) {
+          console.debug(e)
+        }
+    }
+    checkForUser();
+    }, [])
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
@@ -62,10 +78,14 @@ function App(props: Props): JSX.Element {
   } else {
     return (
       <Provider store={store}>
-        <Root>
-          {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" />}
-          <AppNavigator />
-        </Root>
+        <UserContext.Provider value={{userData, updateUser: (e)=>setUserData(e)}}>
+          <Root>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </Root>
+        </UserContext.Provider>
       </Provider>
     );
   }

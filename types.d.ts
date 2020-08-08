@@ -1,2 +1,3 @@
 declare module 'aws-amplify-react-native';
-declare module '*.png'
+declare module '@react-navigation/web';
+declare module '*.png';

@@ -1,5 +1,6 @@
 import Arrow from './assets/images/black/Arrow.png';
 import ArrowWhite from './assets/images/white/Arrow.png';
+import ArrowLeftWhite from './assets/images/white/Arrow-Left.png';
 import UserWhite from './assets/images/white/User.png';
 import NotesWhite from './assets/images/white/Notes.png';
 import CalendarAddWhite from './assets/images/white/Calendar-Add.png';
@@ -15,6 +16,10 @@ import StaffWhite from './assets/images/white/Staff.png';
 import HomeChurchWhite from './assets/images/white/HomeChurch.png';
 import TextOptionsWhite from './assets/images/white/TextOptions.png';
 import NewWindowWhite from './assets/images/white/New-Window.png';
+import UserWhiteLoggedIn from './assets/images/white/UserLoggedIn.png';
+import SignOutWhite from './assets/images/white/SignOut.png';
+import AccountWhite from './assets/images/white/Account.png';
+
 
 export const Theme = {
     colors: {
@@ -54,7 +59,9 @@ export const Theme = {
         width: 24,
         height: 24,
         white: {
+            account: AccountWhite,
             arrow: ArrowWhite,
+            arrowLeft: ArrowLeftWhite,
             user: UserWhite,
             notes: NotesWhite,
             calendarAdd: CalendarAddWhite,
@@ -69,7 +76,9 @@ export const Theme = {
             staff: StaffWhite,
             homeChurch: HomeChurchWhite,
             textOptions: TextOptionsWhite,
-            newWindow: NewWindowWhite
+            newWindow: NewWindowWhite,
+            userLoggedIn: UserWhiteLoggedIn,
+            signOut: SignOutWhite,
         },
         black: {
             arrow: Arrow,

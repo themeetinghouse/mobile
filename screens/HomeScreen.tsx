@@ -25,10 +25,9 @@ const style = {
 interface Params {
   navigation: any;
   location: any;
-  dispatch: any;
 }
 
-function HomeScreen({ navigation, location, dispatch }: Params) {
+function HomeScreen({ navigation, location }: Params) {
 
   const [announcements, setAnnouncements] = useState<any>([]);
   const [events, setEvents] = useState<any>([]);
@@ -51,7 +50,6 @@ function HomeScreen({ navigation, location, dispatch }: Params) {
       loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 1)
     }
     loadRecentTeaching();
-
   }, [])
 
   console.log('HomeScreen.render(): location = ', location)
@@ -65,7 +63,7 @@ function HomeScreen({ navigation, location, dispatch }: Params) {
         }
         {recentTeaching.items.length > 0 &&
           <View style={style.categoryContainer}>
-            <RecentTeaching teaching={recentTeaching.items[0]} navigation={navigation}></RecentTeaching>
+            <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
           </View>
         }
 

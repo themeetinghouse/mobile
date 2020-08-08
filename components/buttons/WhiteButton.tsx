@@ -31,7 +31,7 @@ const style = {
 interface Props {
     style?: ViewStyle;
     label: string;
-    onPress: () => any;
+    onPress?: () => any;
     outlined?: boolean;
 }
 
