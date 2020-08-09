@@ -61,7 +61,7 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
     const location = useContext(LocationContext);
 
     return (
-        <Header style={Style.header}>
+        <Header style={{ backgroundColor: Theme.colors.background }}>
             <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
 
             <Left style={style.left}></Left>

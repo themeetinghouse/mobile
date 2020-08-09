@@ -24,7 +24,7 @@ const style = {
 }
 
 type AllButtonInput = {
-    children?: any;
+    children: string;
     handlePress?(): any;
 }
 

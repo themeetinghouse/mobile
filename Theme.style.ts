@@ -82,10 +82,8 @@ export const Theme = {
         },
         black: {
             arrow: Arrow,
-
         }
     }
-
 }
 
 export const Style = {
@@ -111,9 +109,14 @@ export const Style = {
             color: Theme.colors.white,
             fontFamily: Theme.fonts.fontFamilyRegular,
             fontSize: Theme.fonts.small,
+        },
+        linkTextInactive: {
+            color: Theme.colors.white,
+            fontFamily: Theme.fonts.fontFamilyRegular,
+            fontSize: Theme.fonts.small,
+            opacity: 0.24,
         }
     },
-
     categoryTitle: {
         color: Theme.colors.white,
         fontSize: Theme.fonts.large,
@@ -122,7 +125,6 @@ export const Style = {
         marginRight: 16,
         marginBottom: 16,
     }, 
-
     cardContainer: {
         borderColor: Theme.colors.gray2,
         borderTopWidth: 1

@@ -9,6 +9,7 @@ import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { NavigationRoute } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -84,11 +85,12 @@ const style = {
 
 interface Params {
     navigation: any;
+    route: NavigationRoute;
 }
 
-export default function SermonLandingScreen({ navigation }: Params): JSX.Element {
+export default function SermonLandingScreen({ navigation, route }: Params): JSX.Element {
 
-    const sermon = navigation.getParam("item");
+    const sermon = route.params?.item;
 
     const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
 

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView } from 'react-native'
 import { Auth } from 'aws-amplify';
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { NavigationScreenProp } from 'react-navigation';
+import UserContext from '../../contexts/UserContext';
 
 const style = {
     title: [Style.cardTitle, {
@@ -62,6 +63,14 @@ export default function Login(props: Props): JSX.Element {
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
 
+    const userContext = useContext(UserContext);
+
+    useEffect(() => {
+        if (userContext?.userData?.email_verified) {
+            props.navigation.navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
+        }
+    }, []);
+
     function navigate(screen: string, screenProps?: any): void {
         setUser('');
         setPass('');
@@ -76,7 +85,10 @@ export default function Login(props: Props): JSX.Element {
 
     const signIn = async () => {
         try {
-            await Auth.signIn(user, pass).then(() => props.navigation.navigate('Main', { screen: 'Home' }))
+            await Auth.signIn(user, pass)
+            const userSignedIn = await Auth.currentAuthenticatedUser();
+            userContext?.setUserData(userSignedIn.attributes)
+            navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
         } catch (e) {
             setError(e.message)
         }
@@ -96,7 +108,7 @@ export default function Login(props: Props): JSX.Element {
                 <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
                 <TouchableOpacity onPress={() => navigate('ForgotPasswordScreen')}><Text style={{ color: Theme.colors.grey5 }}>Forgot Password?</Text></TouchableOpacity>
                 <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 24, height: 56 }} />
-                <WhiteButton label="Continue as Guest" onPress={() => props.navigation.navigate('Main', { screen: 'Home' })} style={{ marginTop: 24, height: 56 }} />
+                <WhiteButton label="Continue as Guest" onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} style={{ marginTop: 24, height: 56 }} />
             </View>
             <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>

@@ -8,6 +8,7 @@ import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { NavigationRoute } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -73,12 +74,13 @@ const style = {
 
 interface Params {
     navigation: any;
+    route: NavigationRoute;
 }
 
-function SeriesLandingScreen({ navigation }: Params): JSX.Element {
+function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
-    const seriesParam = navigation.getParam("item");
-    const seriesId = navigation.getParam("seriesId");
+    const seriesParam = route.params?.item;
+    const seriesId = route.params?.seriesId;
 
     const [series, setSeries] = useState(seriesParam);
     const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });

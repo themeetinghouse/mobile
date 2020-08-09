@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Separator } from 'native-base';
+import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Auth } from 'aws-amplify'
 import ActivityIndicator from '../../components/ActivityIndicator';
+import { NavigationScreenProp } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -74,7 +75,7 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: NavigationScreenProp<any, any>;
 }
 
 export default function Profile({ navigation }: Params): JSX.Element {
@@ -106,8 +107,8 @@ export default function Profile({ navigation }: Params): JSX.Element {
     ]
 
     const items2 = [
-        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.arrow, action: () => navigation.navigate('SignUpScreen') },
-        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.arrow, action: () => navigation.navigate('LoginScreen') },
+        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.arrow, action: () => navigation.navigate('Auth', { screen: 'SignUpScreen' }) },
+        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.arrow, action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }) }
     ]
 
     const signOut = async () => {

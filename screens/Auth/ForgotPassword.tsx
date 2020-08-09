@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Auth } from 'aws-amplify';
 import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import { NavigationScreenProp } from 'react-navigation';
+import UserContext from '../../contexts/UserContext';
 
 const style = {
     title: [Style.cardTitle, {
@@ -45,6 +46,7 @@ interface Props {
 }
 
 export default function Login(props: Props): JSX.Element {
+    const userContext = useContext(UserContext);
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
     const [code, setCode] = useState('');
@@ -67,7 +69,7 @@ export default function Login(props: Props): JSX.Element {
         props.navigation.navigate('LoginScreen')
     }
 
-    function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: ()=>any): void {
+    function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
         if (keyEvent.nativeEvent.key === 'Enter')
             cb();
     }
@@ -88,30 +90,30 @@ export default function Login(props: Props): JSX.Element {
         }
     }
 
-    return <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}> 
+    return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{ width: '100%', flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: 'black' }} />
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
-                    <Text style={style.headerTextActive}>Reset your password</Text>
-                </View>
+                <Text style={style.headerTextActive}>Reset your password</Text>
+            </View>
             {!codeSent ? <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
                 <Text style={style.title}>Email</Text>
-                <TextInput onKeyPress={(e)=>handleEnter(e, sendCode)} keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+                <TextInput onKeyPress={(e) => handleEnter(e, sendCode)} keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 24, height: 56 }} />
-                <TouchableOpacity onPress={()=>updateCodeState(true)}><Text style={{ color: Theme.colors.grey5 }}>Submit a Code</Text></TouchableOpacity>
-            </View> 
-            : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
-                <Text style={style.title}>Email</Text>
-                <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
-                <Text style={style.title}>One-Time Security Code</Text>
-                <TextInput keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
-                <Text style={style.title}>New Password</Text>
-                <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, reset)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
-                <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 24, height: 56 }} />
-            </View>}
+                <TouchableOpacity onPress={() => updateCodeState(true)}><Text style={{ color: Theme.colors.grey5 }}>Submit a Code</Text></TouchableOpacity>
+            </View>
+                : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
+                    <Text style={style.title}>Email</Text>
+                    <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+                    <Text style={style.title}>One-Time Security Code</Text>
+                    <TextInput keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
+                    <Text style={style.title}>New Password</Text>
+                    <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, reset)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
+                    <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 24, height: 56 }} />
+                </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                <WhiteButton outlined label="Back to login" onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />
+                <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"} onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />
             </View>
         </View>
     </TouchableWithoutFeedback>
-} 
+}

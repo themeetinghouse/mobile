@@ -5,6 +5,7 @@ import { Container, Text, Button, Icon, Content, Left, Right, Header, Body } fro
 //import moment from 'moment';
 import WhiteButton from '../components/buttons/WhiteButton';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
+import { NavigationRoute } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -41,11 +42,12 @@ const style = {
 
 interface Props {
     navigation: any;
+    route: NavigationRoute;
 }
 
 export default function AnnouncementDetailScreen(props: Props): JSX.Element {
 
-    const announcementItem = props.navigation.getParam("item");
+    const announcementItem = props.route.params?.item;
 
     return (
         <Container>

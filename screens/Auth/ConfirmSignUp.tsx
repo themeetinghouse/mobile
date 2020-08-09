@@ -57,7 +57,7 @@ export default function Login(props: Props): JSX.Element {
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>): void {
         if (keyEvent.nativeEvent.key === 'Enter')
-        confirm();
+            confirm();
     }
 
     const confirm = async () => {
@@ -69,7 +69,7 @@ export default function Login(props: Props): JSX.Element {
         }
     }
 
-    return <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}> 
+    return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={{ width: '100%', flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: 'black' }} />
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
@@ -79,7 +79,7 @@ export default function Login(props: Props): JSX.Element {
                 <Text style={style.title}>Email</Text>
                 <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <Text style={style.title}>One-Time Security Code</Text>
-                <TextInput onKeyPress={(e)=>handleEnter(e)} keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
+                <TextInput onKeyPress={(e) => handleEnter(e)} keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
                 <WhiteButton label={"Submit"} onPress={confirm} style={{ marginTop: 24, height: 56 }} />
             </View>
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>

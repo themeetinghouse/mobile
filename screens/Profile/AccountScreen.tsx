@@ -7,6 +7,7 @@ import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 //import { selectLocation } from '../reducers/locationReducer';
 import { Auth } from 'aws-amplify';
 import UserContext from '../../contexts/UserContext'
+import { NavigationScreenProp } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -87,7 +88,7 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: NavigationScreenProp<any, any>;
 }
 
 function Account({ navigation }: Params): JSX.Element {

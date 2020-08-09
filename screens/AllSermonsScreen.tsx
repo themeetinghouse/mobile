@@ -8,6 +8,7 @@ import TeachingListItem from '../components/teaching/TeachingListItem';
 import SermonsService from '../services/SermonsService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { NavigationRoute } from 'react-navigation';
 
 const style = {
     content: [Style.cardContainer, {
@@ -67,7 +68,7 @@ const style = {
 
 interface Params {
     navigation: any;
-    route: any;
+    route: NavigationRoute;
 }
 
 export default function AllSermonsScreen({ navigation, route }: Params): JSX.Element {

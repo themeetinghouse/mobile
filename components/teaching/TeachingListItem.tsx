@@ -3,6 +3,7 @@ import { View, Text } from 'native-base';
 import Theme from '../../Theme.style';
 import { Image, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
 import moment from 'moment';
+import { LoadSermonResult } from '../../services/SermonsService';
 
 const style = {
     container: {
@@ -46,16 +47,16 @@ const style = {
 
 interface Params {
     handlePress: () => any;
-    teaching: any;
+    teaching: NonNullable<LoadSermonResult['items']>[0];
 }
 
 export default function TeachingListItem({ teaching, handlePress }: Params): JSX.Element {
     //console.log("TeachingListItem(): teaching = ", teaching);
     let imageUrl = "";
-    if (teaching.Youtube.snippet.thumbnails.standard) {
-        imageUrl = teaching.Youtube.snippet.thumbnails.standard.url;
-    } else if (teaching.Youtube.snippet.thumbnails.high) {
-        imageUrl = teaching.Youtube.snippet.thumbnails.high.url;
+    if (teaching?.Youtube?.snippet?.thumbnails?.standard) {
+        imageUrl = teaching.Youtube.snippet.thumbnails.standard.url ?? "";
+    } else if (teaching?.Youtube?.snippet?.thumbnails?.high) {
+        imageUrl = teaching.Youtube.snippet.thumbnails.high.url ?? "";
     }
     return (
         <TouchableOpacity onPress={handlePress}>
@@ -63,9 +64,13 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
                 <Image style={style.thumbnail} source={{ uri: imageUrl }}></Image>
                 {/* <Thumbnail style={style.thumbnail} source={teaching.thumbnail} square ></Thumbnail> */}
                 <View style={style.detailsContainer}>
-                    <Text style={style.title}>{teaching.episodeTitle}</Text>
-                    <Text style={style.detailText1}>E{teaching.episodeNumber}, {teaching.seriesTitle}</Text>
-                    <Text style={style.detailText2}>{moment(teaching.publishedDate).format("MMMM, D, YYYY")}</Text>
+                    <Text style={style.title}>{teaching?.episodeTitle}</Text>
+                    <Text style={style.detailText1}> {teaching?.episodeNumber || `E${teaching?.episodeNumber},`} {teaching?.seriesTitle}</Text>
+                    {teaching?.publishedDate ?
+                        <Text style={style.detailText2}>
+                            {moment(teaching?.publishedDate).format("MMMM, D, YYYY")}
+                        </Text> : null
+                    }
                 </View>
             </View>
         </TouchableOpacity>
