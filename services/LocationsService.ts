@@ -1,5 +1,3 @@
-//import axios from 'axios';
-
 export interface Location {
     id: string;
     name: string;
@@ -14,13 +12,12 @@ export interface Location {
 }
 
 export default class LocationsService {
-
-    static getLocationById = async (locationId: string): Promise<Location | undefined> => {
-      const allLocations: Location[] = LocationsService.loadLocations();
-      return allLocations.find(loc => loc.id === locationId);
+    static async getLocationById(locationId: string): Promise<Location | undefined> {
+      const allLocations: Location[] = await LocationsService.loadLocations();
+      return allLocations.find(location => location.id === locationId);
     }
 
-    static loadLocations = (): Location[] => {
+    static async loadLocations(): Promise<Location[]> {
         return [
           {
               

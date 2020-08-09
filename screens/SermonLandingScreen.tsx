@@ -5,7 +5,6 @@ import moment from 'moment';
 import { StatusBar, ViewStyle } from 'react-native';
 //import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
 import { loadSomeAsync } from '../utils/loading';
@@ -87,7 +86,7 @@ interface Params {
     navigation: any;
 }
 
-function SermonLandingScreen({ navigation }: Params) {
+export default function SermonLandingScreen({ navigation }: Params): JSX.Element {
 
     const sermon = navigation.getParam("item");
 
@@ -166,10 +165,3 @@ function SermonLandingScreen({ navigation }: Params) {
         </Container>
     )
 }
-
-function mapStateToProps(state: any) {
-    return {
-    }
-}
-
-export default connect(mapStateToProps)(SermonLandingScreen);

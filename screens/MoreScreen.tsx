@@ -4,7 +4,6 @@ import Theme, { Style } from '../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 //import { TouchableOpacity } from 'react-native';
 //import LocationsService from '../services/LocationsService';
-import { connect } from 'react-redux';
 //import { selectLocation } from '../reducers/locationReducer';
 
 const style = {
@@ -75,7 +74,7 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
 
     const items = [
         { id: "give", text: "Give", subtext: "Donate to The Meeting House via PushPay", icon: Theme.icons.white.give },
-        { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+        //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
         { id: "connect", text: "Connect", subtext: "Get connected with a staff member", icon: Theme.icons.white.connect },
         { id: "staff", text: "Staff Directory", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff },
         { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch },
@@ -127,11 +126,5 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
     )
 }
 
-function mapStateToProps(state: { location: { location: any; }; }) {
-    return {
-        location: state.location.location
-    }
-}
-
-export default connect(mapStateToProps)(MoreScreen);
+export default MoreScreen;
 

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, Icon, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style } from '../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import LocationsService from '../services/LocationsService';
-import { connect } from 'react-redux';
-import { selectLocation } from '../reducers/locationReducer';
+import LocationsService, { Location } from '../services/LocationsService';
+import LocationContext from '../contexts/LocationContext';
 
 const style = {
     content: [Style.cardContainer, {
@@ -59,15 +58,15 @@ const style = {
 
 type LocationSelectionScreenInput = {
     navigation: any;
-    location: any;
-    dispatch: any;
 }
 
 
-function LocationSelectionScreen({ navigation, location, dispatch }: LocationSelectionScreenInput) {
+export default function LocationSelectionScreen({ navigation }: LocationSelectionScreenInput): JSX.Element {
 
-    const [locations, setLocations] = useState<any>([]);
-    const [selectedLocation, setSelectedLocation] = useState(location);
+    const location = useContext(LocationContext)
+
+    const [locations, setLocations] = useState<Location[]>([]);
+    const [selectedLocation, setSelectedLocation] = useState(location?.locationData);
     const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
@@ -92,7 +91,7 @@ function LocationSelectionScreen({ navigation, location, dispatch }: LocationSel
                 </Body>
                 <Right style={style.headerRight}>
                     <TouchableOpacity onPress={() => {
-                        dispatch(selectLocation(selectedLocation));
+                        location?.setLocationData(selectedLocation);
                         navigation.goBack();
                     }}>
                         <Text style={style.headerButtonText}>Done</Text>
@@ -123,7 +122,7 @@ function LocationSelectionScreen({ navigation, location, dispatch }: LocationSel
                                     <Text style={style.listText}>{location.name}</Text>
                                 </Left>
                                 <Right>
-                                    {selectedLocation.id === location.id &&
+                                    {selectedLocation?.id === location.id &&
                                         <Thumbnail style={style.listCheckIcon} source={Theme.icons.white.check} square></Thumbnail>
                                     }
                                 </Right>
@@ -136,12 +135,3 @@ function LocationSelectionScreen({ navigation, location, dispatch }: LocationSel
 
     )
 }
-
-function mapStateToProps(state: { location: { location: any; }; }) {
-    return {
-        location: state.location.location
-    }
-}
-
-export default connect(mapStateToProps)(LocationSelectionScreen);
-

@@ -4,13 +4,9 @@ import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body
 import moment from 'moment';
 import { Dimensions, StatusBar, ViewStyle } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-//import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
-//import IconButton from '../components/buttons/IconButton';
-//import LinearGradient from 'react-native-linear-gradient';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
-//import { setSermonDateRange } from '../reducers/viewNavReducer';
 import ActivityIndicator from '../components/ActivityIndicator';
 
 const style = {

@@ -82,27 +82,26 @@ export default function Login(props: Props): JSX.Element {
         }
     }
 
-    return <TouchableWithoutFeedback onPress={()=>Keyboard.dismiss()}> 
-            <View style={{ width: '100%', flex: 1 }}>
-                <SafeAreaView style={{ backgroundColor: 'black' }} />
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
-                    <Text style={style.headerTextActive}>Login</Text>
-                    <Text onPress={()=>navigate('SignUpScreen')} style={style.headerTextInactive}>Sign Up</Text>
-                </View>
-                <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
-                    <Text style={style.title}>Email</Text>
-                    <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
-                    <Text style={style.title}>Password</Text>
-                    <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
-                    <TouchableOpacity onPress={()=>navigate('ForgotPasswordScreen')}><Text style={{ color: Theme.colors.grey5 }}>Forgot Password?</Text></TouchableOpacity>
-                    <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 24, height: 56 }} />
-                    <WhiteButton label="Continue as Guest" onPress={() => props.navigation.navigate('Main', { screen: 'Home' } )} style={{ marginTop: 24, height: 56 }} />
-                </View>
-                <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                    <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>
-                    <WhiteButton outlined label="Sign Up" onPress={() => navigate('SignUpScreen')} style={{ marginTop: 12, height: 56 }} />
-                </View>
-
+    return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{ width: '100%', flex: 1 }}>
+            <SafeAreaView style={{ backgroundColor: 'black' }} />
+            <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
+                <Text style={style.headerTextActive}>Login</Text>
+                <Text onPress={() => navigate('SignUpScreen')} style={style.headerTextInactive}>Sign Up</Text>
             </View>
-        </TouchableWithoutFeedback>
+            <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
+                <Text style={style.title}>Email</Text>
+                <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+                <Text style={style.title}>Password</Text>
+                <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
+                <TouchableOpacity onPress={() => navigate('ForgotPasswordScreen')}><Text style={{ color: Theme.colors.grey5 }}>Forgot Password?</Text></TouchableOpacity>
+                <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 24, height: 56 }} />
+                <WhiteButton label="Continue as Guest" onPress={() => props.navigation.navigate('Main', { screen: 'Home' })} style={{ marginTop: 24, height: 56 }} />
+            </View>
+            <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
+                <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>
+                <WhiteButton outlined label="Sign Up" onPress={() => navigate('SignUpScreen')} style={{ marginTop: 12, height: 56 }} />
+            </View>
+        </View>
+    </TouchableWithoutFeedback>
 }

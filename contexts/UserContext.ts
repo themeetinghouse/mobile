@@ -9,8 +9,8 @@ export type UserData = {
 
 type UserContext = {
     userData: UserData;
-    updateUser: (data: UserData) => void;
+    setUserData: (data: UserData) => void;
 } | null
 
-const UserContext = createContext<UserContext>({ userData: null, updateUser: () => null});
+const UserContext = createContext<UserContext>({ userData: null, setUserData: () => null});
 export default UserContext

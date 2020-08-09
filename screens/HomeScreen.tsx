@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Text, Content, View } from 'native-base';
 import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
@@ -9,10 +9,10 @@ import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCa
 import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 import EventsService from '../services/EventsService';
-import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import LocationContext from '../contexts/LocationContext'
 
 const style = {
   categoryContainer: {
@@ -24,11 +24,11 @@ const style = {
 
 interface Params {
   navigation: any;
-  location: any;
 }
 
-function HomeScreen({ navigation, location }: Params) {
+export default function HomeScreen({ navigation }: Params): JSX.Element {
 
+  const location = useContext(LocationContext);
   const [announcements, setAnnouncements] = useState<any>([]);
   const [events, setEvents] = useState<any>([]);
   const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
@@ -41,8 +41,8 @@ function HomeScreen({ navigation, location }: Params) {
     loadAnnouncements();
 
     const loadEvents = async () => {
-      const eventsResult = await EventsService.loadEventsList(location);
-      setEvents(eventsResult);
+      //const eventsResult = await EventsService.loadEventsList(location?.locationData);
+      //setEvents(eventsResult);
     }
     loadEvents();
 
@@ -132,10 +132,6 @@ function HomeScreen({ navigation, location }: Params) {
   );
 }
 
-HomeScreen.navigationOptions = {
-  header: null,
-};
-
 
 // function DevelopmentModeNotice() {
 //   if (__DEV__) {
@@ -180,11 +176,3 @@ HomeScreen.navigationOptions = {
 //     }),
 //   },
 // });
-
-function mapStateToProps(state: { location: { location: any; }; }) {
-  return {
-    location: state.location.location
-  }
-}
-
-export default connect(mapStateToProps)(HomeScreen);

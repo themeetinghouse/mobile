@@ -83,39 +83,39 @@ export default function Profile({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
 
-    useEffect(()=>{
+    useEffect(() => {
         async function checkForUser() {
             try {
-              const user = await Auth.currentAuthenticatedUser()
-              if (user.attributes.email_verified)
-                setLoggedIn('user')
-              else
-                setLoggedIn('no user')
+                const user = await Auth.currentAuthenticatedUser()
+                if (user.attributes.email_verified)
+                    setLoggedIn('user')
+                else
+                    setLoggedIn('no user')
 
             } catch (e) {
-              console.debug(e)
-              setLoggedIn('no user')
+                console.debug(e)
+                setLoggedIn('no user')
             }
-          }
-          checkForUser();
+        }
+        checkForUser();
     }, [])
 
     const items = [
         //{ id: "mycomments", text: "My Comments", subtext: "All your comments in one place", icon: Theme.icons.white.arrow },
-        { id: "myaccount", text: "My Account", subtext: "Email, password and location", icon: Theme.icons.white.account, action: ()=>navigation.navigate('AccountScreen') },
+        { id: "myaccount", text: "My Account", subtext: "Email, password and location", icon: Theme.icons.white.account, action: () => navigation.navigate('AccountScreen') },
     ]
 
     const items2 = [
-        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.arrow, action: ()=>navigation.navigate('SignUpScreen') },
-        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.arrow, action: ()=>navigation.navigate('LoginScreen') },
+        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.arrow, action: () => navigation.navigate('SignUpScreen') },
+        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.arrow, action: () => navigation.navigate('LoginScreen') },
     ]
 
     const signOut = async () => {
-        await Auth.signOut().then(()=>{user?.updateUser(null); navigation.navigate('Auth')});
+        await Auth.signOut().then(() => { user?.setUserData(null); navigation.navigate('Auth') });
     }
 
     function renderContent() {
-        switch(loggedIn) {
+        switch (loggedIn) {
             case 'user':
                 return (
                     <Content style={style.content}>
@@ -140,13 +140,13 @@ export default function Profile({ navigation }: Params): JSX.Element {
                                 <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
                                 <ListItem
                                     style={style.listItem}
-                                        onPress={signOut}>
-                                        <Left>
-                                            <Thumbnail style={style.listIcon} source={Theme.icons.white.signOut} square></Thumbnail>
-                                            <View>
-                                                <Text style={style.listText}>Sign Out</Text>
-                                            </View>
-                                        </Left>
+                                    onPress={signOut}>
+                                    <Left>
+                                        <Thumbnail style={style.listIcon} source={Theme.icons.white.signOut} square></Thumbnail>
+                                        <View>
+                                            <Text style={style.listText}>Sign Out</Text>
+                                        </View>
+                                    </Left>
                                 </ListItem>
                             </List>
                         </View>
@@ -177,11 +177,11 @@ export default function Profile({ navigation }: Params): JSX.Element {
                         </View>
                     </Content>
                 )
-            default: 
+            default:
                 return (
-                        <Content style={style.content}>
-                            <ActivityIndicator/>
-                        </Content>
+                    <Content style={style.content}>
+                        <ActivityIndicator />
+                    </Content>
                 )
         }
     }
@@ -196,7 +196,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                     <Text style={style.headerTitle}>Profile</Text>
                 </Body>
                 <Right style={style.headerRight}>
-                    <TouchableOpacity onPress={()=>navigation.goBack()}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Text style={style.headerButtonText}>Done</Text>
                     </TouchableOpacity>
                 </Right>

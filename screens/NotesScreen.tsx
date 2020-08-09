@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
 import NotesService from '../services/NotesService';
 import { Text, Container, Header, Left, Body, Right, Button, Content, Icon } from 'native-base';
 import Theme, { Style } from '../Theme.style';
@@ -122,7 +121,7 @@ interface Params {
     navigation: any;
 }
 
-const NotesScreen = function ({ sermonId, navigation }: Params) {
+const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
 
     const [notes, setNotes] = useState([]);
     const [verses, setVerses] = useState([]);
@@ -244,10 +243,4 @@ const NotesScreen = function ({ sermonId, navigation }: Params) {
     )
 }
 
-
-function mapStateToProps(state: any) {
-    return {
-    }
-}
-
-export default connect(mapStateToProps)(NotesScreen);
+export default NotesScreen;

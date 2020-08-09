@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Separator, Button } from 'native-base';
+import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Button } from 'native-base';
 import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 //import { TouchableOpacity } from 'react-native';
 //import LocationsService from '../services/LocationsService';
-import { connect } from 'react-redux';
 //import { selectLocation } from '../reducers/locationReducer';
 import { Auth } from 'aws-amplify';
 import UserContext from '../../contexts/UserContext'
@@ -106,10 +105,10 @@ function Account({ navigation }: Params): JSX.Element {
 
     const items = [
         "Login",
-        { id: "email", text: "Email", data: user?.userData?.email},
-        { id: "pass", text: "Password", icon: Theme.icons.white.arrow, action: ()=>navigation.navigate('ChangePasswordScreen') },
+        { id: "email", text: "Email", data: user?.userData?.email },
+        { id: "pass", text: "Password", icon: Theme.icons.white.arrow, action: () => navigation.navigate('ChangePasswordScreen') },
         "Location",
-        { id: "loc", text: "Location", icon: Theme.icons.white.arrow, data: user?.userData?.["custom:home_site"], action: ()=>navigation.navigate('LocationSelectionScreen') },
+        { id: "loc", text: "Location", icon: Theme.icons.white.arrow, data: user?.userData?.["custom:home_site"], action: () => navigation.navigate('LocationSelectionScreen') },
     ]
 
     return (
@@ -131,7 +130,7 @@ function Account({ navigation }: Params): JSX.Element {
                 <View>
                     <List>
                         {items.map(item => {
-                            if (typeof item === 'string') 
+                            if (typeof item === 'string')
                                 return (
                                     <ListItem key={item} style={[style.listItem, { height: 50, alignItems: 'flex-end', paddingBottom: 4 }]}>
                                         <Text style={style.listText}>{item}</Text>
@@ -160,12 +159,5 @@ function Account({ navigation }: Params): JSX.Element {
 
     )
 }
-
-function mapStateToProps(state: { location: { location: any; }; }) {
-    return {
-        location: state.location.location
-    }
-}
-
-export default connect(mapStateToProps)(Account);
+export default Account;
 

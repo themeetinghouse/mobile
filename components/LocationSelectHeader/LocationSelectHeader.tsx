@@ -3,9 +3,8 @@ import UserContext from '../../contexts/UserContext';
 import { Header, Body, Icon, View, Button, Text, Right, Left, Thumbnail } from "native-base";
 import { Style, Theme } from '../../Theme.style';
 import { StatusBar, ViewStyle } from 'react-native';
-import { connect } from 'react-redux';
-import { Location } from '../../services/LocationsService';
-import { useNavigation } from '@react-navigation/native' 
+import { useNavigation } from '@react-navigation/native'
+import LocationContext from '../../contexts/LocationContext';
 //import LocationsService from '../../services/LocationsService';
 
 const style = {
@@ -53,13 +52,13 @@ const style = {
 
 interface LocationSelectHeaderInput {
     children: string;
-    location: Location;
 }
 
-function LocationSelectHeader({ children, location }: LocationSelectHeaderInput): JSX.Element {
+export default function LocationSelectHeader({ children }: LocationSelectHeaderInput): JSX.Element {
 
     const navigation = useNavigation();
     const user = useContext(UserContext);
+    const location = useContext(LocationContext);
 
     return (
         <Header style={Style.header}>
@@ -72,7 +71,7 @@ function LocationSelectHeader({ children, location }: LocationSelectHeaderInput)
                     <View style={style.buttonContentsContainer}>
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
-                            <Text style={[style.subtitle, style.locationName]}>{location.name}</Text>
+                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.name}</Text>
                             <Icon style={style.subtitle} name='arrow-dropdown'></Icon>
                         </View>
                     </View>
@@ -86,11 +85,3 @@ function LocationSelectHeader({ children, location }: LocationSelectHeaderInput)
         </Header>
     )
 }
-
-function mapStateToProps(state: any) {
-    return {
-        location: state.location.location
-    }
-}
-
-export default connect(mapStateToProps)(LocationSelectHeader);
