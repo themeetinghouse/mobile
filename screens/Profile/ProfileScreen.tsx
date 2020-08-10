@@ -9,7 +9,7 @@ import ActivityIndicator from '../../components/ActivityIndicator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -115,7 +115,17 @@ export default function Profile({ navigation }: Params): JSX.Element {
     ]
 
     const signOut = async () => {
-        await Auth.signOut().then(() => { user?.setUserData(null); navigation.navigate('Auth') });
+        await Auth.signOut().then(() => { 
+            user?.setUserData(null); 
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 1,
+                    routes: [
+                        { name: 'Auth' }
+                    ]
+                })
+            )
+        });
     }
 
     function renderContent() {

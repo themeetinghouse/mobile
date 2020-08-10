@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem, Separator } from 'native-base';
+import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
@@ -8,7 +8,7 @@ import UserContext from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CommonActions, CompositeNavigationProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -40,12 +40,6 @@ const style = {
     body: [Style.body, {
         marginBottom: 40,
     }],
-    searchIcon: [Style.icon, {}],
-    searchInput: {
-        color: Theme.colors.white,
-        fontFamily: Theme.fonts.fontFamilyRegular,
-        fontSize: Theme.fonts.medium,
-    },
     listItem: {
         marginLeft: 0,
         borderColor: Theme.colors.gray2,
@@ -80,9 +74,9 @@ const style = {
     input: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         color: 'white',
-        height: 24,
-        fontSize: 16,
-        marginLeft: 16
+        fontSize: 24,
+        marginLeft: 16,
+        flexGrow: 1,
     },
 }
 
@@ -98,13 +92,6 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     const [newPass, setNewPass] = useState('');
     const [error, setError] = useState('');
 
-    function navigate(): void {
-        setCurrentPass('');
-        setNewPass('');
-        setError('');
-        navigation.navigate('Auth')
-    }
-
     function forgotPass(): void {
         setCurrentPass('');
         setNewPass('');
@@ -112,13 +99,25 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
         navigation.navigate('Auth', { screen: 'ForgotPasswordScreen' })
     }
 
+    const signOut = async () => {
+        await Auth.signOut().then(() => { 
+            userContext?.setUserData(null); 
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 1,
+                    routes: [
+                        { name: 'Auth' }
+                    ]
+                })
+            )
+        });
+    }
+
     const changePassword = async (): Promise<void> => {
         try {
             const user = await Auth.currentAuthenticatedUser();
             await Auth.changePassword(user, currentPass, newPass);
-            await Auth.signOut();
-            userContext?.setUserData(null);
-            navigate();
+            signOut();
         } catch (e) {
             setError(e)
             console.debug(e)
@@ -149,12 +148,12 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     <List>
                         <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
                         <ListItem style={style.listItem}>
-                            <View>
+                            <View style={{ width: '100%' }}>
                                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                                     <Text style={style.listText}>Current Password</Text>
                                     <TextInput secureTextEntry autoCompleteType="password" textContentType="password" keyboardAppearance='dark' style={style.input} value={currentPass} onChange={(e) => setCurrentPass(e.nativeEvent.text)}></TextInput>
                                 </View>
-                                <View style={{ alignItems: 'flex-start' }} >
+                                <View style={{ alignItems: 'flex-start' }}>
                                     <Text onPress={() => forgotPass()} style={style.listSubtext}>Forgot password?</Text>
                                 </View>
                             </View>

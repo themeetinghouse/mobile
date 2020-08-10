@@ -108,12 +108,12 @@ export const Style = {
         linkText: {
             color: Theme.colors.white,
             fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.small,
+            fontSize: Theme.fonts.medium,
         },
         linkTextInactive: {
             color: Theme.colors.white,
             fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.small,
+            fontSize: Theme.fonts.medium,
             opacity: 0.24,
         }
     },

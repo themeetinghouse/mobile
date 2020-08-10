@@ -70,12 +70,6 @@ export default function Login(props: Props): JSX.Element {
 
     const userContext = useContext(UserContext);
 
-    useEffect(() => {
-        if (userContext?.userData?.email_verified) {
-            props.navigation.navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
-        }
-    }, []);
-
     function navigate(screen: Screens, screenProps?: any): void {
         setUser('');
         setPass('');

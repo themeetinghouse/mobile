@@ -4,8 +4,10 @@ import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
+import { CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = {
     title: [Style.cardTitle, {
@@ -43,7 +45,10 @@ const style = {
 }
 
 interface Props {
-    navigation: StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>;
+    navigation: CompositeNavigationProp<
+        StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>, 
+        StackNavigationProp<MainStackParamList>
+    >;
 }
 
 export default function Login(props: Props): JSX.Element {
@@ -68,6 +73,15 @@ export default function Login(props: Props): JSX.Element {
         setError('');
         setCodeSent(false);
         props.navigation.navigate('LoginScreen')
+    }
+
+    function toHome(): void {
+        setUser('');
+        setPass('');
+        setCode('');
+        setError('');
+        setCodeSent(false);
+        props.navigation.navigate('Main', {screen: 'Home', params: { screen: 'HomeScreen' }})
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -113,7 +127,9 @@ export default function Login(props: Props): JSX.Element {
                     <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 24, height: 56 }} />
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"} onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />
+                <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"} 
+                    onPress={userContext?.userData?.email_verified ? () => toHome() : () => toLogin()} style={{ marginTop: 24, height: 56 }} 
+                />
             </View>
         </View>
     </TouchableWithoutFeedback>

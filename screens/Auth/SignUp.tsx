@@ -72,7 +72,6 @@ export default function Login(props: Props): JSX.Element {
             const locations = await LocationService.loadLocations();
             setSiteList(locations);
         }
-
         loadData();
     }, [])
 
