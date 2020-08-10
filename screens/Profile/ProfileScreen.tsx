@@ -4,7 +4,7 @@ import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, L
 import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Auth } from 'aws-amplify'
+import { Auth } from '@aws-amplify/auth'
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { AppLoading } from 'expo';
-import { Auth } from 'aws-amplify'
+import { Auth } from '@aws-amplify/auth'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 

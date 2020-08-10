@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem, Separator } from 'native-base';
 import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { Auth } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth'
 import { TextInput } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';

@@ -5,7 +5,7 @@ import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 //import { TouchableOpacity } from 'react-native';
 //import LocationsService from '../services/LocationsService';
 //import { selectLocation } from '../reducers/locationReducer';
-import { Auth } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth'
 import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';

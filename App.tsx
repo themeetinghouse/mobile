@@ -6,7 +6,8 @@ import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
 import { Root } from 'native-base';
 import LocationsService from './services/LocationsService';
-import Amplify, { Auth } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth';
+import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
 import { NavigationContainer } from '@react-navigation/native'

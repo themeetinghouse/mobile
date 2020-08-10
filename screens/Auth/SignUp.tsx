@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView } from 'react-native'
-import { Auth } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import LocationService, { Location } from '../../services/LocationsService';

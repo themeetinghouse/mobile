@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Auth } from 'aws-amplify';
+import { Auth } from '@aws-amplify/auth'
 import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
