@@ -6,6 +6,8 @@ import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { LoadSermonResult } from '../../../services/SermonsService';
+import { TabNavigatorParamList } from '../../../navigation/MainTabNavigator'
+import { StackNavigationProp } from '@react-navigation/stack'
 
 const style = {
     container: {
@@ -65,7 +67,7 @@ interface RecentTeachingInput {
 export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.Element {
     //console.log("RecentTeaching.render(): props = ", props)
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<TabNavigatorParamList>>();
     if (!teaching) {
         return <View />;
     }

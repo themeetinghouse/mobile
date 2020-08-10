@@ -5,7 +5,10 @@ import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeed
 import { Auth } from 'aws-amplify';
 import { TextInput } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
-import { NavigationScreenProp } from 'react-navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -84,7 +87,7 @@ const style = {
 }
 
 interface Params {
-    navigation: NavigationScreenProp<any, any>;
+    navigation: CompositeNavigationProp<StackNavigationProp<HomeStackParamList>, StackNavigationProp<MainStackParamList>>;
 }
 
 export default function ChangePass({ navigation }: Params): JSX.Element {

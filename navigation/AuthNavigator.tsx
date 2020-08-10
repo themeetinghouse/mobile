@@ -5,7 +5,14 @@ import SignUp from '../screens/Auth/SignUp';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
-const Auth = createStackNavigator();
+export type AuthStackParamList = {
+  LoginScreen: undefined;
+  SignUpScreen: undefined;
+  ForgotPasswordScreen: undefined;
+  ConfirmSignUpScreen: undefined;
+}
+
+const Auth = createStackNavigator<AuthStackParamList>();
 
 export default function AuthNavigator(): JSX.Element {
   return (

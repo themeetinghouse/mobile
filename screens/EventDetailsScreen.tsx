@@ -4,6 +4,9 @@ import { Container, Text, Button, Icon, Content, Left, Right, Header, View } fro
 import IconButton from '../components/buttons/IconButton';
 import moment from 'moment';
 import { StatusBar, ViewStyle } from 'react-native';
+import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -55,8 +58,8 @@ const style = {
 }
 
 interface Props {
-    navigation: any;
-    route: any;
+    navigation: StackNavigationProp<HomeStackParamList>;
+    route: RouteProp<HomeStackParamList, 'EventDetailsScreen'>;
 }
 
 export default function EventDetailsScreen(props: Props): JSX.Element {

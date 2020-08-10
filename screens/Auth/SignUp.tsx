@@ -3,9 +3,10 @@ import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData
 import { Auth } from 'aws-amplify';
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
-import { NavigationScreenProp } from 'react-navigation';
 import LocationService, { Location } from '../../services/LocationsService';
 import { Icon, Picker } from 'native-base';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
 const style = {
     title: [Style.cardTitle, {
@@ -56,7 +57,7 @@ const style = {
 
 
 interface Props {
-    navigation: NavigationScreenProp<any, any>;
+    navigation: StackNavigationProp<AuthStackParamList, 'SignUpScreen'>;
 }
 
 export default function Login(props: Props): JSX.Element {
@@ -75,7 +76,7 @@ export default function Login(props: Props): JSX.Element {
         loadData();
     }, [])
 
-    function navigate(screen: string, screenProps?: any): void {
+    function navigate(screen: keyof AuthStackParamList, screenProps?: any): void {
         setUser('');
         setPass('');
         setSite('Oakville');

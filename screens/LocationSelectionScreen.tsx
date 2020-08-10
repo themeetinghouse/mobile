@@ -5,6 +5,8 @@ import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import LocationsService, { Location } from '../services/LocationsService';
 import LocationContext from '../contexts/LocationContext';
+import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -57,7 +59,7 @@ const style = {
 }
 
 type LocationSelectionScreenInput = {
-    navigation: any;
+    navigation: StackNavigationProp<HomeStackParamList>;
 }
 
 

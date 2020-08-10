@@ -8,11 +8,13 @@ import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
 import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
-import EventsService from '../services/EventsService';
+//import EventsService from '../services/EventsService';
 import SermonsService from '../services/SermonsService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
+import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
   categoryContainer: {
@@ -23,7 +25,7 @@ const style = {
 }
 
 interface Params {
-  navigation: any;
+  navigation: StackNavigationProp<HomeStackParamList>;
 }
 
 export default function HomeScreen({ navigation }: Params): JSX.Element {

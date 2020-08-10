@@ -3,6 +3,8 @@ import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
 import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -76,7 +78,7 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
 type Date = {

@@ -3,8 +3,9 @@ import { Auth } from 'aws-amplify';
 import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
-import { NavigationScreenProp } from 'react-navigation';
 import UserContext from '../../contexts/UserContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
 const style = {
     title: [Style.cardTitle, {
@@ -42,7 +43,7 @@ const style = {
 }
 
 interface Props {
-    navigation: NavigationScreenProp<any, any>;
+    navigation: StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>;
 }
 
 export default function Login(props: Props): JSX.Element {

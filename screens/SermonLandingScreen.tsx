@@ -9,7 +9,9 @@ import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
-import { NavigationRoute } from 'react-navigation';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -84,8 +86,8 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
-    route: NavigationRoute;
+    navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'SermonLandingScreen'>;
 }
 
 export default function SermonLandingScreen({ navigation, route }: Params): JSX.Element {

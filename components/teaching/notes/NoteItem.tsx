@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'native-base';
+import { View } from 'native-base';
 //import Theme, { Style } from '../../../Theme.style';
 //import Verse from './VerseLink';
 import { ViewStyle } from 'react-native';

@@ -6,6 +6,8 @@ import { StatusBar, TextStyle, ViewStyle } from 'react-native';
 import NoteItem from '../components/teaching/notes/NoteItem';
 import Verse from '../components/teaching/notes/Verse';
 import VerseLink from '../components/teaching/notes/VerseLink';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const xml2js = require('react-native-xml2js');
 const parser = new xml2js.Parser({ explicitChildren: true, preserveChildrenOrder: true, charsAsChildren: true })
@@ -117,8 +119,8 @@ const style = {
 }
 
 interface Params {
-    sermonId: any;
-    navigation: any;
+    sermonId: string;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
 const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {

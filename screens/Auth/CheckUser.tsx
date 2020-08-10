@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { AppLoading } from 'expo';
 import { Auth } from 'aws-amplify'
-import { NavigationScreenProp } from 'react-navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 
-export default function CheckUser(props: { navigation: NavigationScreenProp<any, any> }): JSX.Element {
+export default function CheckUser(props: { navigation: StackNavigationProp<MainStackParamList, 'CheckUser'> }): JSX.Element {
     useEffect(() => {
         async function checkForUser() {
             try {

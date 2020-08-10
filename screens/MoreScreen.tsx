@@ -2,9 +2,6 @@ import React from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
-//import { TouchableOpacity } from 'react-native';
-//import LocationsService from '../services/LocationsService';
-//import { selectLocation } from '../reducers/locationReducer';
 
 const style = {
     content: [Style.cardContainer, {
@@ -64,13 +61,7 @@ const style = {
     }],
 }
 
-interface Params {
-    navigation: any;
-    location: any;
-    dispatch: any;
-}
-
-function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
+function MoreScreen(): JSX.Element {
 
     const items = [
         { id: "give", text: "Give", subtext: "Donate to The Meeting House via PushPay", icon: Theme.icons.white.give },

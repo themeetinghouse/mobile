@@ -6,7 +6,10 @@ import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Auth } from 'aws-amplify'
 import ActivityIndicator from '../../components/ActivityIndicator';
-import { NavigationScreenProp } from 'react-navigation';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -75,7 +78,7 @@ const style = {
 }
 
 interface Params {
-    navigation: NavigationScreenProp<any, any>;
+    navigation: CompositeNavigationProp<StackNavigationProp<HomeStackParamList>, StackNavigationProp<MainStackParamList>>;
 }
 
 export default function Profile({ navigation }: Params): JSX.Element {

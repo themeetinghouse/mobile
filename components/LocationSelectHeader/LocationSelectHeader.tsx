@@ -5,7 +5,8 @@ import { Style, Theme } from '../../Theme.style';
 import { StatusBar, ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import LocationContext from '../../contexts/LocationContext';
-//import LocationsService from '../../services/LocationsService';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator'
+import { StackNavigationProp } from '@react-navigation/stack'
 
 const style = {
     left: {
@@ -56,7 +57,7 @@ interface LocationSelectHeaderInput {
 
 export default function LocationSelectHeader({ children }: LocationSelectHeaderInput): JSX.Element {
 
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
 

@@ -3,8 +3,11 @@ import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData
 import { Auth } from 'aws-amplify';
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
-import { NavigationScreenProp } from 'react-navigation';
 import UserContext from '../../contexts/UserContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { MainStackParamList } from '../../navigation/AppNavigator'
 
 const style = {
     title: [Style.cardTitle, {
@@ -55,8 +58,10 @@ const style = {
 
 
 interface Props {
-    navigation: NavigationScreenProp<any, any>;
+    navigation: CompositeNavigationProp<StackNavigationProp<AuthStackParamList>, StackNavigationProp<MainStackParamList>>;
 }
+
+type Screens = keyof AuthStackParamList | keyof MainStackParamList
 
 export default function Login(props: Props): JSX.Element {
     const [user, setUser] = useState('');
@@ -71,7 +76,7 @@ export default function Login(props: Props): JSX.Element {
         }
     }, []);
 
-    function navigate(screen: string, screenProps?: any): void {
+    function navigate(screen: Screens, screenProps?: any): void {
         setUser('');
         setPass('');
         setError('');

@@ -8,7 +8,9 @@ import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
-import { NavigationRoute } from 'react-navigation';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -73,8 +75,8 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
-    route: NavigationRoute;
+    navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'SeriesLandingScreen'>;
 }
 
 function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
@@ -94,7 +96,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     useEffect(() => {
         const loadSermonsInSeriesAsync = async () => {
             let loadedSeries = series;
-            if (!loadedSeries) {
+            if (!loadedSeries && seriesId) {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }
