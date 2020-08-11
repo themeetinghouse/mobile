@@ -21,6 +21,11 @@ import SignOutWhite from './assets/images/white/SignOut.png';
 import AccountWhite from './assets/images/white/Account.png';
 import SignUpWhite from './assets/images/white/Register.png';
 import ArrowGrey from './assets/images/other/Arrow.png';
+import WatchWhite from './assets/images/white/Watch.png';
+import WatchBlack from './assets/images/black/Watch.png';
+import AudioWhite from './assets/images/white/Audio.png';
+import AudioBlack from './assets/images/black/Audio.png';
+
 
 export const Theme = {
     colors: {
@@ -82,11 +87,15 @@ export const Theme = {
             signOut: SignOutWhite,
             signUp: SignUpWhite,
         },
+        grey: {
+            arrow: ArrowGrey,
+            audio: AudioWhite,
+            watch: WatchWhite
+        },
         black: {
             arrow: Arrow,
-        },
-        grey: {
-            arrow: ArrowGrey
+            audio: AudioBlack,
+            watch: WatchBlack
         }
     }
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
@@ -27,6 +27,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountScreen from '../screens/Profile/AccountScreen';
 import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
 import { Moment } from 'moment';
+import TeachingContext from '../contexts/TeachingContext';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -70,19 +71,24 @@ export type TeachingStackParamList = {
 const Teaching = createStackNavigator<TeachingStackParamList>();
 
 function TeachingStack() {
+
+  const [media, setMedia] = useState(null);
+
   return (
-    <Teaching.Navigator screenOptions={{ headerShown: false }}>
-      <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
-      <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
-      <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
-      <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
-      <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
-      <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
-      <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
-      <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
-      <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
-      <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
-    </Teaching.Navigator>
+    <TeachingContext.Provider value={{ media, setMedia }}>
+      <Teaching.Navigator screenOptions={{ headerShown: false }}>
+        <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
+        <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
+        <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
+        <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
+        <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
+        <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
+        <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
+        <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
+        <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
+        <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
+      </Teaching.Navigator>
+    </TeachingContext.Provider>
   )
 }
 
