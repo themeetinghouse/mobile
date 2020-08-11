@@ -30,7 +30,11 @@ Amplify.configure({
     region: 'us-east-1',
     userPoolId: 'us-east-1_KiJzP2dH5',
     userPoolWebClientId: '3pf37ngd57hsk9ld12aha9bm2f',
-  }
+  },
+  aws_appsync_graphqlEndpoint: "https://qt6manqtzbhkvd6tcxvchusmyq.appsync-api.us-east-1.amazonaws.com/graphql",
+  aws_appsync_region: "us-east-1",
+  aws_appsync_authenticationType: "API_KEY",
+  aws_appsync_apiKey: "da2-6zfuocqmhvecrfkng7hx2oipni",
 });
 
 interface Props {
