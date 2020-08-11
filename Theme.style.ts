@@ -25,6 +25,10 @@ import WatchWhite from './assets/images/white/Watch.png';
 import WatchBlack from './assets/images/black/Watch.png';
 import AudioWhite from './assets/images/white/Audio.png';
 import AudioBlack from './assets/images/black/Audio.png';
+import PlaySolidWhite from './assets/images/white/Play-Solid.png';
+import PauseLargeWhite from './assets/images/white/Pause-Large.png';
+import SkipForward from './assets/images/other/Skip-Backward.png'; 
+import SkipBackward from './assets/images/other/Skip-Forward.png'; 
 
 
 export const Theme = {
@@ -90,12 +94,18 @@ export const Theme = {
         grey: {
             arrow: ArrowGrey,
             audio: AudioWhite,
-            watch: WatchWhite
+            watch: WatchWhite,
+            playAudio: PlaySolidWhite,
+            pauseAudio: PauseLargeWhite,
         },
         black: {
             arrow: Arrow,
             audio: AudioBlack,
             watch: WatchBlack
+        },
+        grey: {
+            skipForward: SkipBackward,
+            skipBack: SkipForward
         }
     }
 }
