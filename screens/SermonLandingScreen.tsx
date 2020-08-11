@@ -107,9 +107,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const [audioDuration, setAudioDuration] = useState<number | undefined>(0);
     const [sound, setSound] = useState<{ sound: Audio.Sound, status: AVPlaybackStatus }>();
 
-    useEffect(() => {
+    /*useEffect(() => {
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
-    }, [])
+    }, [])*/
 
     const loadAndNavigateToSeries = () => {
         navigation.navigate('SeriesLandingScreen', { seriesId: sermon.series.id });
@@ -179,6 +179,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
         if (sound?.status.isLoaded) {
             try {
                 await sound?.sound.setPositionAsync(time);
+                await sound?.sound.playAsync();
                 setAudioPosition(time);
             } catch (e) {
                 console.debug(e)
@@ -217,7 +218,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 <View style={style.sermonContainer}>
                     {/*<YoutubePlayer height={300} play={videoPlaying} initialPlayerParams={{ showClosedCaptions: false }} videoId={sermon.id} />*/}
                     {audioOpen && audioDuration ? <View>
-                        <Slider minimumValue={0} maximumValue={audioDuration} value={audioPostion} onSlidingComplete={(e) => seekTo(e)} minimumTrackTintColor={Theme.colors.grey5} maximumTrackTintColor={Theme.colors.grey2} thumbTintColor='white' />
+                        <Slider minimumValue={0} maximumValue={audioDuration} value={audioPostion} onSlidingStart={pauseAudio} onSlidingComplete={(e) => seekTo(e)} minimumTrackTintColor={Theme.colors.grey5} maximumTrackTintColor={Theme.colors.grey2} thumbTintColor='white' />
                         <Button onPress={() => setPosition(-15000)}><Text>back 15 sec</Text></Button>
                         <Button onPress={() => setPosition(30000)}><Text>forward 30 sec</Text></Button>
                         <Button onPress={pauseAudio}><Text>pause/play</Text></Button>
