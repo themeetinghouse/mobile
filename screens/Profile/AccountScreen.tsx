@@ -160,7 +160,7 @@ function Account({ navigation }: Params): JSX.Element {
                                             <Text style={style.listText2}>{item.text}</Text>
                                         </View>
                                     </Left>
-                                    <View style={{ maxWidth: '75%', display: 'flex', flexDirection: 'row' }}>
+                                    <View style={{ maxWidth: '75%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                                         {item.data ? <Text numberOfLines={1} style={style.listText3}>{item.id === 'loc' ? LocationsService.mapLocationIdToName(item.data as LocationKey) : item.data}</Text> : null}
                                         {item.icon ? <Thumbnail style={style.listArrowIcon} source={item.icon} square></Thumbnail> : null}
                                     </View>

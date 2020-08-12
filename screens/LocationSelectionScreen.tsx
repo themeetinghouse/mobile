@@ -22,7 +22,7 @@ const style = {
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 70
     },
     headerBody: {
         flexGrow: 3,
@@ -31,7 +31,7 @@ const style = {
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 70
     },
     headerTitle: [Style.header.title, {
         width: "100%",
