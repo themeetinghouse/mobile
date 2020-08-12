@@ -1,16 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
-import Theme, { Style } from '../Theme.style';
+import Theme, { Style } from '../../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import LocationsService from '../services/LocationsService';
-import LocationContext, { LocationData } from '../contexts/LocationContext';
-import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import LocationsService from '../../services/LocationsService';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { Auth } from '@aws-amplify/auth';
-import UserContext from '../contexts/UserContext';
-import * as SecureStore from 'expo-secure-store';
-import { RouteProp } from '@react-navigation/native';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { LocationData } from '../../contexts/LocationContext';
 
 const style = {
     content: [Style.cardContainer, {
@@ -70,18 +66,13 @@ const style = {
 }
 
 type LocationSelectionScreenInput = {
-    navigation: StackNavigationProp<HomeStackParamList>;
-    route: RouteProp<HomeStackParamList, 'LocationSelectionScreen'>;
+    navigation: StackNavigationProp<AuthStackParamList>;
 }
 
-
-export default function LocationSelectionScreen({ navigation, route }: LocationSelectionScreenInput): JSX.Element {
-
-    const location = useContext(LocationContext);
-    const user = useContext(UserContext);
+export default function LocationSelectionScreen({ navigation }: LocationSelectionScreenInput): JSX.Element {
 
     const [locations, setLocations] = useState<LocationData[]>([]);
-    const [selectedLocation, setSelectedLocation] = useState(location?.locationData);
+    const [selectedLocation, setSelectedLocation] = useState<LocationData>();
     const [searchText, setSearchText] = useState("");
 
     useEffect(() => {
@@ -92,27 +83,6 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
         }
         loadLocations();
     }, []);
-
-    async function updateUser(locationId: string | undefined) {
-        if (locationId && user?.userData?.email_verified) {
-            try {
-                const user = await Auth.currentAuthenticatedUser();
-                const update = await Auth.updateUserAttributes(user, { ...user.attributes, 'custom:home_location': locationId });
-                console.log(update);
-            } catch (e) {
-                console.error(e)
-            }
-        } else if (locationId) {
-            try {
-                const updateLocalStore = await SecureStore.setItemAsync('location', locationId);
-                console.log(updateLocalStore)
-            } catch (e) {
-                console.error(e)
-            }
-        } else {
-            console.debug('locationId is undefined');
-        }
-    }
 
     return (
         <Container>
@@ -128,10 +98,10 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
                 </Body>
                 <Right style={style.headerRight}>
                     <TouchableOpacity onPress={() => {
-                        location?.setLocationData(selectedLocation);
-                        if (route.params.persist)
-                            updateUser(selectedLocation?.locationId);
-                        navigation.goBack();
+                        if (selectedLocation?.locationId)
+                            navigation.navigate('SignUpScreen', { locationId: selectedLocation.locationId, locationName: selectedLocation.locationName });
+                        else
+                            navigation.goBack();
                     }}>
                         <Text style={style.headerButtonText}>Done</Text>
                     </TouchableOpacity>

@@ -10,6 +10,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
+import LocationContext from '../../contexts/LocationContext';
 
 const style = {
     content: [Style.cardContainer, {
@@ -86,20 +87,14 @@ export default function Profile({ navigation }: Params): JSX.Element {
     const [loggedIn, setLoggedIn] = useState('unknown');
 
     const user = useContext(UserContext);
+    const location = useContext(LocationContext);
 
     useEffect(() => {
-        async function checkForUser() {
-            try {
-                const user = await Auth.currentAuthenticatedUser()
-                if (user.attributes.email_verified)
-                    setLoggedIn('user')
-                else
-                    setLoggedIn('no user')
-
-            } catch (e) {
-                console.debug(e)
+        function checkForUser() {
+            if (user?.userData?.email_verified)
+                setLoggedIn('user')
+            else
                 setLoggedIn('no user')
-            }
         }
         checkForUser();
     }, [])
@@ -110,18 +105,19 @@ export default function Profile({ navigation }: Params): JSX.Element {
     ]
 
     const items2 = [
-        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.arrow, action: () => navigation.navigate('Auth', { screen: 'SignUpScreen' }) },
-        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.arrow, action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }) }
+        { id: "signup", text: "Don't have an account?", subtext: "Create one today", icon: Theme.icons.white.signUp, action: () => navigation.navigate('Auth', { screen: 'SignUpScreen' }) },
+        { id: "signin", text: "Forgot to sign in?", subtext: "Back to login", icon: Theme.icons.white.account, action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }) }
     ]
 
     const signOut = async () => {
-        await Auth.signOut().then(() => { 
-            user?.setUserData(null); 
+        await Auth.signOut().then(() => {
+            user?.setUserData(null);
+            location?.setLocationData(null);
             navigation.dispatch(
                 CommonActions.reset({
                     index: 1,
                     routes: [
-                        { name: 'Auth' }
+                        { name: 'Main' }
                     ]
                 })
             )

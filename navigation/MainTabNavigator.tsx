@@ -32,7 +32,7 @@ export type HomeStackParamList = {
   HomeScreen: undefined;
   EventDetailsScreen: { item: any };
   AnnouncementDetailsScreen: { item: any };
-  LocationSelectionScreen: undefined;
+  LocationSelectionScreen: { persist: boolean };
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;

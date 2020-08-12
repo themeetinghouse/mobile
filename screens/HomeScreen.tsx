@@ -54,12 +54,10 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     loadRecentTeaching();
   }, [])
 
-  console.log('HomeScreen.render(): location = ', location)
-
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      <Content style={{ backgroundColor: Theme.colors.background }}>
+      <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         {recentTeaching.loading &&
           <ActivityIndicator />
         }

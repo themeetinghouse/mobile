@@ -5,12 +5,13 @@ import { Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
 import { Root } from 'native-base';
-import LocationsService from './services/LocationsService';
+import LocationsService, { LocationKey } from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
 import { NavigationContainer } from '@react-navigation/native'
+import * as SecureStore from 'expo-secure-store';
 
 Amplify.configure({
   Auth: {
@@ -41,23 +42,26 @@ function App(props: Props): JSX.Element {
   useEffect(() => {
     async function checkForUser() {
       try {
-        const user = await Auth.currentAuthenticatedUser()
+        const user = await Auth.currentAuthenticatedUser();
         if (user.attributes.email_verified) {
-          console.log('user verified')
           setUserData(user.attributes)
         }
-
         if (user.attributes['custom:home_location']) {
-          const selectedLocation = await LocationsService.getLocationById(user.attributes['custom:home_location']);
-          setLocationData(selectedLocation);
-        } else {
-          const selectedLocation = await LocationsService.getLocationById("oakville");
-          setLocationData(selectedLocation);
+          const selectedLocation = LocationsService.mapLocationIdToName(user.attributes['custom:home_location']);
+          setLocationData({ locationId: user.attributes['custom:home_location'], locationName: selectedLocation });
         }
       } catch (e) {
         console.debug(e)
-        const selectedLocation = await LocationsService.getLocationById("oakville");
-        setLocationData(selectedLocation);
+        try {
+          const location = await SecureStore.getItemAsync('location')
+          if (location) {
+            const selectedLocation = LocationsService.mapLocationIdToName(location as LocationKey);
+            setLocationData({ locationId: location, locationName: selectedLocation });
+          }
+        } catch (e) {
+          console.debug(e)
+          setLocationData({ locationId: "", locationName: "" });
+        }
       }
     }
     checkForUser();

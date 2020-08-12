@@ -4,7 +4,7 @@ export type UserData = {
     sub: string;
     email_verified: boolean;
     email: string;
-    'custom:home_site'?: string;
+    'custom:home_location'?: string;
 } | null
 
 type UserContext = {

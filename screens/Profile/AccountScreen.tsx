@@ -5,10 +5,10 @@ import { StatusBar, ViewStyle, TextStyle } from 'react-native';
 //import { TouchableOpacity } from 'react-native';
 //import LocationsService from '../services/LocationsService';
 //import { selectLocation } from '../reducers/locationReducer';
-import { Auth } from '@aws-amplify/auth'
 import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import LocationsService, { LocationKey } from '../../services/LocationsService';
 
 const style = {
     content: [Style.cardContainer, {
@@ -59,7 +59,13 @@ const style = {
     },
     listText2: {
         fontSize: Theme.fonts.medium,
-        color: 'white',
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        marginLeft: 16,
+    },
+    listText3: {
+        fontSize: Theme.fonts.medium,
+        color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         marginLeft: 16,
     },
@@ -79,6 +85,7 @@ const style = {
         marginLeft: 16,
     }],
     listArrowIcon: [Style.icon, {
+        marginLeft: 5
     }],
     headerText: {
         fontSize: 16,
@@ -96,21 +103,27 @@ function Account({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
 
-    async function updateUser(): Promise<void> {
-        const user = await Auth.currentAuthenticatedUser();
-
-        if (user.attributes.email_verified) {
-            await Auth.updateUserAttributes(user, { 'custom:user_location': 'site_id' })
-        }
-        console.log('hi');
-    }
-
     const items = [
         "Login",
-        { id: "email", text: "Email", data: user?.userData?.email },
-        { id: "pass", text: "Password", icon: Theme.icons.white.arrow, action: () => navigation.navigate('ChangePasswordScreen') },
+        {
+            id: "email",
+            text: "Email",
+            data: user?.userData?.email
+        },
+        {
+            id: "pass",
+            text: "Password",
+            icon: Theme.icons.grey.arrow,
+            action: () => navigation.navigate('ChangePasswordScreen')
+        },
         "Location",
-        { id: "loc", text: "Location", icon: Theme.icons.white.arrow, data: user?.userData?.["custom:home_site"], action: () => navigation.navigate('LocationSelectionScreen') },
+        {
+            id: "loc",
+            text: "Location",
+            icon: Theme.icons.grey.arrow,
+            data: user?.userData?.["custom:home_location"] ? user?.userData?.["custom:home_location"] : 'None Selected',
+            action: () => navigation.navigate('LocationSelectionScreen', { persist: true })
+        }
     ]
 
     return (
@@ -118,7 +131,7 @@ function Account({ navigation }: Params): JSX.Element {
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
+                    <Button transparent onPress={() => navigation.navigate('ProfileScreen')}>
                         <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
                     </Button>
                 </Left>
@@ -147,8 +160,8 @@ function Account({ navigation }: Params): JSX.Element {
                                             <Text style={style.listText2}>{item.text}</Text>
                                         </View>
                                     </Left>
-                                    <View style={{ maxWidth: '75%' }}>
-                                        {item.data ? <Text numberOfLines={1} style={style.listText2}>{item.data}</Text> : null}
+                                    <View style={{ maxWidth: '75%', display: 'flex', flexDirection: 'row' }}>
+                                        {item.data ? <Text numberOfLines={1} style={style.listText3}>{item.id === 'loc' ? LocationsService.mapLocationIdToName(item.data as LocationKey) : item.data}</Text> : null}
                                         {item.icon ? <Thumbnail style={style.listArrowIcon} source={item.icon} square></Thumbnail> : null}
                                     </View>
                                 </ListItem>

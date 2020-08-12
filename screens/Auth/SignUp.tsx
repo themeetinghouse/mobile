@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView } from 'react-native'
+import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView, ViewStyle } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
-import LocationService, { Location } from '../../services/LocationsService';
-import { Icon, Picker } from 'native-base';
+import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { RouteProp, useRoute, CompositeNavigationProp } from '@react-navigation/native';
+import { Thumbnail, Button } from 'native-base';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = {
     title: [Style.cardTitle, {
@@ -14,6 +16,22 @@ const style = {
         paddingTop: 26,
         lineHeight: 24,
     }],
+    locationSelector: {
+        backgroundColor: Theme.colors.gray1,
+        borderColor: Theme.colors.grey3,
+        borderWidth: 1,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    } as ViewStyle,
+    locationText: {
+        height: 56,
+        lineHeight: 56,
+        color: 'white',
+        fontSize: 16,
+    },
     input: {
         backgroundColor: Theme.colors.gray1,
         borderColor: Theme.colors.grey3,
@@ -52,33 +70,37 @@ const style = {
         lineHeight: 24,
         fontFamily: Theme.fonts.fontFamilyBold,
         paddingHorizontal: 16,
+    },
+    forgotPassText: {
+        color: Theme.colors.grey5,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+        marginTop: 8
     }
 }
 
 
 interface Props {
-    navigation: StackNavigationProp<AuthStackParamList, 'SignUpScreen'>;
+    navigation: CompositeNavigationProp<StackNavigationProp<AuthStackParamList>, StackNavigationProp<MainStackParamList>>;
 }
 
-export default function Login(props: Props): JSX.Element {
+export default function SignUp(props: Props): JSX.Element {
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
-    const [site, setSite] = useState('Oakville');
+    const [site, setSite] = useState({ locationName: '', locationId: '' });
     const [error, setError] = useState('');
-    const [siteList, setSiteList] = useState<Location[]>([]);
+    const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
 
     useEffect(() => {
-        async function loadData() {
-            const locations = await LocationService.loadLocations();
-            setSiteList(locations);
-        }
-        loadData();
-    }, [])
+        if (route.params?.locationName && route.params.locationId)
+            setSite({ locationName: route.params.locationName, locationId: route.params.locationId })
+    }, [route]);
 
-    function navigate(screen: keyof AuthStackParamList, screenProps?: any): void {
+    function navigate(screen: keyof AuthStackParamList | keyof MainStackParamList, screenProps?: any): void {
         setUser('');
         setPass('');
-        setSite('Oakville');
+        setSite({ locationName: '', locationId: '' });
         setError('');
         props.navigation.navigate(screen, screenProps)
     }
@@ -89,8 +111,15 @@ export default function Login(props: Props): JSX.Element {
     }
 
     const signUp = async () => {
+
+        const regex = /\S+@\S+\.\S+/
+        if (!regex.test(user)) {
+            setError('invalid email address');
+            return
+        }
+
         try {
-            await Auth.signUp({ username: user, password: pass, attributes: { email: user } }).then(() => navigate('ConfirmSignUpScreen'))
+            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigate('ConfirmSignUpScreen'))
         } catch (e) {
             setError(e.message)
         }
@@ -100,6 +129,9 @@ export default function Login(props: Props): JSX.Element {
         <View style={{ width: '100%', flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: 'black' }} />
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
+                <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
+                    <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
+                </Button>
                 <Text onPress={() => navigate('LoginScreen')} style={style.headerTextInactive}>Login</Text>
                 <Text style={style.headerTextActive}>Sign Up</Text>
             </View>
@@ -108,23 +140,13 @@ export default function Login(props: Props): JSX.Element {
                 <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <Text style={style.title}>Password</Text>
                 <TextInput keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
-                <View>
-                    <Text style={style.title}>Choose Your Home Site</Text>
-                    <Picker
-                        selectedValue={site}
-                        onValueChange={e => setSite(e)}
-                        textStyle={{ color: 'white', fontSize: 16 }}
-                        style={style.picker}
-                        placeholder="None Selected" mode="dropdown"
-                        iosIcon={<Icon name="md-arrow-dropdown" style={{ color: "white" }} />}
-                    >
-                        {siteList.sort((a, b) => a.id.localeCompare(b.id)).map((site) => {
-                            return <Picker.Item key={site.id} label={site.name} value={site.id} />
-                        })}
-                    </Picker>
-                </View>
+                <Text style={style.title}>Choose Your Location</Text>
+                <TouchableOpacity style={style.locationSelector} onPress={() => props.navigation.navigate('LocationSelectionScreen')} >
+                    <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>
+                    <AntDesign name="caretdown" size={8} color="white" />
+                </TouchableOpacity>
                 <WhiteButton label={"Create Account"} onPress={signUp} style={{ marginTop: 24, height: 56 }} />
-                <TouchableOpacity onPress={() => navigate('ConfirmSignUpScreen')}><Text style={{ color: Theme.colors.grey5 }}>Verify a Code</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigate('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
             </View>
             <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Already have an account?</Text>

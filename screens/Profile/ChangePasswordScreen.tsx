@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../../Theme.style';
-import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import { TextInput } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
@@ -47,14 +47,14 @@ const style = {
     },
     listText: {
         fontSize: Theme.fonts.medium,
-        color: Theme.colors.white,
+        color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         marginLeft: 16,
         lineHeight: 24,
     },
     listSubtext: {
         fontSize: Theme.fonts.smallMedium,
-        color: Theme.colors.gray5,
+        color: Theme.colors.grey4,
         fontFamily: Theme.fonts.fontFamilyRegular,
         marginLeft: 16,
         marginTop: 10
@@ -75,9 +75,8 @@ const style = {
         fontFamily: Theme.fonts.fontFamilyRegular,
         color: 'white',
         fontSize: 24,
-        marginLeft: 16,
-        flexGrow: 1,
-    },
+        paddingLeft: 16
+    }
 }
 
 interface Params {
@@ -100,8 +99,8 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     }
 
     const signOut = async () => {
-        await Auth.signOut().then(() => { 
-            userContext?.setUserData(null); 
+        await Auth.signOut().then(() => {
+            userContext?.setUserData(null);
             navigation.dispatch(
                 CommonActions.reset({
                     index: 1,
@@ -111,6 +110,18 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                 })
             )
         });
+    }
+
+    const deleteUser = async (): Promise<void> => {
+        try {
+            const user = await Auth.currentAuthenticatedUser();
+            const del = user.deleteUser();
+            console.log(del)
+            signOut();
+        } catch (e) {
+            setError(e)
+            console.debug(e)
+        }
     }
 
     const changePassword = async (): Promise<void> => {
@@ -148,10 +159,12 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     <List>
                         <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
                         <ListItem style={style.listItem}>
-                            <View style={{ width: '100%' }}>
+                            <View style={{ display: 'flex', flexDirection: 'column' }}>
                                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                                     <Text style={style.listText}>Current Password</Text>
-                                    <TextInput secureTextEntry autoCompleteType="password" textContentType="password" keyboardAppearance='dark' style={style.input} value={currentPass} onChange={(e) => setCurrentPass(e.nativeEvent.text)}></TextInput>
+                                    <View style={{ width: Dimensions.get('window').width - 150 }}>
+                                        <TextInput secureTextEntry autoCompleteType="password" textContentType="password" keyboardAppearance='dark' style={style.input} value={currentPass} onChange={(e) => setCurrentPass(e.nativeEvent.text)}></TextInput>
+                                    </View>
                                 </View>
                                 <View style={{ alignItems: 'flex-start' }}>
                                     <Text onPress={() => forgotPass()} style={style.listSubtext}>Forgot password?</Text>
@@ -162,7 +175,9 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                         <ListItem style={style.listItem}>
                             <View style={{ display: 'flex', flexDirection: 'row' }}>
                                 <Text style={style.listText}>New Password</Text>
-                                <TextInput secureTextEntry keyboardAppearance='dark' style={style.input} value={newPass} onChange={(e) => setNewPass(e.nativeEvent.text)}></TextInput>
+                                <View style={{ width: Dimensions.get('window').width - 150 }}>
+                                    <TextInput secureTextEntry keyboardAppearance='dark' style={style.input} value={newPass} onChange={(e) => setNewPass(e.nativeEvent.text)}></TextInput>
+                                </View>
                             </View>
                         </ListItem>
                     </List>

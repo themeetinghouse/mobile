@@ -64,15 +64,13 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
     return (
         <Header style={{ backgroundColor: Theme.colors.background }}>
             <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
-
             <Left style={style.left}></Left>
-
             <Body style={style.body}>
-                <Button style={style.headerButton} onPress={() => navigation.navigate('LocationSelectionScreen')}>
+                <Button style={style.headerButton} onPress={() => navigation.navigate('LocationSelectionScreen', { persist: !Boolean(user?.userData?.email_verified) })}>
                     <View style={style.buttonContentsContainer}>
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
-                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.name}</Text>
+                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName ? location?.locationData?.locationName : 'Select Location'}</Text>
                             <Icon style={style.subtitle} name='arrow-dropdown'></Icon>
                         </View>
                     </View>

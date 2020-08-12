@@ -42,11 +42,18 @@ const style = {
         fontFamily: Theme.fonts.fontFamilyBold,
         paddingHorizontal: 16,
     },
+    forgotPassText: {
+        color: Theme.colors.grey5,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+        marginTop: 8
+    }
 }
 
 interface Props {
     navigation: CompositeNavigationProp<
-        StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>, 
+        StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>,
         StackNavigationProp<MainStackParamList>
     >;
 }
@@ -81,7 +88,7 @@ export default function Login(props: Props): JSX.Element {
         setCode('');
         setError('');
         setCodeSent(false);
-        props.navigation.navigate('Main', {screen: 'Home', params: { screen: 'HomeScreen' }})
+        props.navigation.navigate("Main", { screen: "Home", params: { screen: "HomeScreen" } })
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -115,7 +122,7 @@ export default function Login(props: Props): JSX.Element {
                 <Text style={style.title}>Email</Text>
                 <TextInput onKeyPress={(e) => handleEnter(e, sendCode)} keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 24, height: 56 }} />
-                <TouchableOpacity onPress={() => updateCodeState(true)}><Text style={{ color: Theme.colors.grey5 }}>Submit a Code</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => updateCodeState(true)} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Submit a Code</Text></TouchableOpacity>
             </View>
                 : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
                     <Text style={style.title}>Email</Text>
@@ -127,8 +134,8 @@ export default function Login(props: Props): JSX.Element {
                     <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 24, height: 56 }} />
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"} 
-                    onPress={userContext?.userData?.email_verified ? () => toHome() : () => toLogin()} style={{ marginTop: 24, height: 56 }} 
+                <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"}
+                    onPress={userContext?.userData?.email_verified ? () => toHome() : () => toLogin()} style={{ marginTop: 24, height: 56 }}
                 />
             </View>
         </View>
