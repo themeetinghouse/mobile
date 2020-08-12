@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
-import { Root } from 'native-base';
 import LocationsService, { LocationKey } from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
-import { NavigationContainer } from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 Amplify.configure({
   Auth: {
@@ -24,6 +24,14 @@ Amplify.configure({
 
 interface Props {
   skipLoadingScreen?: boolean;
+}
+
+const CustomTheme = {
+  ...DefaultTheme, 
+  colors: {
+    ...DefaultTheme.colors,  
+    background: 'black' 
+  }
 }
 
 function App(props: Props): JSX.Element {
@@ -80,12 +88,12 @@ function App(props: Props): JSX.Element {
     return (
       <LocationContext.Provider value={{ locationData, setLocationData }}>
         <UserContext.Provider value={{ userData, setUserData }}>
-          <Root>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-            <NavigationContainer>
+          <SafeAreaProvider>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+            <NavigationContainer theme={CustomTheme}>
               <AppNavigator />
             </NavigationContainer>
-          </Root>
+          </SafeAreaProvider>
         </UserContext.Provider>
       </LocationContext.Provider>
     );

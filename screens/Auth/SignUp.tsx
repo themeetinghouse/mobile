@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView, ViewStyle } from 'react-native'
+import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ViewStyle, ScrollView } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
@@ -7,8 +7,9 @@ import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { RouteProp, useRoute, CompositeNavigationProp } from '@react-navigation/native';
-import { Thumbnail, Button, Content } from 'native-base';
+import { Thumbnail, Button } from 'native-base';
 import { MainStackParamList } from '../../navigation/AppNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = {
     title: [Style.cardTitle, {
@@ -92,6 +93,8 @@ export default function SignUp(props: Props): JSX.Element {
     const [error, setError] = useState('');
     const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
 
+    const safeArea = useSafeAreaInsets();
+
     useEffect(() => {
         if (route.params?.locationName && route.params.locationId)
             setSite({ locationName: route.params.locationName, locationId: route.params.locationId })
@@ -132,8 +135,7 @@ export default function SignUp(props: Props): JSX.Element {
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Content style={{ width: '100%' }} contentContainerStyle={{ flex: 1 }}>
-            <SafeAreaView style={{ backgroundColor: 'black' }} />
+        <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ flex: 1 }}>
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
                 <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
                     <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
@@ -161,6 +163,6 @@ export default function SignUp(props: Props): JSX.Element {
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Already have an account?</Text>
                 <WhiteButton outlined label="Login" onPress={() => navigate('LoginScreen')} style={{ marginTop: 12, height: 56 }} />
             </View>
-        </Content>
+        </ScrollView>
     </TouchableWithoutFeedback>
 }
