@@ -12,7 +12,7 @@ import { CommonActions, CompositeNavigationProp } from '@react-navigation/native
 
 const style = {
     content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.background,
+        backgroundColor: 'black',
     }],
     header: [Style.header, {}],
     headerLeft: {
@@ -43,7 +43,7 @@ const style = {
     listItem: {
         marginLeft: 0,
         borderColor: Theme.colors.gray2,
-        backgroundColor: 'black'
+        backgroundColor: Theme.colors.background
     },
     listText: {
         fontSize: Theme.fonts.medium,
@@ -112,28 +112,25 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
         });
     }
 
-    const deleteUser = async (): Promise<void> => {
-        try {
-            const user = await Auth.currentAuthenticatedUser();
-            const del = user.deleteUser();
-            console.log(del)
-            signOut();
-        } catch (e) {
-            setError(e)
-            console.debug(e)
-        }
-    }
-
     const changePassword = async (): Promise<void> => {
         try {
             const user = await Auth.currentAuthenticatedUser();
             await Auth.changePassword(user, currentPass, newPass);
             signOut();
         } catch (e) {
-            setError(e)
-            console.debug(e)
+            console.debug(e);
+            if (e.code === 'NotAuthorizedException')
+                setError('Current password incorrect')
+            else if (e.code === 'InvalidPasswordException')
+                setError(e.message.split(': ')[1])
+            else if (e.code === 'InvalidParameterException')
+                if (e.message.includes('previousPassword'))
+                    setError('Current password incorrect')
+                else
+                    setError('Password not long enough')
+            else
+                setError(e.message)
         }
-
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -157,7 +154,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
             <Content style={style.content}>
                 <View>
                     <List>
-                        <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
+                        <View style={{ height: 15, backgroundColor: Theme.colors.black, padding: 0 }} />
                         <ListItem style={style.listItem}>
                             <View style={{ display: 'flex', flexDirection: 'column' }}>
                                 <View style={{ display: 'flex', flexDirection: 'row' }}>
@@ -171,15 +168,18 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                                 </View>
                             </View>
                         </ListItem>
-                        <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
+                        <View style={{ height: 15, backgroundColor: Theme.colors.black, padding: 0 }} />
                         <ListItem style={style.listItem}>
                             <View style={{ display: 'flex', flexDirection: 'row' }}>
                                 <Text style={style.listText}>New Password</Text>
                                 <View style={{ width: Dimensions.get('window').width - 150 }}>
-                                    <TextInput secureTextEntry keyboardAppearance='dark' style={style.input} value={newPass} onChange={(e) => setNewPass(e.nativeEvent.text)}></TextInput>
+                                    <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" secureTextEntry keyboardAppearance='dark' style={style.input} value={newPass} onChange={(e) => setNewPass(e.nativeEvent.text)}></TextInput>
                                 </View>
                             </View>
                         </ListItem>
+                        <View style={{ marginTop: 12 }}>
+                            <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                        </View>
                     </List>
                 </View>
             </Content>

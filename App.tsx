@@ -43,6 +43,7 @@ function App(props: Props): JSX.Element {
     async function checkForUser() {
       try {
         const user = await Auth.currentAuthenticatedUser();
+        console.debug(user);
         if (user.attributes.email_verified) {
           setUserData(user.attributes)
         }

@@ -114,15 +114,20 @@ export default function SignUp(props: Props): JSX.Element {
 
         const regex = /\S+@\S+\.\S+/
         if (!regex.test(user)) {
-            setError('invalid email address');
+            setError('Invalid email address');
             return
         }
 
         try {
             await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigate('ConfirmSignUpScreen'))
         } catch (e) {
-            console.error(e)
-            setError(e.message)
+            console.debug(e)
+            if (e.code === 'InvalidPasswordException')
+                setError(e.message.split(': ')[1])
+            else if (e.code === 'InvalidParameterException')
+                setError('Password not long enough')
+            else
+                setError(e.message)
         }
     }
 
@@ -140,13 +145,16 @@ export default function SignUp(props: Props): JSX.Element {
                 <Text style={style.title}>Email</Text>
                 <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <Text style={style.title}>Password</Text>
-                <TextInput keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
+                <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
                 <Text style={style.title}>Choose Your Location</Text>
                 <TouchableOpacity style={style.locationSelector} onPress={() => props.navigation.navigate('LocationSelectionScreen')} >
                     <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>
                     <AntDesign name="caretdown" size={8} color="white" />
                 </TouchableOpacity>
-                <WhiteButton label={"Create Account"} onPress={signUp} style={{ marginTop: 24, height: 56 }} />
+                <View style={{ marginTop: 12 }}>
+                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                </View>
+                <WhiteButton label={"Create Account"} onPress={signUp} style={{ marginTop: 12, height: 56 }} />
                 <TouchableOpacity onPress={() => navigate('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
             </View>
             <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>

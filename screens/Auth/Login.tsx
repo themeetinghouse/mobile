@@ -125,7 +125,10 @@ export default function Login(props: Props): JSX.Element {
                 <Text style={style.title}>Password</Text>
                 <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
                 <TouchableOpacity onPress={() => navigate('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>
-                <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 24, height: 56 }} />
+                <View style={{ marginTop: 12 }}>
+                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                </View>
+                <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 12, height: 56 }} />
             </View>
             <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>

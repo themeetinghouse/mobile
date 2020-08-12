@@ -78,7 +78,6 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
     useEffect(() => {
         const loadLocations = () => {
             const locationsResult = LocationsService.loadLocationDataForContext();
-            console.log(locationsResult)
             setLocations(locationsResult.sort((a, b) => (a?.locationName as string).localeCompare(b?.locationName as string)));
         }
         loadLocations();

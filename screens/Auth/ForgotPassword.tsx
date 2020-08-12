@@ -101,7 +101,14 @@ export default function Login(props: Props): JSX.Element {
             await Auth.forgotPassword(user).then(() => updateCodeState(true))
         } catch (e) {
             console.error(e)
-            setError(e.message)
+            if (e.code === "UserNotFoundException")
+                setError('Username not found.')
+            else if (e.code === 'InvalidPasswordException')
+                setError(e.message.split(': ')[1])
+            else if (e.code === 'InvalidParameterException')
+                setError('Password not long enough')
+            else
+                setError(e.message)
         }
     }
 
@@ -123,7 +130,10 @@ export default function Login(props: Props): JSX.Element {
             {!codeSent ? <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
                 <Text style={style.title}>Email</Text>
                 <TextInput onKeyPress={(e) => handleEnter(e, sendCode)} keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text)} />
-                <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 24, height: 56 }} />
+                <View style={{ marginTop: 12 }}>
+                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                </View>
+                <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 12, height: 56 }} />
                 <TouchableOpacity onPress={() => updateCodeState(true)} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Submit a Code</Text></TouchableOpacity>
             </View>
                 : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
@@ -132,8 +142,11 @@ export default function Login(props: Props): JSX.Element {
                     <Text style={style.title}>One-Time Security Code</Text>
                     <TextInput keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
                     <Text style={style.title}>New Password</Text>
-                    <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, reset)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
-                    <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 24, height: 56 }} />
+                    <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, reset)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
+                    <View style={{ marginTop: 12 }}>
+                        <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                    </View>
+                    <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 12, height: 56 }} />
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"}
