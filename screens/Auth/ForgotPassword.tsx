@@ -100,6 +100,7 @@ export default function Login(props: Props): JSX.Element {
         try {
             await Auth.forgotPassword(user).then(() => updateCodeState(true))
         } catch (e) {
+            console.error(e)
             setError(e.message)
         }
     }
@@ -108,6 +109,7 @@ export default function Login(props: Props): JSX.Element {
         try {
             await Auth.forgotPasswordSubmit(user, code, pass).then(() => updateCodeState(true))
         } catch (e) {
+            console.error(e)
             setError(e.message)
         }
     }

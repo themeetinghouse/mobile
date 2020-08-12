@@ -125,7 +125,7 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
                     </TouchableOpacity>
                 </Left>
                 <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Your Home Location</Text>
+                    <Text style={style.headerTitle}>Location</Text>
                 </Body>
                 <Right style={style.headerRight}>
                     <TouchableOpacity onPress={() => {

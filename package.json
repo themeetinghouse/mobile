@@ -48,7 +48,7 @@
     "babel-preset-expo": "^8.2.3",
     "eslint": "^7.6.0",
     "eslint-plugin-react": "^7.20.5",
-    "expo-cli": "^3.23.3",
+    "expo-cli": "^3.24.0",
     "jest-expo": "^38.0.0",
     "typescript": "^3.9.7"
   },

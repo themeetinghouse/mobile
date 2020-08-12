@@ -7,7 +7,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { RouteProp, useRoute, CompositeNavigationProp } from '@react-navigation/native';
-import { Thumbnail, Button } from 'native-base';
+import { Thumbnail, Button, Content } from 'native-base';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = {
@@ -121,12 +121,13 @@ export default function SignUp(props: Props): JSX.Element {
         try {
             await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigate('ConfirmSignUpScreen'))
         } catch (e) {
+            console.error(e)
             setError(e.message)
         }
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{ width: '100%', flex: 1 }}>
+        <Content style={{ width: '100%' }} contentContainerStyle={{ flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: 'black' }} />
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
                 <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
@@ -152,6 +153,6 @@ export default function SignUp(props: Props): JSX.Element {
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Already have an account?</Text>
                 <WhiteButton outlined label="Login" onPress={() => navigate('LoginScreen')} style={{ marginTop: 12, height: 56 }} />
             </View>
-        </View>
+        </Content>
     </TouchableWithoutFeedback>
 }

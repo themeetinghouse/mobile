@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView } from 'react-native'
+import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, SafeAreaView, Dimensions } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
@@ -8,7 +8,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { MainStackParamList } from '../../navigation/AppNavigator'
-import { Thumbnail, Button } from 'native-base';
+import { Thumbnail, Button, Content } from 'native-base';
 import LocationContext from '../../contexts/LocationContext';
 import LocationsService from '../../services/LocationsService';
 
@@ -104,12 +104,13 @@ export default function Login(props: Props): JSX.Element {
             });
             navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
         } catch (e) {
+            console.error(e)
             setError(e.message)
         }
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={{ width: '100%', flex: 1 }}>
+        <Content style={{ width: '100%' }} contentContainerStyle={{ flex: 1 }}>
             <SafeAreaView style={{ backgroundColor: 'black' }} />
             <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
                 <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
@@ -130,6 +131,6 @@ export default function Login(props: Props): JSX.Element {
                 <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>
                 <WhiteButton outlined label="Sign Up" onPress={() => navigate('SignUpScreen')} style={{ marginTop: 12, height: 56 }} />
             </View>
-        </View>
+        </Content>
     </TouchableWithoutFeedback>
 }
