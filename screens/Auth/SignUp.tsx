@@ -137,7 +137,7 @@ export default function SignUp(props: Props): JSX.Element {
             </View>
             <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
                 <Text style={style.title}>Email</Text>
-                <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+                <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
                 <Text style={style.title}>Password</Text>
                 <TextInput keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
                 <Text style={style.title}>Choose Your Location</Text>

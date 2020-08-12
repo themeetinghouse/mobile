@@ -78,7 +78,7 @@ type LocationSelectionScreenInput = {
 export default function LocationSelectionScreen({ navigation, route }: LocationSelectionScreenInput): JSX.Element {
 
     const location = useContext(LocationContext);
-    const user = useContext(UserContext);
+    const userContext = useContext(UserContext);
 
     const [locations, setLocations] = useState<LocationData[]>([]);
     const [selectedLocation, setSelectedLocation] = useState(location?.locationData);
@@ -94,9 +94,10 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
     }, []);
 
     async function updateUser(locationId: string | undefined) {
-        if (locationId && user?.userData?.email_verified) {
+        if (locationId && userContext?.userData?.email_verified) {
             try {
                 const user = await Auth.currentAuthenticatedUser();
+                userContext.setUserData({ ...user.attributes, 'custom:home_location': locationId });
                 const update = await Auth.updateUserAttributes(user, { ...user.attributes, 'custom:home_location': locationId });
                 console.log(update);
             } catch (e) {
@@ -150,7 +151,7 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
                         }
                     </Item>
                 </View>
-                <View style={{ marginTop: 24 }}>
+                <View style={{ paddingVertical: 24 }}>
                     <List>
                         {locations.map(location => (
                             location?.locationName.toLowerCase().includes(searchText.toLowerCase()) &&

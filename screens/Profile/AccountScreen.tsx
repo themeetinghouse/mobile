@@ -121,7 +121,7 @@ function Account({ navigation }: Params): JSX.Element {
             id: "loc",
             text: "Location",
             icon: Theme.icons.grey.arrow,
-            data: user?.userData?.["custom:home_location"] ? user?.userData?.["custom:home_location"] : 'None Selected',
+            data: user?.userData?.["custom:home_location"] ? LocationsService.mapLocationIdToName(user?.userData?.["custom:home_location"] as LocationKey) : 'None Selected',
             action: () => navigation.navigate('LocationSelectionScreen', { persist: true })
         }
     ]
@@ -161,7 +161,7 @@ function Account({ navigation }: Params): JSX.Element {
                                         </View>
                                     </Left>
                                     <View style={{ maxWidth: '75%', display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                        {item.data ? <Text numberOfLines={1} style={style.listText3}>{item.id === 'loc' ? LocationsService.mapLocationIdToName(item.data as LocationKey) : item.data}</Text> : null}
+                                        {item.data ? <Text numberOfLines={1} style={style.listText3}>{item.data}</Text> : null}
                                         {item.icon ? <Thumbnail style={style.listArrowIcon} source={item.icon} square></Thumbnail> : null}
                                     </View>
                                 </ListItem>

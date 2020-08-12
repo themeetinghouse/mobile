@@ -120,7 +120,7 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
                         }
                     </Item>
                 </View>
-                <View style={{ marginTop: 24 }}>
+                <View style={{ paddingVertical: 24 }}>
                     <List>
                         {locations.map(location => (
                             location?.locationName.toLowerCase().includes(searchText.toLowerCase()) &&
