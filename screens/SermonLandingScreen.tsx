@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -17,6 +17,7 @@ import { RouteProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import Slider from '@react-native-community/slider';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import MediaContext from '../contexts/MediaContext';
 
 const style = {
     content: [Style.cardContainer, {
@@ -119,6 +120,8 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
     const sermon = route.params?.item;
 
+    const media = useContext(MediaContext);
+
     const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
     const [videoPlaying, setVideoPlaying] = useState(false);
     const [audioOpen, setAudioOpen] = useState(false);
@@ -128,6 +131,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const [sound, setSound] = useState<{ sound: Audio.Sound, status: AVPlaybackStatus }>();
     const [buttonUri, setButtonUri] = useState(Theme.icons.white.pauseAudio);
     const [time, setTime] = useState({ elapsed: '', remaining: '' });
+    const [mounted, setMounted] = useState(true);
 
     const expandAnim = useRef(new Animated.Value(0)).current;
 
@@ -159,11 +163,12 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const loadAndNavigateToSeries = () => {
+        setMounted(false);
         navigation.navigate('SeriesLandingScreen', { seriesId: sermon.series.id });
     }
 
     function updateAudioPosition(e: AVPlaybackStatus) {
-        if (e.isLoaded) {
+        if (e.isLoaded && mounted) {
             setAudioPosition(Math.round(e.positionMillis));
             if (e.durationMillis) {
                 const time = {
@@ -279,7 +284,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
+                    <Button transparent onPress={() => { setMounted(false); navigation.goBack() } }>
                         <Icon name='close' />
                     </Button>
                 </Left>
@@ -363,9 +368,11 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                                 <TeachingListItem
                                     key={sermon.id}
                                     teaching={seriesSermon}
-                                    handlePress={() =>
-                                        navigation.push('SermonLandingScreen', { item: seriesSermon })
-                                    } />
+                                    handlePress={() => {
+                                            setMounted(false);
+                                            navigation.push('SermonLandingScreen', { item: seriesSermon });
+                                        }
+                                    }/>
                                 : null
                         ))}
                     </View>

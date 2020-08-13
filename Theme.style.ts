@@ -27,6 +27,8 @@ import AudioWhite from './assets/images/white/Audio.png';
 import AudioBlack from './assets/images/black/Audio.png';
 import PlaySolidWhite from './assets/images/white/Play-Solid.png';
 import PauseLargeWhite from './assets/images/white/Pause-Large.png';
+import PauseCircleWhite from './assets/images/white/Pause-Small.png';
+import PlayCircleWhite from './assets/images/white/Play-Small.png';
 import SkipForward from './assets/images/other/Skip-Backward.png'; 
 import SkipBackward from './assets/images/other/Skip-Forward.png'; 
 
@@ -90,23 +92,23 @@ export const Theme = {
             userLoggedIn: UserWhiteLoggedIn,
             signOut: SignOutWhite,
             signUp: SignUpWhite,
-        },
-        grey: {
-            arrow: ArrowGrey,
             audio: AudioWhite,
             watch: WatchWhite,
             playAudio: PlaySolidWhite,
             pauseAudio: PauseLargeWhite,
+            pauseMiniPlayer: PauseCircleWhite,
+            playMiniPlayer: PlayCircleWhite
+        },
+        grey: {
+            arrow: ArrowGrey,
+            skipForward: SkipBackward,
+            skipBack: SkipForward
         },
         black: {
             arrow: Arrow,
             audio: AudioBlack,
             watch: WatchBlack
         },
-        grey: {
-            skipForward: SkipBackward,
-            skipBack: SkipForward
-        }
     }
 }
 

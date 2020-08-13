@@ -9,9 +9,11 @@ import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
+import MediaContext, { MediaData } from './contexts/MediaContext';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import MiniPlayer from './components/MiniPlayer';
 
 Amplify.configure({
   Auth: {
@@ -38,6 +40,7 @@ function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
+  const [media, setMedia] = useState<MediaData>({ type: 'video', audio: null, video: null });
 
   /*useEffect(() => {
     const setInitialAppState = async () => {
@@ -86,16 +89,19 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <LocationContext.Provider value={{ locationData, setLocationData }}>
-        <UserContext.Provider value={{ userData, setUserData }}>
-          <SafeAreaProvider>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-            <NavigationContainer theme={CustomTheme}>
-              <AppNavigator />
-            </NavigationContainer>
-          </SafeAreaProvider>
-        </UserContext.Provider>
-      </LocationContext.Provider>
+      <MediaContext.Provider value={{ media, setMedia }}>
+        <LocationContext.Provider value={{ locationData, setLocationData }}>
+          <UserContext.Provider value={{ userData, setUserData }}>
+            <SafeAreaProvider>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+                <NavigationContainer theme={CustomTheme}>
+                  <AppNavigator />
+                  <MiniPlayer />
+                </NavigationContainer>
+            </SafeAreaProvider>
+          </UserContext.Provider>
+        </LocationContext.Provider>
+      </MediaContext.Provider>
     );
   }
 }
