@@ -29,10 +29,10 @@ interface Props {
 }
 
 const CustomTheme = {
-  ...DefaultTheme, 
+  ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,  
-    background: 'black' 
+    ...DefaultTheme.colors,
+    background: 'black'
   }
 }
 
@@ -40,7 +40,7 @@ function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
-  const [media, setMedia] = useState<MediaData>({ type: 'video', audio: null, video: null });
+  const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, episode: '', series: '' });
 
   /*useEffect(() => {
     const setInitialAppState = async () => {
@@ -93,11 +93,11 @@ function App(props: Props): JSX.Element {
         <LocationContext.Provider value={{ locationData, setLocationData }}>
           <UserContext.Provider value={{ userData, setUserData }}>
             <SafeAreaProvider>
-              {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-                <NavigationContainer theme={CustomTheme}>
-                  <AppNavigator />
-                  <MiniPlayer />
-                </NavigationContainer>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+              <NavigationContainer theme={CustomTheme}>
+                <AppNavigator />
+                <MiniPlayer />
+              </NavigationContainer>
             </SafeAreaProvider>
           </UserContext.Provider>
         </LocationContext.Provider>

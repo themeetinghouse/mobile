@@ -2,9 +2,12 @@ import { Audio, AVPlaybackStatus } from 'expo-av';
 import { createContext } from 'react';
 
 export type MediaData = {
-    type: 'video' | 'audio' | 'none';
+    playerType: 'none' | 'audio' | 'video' | 'mini audio' | 'mini video';
     audio: { sound: Audio.Sound, status: AVPlaybackStatus } | null;
-    video: { id: string, time: number, imageUri: string } | null;
+    video: { id: string, time: number } | null;
+    playing: boolean;
+    episode: string;
+    series: string;
 }
 
 type MediaContextType = {
@@ -12,5 +15,15 @@ type MediaContextType = {
     setMedia: (data: MediaData) => void;
 }
 
-const MediaContext = createContext<MediaContextType>({ media: { type: 'none', audio: null, video: null }, setMedia: () => null });
+const MediaContext = createContext<MediaContextType>(
+    { media: { 
+        playerType: 'none', 
+        playing: false, 
+        audio: null, 
+        video: null, 
+        episode: '', 
+        series: '' 
+    }, 
+    setMedia: () => null 
+});
 export default MediaContext

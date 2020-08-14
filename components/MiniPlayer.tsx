@@ -1,20 +1,35 @@
 import { Button, Text, Thumbnail, View } from 'native-base';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { Theme } from '../Theme.style';
 import YoutubePlayer from 'react-native-youtube-iframe';
+import { AVPlaybackStatus } from 'expo-av';
 
-const styles = StyleSheet.create({
-    containerStyle: {
+const style = StyleSheet.create({
+    containerVideo: {
         position: 'absolute',
         height: 56,
-        width: '100%',
+        width: Dimensions.get('window').width,
         bottom: 90,
         backgroundColor: Theme.colors.black,
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    containerAudioInner: {
+        height: 56,
+        width: Dimensions.get('window').width,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    containerAudioOuter: {
+        position: 'absolute',
+        height: 56,
+        width: Dimensions.get('window').width,
+        bottom: 90,
+        backgroundColor: Theme.colors.black,
     },
     title: {
         fontFamily: Theme.fonts.fontFamilyBold,
@@ -27,61 +42,156 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 18,
         color: Theme.colors.grey5
+    },
+    skipText: {
+        fontFamily: Theme.fonts.fontFamilyBold,
+        fontSize: 12,
+        lineHeight: 18,
+        color: Theme.colors.grey5,
+        marginTop: 8
+    },
+    speedText: {
+        fontFamily: Theme.fonts.fontFamilyBold,
+        fontSize: 16,
+        lineHeight: 24,
+        color: Theme.colors.grey5
+    },
+    timeText: {
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+        color: Theme.colors.grey5
     }
 })
 
-export default function MiniPlayer(): JSX.Element {
+export default function MediaPlayer(): JSX.Element {
 
-    const media = useContext(MediaContext);
+    const width = Dimensions.get('window').width;
 
-    const [play, setPlay] = useState(true);
+    const mediaContext = useContext(MediaContext);
     const [videoReady, setVideoReady] = useState(false);
+    const [audioDuration, setAudioDuration] = useState(0.1);
+    const [audioPosition, setAudioPosition] = useState(0);
     const playerRef = useRef<any>();
 
+    useEffect(() => {
+        async function updateAudio() {
+            if (mediaContext.media.playerType === 'mini audio') {
+                await mediaContext.media.audio?.sound.setProgressUpdateIntervalAsync(1000)
+                mediaContext.media.audio?.sound.setOnPlaybackStatusUpdate((e) => updateAudioPosition(e))
+            }
+        }
+        updateAudio();
+    }, [mediaContext])
+
+    function updateAudioPosition(e: AVPlaybackStatus) {
+        if (e.isLoaded) {
+            setAudioPosition(Math.round(e.positionMillis));
+            if (e.durationMillis)
+                setAudioDuration(Math.round(e.durationMillis));
+        }
+    }
+
+    const handleVideoReady = async () => {
+        playerRef.current.seekTo(mediaContext.media.video?.time, true);
+        setVideoReady(true);
+    }
+
     const closeVideo = () => {
-        media.setMedia({ type: 'none', audio: null, video: null })
+        mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, series: '', episode: '' })
     }
 
     const closeAudio = async () => {
-        console.log('close')
+        try {
+            await mediaContext?.media?.audio?.sound.unloadAsync();
+            mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, series: '', episode: '' })
+        } catch (e) {
+            console.debug(e)
+        }
     }
 
-    const test = async () => {
-        const test = await playerRef.current.getCurrentTime();
-        console.log(test)
-
+    const pauseVideo = () => {
+        mediaContext?.setMedia({ ...mediaContext.media, playing: !mediaContext.media.playing })
     }
 
-    const test2 = async () => {
-        playerRef.current.seekTo(90, true);
+    const pauseAudio = async () => {
+        try {
+            const status = await mediaContext?.media.audio?.sound.getStatusAsync();
+            if (status?.isLoaded) {
+                mediaContext.setMedia({ ...mediaContext.media, playing: !mediaContext.media.playing })
+                if (status.isPlaying) {
+                    await mediaContext?.media.audio?.sound.pauseAsync();
+                } else {
+                    await mediaContext?.media.audio?.sound.playAsync();
+                }
+            }
+        } catch (e) {
+            console.debug(e)
+        }
     }
 
-    switch (media.media.type) {
-        case 'audio':
-            return <View></View>
-        case 'video':
+    switch (mediaContext.media.playerType) {
+        case 'mini audio':
             return (
-                <View style={styles.containerStyle}>
-                    <View pointerEvents="none">
-                        <YoutubePlayer ref={playerRef} onReady={()=>setVideoReady(true)} forceAndroidAutoplay height={videoReady && play ? 56 : 0} width={videoReady && play ? 100 : 0} videoId="VO9GVLfMtXQ" play={play} initialPlayerParams={{ controls: false, modestbranding: true, }} />
-                        <Image source={{ uri: 'https://img.youtube.com/vi/VO9GVLfMtXQ/sddefault.jpg' }} style={{ width: videoReady && play ? 0 : 100, height: videoReady && play ? 0 : 56 }} />
+                <View style={style.containerAudioOuter}>
+                    <View style={style.containerAudioInner}>
+                        <Image source={{ uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${mediaContext.media.series}.jpg` }} style={{ width: 34, height: 40, marginHorizontal: 15 }} />
+                        <View style={{ marginLeft: 8, width: width - (64 + 56 + 56), paddingRight: 12 }}>
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={style.title}>{mediaContext.media.episode}</Text>
+                            <Text numberOfLines={1} ellipsizeMode='tail' style={style.subTitle}>{mediaContext.media.series}</Text>
+                        </View>
+                        <View style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }} >
+                            <Button transparent onPress={pauseAudio} style={{ width: 56, height: 56 }} >
+                                <Thumbnail source={mediaContext.media.playing ? Theme.icons.white.pauseMiniPlayer : Theme.icons.white.playMiniPlayer} style={{ width: 24, height: 24 }}></Thumbnail>
+                            </Button>
+                            <Button transparent onPress={closeAudio} style={{ width: 56, height: 56 }} >
+                                <Thumbnail source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
+                            </Button>
+                        </View>
                     </View>
-                    <View style={{ marginLeft: 8, width: Dimensions.get('window').width - (100+56+56), paddingRight: 12 }}>
-                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.title}>Those Dry Bone</Text>
-                        <Text numberOfLines={1} ellipsizeMode='tail' style={styles.subTitle}>The Life and Death of God Very long title</Text>
+                    <View style={{ width, height: 2, display: 'flex', flexDirection: 'row' }} >
+                        <View style={{ width: width * (audioPosition / audioDuration), backgroundColor: Theme.colors.grey5 }} ></View>
+                        <View style={{ width: width * (audioDuration - (audioPosition / audioDuration)), backgroundColor: Theme.colors.grey2 }} ></View>
+                    </View>
+                </View>
+            )
+        case 'mini video':
+            return (
+                <View style={style.containerVideo}>
+                    <View pointerEvents="none">
+                        <YoutubePlayer
+                            ref={playerRef}
+                            onReady={handleVideoReady}
+                            forceAndroidAutoplay
+                            height={videoReady && mediaContext.media.playing ? 56 : 0}
+                            width={videoReady && mediaContext.media.playing ? 100 : 0}
+                            videoId={mediaContext.media.video?.id as string}
+                            play={mediaContext.media.playing}
+                            initialPlayerParams={{ controls: false, modestbranding: true }}
+                        />
+                        <Image source={{ uri: `https://img.youtube.com/vi/${mediaContext.media.video?.id}/sddefault.jpg` }}
+                            style={{
+                                width: videoReady && mediaContext.media.playing ? 0 : 100,
+                                height: videoReady && mediaContext.media.playing ? 0 : 56
+                            }}
+                        />
+                    </View>
+                    <View style={{ marginLeft: 8, width: width - (100 + 56 + 56), paddingRight: 12 }}>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={style.title}>{mediaContext.media.episode}</Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={style.subTitle}>{mediaContext.media.series}</Text>
                     </View>
                     <View style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }} >
-                        <Button transparent onPress={()=>setPlay(!play)} style={{ width: 56, height: 56 }} >
-                            <Thumbnail source={play ? Theme.icons.white.pauseMiniPlayer : Theme.icons.white.playMiniPlayer} style={{ width: 24, height: 24 }}></Thumbnail>
+                        <Button transparent onPress={pauseVideo} style={{ width: 56, height: 56 }} >
+                            <Thumbnail source={mediaContext.media.playing ? Theme.icons.white.pauseMiniPlayer : Theme.icons.white.playMiniPlayer} style={{ width: 24, height: 24 }}></Thumbnail>
                         </Button>
-                        <Button transparent onPress={test2} style={{ width: 56, height: 56 }} >
+                        <Button transparent onPress={closeVideo} style={{ width: 56, height: 56 }} >
                             <Thumbnail source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
                         </Button>
                     </View>
-                </View>
-            ) 
-        case 'none':
-            return <View></View>
+                </View >
+            )
+        default:
+            return <View />
     }
-    
+
 }

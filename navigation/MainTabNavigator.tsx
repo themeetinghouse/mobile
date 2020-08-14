@@ -74,18 +74,18 @@ const Teaching = createStackNavigator<TeachingStackParamList>();
 function TeachingStack() {
 
   return (
-      <Teaching.Navigator screenOptions={{ headerShown: false }}>
-        <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
-        <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
-        <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
-        <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
-        <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
-        <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
-        <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
-        <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
-        <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
-        <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
-      </Teaching.Navigator>
+    <Teaching.Navigator screenOptions={{ headerShown: false }}>
+      <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
+      <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
+      <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
+      <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
+      <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
+      <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
+      <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
+      <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
+      <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
+      <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
+    </Teaching.Navigator>
   )
 }
 
@@ -143,7 +143,7 @@ export default function MainTabNavigator(): JSX.Element {
         style: {
           height: 90,
           backgroundColor: Theme.colors.background,
-          marginTop: media.media.type !== 'none' ? 56 : 0
+          marginTop: media.media.playerType.includes('mini') ? 56 : 0
         }
       }}
       screenOptions={({ route }) => ({

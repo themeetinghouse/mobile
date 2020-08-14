@@ -31,6 +31,9 @@ import PauseCircleWhite from './assets/images/white/Pause-Small.png';
 import PlayCircleWhite from './assets/images/white/Play-Small.png';
 import SkipForward from './assets/images/other/Skip-Backward.png'; 
 import SkipBackward from './assets/images/other/Skip-Forward.png'; 
+import ShareWhite from './assets/images/white/Share.png'; 
+import MinimizeWhite from './assets/images/white/Downsize-Arrow.png'; 
+import SliderThumb from './assets/images/white/Ellipse.png'; 
 
 
 export const Theme = {
@@ -97,7 +100,10 @@ export const Theme = {
             playAudio: PlaySolidWhite,
             pauseAudio: PauseLargeWhite,
             pauseMiniPlayer: PauseCircleWhite,
-            playMiniPlayer: PlayCircleWhite
+            playMiniPlayer: PlayCircleWhite,
+            share: ShareWhite,
+            mini: MinimizeWhite,
+            sliderThumb: SliderThumb,
         },
         grey: {
             arrow: ArrowGrey,
