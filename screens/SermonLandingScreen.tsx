@@ -15,7 +15,7 @@ import { RouteProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
 import Slider from '@react-native-community/slider';
-import YoutubePlayer from 'react-native-youtube-iframe';
+import YoutubePlayer, { YoutubeIframeRef } from 'tmh-temp-react-native-youtube-iframe';
 
 const style = {
     content: [Style.cardContainer, {
@@ -123,7 +123,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const [audioSpeed, setAudioSpeed] = useState(1);
     const [audioPosition, setAudioPosition] = useState(0);
     const [audioDuration, setAudioDuration] = useState<number | undefined>(0);
-    const playerRef = useRef<any>();
+    const playerRef = useRef<YoutubeIframeRef>(null);
 
     useEffect(() => {
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
@@ -232,7 +232,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const handleVideoReady = () => {
-        playerRef.current.seekTo(mediaContext.media.videoTime, true);
+        playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
     }
 
     const loadVideo = async () => {
@@ -292,8 +292,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const minimizeVideo = async () => {
-        const time = await playerRef.current.getCurrentTime();
-        mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini video', videoTime: time });
+        const videoTime = await playerRef?.current?.getCurrentTime();
+        if (videoTime)
+            mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini video', videoTime });
     }
 
     return (

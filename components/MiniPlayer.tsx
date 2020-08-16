@@ -3,7 +3,7 @@ import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { Theme } from '../Theme.style';
-import YoutubePlayer from 'react-native-youtube-iframe';
+import YoutubePlayer, { YoutubeIframeRef } from 'tmh-temp-react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 
 const style = StyleSheet.create({
@@ -72,7 +72,7 @@ export default function MediaPlayer(): JSX.Element {
     const [videoReady, setVideoReady] = useState(false);
     const [audioDuration, setAudioDuration] = useState(0.1);
     const [audioPosition, setAudioPosition] = useState(0);
-    const playerRef = useRef<any>();
+    const playerRef = useRef<YoutubeIframeRef>(null);
 
     useEffect(() => {
         async function updateTime() {
@@ -105,7 +105,7 @@ export default function MediaPlayer(): JSX.Element {
     }
 
     const handleVideoReady = () => {
-        playerRef.current.seekTo(mediaContext.media.videoTime, true);
+        playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
         setVideoReady(true);
     }
 
