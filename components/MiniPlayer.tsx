@@ -75,6 +75,18 @@ export default function MediaPlayer(): JSX.Element {
     const playerRef = useRef<any>();
 
     useEffect(() => {
+        async function updateTime() {
+            const videoTime = await playerRef?.current?.getCurrentTime();
+            if (videoTime)
+                mediaContext.setVideoTime(videoTime)
+        }
+        const interval = setInterval(() => {
+            updateTime();
+        }, 5000)
+        return () => clearInterval(interval);
+    }, [])
+
+    useEffect(() => {
         async function updateAudio() {
             if (mediaContext.media.playerType === 'mini audio') {
                 await mediaContext.media.audio?.sound.setProgressUpdateIntervalAsync(1000)
@@ -92,19 +104,19 @@ export default function MediaPlayer(): JSX.Element {
         }
     }
 
-    const handleVideoReady = async () => {
-        playerRef.current.seekTo(mediaContext.media.video?.time, true);
+    const handleVideoReady = () => {
+        playerRef.current.seekTo(mediaContext.media.videoTime, true);
         setVideoReady(true);
     }
 
     const closeVideo = () => {
-        mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, series: '', episode: '' })
+        mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, series: '', episode: '' })
     }
 
     const closeAudio = async () => {
         try {
             await mediaContext?.media?.audio?.sound.unloadAsync();
-            mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, series: '', episode: '' })
+            mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, series: '', episode: '' })
         } catch (e) {
             console.debug(e)
         }
@@ -165,11 +177,11 @@ export default function MediaPlayer(): JSX.Element {
                             forceAndroidAutoplay
                             height={videoReady && mediaContext.media.playing ? 56 : 0}
                             width={videoReady && mediaContext.media.playing ? 100 : 0}
-                            videoId={mediaContext.media.video?.id as string}
-                            play={mediaContext.media.playing}
+                            videoId={mediaContext.media.video as string}
+                            play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
                             initialPlayerParams={{ controls: false, modestbranding: true }}
                         />
-                        <Image source={{ uri: `https://img.youtube.com/vi/${mediaContext.media.video?.id}/sddefault.jpg` }}
+                        <Image source={{ uri: `https://img.youtube.com/vi/${mediaContext.media.video}/sddefault.jpg` }}
                             style={{
                                 width: videoReady && mediaContext.media.playing ? 0 : 100,
                                 height: videoReady && mediaContext.media.playing ? 0 : 56

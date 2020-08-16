@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
@@ -13,6 +13,7 @@ import LocationContext from '../../contexts/LocationContext';
 import LocationsService from '../../services/LocationsService';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MediaContext from '../../contexts/MediaContext';
 
 const style = {
     title: [Style.cardTitle, {
@@ -81,9 +82,23 @@ export default function Login(props: Props): JSX.Element {
     const [error, setError] = useState('');
 
     const safeArea = useSafeAreaInsets();
-
+    const media = useContext(MediaContext);
     const userContext = useContext(UserContext);
     const location = useContext(LocationContext);
+
+    useEffect(() => {
+        async function closeMedia() {
+            if (media.media.audio) {
+                try {
+                    await media.media.audio?.sound.unloadAsync();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+            media.setMedia({ video: null, videoTime: 0, audio: null, playerType: 'none', playing: false, series: '', episode: '' });
+        }
+        closeMedia();
+    }, []);
 
     function navigate(screen: Screens, screenProps?: any): void {
         setUser('');

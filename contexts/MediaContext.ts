@@ -4,7 +4,8 @@ import { createContext } from 'react';
 export type MediaData = {
     playerType: 'none' | 'audio' | 'video' | 'mini audio' | 'mini video';
     audio: { sound: Audio.Sound, status: AVPlaybackStatus } | null;
-    video: { id: string, time: number } | null;
+    video: string | null;
+    videoTime: number;
     playing: boolean;
     episode: string;
     series: string;
@@ -13,6 +14,8 @@ export type MediaData = {
 type MediaContextType = {
     media: MediaData;
     setMedia: (data: MediaData) => void;
+    setVideoTime: (time: number) => void;
+    setAudioNull: () => void;
 }
 
 const MediaContext = createContext<MediaContextType>(
@@ -21,9 +24,12 @@ const MediaContext = createContext<MediaContextType>(
         playing: false, 
         audio: null, 
         video: null, 
+        videoTime: 0,
         episode: '', 
         series: '' 
     }, 
-    setMedia: () => null 
+    setMedia: () => null,
+    setVideoTime: () => null,
+    setAudioNull: () => null
 });
 export default MediaContext

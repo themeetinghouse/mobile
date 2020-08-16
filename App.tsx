@@ -40,7 +40,7 @@ function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
-  const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, episode: '', series: '' });
+  const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, episode: '', series: '' });
 
   /*useEffect(() => {
     const setInitialAppState = async () => {
@@ -49,6 +49,14 @@ function App(props: Props): JSX.Element {
     }
     setInitialAppState();
   }, [])*/
+
+  const setVideoTime = (data: number) => {
+    setMedia(prevState => { return { ...prevState, videoTime: data } })
+  }
+
+  const setAudioNull = () => {
+    setMedia(prevState => { return { ...prevState, audio: null } })
+  }
 
   useEffect(() => {
     async function checkForUser() {
@@ -89,7 +97,7 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <MediaContext.Provider value={{ media, setMedia }}>
+      <MediaContext.Provider value={{ media, setMedia, setVideoTime, setAudioNull }}>
         <LocationContext.Provider value={{ locationData, setLocationData }}>
           <UserContext.Provider value={{ userData, setUserData }}>
             <SafeAreaProvider>

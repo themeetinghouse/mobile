@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
+import React, { useState, useContext, useRef, useEffect } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -125,18 +125,23 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const [audioDuration, setAudioDuration] = useState<number | undefined>(0);
     const playerRef = useRef<any>();
 
-    /*useEffect(() => {
+    useEffect(() => {
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
-    }, [])*/
+    }, [])
 
-    const closeAudio = async () => {
-        try {
-            await mediaContext?.media?.audio?.sound.unloadAsync();
-            mediaContext.setMedia({ playerType: 'none', playing: false, audio: null, video: null, series: '', episode: '' })
-        } catch (e) {
-            console.debug(e)
-        }
-    }
+    useEffect(() => {
+        const unsub = navigation.addListener('blur', async () => {
+            if (mediaContext.media.playerType === 'audio') {
+                try {
+                    await mediaContext.media.audio?.sound.unloadAsync();
+                    mediaContext.setAudioNull();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+        });
+        return unsub;
+    }, [mediaContext])
 
     const setPlaybackSpeed = async () => {
         if (mediaContext?.media.audio?.status.isLoaded) {
@@ -226,28 +231,42 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
         navigation.navigate('SeriesLandingScreen', { seriesId: sermon.series.id });
     }
 
+    const handleVideoReady = () => {
+        playerRef.current.seekTo(mediaContext.media.videoTime, true);
+    }
+
     const loadVideo = async () => {
-        unloadAudio();
-        mediaContext.setMedia({ playerType: 'video', playing: true, video: { id: sermon.id, time: 0 }, audio: null, episode: sermon.episodeTitle, series: sermon.seriesTitle });
+        try {
+            await mediaContext.media.audio?.sound.unloadAsync();
+            mediaContext.setAudioNull();
+        } catch (e) {
+            console.debug(e)
+        }
+
+        if (mediaContext.media.playerType === 'mini video' && sermon.seriesTitle === mediaContext.media.series && sermon.episodeTitle === mediaContext.media.episode) {
+            mediaContext.setMedia({ ...mediaContext.media, playerType: 'video' });
+        } else {
+            mediaContext.setMedia({ playerType: 'video', playing: true, video: sermon.id, videoTime: 0, audio: null, episode: sermon.episodeTitle, series: sermon.seriesTitle });
+        }
     }
 
     const loadAudio = async () => {
-        if (sermon.seriesTitle === mediaContext.media.series && sermon.episodeTitle === mediaContext.media.episode) {
+        if (mediaContext.media.playerType === 'mini audio' && sermon.seriesTitle === mediaContext.media.series && sermon.episodeTitle === mediaContext.media.episode) {
             mediaContext.setMedia({ ...mediaContext.media, playerType: 'audio' });
+            mediaContext.media.audio?.sound.setOnPlaybackStatusUpdate((e) => updateAudioPosition(e));
         } else {
             try {
                 await mediaContext?.media?.audio?.sound?.unloadAsync();
             } catch (e) {
                 console.debug(e)
             }
-
             try {
                 const sound = await Audio.Sound.createAsync(
                     { uri: sermon.audioURL },
                     { shouldPlay: true, progressUpdateIntervalMillis: 1000 },
                     (e) => updateAudioPosition(e)
                 );
-                mediaContext.setMedia({ playerType: 'audio', playing: true, audio: sound, video: null, episode: sermon.episodeTitle, series: sermon.seriesTitle });
+                mediaContext.setMedia({ playerType: 'audio', playing: true, audio: sound, video: null, videoTime: 0, episode: sermon.episodeTitle, series: sermon.seriesTitle });
                 try {
                     await Audio.setAudioModeAsync({
                         playsInSilentModeIOS: true,
@@ -268,22 +287,13 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
     }
 
-    // call on navigation
-    const unloadAudio = async () => {
-        try {
-            await mediaContext?.media.audio.sound.unloadAsync();
-        } catch (e) {
-            console.debug(e)
-        }
-    }
-
     const minimizeAudio = () => {
         mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini audio' });
     }
 
     const minimizeVideo = async () => {
         const time = await playerRef.current.getCurrentTime();
-        mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini video', video: { id: sermon.id, time } });
+        mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini video', videoTime: time });
     }
 
     return (
@@ -311,11 +321,12 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 {mediaContext.media.playerType === 'video' ? <View style={{ height: Math.round(Dimensions.get('window').width * (9 / 16)), marginBottom: 8 }}>
                     <YoutubePlayer
                         ref={playerRef}
+                        onReady={handleVideoReady}
                         forceAndroidAutoplay
                         height={Math.round(Dimensions.get('window').width * (9 / 16))}
                         width={Math.round(Dimensions.get('window').width)}
-                        videoId={mediaContext.media.video?.id as string}
-                        play={mediaContext.media.playing}
+                        videoId={mediaContext.media.video as string}
+                        play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
                         initialPlayerParams={{ modestbranding: true }}
                     />
                 </View > : null}
@@ -387,7 +398,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                         {sermonsInSeries.items.map((seriesSermon: any) => (
                             (seriesSermon.id !== sermon.id) ?
                                 <TeachingListItem
-                                    key={sermon.id}
+                                    key={seriesSermon.id}
                                     teaching={seriesSermon}
                                     handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
                                 : null
