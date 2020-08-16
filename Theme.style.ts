@@ -1,5 +1,6 @@
 import Arrow from './assets/images/black/Arrow.png';
 import ArrowWhite from './assets/images/white/Arrow.png';
+import ArrowLeftWhite from './assets/images/white/Arrow-Left.png';
 import UserWhite from './assets/images/white/User.png';
 import NotesWhite from './assets/images/white/Notes.png';
 import CalendarAddWhite from './assets/images/white/Calendar-Add.png';
@@ -15,6 +16,11 @@ import StaffWhite from './assets/images/white/Staff.png';
 import HomeChurchWhite from './assets/images/white/HomeChurch.png';
 import TextOptionsWhite from './assets/images/white/TextOptions.png';
 import NewWindowWhite from './assets/images/white/New-Window.png';
+import UserWhiteLoggedIn from './assets/images/white/UserLoggedIn.png';
+import SignOutWhite from './assets/images/white/SignOut.png';
+import AccountWhite from './assets/images/white/Account.png';
+import SignUpWhite from './assets/images/white/Register.png';
+import ArrowGrey from './assets/images/other/Arrow.png';
 
 export const Theme = {
     colors: {
@@ -27,6 +33,12 @@ export const Theme = {
         gray4: "#646469",
         gray5: "#c8c8c8",
         gray6: "#efeff0",
+        grey1: "#111111",
+        grey2: "#1a1a1a",
+        grey3: "#54565a",
+        grey4: "#646469",
+        grey5: "#c8c8c8",
+        grey6: "#efeff0",
         white: "#ffffff",
         red: "#ff595a",
         yellow: "#FFC60B",
@@ -48,7 +60,9 @@ export const Theme = {
         width: 24,
         height: 24,
         white: {
+            account: AccountWhite,
             arrow: ArrowWhite,
+            arrowLeft: ArrowLeftWhite,
             user: UserWhite,
             notes: NotesWhite,
             calendarAdd: CalendarAddWhite,
@@ -63,14 +77,18 @@ export const Theme = {
             staff: StaffWhite,
             homeChurch: HomeChurchWhite,
             textOptions: TextOptionsWhite,
-            newWindow: NewWindowWhite
+            newWindow: NewWindowWhite,
+            userLoggedIn: UserWhiteLoggedIn,
+            signOut: SignOutWhite,
+            signUp: SignUpWhite,
         },
         black: {
             arrow: Arrow,
-
+        },
+        grey: {
+            arrow: ArrowGrey
         }
     }
-
 }
 
 export const Style = {
@@ -95,10 +113,15 @@ export const Style = {
         linkText: {
             color: Theme.colors.white,
             fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.small,
+            fontSize: Theme.fonts.medium,
+        },
+        linkTextInactive: {
+            color: Theme.colors.white,
+            fontFamily: Theme.fonts.fontFamilyRegular,
+            fontSize: Theme.fonts.medium,
+            opacity: 0.24,
         }
     },
-
     categoryTitle: {
         color: Theme.colors.white,
         fontSize: Theme.fonts.large,
@@ -107,7 +130,6 @@ export const Style = {
         marginRight: 16,
         marginBottom: 16,
     }, 
-
     cardContainer: {
         borderColor: Theme.colors.gray2,
         borderTopWidth: 1

@@ -7,6 +7,8 @@ import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -93,7 +95,7 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
 export default function AllSeriesScreen({ navigation }: Params): JSX.Element {

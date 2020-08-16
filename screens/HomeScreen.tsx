@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container, Text, Content, View } from 'native-base';
 import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
@@ -8,11 +8,13 @@ import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
 import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
-import EventsService from '../services/EventsService';
-import { connect } from 'react-redux';
+//import EventsService from '../services/EventsService';
 import SermonsService from '../services/SermonsService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import LocationContext from '../contexts/LocationContext'
+import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
   categoryContainer: {
@@ -23,15 +25,14 @@ const style = {
 }
 
 interface Params {
-  navigation: any;
-  location: any;
-  dispatch: any;
+  navigation: StackNavigationProp<HomeStackParamList>;
 }
 
-function HomeScreen({ navigation, location, dispatch }: Params) {
+export default function HomeScreen({ navigation }: Params): JSX.Element {
 
+  const location = useContext(LocationContext);
   const [announcements, setAnnouncements] = useState<any>([]);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any>([]);
   const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
 
   useEffect(() => {
@@ -42,8 +43,8 @@ function HomeScreen({ navigation, location, dispatch }: Params) {
     loadAnnouncements();
 
     const loadEvents = async () => {
-      const eventsResult = await EventsService.loadEventsList(location);
-      setEvents(eventsResult);
+      //const eventsResult = await EventsService.loadEventsList(location?.locationData);
+      //setEvents(eventsResult);
     }
     loadEvents();
 
@@ -51,21 +52,18 @@ function HomeScreen({ navigation, location, dispatch }: Params) {
       loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 1)
     }
     loadRecentTeaching();
-
   }, [])
-
-  console.log('HomeScreen.render(): location = ', location)
 
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      <Content style={{ backgroundColor: Theme.colors.background }}>
+      <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         {recentTeaching.loading &&
           <ActivityIndicator />
         }
         {recentTeaching.items.length > 0 &&
           <View style={style.categoryContainer}>
-            <RecentTeaching teaching={recentTeaching.items[0]} navigation={navigation}></RecentTeaching>
+            <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
           </View>
         }
 
@@ -134,10 +132,6 @@ function HomeScreen({ navigation, location, dispatch }: Params) {
   );
 }
 
-HomeScreen.navigationOptions = {
-  header: null,
-};
-
 
 // function DevelopmentModeNotice() {
 //   if (__DEV__) {
@@ -182,11 +176,3 @@ HomeScreen.navigationOptions = {
 //     }),
 //   },
 // });
-
-function mapStateToProps(state: { location: { location: any; }; }) {
-  return {
-    location: state.location.location
-  }
-}
-
-export default connect(mapStateToProps)(HomeScreen);

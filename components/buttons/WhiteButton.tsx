@@ -6,10 +6,23 @@ import { ViewStyle } from 'react-native';
 const style = {
     button: {
         backgroundColor: Theme.colors.white,
-        borderRadius: 0
+        borderRadius: 0,
+        height: '100%'
     },
     label: {
         color: Theme.colors.black,
+        fontFamily: Theme.fonts.fontFamilyBold,
+        fontSize: Theme.fonts.medium,
+    },
+    buttonOutlined: {
+        backgroundColor: 'transparent',
+        borderRadius: 0,
+        height: '100%',
+        borderWidth: 3,
+        borderColor: 'white'
+    },
+    labelOutlined: {
+        color: 'white',
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
     }
@@ -18,13 +31,15 @@ const style = {
 interface Props {
     style?: ViewStyle;
     label: string;
+    onPress?: () => any;
+    outlined?: boolean;
 }
 
 export default function WhiteButton(props: Props): JSX.Element {
     return (
         <View style={props.style}>
-            <Button style={style.button} block>
-                <Text style={style.label} uppercase={false}>{props.label}</Text>
+            <Button style={props.outlined ? style.buttonOutlined : style.button} block onPress={props.onPress}>
+                <Text style={props.outlined ? style.labelOutlined : style.label} uppercase={false}>{props.label}</Text>
             </Button>
         </View>
     )

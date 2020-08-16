@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
 import NotesService from '../services/NotesService';
 import { Text, Container, Header, Left, Body, Right, Button, Content, Icon } from 'native-base';
 import Theme, { Style } from '../Theme.style';
@@ -7,6 +6,8 @@ import { StatusBar, TextStyle, ViewStyle } from 'react-native';
 import NoteItem from '../components/teaching/notes/NoteItem';
 import Verse from '../components/teaching/notes/Verse';
 import VerseLink from '../components/teaching/notes/VerseLink';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const xml2js = require('react-native-xml2js');
 const parser = new xml2js.Parser({ explicitChildren: true, preserveChildrenOrder: true, charsAsChildren: true })
@@ -118,11 +119,11 @@ const style = {
 }
 
 interface Params {
-    sermonId: any;
-    navigation: any;
+    sermonId: string;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
-const NotesScreen = function ({ sermonId, navigation }: Params) {
+const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
 
     const [notes, setNotes] = useState([]);
     const [verses, setVerses] = useState([]);
@@ -244,10 +245,4 @@ const NotesScreen = function ({ sermonId, navigation }: Params) {
     )
 }
 
-
-function mapStateToProps(state: any) {
-    return {
-    }
-}
-
-export default connect(mapStateToProps)(NotesScreen);
+export default NotesScreen;

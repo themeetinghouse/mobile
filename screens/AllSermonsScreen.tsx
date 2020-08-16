@@ -5,11 +5,12 @@ import moment from 'moment';
 import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
-import { Moment } from 'moment'
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -68,12 +69,14 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
-    dateStart: Moment;
-    dateEnd: Moment;
+    navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'AllSermonsScreen'>;
 }
 
-function AllSermonsScreen({ navigation, dateStart, dateEnd }: Params): JSX.Element {
+export default function AllSermonsScreen({ navigation, route }: Params): JSX.Element {
+
+    const dateStart = route.params?.startDate;
+    const dateEnd = route.params?.endDate;
 
     const [searchText, setSearchText] = useState("");
     const [sermons, setSermons] = useState({ loading: true, items: [], nextToken: null });
@@ -96,11 +99,10 @@ function AllSermonsScreen({ navigation, dateStart, dateEnd }: Params): JSX.Eleme
     }
     return (
         <Container>
-
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
+                    <Button transparent onPress={() => navigation.navigate('Teaching')}>
                         <Icon name='arrow-back' />
                     </Button>
                 </Left>
@@ -110,15 +112,12 @@ function AllSermonsScreen({ navigation, dateStart, dateEnd }: Params): JSX.Eleme
                 <Right style={style.headerRight}>
                 </Right>
             </Header>
-
             <Content style={style.content}>
-
                 <SearchBar
                     style={style.searchBar}
                     searchText={searchText}
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name..."></SearchBar>
-
                 <View style={style.dateSelectBar}>
                     <TouchableOpacity style={style.dateRangeItem} onPress={() => { navigation.push('DateRangeSelectScreen') }}>
                         {(dateStart && dateEnd)
@@ -145,12 +144,3 @@ function AllSermonsScreen({ navigation, dateStart, dateEnd }: Params): JSX.Eleme
         </Container>
     )
 }
-
-function mapStateToProps(state: { viewNav: { sermonSearchDateStart: any; sermonSearchDateEnd: any; }; }) {
-    return {
-        dateStart: state.viewNav.sermonSearchDateStart,
-        dateEnd: state.viewNav.sermonSearchDateEnd,
-    }
-}
-
-export default connect(mapStateToProps)(AllSermonsScreen);

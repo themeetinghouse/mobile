@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style } from '../Theme.style';
 import { StatusBar, ViewStyle, TextStyle } from 'react-native';
-//import { TouchableOpacity } from 'react-native';
-//import LocationsService from '../services/LocationsService';
-import { connect } from 'react-redux';
-//import { selectLocation } from '../reducers/locationReducer';
+import * as Linking from 'expo-linking';
+import UserContext from '../contexts/UserContext';
+import { useNavigation } from '@react-navigation/native';
+import { MoreStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -63,22 +64,21 @@ const style = {
     }],
     listArrowIcon: [Style.icon, {
     }],
+    icon: [Style.icon, {
+    }],
 }
 
-interface Params {
-    navigation: any;
-    location: any;
-    dispatch: any;
-}
+function MoreScreen(): JSX.Element {
 
-function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
+    const user = useContext(UserContext);
+    const navigation = useNavigation<StackNavigationProp<MoreStackParamList>>();
 
     const items = [
-        { id: "give", text: "Give", subtext: "Donate to The Meeting House via PushPay", icon: Theme.icons.white.give },
-        { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-        { id: "connect", text: "Connect", subtext: "Get connected with a staff member", icon: Theme.icons.white.connect },
-        { id: "staff", text: "Staff Directory", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff },
-        { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch },
+        { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
+        //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+        { id: "connect", text: "Connect", subtext: "Get connected with a staff member", icon: Theme.icons.white.connect, action: () => Linking.openURL('https://www.themeetinghouse.com/connect') },
+        //{ id: "staff", text: "Staff Directory", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff },
+        { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch, action: () => Linking.openURL('https://www.themeetinghouse.com/find-homechurch') },
     ]
 
     return (
@@ -91,8 +91,8 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
                     <Text style={style.headerTitle}>More</Text>
                 </Body>
                 <Right style={style.headerRight}>
-                    <Button transparent>
-                        <Thumbnail style={Style.icon} source={Theme.icons.white.user} square></Thumbnail>
+                    <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                        <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
                     </Button>
                 </Right>
             </Header>
@@ -101,12 +101,10 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
 
                 <View>
                     <List>
-                        {items.map(item => (
-                            <ListItem
+                        {items.slice(0, 2).map(item => {
+                            return <ListItem
                                 key={item.id} style={style.listItem}
-                                onPress={() => {
-                                    return null
-                                }}>
+                                onPress={item.action}>
                                 <Left>
                                     <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
                                     <View>
@@ -118,7 +116,26 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
                                     <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
                                 </View>
                             </ListItem>
-                        ))}
+                        })}
+
+                        <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
+
+                        {items.slice(2).map(item => {
+                            return <ListItem
+                                key={item.id} style={style.listItem}
+                                onPress={item.action}>
+                                <Left>
+                                    <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
+                                    <View>
+                                        <Text style={style.listText}>{item.text}</Text>
+                                        <Text style={style.listSubtext}>{item.subtext}</Text>
+                                    </View>
+                                </Left>
+                                <View>
+                                    <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
+                                </View>
+                            </ListItem>
+                        })}
                     </List>
                 </View>
             </Content>
@@ -127,11 +144,5 @@ function MoreScreen({ navigation, location, dispatch }: Params): JSX.Element {
     )
 }
 
-function mapStateToProps(state: { location: { location: any; }; }) {
-    return {
-        location: state.location.location
-    }
-}
-
-export default connect(mapStateToProps)(MoreScreen);
+export default MoreScreen;
 

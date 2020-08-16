@@ -3,8 +3,8 @@ import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
 import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
-import { setSermonDateRange } from '../reducers/viewNavReducer';
-import { connect } from 'react-redux';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -78,22 +78,25 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
-    startDate: string;
-    endDate: string;
-    dispatch: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
-function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Params): JSX.Element {
+type Date = {
+    year?: number;
+    month?: number;
+    selectNext?: boolean;
+}
+
+export default function DateRangeSelectScreen({ navigation }: Params): JSX.Element {
 
     let currentYear = moment().get("year");
-    const startYear = moment(startDate || "2005-01-01").get("year");
+    const startYear = moment("2005-01-01").get("year");
     const years = [];
     while (currentYear >= startYear) years.push(currentYear--);
     const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-    const [firstDate, setFirstDate] = useState<any>({});
-    const [secondDate, setSecondDate] = useState<any>({});
+    const [firstDate, setFirstDate] = useState<Date>({});
+    const [secondDate, setSecondDate] = useState<Date>({});
 
     const selectDateItem = (year: number, month: number) => {
         console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate);
@@ -133,16 +136,14 @@ function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Par
         const firstMoment = moment().startOf('month').set('year', firstDate.year || 1970).set('month', firstDate.month || 0);
         const secondMoment = moment().startOf('month').set('year', secondDate.year || 1970).set('month', secondDate.month || 0);
         if (firstMoment.isBefore(secondMoment)) {
-            dispatch(setSermonDateRange(firstMoment, secondMoment));
+            navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: secondMoment });
         } else {
-            dispatch(setSermonDateRange(secondMoment, firstMoment));
+            navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: firstMoment });
         }
-        navigation.goBack();
     }
 
     return (
         <Container>
-
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
@@ -160,7 +161,6 @@ function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Par
 
                 </Right>
             </Header>
-
             <Content style={style.content}>
                 {years.map(year => (
                     <View key={year + ""} style={style.yearSection}>
@@ -181,12 +181,3 @@ function DateRangeSelectScreen({ navigation, startDate, endDate, dispatch }: Par
         </Container>
     )
 }
-
-function mapStateToProps(state: { viewNav: { sermonSearchStateDate: any; sermonSearchEndDate: any; }; }) {
-    return {
-        startDate: state.viewNav.sermonSearchStateDate,
-        endDate: state.viewNav.sermonSearchEndDate,
-    }
-}
-
-export default connect(mapStateToProps)(DateRangeSelectScreen);

@@ -4,14 +4,13 @@ import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body
 import moment from 'moment';
 import { Dimensions, StatusBar, ViewStyle } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-//import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
-//import IconButton from '../components/buttons/IconButton';
-//import LinearGradient from 'react-native-linear-gradient';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
-//import { setSermonDateRange } from '../reducers/viewNavReducer';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -76,13 +75,14 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'SeriesLandingScreen'>;
 }
 
-function SeriesLandingScreen({ navigation }: Params): JSX.Element {
+function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
-    const seriesParam = navigation.getParam("item");
-    const seriesId = navigation.getParam("seriesId");
+    const seriesParam = route.params?.item;
+    const seriesId = route.params?.seriesId;
 
     const [series, setSeries] = useState(seriesParam);
     const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
@@ -96,7 +96,7 @@ function SeriesLandingScreen({ navigation }: Params): JSX.Element {
     useEffect(() => {
         const loadSermonsInSeriesAsync = async () => {
             let loadedSeries = series;
-            if (!loadedSeries) {
+            if (!loadedSeries && seriesId) {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }

@@ -13,6 +13,8 @@ import SeriesService from '../services/SeriesService';
 import SpeakersService from '../services/SpeakersService';
 import { loadSomeAsync } from '../utils/loading';
 import { LoadSeriesListData } from '../services/SeriesService';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 const style = {
     content: [Style.cardContainer, {
@@ -129,7 +131,7 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
 }
 
 interface SeriesData extends LoadSeriesListData {

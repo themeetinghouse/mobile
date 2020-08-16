@@ -5,11 +5,13 @@ import moment from 'moment';
 import { StatusBar, ViewStyle } from 'react-native';
 //import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import { connect } from 'react-redux';
 import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
+import { TeachingStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
 
 const style = {
     content: [Style.cardContainer, {
@@ -84,12 +86,13 @@ const style = {
 }
 
 interface Params {
-    navigation: any;
+    navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'SermonLandingScreen'>;
 }
 
-function SermonLandingScreen({ navigation }: Params) {
+export default function SermonLandingScreen({ navigation, route }: Params): JSX.Element {
 
-    const sermon = navigation.getParam("item");
+    const sermon = route.params?.item;
 
     const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
 
@@ -166,10 +169,3 @@ function SermonLandingScreen({ navigation }: Params) {
         </Container>
     )
 }
-
-function mapStateToProps(state: any) {
-    return {
-    }
-}
-
-export default connect(mapStateToProps)(SermonLandingScreen);

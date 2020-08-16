@@ -1,62 +1,101 @@
-//<script src="http://localhost:8097"></script>
-
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
-import { Root } from 'native-base';
-import { Provider } from 'react-redux'
-import { createStore, combineReducers } from 'redux';
-import { locationReducer, selectLocation } from './reducers/locationReducer';
-import LocationsService from './services/LocationsService';
-import { viewNavReducer } from './reducers/viewNavReducer';
+import LocationsService, { LocationKey } from './services/LocationsService';
+import { Auth } from '@aws-amplify/auth';
+import Amplify from '@aws-amplify/core';
+import UserContext, { UserData } from './contexts/UserContext';
+import LocationContext, { LocationData } from './contexts/LocationContext';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import * as SecureStore from 'expo-secure-store';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-const store = createStore(combineReducers({
-  location: locationReducer,
-  viewNav: viewNavReducer,
-}))
-
-const initApp = async () => {
-  const selectedLocation = await LocationsService.getLocationById("oakville");
-  store.dispatch(selectLocation(selectedLocation));
-}
-initApp();
+Amplify.configure({
+  Auth: {
+    identityPoolId: 'us-east-1:d3da58ee-46b8-4b00-aa3a-a14c37b64aa7',
+    region: 'us-east-1',
+    userPoolId: 'us-east-1_KiJzP2dH5',
+    userPoolWebClientId: '3pf37ngd57hsk9ld12aha9bm2f',
+  }
+});
 
 interface Props {
   skipLoadingScreen?: boolean;
 }
 
+const CustomTheme = {
+  ...DefaultTheme, 
+  colors: {
+    ...DefaultTheme.colors,  
+    background: 'black' 
+  }
+}
+
 function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
+  const [userData, setUserData] = useState<UserData>(null)
+  const [locationData, setLocationData] = useState<LocationData>(null);
 
-  // useEffect(() => {
-  //   const setInitialAppState = async () => {
-  //     const selectedLocation = await LocationsService.getLocationById("oakville");
-  //     props.dispatch(selectLocation(selectedLocation));
-  //   }
-  //   setInitialAppState();
-  // }, [])
+  /*useEffect(() => {
+    const setInitialAppState = async () => {
+      const selectedLocation = await LocationsService.getLocationById("oakville");
+      props.dispatch(selectLocation(selectedLocation));
+    }
+    setInitialAppState();
+  }, [])*/
+
+  useEffect(() => {
+    async function checkForUser() {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        console.debug(user);
+        if (user.attributes.email_verified) {
+          setUserData(user.attributes)
+        }
+        if (user.attributes['custom:home_location']) {
+          const selectedLocation = LocationsService.mapLocationIdToName(user.attributes['custom:home_location']);
+          setLocationData({ locationId: user.attributes['custom:home_location'], locationName: selectedLocation });
+        }
+      } catch (e) {
+        console.debug(e)
+        try {
+          const location = await SecureStore.getItemAsync('location')
+          if (location) {
+            const selectedLocation = LocationsService.mapLocationIdToName(location as LocationKey);
+            setLocationData({ locationId: location, locationName: selectedLocation });
+          }
+        } catch (e) {
+          console.debug(e)
+          setLocationData({ locationId: "", locationName: "" });
+        }
+      }
+    }
+    checkForUser();
+  }, []);
 
   if (!isLoadingComplete && !props.skipLoadingScreen) {
     return (
-      <Provider store={store}>
-        <AppLoading
-          startAsync={loadResourcesAsync}
-          onError={handleLoadingError}
-          onFinish={() => setLoadingComplete(true)}
-        />
-      </Provider>
+      <AppLoading
+        startAsync={loadResourcesAsync}
+        onError={handleLoadingError}
+        onFinish={() => setLoadingComplete(true)}
+      />
     );
   } else {
     return (
-      <Provider store={store}>
-        <Root>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </Root>
-      </Provider>
+      <LocationContext.Provider value={{ locationData, setLocationData }}>
+        <UserContext.Provider value={{ userData, setUserData }}>
+          <SafeAreaProvider>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
+            <NavigationContainer theme={CustomTheme}>
+              <AppNavigator />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </UserContext.Provider>
+      </LocationContext.Provider>
     );
   }
 }
@@ -65,10 +104,10 @@ export default App;
 
 async function loadResourcesAsync() {
   await Promise.all([
-    // Asset.loadAsync([
-    //   require('./assets/images/robot-dev.png'),
-    //   require('./assets/images/robot-prod.png'),
-    // ]),
+    /*Asset.loadAsync([
+      require('./assets/images/robot-dev.png'),
+      require('./assets/images/robot-prod.png'),
+    ]),*/
     Font.loadAsync({
       Roboto: require('native-base/Fonts/Roboto.ttf'),
       Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
@@ -76,7 +115,7 @@ async function loadResourcesAsync() {
       'Graphik-Medium-App': require('./assets/fonts/Graphik-Medium-App.ttf'),
       'Graphik-Bold-App': require('./assets/fonts/Graphik-Bold-App.ttf'),
       'Graphik-Semibold-App': require('./assets/fonts/Graphik-Semibold-App.ttf'),
-      // This is the font that we are using for our tab bar
+      //This is the font that we are using for our tab bar
       ...Ionicons.font,
     }),
   ]);

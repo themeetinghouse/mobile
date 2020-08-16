@@ -1,21 +1,18 @@
 import React from 'react';
-//import { Platform } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
-
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import TeachingScreen from '../screens/TeachingScreen';
 import AllSeriesScreen from '../screens/AllSeriesScreen';
 import AllSermonsScreen from '../screens/AllSermonsScreen';
-import SettingsScreen from '../screens/SettingsScreen';
+//import SettingsScreen from '../screens/SettingsScreen';
 import { Thumbnail } from 'native-base';
-
 import TabHomeImage from '../assets/icons/tab-home.png';
 import TabHomeActiveImage from '../assets/icons/tab-home-active.png';
 import TabTeachingImage from '../assets/icons/tab-teaching.png';
 import TabTeachingActiveImage from '../assets/icons/tab-teaching-active.png';
-import TabSearchImage from '../assets/icons/tab-search.png';
-import TabSearchActiveImage from '../assets/icons/tab-search-active.png';
+//import TabSearchImage from '../assets/icons/tab-search.png';
+//import TabSearchActiveImage from '../assets/icons/tab-search-active.png';
 import TabMoreImage from '../assets/icons/tab-more.png';
 import TabMoreActiveImage from '../assets/icons/tab-more-active.png';
 import EventDetailsScreen from '../screens/EventDetailsScreen';
@@ -26,30 +23,104 @@ import SermonLandingScreen from '../screens/SermonLandingScreen';
 import MoreScreen from '../screens/MoreScreen';
 import NotesScreen from '../screens/NotesScreen';
 import SeriesLandingScreen from '../screens/SeriesLandingScreen';
+import ProfileScreen from '../screens/Profile/ProfileScreen';
+import AccountScreen from '../screens/Profile/AccountScreen';
+import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
+import { Moment } from 'moment';
 
-const HomeStack = createStackNavigator(
-  {
-    Home: HomeScreen,
-    EventDetailsScreen: {
-      screen: EventDetailsScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    AnnouncementDetailsScreen: {
-      screen: AnnouncementDetailsScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    LocationSelectionScreen: {
-      screen: LocationSelectionScreen,
-      navigationOptions: {
-        headerShown: false
-      }
-    }
-  }
-);
+export type HomeStackParamList = {
+  HomeScreen: undefined;
+  EventDetailsScreen: { item: any };
+  AnnouncementDetailsScreen: { item: any };
+  LocationSelectionScreen: { persist: boolean };
+  ProfileScreen: undefined;
+  AccountScreen: undefined;
+  ChangePasswordScreen: undefined;
+}
+
+const Home = createStackNavigator<HomeStackParamList>();
+
+function HomeStack() {
+  return (
+    <Home.Navigator screenOptions={{ headerShown: false }}>
+      <Home.Screen name="HomeScreen" component={HomeScreen}></Home.Screen>
+      <Home.Screen name="EventDetailsScreen" component={EventDetailsScreen} ></Home.Screen>
+      <Home.Screen name="AnnouncementDetailsScreen" component={AnnouncementDetailsScreen} ></Home.Screen>
+      <Home.Screen name="LocationSelectionScreen" component={LocationSelectionScreen} ></Home.Screen>
+      <Home.Screen name="ProfileScreen" component={ProfileScreen}></Home.Screen>
+      <Home.Screen name="AccountScreen" component={AccountScreen}></Home.Screen>
+      <Home.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Home.Screen>
+    </Home.Navigator>
+  )
+}
+
+export type TeachingStackParamList = {
+  Teaching: undefined;
+  AllSeriesScreen: undefined;
+  AllSermonsScreen: { startDate: Moment, endDate: Moment } | undefined;
+  DateRangeSelectScreen: undefined;
+  SeriesLandingScreen: { seriesId?: string, item?: any };
+  SermonLandingScreen: { item: any };
+  NotesScreen: undefined;
+  ProfileScreen: undefined;
+  AccountScreen: undefined;
+  ChangePasswordScreen: undefined;
+}
+
+const Teaching = createStackNavigator<TeachingStackParamList>();
+
+function TeachingStack() {
+  return (
+    <Teaching.Navigator screenOptions={{ headerShown: false }}>
+      <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
+      <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
+      <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
+      <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
+      <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
+      <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
+      <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
+      <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
+      <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
+      <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
+    </Teaching.Navigator>
+  )
+}
+
+/*function SearchStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Search" component={SettingsScreen}></Stack.Screen>
+    </Stack.Navigator>
+  )
+}*/
+
+export type MoreStackParamList = {
+  MoreScreen: undefined;
+  ProfileScreen: undefined;
+  AccountScreen: undefined;
+  ChangePasswordScreen: undefined;
+}
+
+const More = createStackNavigator<MoreStackParamList>();
+
+function MoreStack() {
+  return (
+    <More.Navigator screenOptions={{ headerShown: false }}>
+      <More.Screen name="MoreScreen" component={MoreScreen}></More.Screen>
+      <More.Screen name="ProfileScreen" component={ProfileScreen}></More.Screen>
+      <More.Screen name="AccountScreen" component={AccountScreen}></More.Screen>
+      <More.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></More.Screen>
+    </More.Navigator>
+  )
+}
+
+export type TabNavigatorParamList = {
+  Home: undefined | { screen: keyof HomeStackParamList };
+  Teaching: undefined | { screen: keyof TeachingStackParamList };
+  More: undefined | { screen: keyof MoreStackParamList };
+}
+
+const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
 const style = {
   tabIcon: {
@@ -58,152 +129,41 @@ const style = {
   }
 }
 
-HomeStack.navigationOptions = {
-  tabBarLabel: 'Home',
-  tabBarIcon: (focused: boolean) => {
-    return <Thumbnail square source={focused ? TabHomeActiveImage : TabHomeImage} style={style.tabIcon}></Thumbnail>
-  }
+export default function MainTabNavigator(): JSX.Element {
+  return (
+    <Tab.Navigator
+      tabBarOptions={{
+        showLabel: false,
+        activeBackgroundColor: 'black',
+        inactiveBackgroundColor: 'black',
+        style: {
+          height: 90,
+          backgroundColor: 'black'
+        }
+      }}
+      screenOptions={({ route }) => ({
+        tabBarIcon: function render({ focused }: { focused: boolean }) {
+          let icon;
 
-  // <TabBarIcon
-  //   focused={focused}
-  //   name={
-  //     Platform.OS === 'ios'
-  //       ? `ios-information-circle${focused ? '' : '-outline'}`
-  //       : 'md-information-circle'
-  //   }
-  // />
-};
-
-HomeStack.path = '';
-
-const TeachingStack = createStackNavigator(
-  {
-    Teaching: {
-      screen: TeachingScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    AllSeriesScreen: {
-      screen: AllSeriesScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    AllSermonsScreen: {
-      screen: AllSermonsScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    DateRangeSelectScreen: {
-      screen: DateRangeSelectScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    SeriesLandingScreen: {
-      screen: SeriesLandingScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    SermonLandingScreen: {
-      screen: SermonLandingScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-    NotesScreen: {
-      screen: NotesScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-  }
-);
-
-TeachingStack.navigationOptions = {
-  tabBarLabel: 'Teaching',
-  tabBarIcon: (focused: boolean) => {
-    return <Thumbnail square source={focused ? TabTeachingActiveImage : TabTeachingImage} style={style.tabIcon}></Thumbnail>
-  }
-};
-
-TeachingStack.path = '';
-
-const SearchStack = createStackNavigator(
-  {
-    Search: SettingsScreen,
-  }
-);
-
-SearchStack.navigationOptions = {
-  tabBarLabel: 'Search',
-  tabBarIcon: (focused: boolean) => {
-    return <Thumbnail square source={focused ? TabSearchActiveImage : TabSearchImage} style={style.tabIcon}></Thumbnail>
-  }
-};
-
-SearchStack.path = '';
-
-const MoreStack = createStackNavigator(
-  {
-    MoreScreen: {
-      screen: MoreScreen,
-      navigationOptions: {
-        headerShown: false,
-      }
-    },
-  }
-);
-
-MoreStack.navigationOptions = {
-  tabBarLabel: 'More',
-  tabBarIcon: (focused: boolean) => {
-    return <Thumbnail square source={focused ? TabMoreActiveImage : TabMoreImage} style={style.tabIcon}></Thumbnail>
-  }
-};
-
-MoreStack.path = '';
-
-let tabNavigator;
-let tabs = { HomeStack, TeachingStack, /*SearchStack,*/ MoreStack }
-
-//if (Platform.OS === "ios"){
-tabNavigator = createBottomTabNavigator(tabs,
-  {
-    tabBarOptions: {
-      activeBackgroundColor: "#000000",
-      inactiveBackgroundColor: "#000000",
-      showLabel: false,
-      style: {
-        height: 65
-      }
-    },
-    labeled: false,
-    activeColor: "#FFFFFF",
-    inactiveColor: "#FFFFFF",
-    barStyle: {
-      backgroundColor: '#000000',
-      overflow: "visible",
-    },
-  }
-);
-
-// } else {
-//   tabNavigator = createMaterialBottomTabNavigator(tabs, 
-//   {
-//     labeled: false,
-//     activeColor: "#FFFFFF",
-//     inactiveColor: "#FFFFFF",
-//     barStyle: { 
-//       backgroundColor: '#000000',
-//       overflow: "visible",
-//     },
-//   });
-// }
-
-tabNavigator.path = '';
-
-export default tabNavigator;
+          if (route.name === 'Home') {
+            icon = focused
+              ? TabHomeActiveImage
+              : TabHomeImage;
+          } else if (route.name === 'Teaching') {
+            icon = focused
+              ? TabTeachingActiveImage
+              : TabTeachingImage;
+          } else if (route.name === 'More') {
+            icon = focused
+              ? TabMoreActiveImage
+              : TabMoreImage;
+          }
+          return <Thumbnail square source={icon} style={style.tabIcon}></Thumbnail>;
+        },
+      })}>
+      <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="Teaching" component={TeachingStack} />
+      <Tab.Screen name="More" component={MoreStack} />
+    </Tab.Navigator>
+  )
+}

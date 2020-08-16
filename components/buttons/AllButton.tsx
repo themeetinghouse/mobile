@@ -23,12 +23,12 @@ const style = {
     }
 }
 
-type AllButtonInput = {
-    children?: any;
+type Params = {
+    children: string;
     handlePress?(): any;
 }
 
-export default function AllButton({ children, handlePress }: AllButtonInput): JSX.Element {
+export default function AllButton({ children, handlePress }: Params): JSX.Element {
     return (
         <Button full iconRight style={style.button} onPress={handlePress}>
             <Text uppercase={false} style={style.text}>{children}</Text>

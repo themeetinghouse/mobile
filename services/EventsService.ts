@@ -7,10 +7,10 @@ export type EventQueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['dat
 
 export default class EventsService {
 
-  static loadEventsList = async (location: Location): Promise<EventQueryResult> => {
+  static loadEventsList = async (location: Location | null | undefined): Promise<EventQueryResult> => {
     const query = { 
       query: getFbEvents,
-      variables: { pageId: location.facebookEvents[0] },
+      variables: { pageId: location?.facebookEvents[0] },
     }
     //console.log("EventsService.loadEventsList(): query = ", query);
     const queryResult = await runGraphQLQuery(query);
