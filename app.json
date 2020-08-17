@@ -29,11 +29,11 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
-      "buildNumber": "1"
+      "buildNumber": "2"
     },
     "android": {
       "package": "com.themeetinghouse.androidapp",
-      "versionCode": 100
+      "versionCode": 101
     }
   }
 }
