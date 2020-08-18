@@ -9,9 +9,11 @@ import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
+import MediaContext, { MediaData } from './contexts/MediaContext';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import MiniPlayer from './components/MiniPlayer';
 
 Amplify.configure({
   Auth: {
@@ -27,10 +29,10 @@ interface Props {
 }
 
 const CustomTheme = {
-  ...DefaultTheme, 
+  ...DefaultTheme,
   colors: {
-    ...DefaultTheme.colors,  
-    background: 'black' 
+    ...DefaultTheme.colors,
+    background: 'black'
   }
 }
 
@@ -38,6 +40,7 @@ function App(props: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
+  const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, episode: '', series: '' });
 
   /*useEffect(() => {
     const setInitialAppState = async () => {
@@ -46,6 +49,14 @@ function App(props: Props): JSX.Element {
     }
     setInitialAppState();
   }, [])*/
+
+  const setVideoTime = (data: number) => {
+    setMedia(prevState => { return { ...prevState, videoTime: data } })
+  }
+
+  const setAudioNull = () => {
+    setMedia(prevState => { return { ...prevState, audio: null } })
+  }
 
   useEffect(() => {
     async function checkForUser() {
@@ -86,16 +97,19 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <LocationContext.Provider value={{ locationData, setLocationData }}>
-        <UserContext.Provider value={{ userData, setUserData }}>
-          <SafeAreaProvider>
-            {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-            <NavigationContainer theme={CustomTheme}>
-              <AppNavigator />
-            </NavigationContainer>
-          </SafeAreaProvider>
-        </UserContext.Provider>
-      </LocationContext.Provider>
+      <MediaContext.Provider value={{ media, setMedia, setVideoTime, setAudioNull }}>
+        <LocationContext.Provider value={{ locationData, setLocationData }}>
+          <UserContext.Provider value={{ userData, setUserData }}>
+            <SafeAreaProvider>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+              <NavigationContainer theme={CustomTheme}>
+                <AppNavigator />
+                <MiniPlayer />
+              </NavigationContainer>
+            </SafeAreaProvider>
+          </UserContext.Provider>
+        </LocationContext.Provider>
+      </MediaContext.Provider>
     );
   }
 }

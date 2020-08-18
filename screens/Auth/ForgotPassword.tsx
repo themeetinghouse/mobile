@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth'
 import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
@@ -8,6 +8,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
+import MediaContext from '../../contexts/MediaContext';
 
 const style = {
     title: [Style.cardTitle, {
@@ -65,6 +66,21 @@ export default function Login(props: Props): JSX.Element {
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
     const [codeSent, setCodeSent] = useState(false);
+    const media = useContext(MediaContext);
+
+    useEffect(() => {
+        async function closeMedia() {
+            if (media.media.audio) {
+                try {
+                    await media.media.audio?.sound.unloadAsync();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+            media.setMedia({ video: null, videoTime: 0, audio: null, playerType: 'none', playing: false, series: '', episode: '' });
+        }
+        closeMedia();
+    }, [])
 
     function updateCodeState(state: boolean): void {
         setPass('');

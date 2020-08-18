@@ -21,6 +21,20 @@ import SignOutWhite from './assets/images/white/SignOut.png';
 import AccountWhite from './assets/images/white/Account.png';
 import SignUpWhite from './assets/images/white/Register.png';
 import ArrowGrey from './assets/images/other/Arrow.png';
+import WatchWhite from './assets/images/white/Watch.png';
+import WatchBlack from './assets/images/black/Watch.png';
+import AudioWhite from './assets/images/white/Audio.png';
+import AudioBlack from './assets/images/black/Audio.png';
+import PlaySolidWhite from './assets/images/white/Play-Solid.png';
+import PauseLargeWhite from './assets/images/white/Pause-Large.png';
+import PauseCircleWhite from './assets/images/white/Pause-Small.png';
+import PlayCircleWhite from './assets/images/white/Play-Small.png';
+import SkipForward from './assets/images/other/Skip-Backward.png'; 
+import SkipBackward from './assets/images/other/Skip-Forward.png'; 
+import ShareWhite from './assets/images/white/Share.png'; 
+import MinimizeWhite from './assets/images/white/Downsize-Arrow.png'; 
+import SliderThumb from './assets/images/white/Ellipse.png'; 
+
 
 export const Theme = {
     colors: {
@@ -81,13 +95,26 @@ export const Theme = {
             userLoggedIn: UserWhiteLoggedIn,
             signOut: SignOutWhite,
             signUp: SignUpWhite,
+            audio: AudioWhite,
+            watch: WatchWhite,
+            playAudio: PlaySolidWhite,
+            pauseAudio: PauseLargeWhite,
+            pauseMiniPlayer: PauseCircleWhite,
+            playMiniPlayer: PlayCircleWhite,
+            share: ShareWhite,
+            mini: MinimizeWhite,
+            sliderThumb: SliderThumb,
+        },
+        grey: {
+            arrow: ArrowGrey,
+            skipForward: SkipBackward,
+            skipBack: SkipForward
         },
         black: {
             arrow: Arrow,
+            audio: AudioBlack,
+            watch: WatchBlack
         },
-        grey: {
-            arrow: ArrowGrey
-        }
     }
 }
 

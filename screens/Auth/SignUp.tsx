@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ViewStyle, ScrollView } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
@@ -10,6 +10,7 @@ import { RouteProp, useRoute, CompositeNavigationProp } from '@react-navigation/
 import { Thumbnail, Button } from 'native-base';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MediaContext from '../../contexts/MediaContext';
 
 const style = {
     title: [Style.cardTitle, {
@@ -92,8 +93,22 @@ export default function SignUp(props: Props): JSX.Element {
     const [site, setSite] = useState({ locationName: '', locationId: '' });
     const [error, setError] = useState('');
     const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
-
     const safeArea = useSafeAreaInsets();
+    const media = useContext(MediaContext);
+
+    useEffect(() => {
+        async function closeMedia() {
+            if (media.media.audio) {
+                try {
+                    await media.media.audio?.sound.unloadAsync();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+            media.setMedia({ video: null, videoTime: 0, audio: null, playerType: 'none', playing: false, series: '', episode: '' });
+        }
+        closeMedia();
+    }, []);
 
     useEffect(() => {
         if (route.params?.locationName && route.params.locationId)

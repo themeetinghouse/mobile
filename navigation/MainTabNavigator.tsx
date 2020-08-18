@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
@@ -27,6 +27,8 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountScreen from '../screens/Profile/AccountScreen';
 import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
 import { Moment } from 'moment';
+import { Theme } from '../Theme.style';
+import MediaContext from '../contexts/MediaContext'
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -70,6 +72,7 @@ export type TeachingStackParamList = {
 const Teaching = createStackNavigator<TeachingStackParamList>();
 
 function TeachingStack() {
+
   return (
     <Teaching.Navigator screenOptions={{ headerShown: false }}>
       <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
@@ -130,15 +133,17 @@ const style = {
 }
 
 export default function MainTabNavigator(): JSX.Element {
+
+  const media = useContext(MediaContext);
+
   return (
     <Tab.Navigator
       tabBarOptions={{
         showLabel: false,
-        activeBackgroundColor: 'black',
-        inactiveBackgroundColor: 'black',
         style: {
           height: 90,
-          backgroundColor: 'black'
+          backgroundColor: Theme.colors.background,
+          marginTop: media.media.playerType.includes('mini') ? 56 : 0
         }
       }}
       screenOptions={({ route }) => ({
