@@ -7,7 +7,7 @@
     "web": "expo start:web",
     "eject": "expo eject",
     "test": "jest --watchAll",
-    "buildExpo":"expo build:ios;expo build:android"
+    "buildExpo": "expo build:ios;expo build:android"
   },
   "jest": {
     "preset": "jest-expo"
