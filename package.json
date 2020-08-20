@@ -1,13 +1,13 @@
 {
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
+    "start": "export SENTRY_ORG=the-meeting-house;VERSION=`sentry-cli releases propose-version`;echo export const version ={git:\\\"$VERSION\\\"}>version.js;expo start",
     "android": "expo start:android",
     "ios": "expo start:ios",
     "web": "expo start:web",
     "eject": "expo eject",
     "test": "jest --watchAll",
-    "buildExpo": "expo build:ios;expo build:android"
+    "buildExpo": "export SENTRY_ORG=the-meeting-house;VERSION=`sentry-cli releases propose-version`;sentry-cli releases new -p the-meeting-house-mobile $VERSION;sentry-cli releases set-commits --auto $VERSION;echo export const version ={git:\\\"$VERSION\\\"}>version.js;expo build:ios;expo build:android;sentry-cli releases finalize $VERSION;sentry-cli releases deploys $VERSION new -e prod;"
   },
   "jest": {
     "preset": "jest-expo"
@@ -40,6 +40,7 @@
     "react-native-web": "~0.11.7",
     "react-native-webview": "9.4.0",
     "react-native-xml2js": "^1.0.3",
+    "sentry-expo": "^2.1.2",
     "tmh-temp-react-native-youtube-iframe": "https://github.com/JonEsparaz/react-native-youtube-iframe/archive/v1.0.tar.gz"
   },
   "devDependencies": {

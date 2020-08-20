@@ -14,7 +14,16 @@ import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MiniPlayer from './components/MiniPlayer';
+import * as Sentry from 'sentry-expo';
+import { version } from './version'
 
+Sentry.init({
+  dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
+  enableInExpoDevelopment: true,
+  debug: false,
+  environment: "prod",
+  release: version.git
+});
 Amplify.configure({
   Auth: {
     identityPoolId: 'us-east-1:d3da58ee-46b8-4b00-aa3a-a14c37b64aa7',
