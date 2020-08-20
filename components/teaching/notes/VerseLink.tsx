@@ -1,8 +1,8 @@
 import React from 'react';
 import Theme from '../../../Theme.style';
-import { TouchableOpacity, Text, TextStyle } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     verseLink: {
         color: Theme.colors.white,
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -16,8 +16,8 @@ const style = {
     verseLinkSelected: {
         borderBottomColor: Theme.colors.red,
         borderStyle: 'dashed',
-    } as TextStyle
-}
+    }
+})
 
 interface noteType {
     note: any;

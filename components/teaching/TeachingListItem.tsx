@@ -1,17 +1,17 @@
 import React from 'react';
 import { View, Text } from 'native-base';
 import Theme from '../../Theme.style';
-import { Image, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { Image, TouchableOpacity, StyleSheet } from 'react-native';
 import moment from 'moment';
 import { LoadSermonResult } from '../../services/SermonsService';
 
-const style = {
+const style = StyleSheet.create({
     container: {
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
         marginBottom: 16,
-    } as ViewStyle,
+    },
     thumbnail: {
         width: 158,
         height: 88,
@@ -23,14 +23,14 @@ const style = {
         color: Theme.colors.white,
         flexWrap: 'wrap',
         lineHeight: 20,
-    } as TextStyle,
+    },
     detailsContainer: {
         display: 'flex',
         flexDirection: 'column',
         marginLeft: 16,
         flexWrap: 'nowrap',
         flexShrink: 1,
-    } as ViewStyle,
+    },
     detailText1: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
@@ -43,7 +43,7 @@ const style = {
         color: Theme.colors.gray5,
         marginTop: 1,
     },
-}
+})
 
 interface Params {
     handlePress: () => any;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'native-base';
-import { Image, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { Image, StyleSheet, Dimensions } from 'react-native';
 import { Theme, Style } from '../../../Theme.style';
 import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
@@ -9,25 +9,28 @@ import { LoadSermonResult } from '../../../services/SermonsService';
 import { TabNavigatorParamList } from '../../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-const style = {
+const screenWidth = Dimensions.get('window').width
+
+const style = StyleSheet.create({
     container: {
         alignItems: "center",
         marginLeft: 16,
         marginRight: 16,
         backgroundColor: Theme.colors.black,
-    } as ViewStyle,
+    },
     teachingImage: {
-        width: "100%",
-        height: 280,
-        position: "absolute"
-    } as ImageStyle,
+        width: screenWidth,
+        height: (9 / 16) * screenWidth,
+        position: 'absolute'
+    },
     seriesImage: {
-        width: 80,
-        height: 96,
+        alignSelf: 'center',
+        width: screenWidth * 0.2133,
+        height: screenWidth * 0.256,
         marginBottom: 24
     },
     seriesImageWithTeachingImage: {
-        marginTop: 208,
+        marginTop: 32 + (0.75 * (9 / 16) * screenWidth),
     },
     episodeNumber: {
         color: Theme.colors.white,
@@ -41,24 +44,22 @@ const style = {
         fontFamily: Theme.fonts.fontFamilyBold,
         marginBottom: 8,
         textAlign: "center",
-    } as TextStyle,
+    },
     subtitle: {
         color: Theme.colors.gray5,
         fontSize: Theme.fonts.small,
         marginBottom: 14
     },
-    description: [
-        Style.cardDescription,
-        {
+    description: {
+        ...Style.cardDescription,
+        ...{
             color: Theme.colors.gray5,
             fontSize: Theme.fonts.medium,
             marginBottom: 32,
             textAlign: "center",
         }
-    ] as TextStyle,
-    noteButtonContainer: {
     }
-}
+})
 
 interface RecentTeachingInput {
     teaching: NonNullable<LoadSermonResult['items']>[0];
@@ -89,20 +90,18 @@ export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.E
 
     return (
         <View style={style.container}>
-            {teachingImage &&
-                <>
-                    <Image style={style.teachingImage} source={{ uri: teachingImage.url as string }}></Image>
+            {teachingImage?.url ?
+                <View style={{ width: '100%' }}>
+                    <Image style={style.teachingImage} source={{ uri: teachingImage.url }}></Image>
                     <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }}></Image>
-                </>
-            }
-            {!teachingImage &&
-                <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
+                </View>
+                : <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
             }
             <Text style={style.episodeNumber}>Week {teaching.episodeNumber}</Text>
             <Text style={style.title}>{teaching.episodeTitle}</Text>
             <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")}</Text>
             <Text style={style.description}>{teaching.description}</Text>
-            <View style={style.noteButtonContainer}>
+            <View>
                 <IconButton icon={Theme.icons.white.notes} label="Notes" onPress={() => openNotes(teaching.id)}></IconButton>
             </View>
         </View>

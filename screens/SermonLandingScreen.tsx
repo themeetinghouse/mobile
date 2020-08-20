@@ -1,8 +1,8 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { Dimensions, StatusBar, TouchableOpacity, ViewStyle } from 'react-native';
+import { Dimensions, StatusBar, TouchableOpacity, StyleSheet } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
@@ -17,12 +17,13 @@ import MediaContext from '../contexts/MediaContext';
 import Slider from '@react-native-community/slider';
 import YoutubePlayer, { YoutubeIframeRef } from 'tmh-temp-react-native-youtube-iframe';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -31,25 +32,30 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }],
-    title: [Style.title, {
-        fontSize: Theme.fonts.large,
-        marginTop: 16
-    }],
-    body: [Style.body, {
-    }],
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: {
+        ...Style.title, ...{
+            fontSize: Theme.fonts.large,
+            marginTop: 16
+        }
+    },
+    body: Style.body,
 
-    categoryTitle: [Style.categoryTitle, {
-        marginTop: 16
-    }],
+    categoryTitle: {
+        ...Style.categoryTitle, ...{
+            marginTop: 16
+        }
+    },
     categorySection: {
         backgroundColor: Theme.colors.black,
         paddingTop: 16,
@@ -65,7 +71,7 @@ const style = {
     },
     detailsContainer: {
         flexDirection: 'row',
-    } as ViewStyle,
+    },
     detailsContainerItem: {
         flexBasis: 0,
         flexGrow: 1,
@@ -107,7 +113,7 @@ const style = {
         lineHeight: 18,
         color: Theme.colors.grey5
     }
-}
+})
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList, 'SermonLandingScreen'>;

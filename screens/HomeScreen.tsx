@@ -15,14 +15,17 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { StyleSheet } from 'react-native';
+import WhiteButton from '../components/buttons/WhiteButton';
+import * as Linking from 'expo-linking';
 
-const style = {
+const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
     paddingTop: 32,
   },
-  categoryTitle: [Style.categoryTitle, {}]
-}
+  categoryTitle: Style.categoryTitle,
+})
 
 interface Params {
   navigation: StackNavigationProp<HomeStackParamList>;
@@ -54,6 +57,10 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     loadRecentTeaching();
   }, [])
 
+  const sendQuestion = () => {
+    Linking.openURL('mailto:ask@themeetinghouse.com');
+  }
+
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
@@ -66,6 +73,11 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
           </View>
         }
+
+        <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]} >
+          <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
+        </View>
+
 
         <View style={style.categoryContainer}>
           {announcements.map((announcement: any) => (

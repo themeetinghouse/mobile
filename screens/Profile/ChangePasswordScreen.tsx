@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
-import Theme, { Style } from '../../Theme.style';
-import { StatusBar, ViewStyle, TextStyle, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions } from 'react-native';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import { StatusBar, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions, StyleSheet } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import { TextInput } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
@@ -10,11 +10,15 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CommonActions, CompositeNavigationProp } from '@react-navigation/native';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: 'black',
-    }],
-    header: [Style.header, {}],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: 'black',
+        }
+    },
+    header: {
+        backgroundColor: Theme.colors.header
+    },
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -23,23 +27,29 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50,
         right: 6,
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    title: [Style.title, {
-        marginTop: 130,
-        marginBottom: 16,
-    }],
-    body: [Style.body, {
-        marginBottom: 40,
-    }],
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: {
+        ...Style.title, ...{
+            marginTop: 130,
+            marginBottom: 16,
+        }
+    },
+    body: {
+        ...Style.body, ...{
+            marginBottom: 40,
+        }
+    },
     listItem: {
         marginLeft: 0,
         borderColor: Theme.colors.gray2,
@@ -59,12 +69,13 @@ const style = {
         marginLeft: 16,
         marginTop: 10
     },
-    listIcon: [Style.icon, {
-        marginRight: 16,
-        marginLeft: 16,
-    }],
-    listArrowIcon: [Style.icon, {
-    }],
+    listIcon: {
+        ...Style.icon, ...{
+            marginRight: 16,
+            marginLeft: 16,
+        }
+    },
+    listArrowIcon: Style.icon,
     headerText: {
         fontSize: 16,
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -77,7 +88,7 @@ const style = {
         fontSize: 24,
         paddingLeft: 16
     }
-}
+})
 
 interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<HomeStackParamList>, StackNavigationProp<MainStackParamList>>;
@@ -147,7 +158,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                 </Body>
                 <Right style={style.headerRight}>
                     <TouchableOpacity disabled={!(currentPass && newPass)} onPress={changePassword}>
-                        <Text style={currentPass && newPass ? Style.header.linkText : Style.header.linkTextInactive}>Save</Text>
+                        <Text style={currentPass && newPass ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Save</Text>
                     </TouchableOpacity>
                 </Right>
             </Header>

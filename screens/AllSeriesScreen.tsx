@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, Image, FlatList, TextStyle, ViewStyle } from 'react-native';
+import { StyleSheet, StatusBar, TouchableOpacity, Image, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -10,13 +10,14 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -25,34 +26,31 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    title: [Style.title, {
-    }],
-    body: [Style.body, {
-    }],
-
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: Style.title,
+    body: Style.body,
     horizontalListContentContainer: {
     },
     lastHorizontalListItem: {
         marginRight: 16,
     },
-
     searchBar: {
         marginBottom: 16,
     },
-
     dateSelectBar: {
         flexDirection: "row",
         marginBottom: 32,
-    } as ViewStyle,
+    },
     dateSelectYear: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.smallMedium,
@@ -68,13 +66,12 @@ const style = {
         backgroundColor: Theme.colors.white,
         color: Theme.colors.black,
     },
-
     seriesListContainer: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-    } as ViewStyle,
+    },
     seriesItem: {
         marginBottom: 20,
         marginLeft: 8,
@@ -91,8 +88,8 @@ const style = {
         color: Theme.colors.gray5,
         textAlign: 'center',
         marginTop: 8,
-    } as TextStyle
-}
+    }
+});
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList>;

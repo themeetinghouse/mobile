@@ -4,8 +4,9 @@ import Theme, { Style } from '../../../Theme.style';
 //import WhiteButton from '../../buttons/WhiteButton';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Announcement } from '../../../services/AnnouncementService';
+import { StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     cardContainer: {
         paddingLeft: 16,
         paddingRight: 16,
@@ -16,17 +17,17 @@ const style = {
         borderBottomWidth: 1,
         borderBottomColor: "#313131",
     },
-    title: [Style.title, {
-        marginBottom: 8,
-    }],
-    body: [Style.body, {
-    }],
-    icon: [Style.icon, {
-        width: 30,
-        height: 30,
-        marginBottom: 56,
-    }]
-}
+    title: { ...Style.title, ...{ marginBottom: 8 } },
+    body: Style.body,
+    icon: {
+        ...Style.icon,
+        ...{
+            width: 30,
+            height: 30,
+            marginBottom: 56,
+        }
+    }
+})
 
 type AnnouncementCardInput = {
     announcement: Announcement;

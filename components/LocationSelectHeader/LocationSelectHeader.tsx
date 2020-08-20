@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { Header, Body, Icon, View, Button, Text, Right, Left, Thumbnail } from "native-base";
-import { Style, Theme } from '../../Theme.style';
-import { StatusBar, ViewStyle } from 'react-native';
+import { Style, Theme, HeaderStyle } from '../../Theme.style';
+import { StatusBar, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import LocationContext from '../../contexts/LocationContext';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-const style = {
+const style = StyleSheet.create({
     left: {
         flexGrow: 0,
         flexShrink: 0,
@@ -17,39 +17,33 @@ const style = {
     body: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     right: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
     headerButton: {
-        backgroundColor: Style.header.backgroundColor,
+        backgroundColor: Theme.colors.header,
         paddingLeft: 20,
         paddingRight: 20
     },
-    icon: [Style.icon, {
-        // Inherited
-    }],
-    title: [Style.header.title, {
-        // Inherited
-    }],
-    subtitle: [Style.header.subtitle, {
-        // Inherited
-    }],
+    icon: Style.icon,
+    title: HeaderStyle.title,
+    subtitle: HeaderStyle.subtitle,
     locationContainer: {
         display: "flex",
         flexDirection: "row",
         alignItems: "baseline",
-    } as ViewStyle,
+    },
     buttonContentsContainer: {
         display: "flex",
         flexDirection: "column",
-    } as ViewStyle,
+    },
     locationName: {
         marginRight: 5,
     },
-}
+})
 
 interface LocationSelectHeaderInput {
     children: string;

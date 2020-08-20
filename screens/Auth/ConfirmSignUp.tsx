@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Auth } from '@aws-amplify/auth'
-import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, Keyboard, SafeAreaView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, Keyboard, SafeAreaView, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 
-const style = {
-    title: [Style.cardTitle, {
-        paddingLeft: 0,
-        paddingTop: 26,
-        lineHeight: 24,
-    }],
+const style = StyleSheet.create({
+    title: {
+        ...Style.cardTitle, ...{
+            paddingLeft: 0,
+            paddingTop: 26,
+            lineHeight: 24,
+        }
+    },
     input: {
         backgroundColor: Theme.colors.gray1,
         borderColor: Theme.colors.grey3,
@@ -46,7 +48,7 @@ const style = {
         lineHeight: 18,
         marginTop: 8
     }
-}
+})
 
 interface Props {
     navigation: StackNavigationProp<AuthStackParamList, 'ConfirmSignUpScreen'>;

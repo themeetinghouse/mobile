@@ -1,20 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
-import Theme, { Style } from '../../Theme.style';
-import { StatusBar, ViewStyle, TextStyle } from 'react-native';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import { StatusBar, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import LocationsService from '../../services/LocationsService';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { LocationData } from '../../contexts/LocationContext';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16,
-        paddingBottom: 150,
-    }],
-    header: [Style.header, {}],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16,
+            paddingBottom: 150,
+        }
+    },
+    header: {
+        backgroundColor: Theme.colors.header
+    },
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -23,24 +27,30 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 70
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    headerButtonText: [Style.header.linkText, {}],
-    title: [Style.title, {
-        marginTop: 130,
-        marginBottom: 16,
-    }],
-    body: [Style.body, {
-        marginBottom: 40,
-    }],
-    searchIcon: [Style.icon, {}],
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    headerButtonText: HeaderStyle.linkText,
+    title: {
+        ...Style.title, ...{
+            marginTop: 130,
+            marginBottom: 16,
+        }
+    },
+    body: {
+        ...Style.body, ...{
+            marginBottom: 40,
+        }
+    },
+    searchIcon: Style.icon,
     searchInput: {
         color: Theme.colors.grey3,
         fontFamily: Theme.fonts.fontFamilyBold,
@@ -62,8 +72,8 @@ const style = {
         color: Theme.colors.white,
         fontFamily: Theme.fonts.fontFamilySemiBold,
     },
-    listCheckIcon: [Style.icon, {}],
-}
+    listCheckIcon: Style.icon,
+})
 
 type LocationSelectionScreenInput = {
     navigation: StackNavigationProp<AuthStackParamList>;

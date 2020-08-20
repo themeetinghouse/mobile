@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Button, Text, Thumbnail } from 'native-base';
 import Theme from '../../Theme.style';
-import { ViewStyle, ImageSourcePropType } from 'react-native';
+import { ViewStyle, ImageSourcePropType, StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     button: {
         backgroundColor: Theme.colors.white,
         borderRadius: 0,
@@ -30,7 +30,7 @@ const style = {
         width: 24,
         height: 24
     }
-}
+})
 
 interface Params {
     wrapperStyle?: ViewStyle;

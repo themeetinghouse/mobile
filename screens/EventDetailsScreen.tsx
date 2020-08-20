@@ -3,32 +3,35 @@ import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import moment from 'moment';
-import { StatusBar, ViewStyle } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16,
-    }],
-    header: [Style.header, {
-
-    }],
-    title: [Style.title, {
-        marginTop: 32,
-        marginBottom: 16,
-    }],
-    subtitle: [Style.subtitle, {
-        marginTop: 32,
-    }],
-    body: [Style.body, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16,
+        }
+    },
+    header: Style.header,
+    title: {
+        ...Style.title, ...{
+            marginTop: 32,
+            marginBottom: 16,
+        }
+    },
+    subtitle: {
+        ...Style.subtitle, ...{
+            marginTop: 32,
+        }
+    },
+    body: Style.body,
     dateBoxContainer: {
         display: "flex",
         alignItems: "center",
-    } as ViewStyle,
+    },
     dateBox: {
         display: "flex",
         flexDirection: "column",
@@ -37,7 +40,7 @@ const style = {
         justifyContent: "center",
         width: 96,
         height: 96,
-    } as ViewStyle,
+    },
     dateBoxText: {
         color: Theme.colors.black,
         fontSize: Theme.fonts.large,
@@ -55,7 +58,7 @@ const style = {
     detailsContainer: {
         paddingBottom: 50
     }
-}
+})
 
 interface Props {
     navigation: StackNavigationProp<HomeStackParamList>;

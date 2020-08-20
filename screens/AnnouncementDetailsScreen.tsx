@@ -1,21 +1,22 @@
 import React from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, Body } from 'native-base';
 //import IconButton from '../components/buttons/IconButton';
 //import moment from 'moment';
 import WhiteButton from '../components/buttons/WhiteButton';
-import { StatusBar, ViewStyle, TextStyle } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -24,23 +25,29 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    title: [Style.title, {
-        marginTop: 130,
-        marginBottom: 16,
-    }],
-    body: [Style.body, {
-        marginBottom: 40,
-    }],
-}
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: {
+        ...Style.title, ...{
+            marginTop: 130,
+            marginBottom: 16,
+        }
+    },
+    body: {
+        ...Style.body, ...{
+            marginBottom: 40,
+        }
+    },
+})
 
 interface Props {
     navigation: StackNavigationProp<HomeStackParamList>;

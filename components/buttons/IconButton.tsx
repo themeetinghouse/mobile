@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Right, Thumbnail, Text } from 'native-base';
 import { Theme, Style } from '../../Theme.style';
-import { TouchableOpacity, ImageSourcePropType, ViewStyle } from 'react-native';
+import { TouchableOpacity, ImageSourcePropType, StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     container: {
         paddingTop: 10,
         paddingBottom: 10,
@@ -15,7 +15,7 @@ const style = {
         justifyContent: "flex-start",
         alignItems: "center",
 
-    } as ViewStyle,
+    },
     icon: {
         marginLeft: 0,
     },
@@ -33,7 +33,7 @@ const style = {
         marginRight: 15,
         color: Theme.colors.white,
     }
-}
+})
 
 interface Props {
     style?: any;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { StatusBar, TouchableOpacity, StyleSheet } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import SermonsService from '../services/SermonsService';
@@ -12,13 +12,14 @@ import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -27,20 +28,19 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    title: [Style.title, {
-    }],
-    body: [Style.body, {
-    }],
-
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: Style.title,
+    body: Style.body,
     searchBar: {
         marginBottom: 16,
     },
@@ -48,7 +48,7 @@ const style = {
     dateSelectBar: {
         marginBottom: 32,
         alignItems: "flex-start",
-    } as ViewStyle,
+    },
     dateRangeItem: {
         padding: 20,
         paddingTop: 8,
@@ -62,11 +62,10 @@ const style = {
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.gray5,
     },
-
     sermonListContainer: {
 
     },
-}
+})
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList>;

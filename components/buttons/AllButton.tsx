@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Right, Text, Thumbnail } from 'native-base';
 import { Theme } from '../../Theme.style';
+import { StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     button: {
         backgroundColor: Theme.colors.black,
         borderColor: Theme.colors.gray2,
@@ -21,7 +22,7 @@ const style = {
         height: Theme.icons.height,
         marginRight: 15
     }
-}
+})
 
 type Params = {
     children: string;

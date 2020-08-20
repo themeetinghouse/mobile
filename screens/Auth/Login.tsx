@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
@@ -15,12 +15,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MediaContext from '../../contexts/MediaContext';
 
-const style = {
-    title: [Style.cardTitle, {
-        paddingLeft: 0,
-        paddingTop: 26,
-        lineHeight: 24,
-    }],
+const style = StyleSheet.create({
+    title: {
+        ...Style.cardTitle, ...{
+            paddingLeft: 0,
+            paddingTop: 26,
+            lineHeight: 24,
+        }
+    },
     input: {
         backgroundColor: Theme.colors.gray1,
         borderColor: Theme.colors.grey3,
@@ -67,7 +69,7 @@ const style = {
         lineHeight: 18,
         marginTop: 8
     }
-}
+})
 
 
 interface Props {

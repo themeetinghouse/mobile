@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
-import { StatusBar, Image, TouchableOpacity, Dimensions, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
 import AllButton from '../components/buttons/AllButton';
 import TeachingListItem from '../components/teaching/TeachingListItem';
@@ -16,14 +16,17 @@ import { LoadSeriesListData } from '../services/SeriesService';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.gray1,
-        paddingLeft: 0,
-        paddingRight: 0,
-    }],
-    header: [Style.header, {
-    }],
+const screenWidth = Dimensions.get('screen').width;
+
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.gray1,
+            paddingLeft: 0,
+            paddingRight: 0,
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -32,19 +35,22 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-
-    categoryTitle: [Style.categoryTitle, {
-        marginTop: 16
-    }],
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    categoryTitle: {
+        ...Style.categoryTitle, ...{
+            marginTop: 16
+        }
+    },
     categorySection: {
         backgroundColor: Theme.colors.black,
         paddingTop: 16,
@@ -54,40 +60,46 @@ const style = {
         paddingLeft: 16,
         paddingRight: 16,
     },
-
     horizontalListContentContainer: {
         marginTop: 16,
-        alignItems: "center"
-    } as ViewStyle,
+        alignItems: "center",
+        marginBottom: 24
+    },
     lastHorizontalListItem: {
         marginRight: 16,
     },
     seriesThumbnailContainer: {
-        width: 295,
-        height: 454,
-        marginLeft: 10,
-        marginRight: 10
+        width: 0.7867 * screenWidth,
+        height: 1.11 * screenWidth,
+        marginHorizontal: 5,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     seriesThumbnail: {
         width: "100%",
-        height: 295 * (1248 / 1056),
+        height: 0.944 * screenWidth,
+    },
+    seriesThumbnailSmall: {
+        width: "93.22%",
+        height: 0.88 * screenWidth,
+        opacity: 0.8
     },
     seriesDetailContainer: {
         alignItems: "center",
         marginTop: 16,
-    } as ViewStyle,
+    },
     seriesDetail1: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
         color: Theme.colors.white,
         textAlign: "center"
-    } as TextStyle,
+    },
     seriesDetail2: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
         color: Theme.colors.gray5,
     },
-
     highlightsText: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.medium,
@@ -96,15 +108,15 @@ const style = {
         marginTop: -10,
     },
     highlightsThumbnail: {
-        width: 158,
-        height: 88,
+        width: 80,
+        height: 112,
         marginLeft: 16,
     },
     teacherContainer: {
         alignItems: "center",
         marginLeft: 16,
         maxWidth: 96,
-    } as ViewStyle,
+    },
     teacherThumbnailContainer: {
         height: 96,
         width: 96,
@@ -120,15 +132,29 @@ const style = {
         height: 96,
         borderRadius: 96,
         overflow: "hidden",
-    } as ImageStyle,
+    },
     teacherDetail1: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
         color: Theme.colors.gray5,
         textAlign: 'center',
         marginTop: 3,
-    } as TextStyle,
-}
+    },
+    image: {
+        marginLeft: -50,
+        marginTop: -50,
+        width: 1280,
+        height: 720,
+    },
+    cropped: {
+        width: 150,
+        height: 150,
+        overflow: 'hidden',
+        position: 'absolute',
+        left: 50,
+        top: 50,
+    },
+})
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList>;
@@ -144,6 +170,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
+    const [bounce, setBounce] = useState(false);
 
     const loadRecentSermonsAsync = async () => {
         loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 5);
@@ -165,8 +192,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSpeakersAsync();
     }, [])
 
-    const width = Dimensions.get('window').width;
-    const contentOffset = (width - 313) / 2;
+    const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
 
     const getSeriesDate = (series: any) => {
         return moment(series.startDate || moment()).format("YYYY");
@@ -174,10 +200,20 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     const getTeachingImage = (teaching: any) => {
         const thumbnails = teaching.Youtube.snippet.thumbnails;
-        if (thumbnails.standard) {
+
+        console.log(thumbnails.maxres.height, thumbnails.maxres.width)
+
+        if (thumbnails.standard)
             return thumbnails.standard.url;
-        } else if (thumbnails.high) {
-            return thumbnails.high.url;
+        else if (thumbnails.maxres)
+            return thumbnails.maxres.url;
+    }
+
+    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+        if (event.nativeEvent.contentOffset.y > Dimensions.get('screen').height) {
+            setBounce(true)
+        } else {
+            setBounce(false)
         }
     }
 
@@ -185,17 +221,16 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
     }
 
-    const renderSeriesSwipeItem = (item: any) => {
-        console.log('swipe', item)
-        if (item.item.loading) {
+    const renderSeriesSwipeItem = (itemIndex: number, currentIndex: number, item: any) => {
+        if (item?.loading) {
             return <ActivityIndicator />
         }
         return (
-            <TouchableOpacity key={item.item.id} onPress={() => navigation.push('SeriesLandingScreen', { item: item.item })} style={style.seriesThumbnailContainer}>
-                <Image source={{ uri: item.item.image }} style={style.seriesThumbnail}></Image>
+            <TouchableOpacity key={item.id} onPress={() => navigation.push('SeriesLandingScreen', { item: item })} style={style.seriesThumbnailContainer}>
+                <Animated.Image source={{ uri: item.image }} style={itemIndex === currentIndex ? style.seriesThumbnail : style.seriesThumbnailSmall}></Animated.Image>
                 <View style={style.seriesDetailContainer}>
-                    <Text style={style.seriesDetail1}>{item.item.title}</Text>
-                    <Text style={style.seriesDetail2}>{getSeriesDate(item.item)} &bull; {item.item.videos.items.length} episodes</Text>
+                    <Text style={style.seriesDetail1}>{item.title}</Text>
+                    <Text style={style.seriesDetail2}>{getSeriesDate(item)} &bull; {item.videos.items.length} episodes</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -217,22 +252,23 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 </Right>
             </Header>
 
-            <Content style={style.content}>
+            <Content style={style.content} bounces={bounce} onScroll={(e) => handleScroll(e)} >
 
-                <View style={style.categorySection}>
+                <View style={style.categorySection} >
                     <SideSwipe
                         contentContainerStyle={style.horizontalListContentContainer}
                         data={recentSeries?.items?.concat({ loading: true })}
-                        itemWidth={315}
+                        itemWidth={0.7867 * screenWidth + 10}
+                        threshold={0.35 * screenWidth}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}
-                        renderItem={renderSeriesSwipeItem}
+                        renderItem={({ itemIndex, currentIndex, item }) => renderSeriesSwipeItem(itemIndex, currentIndex, item)}
                         onEndReachedThreshold={0.2}
                         onEndReached={loadRecentSeriesAsync}
+                        useVelocityForIndex={false}
                     />
                     <AllButton handlePress={() => { navigation.push('AllSeriesScreen') }}>All series</AllButton>
                 </View>
-
 
                 <View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Recent Teaching</Text>
@@ -252,7 +288,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => { navigation.push('AllSermonsScreen') }}>All sermons</AllButton>
                 </View>
-
 
                 <View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Highlights</Text>
@@ -291,8 +326,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <AllButton>More popular sermons</AllButton>
                 </View>
 
-
-                <View style={style.categorySection}>
+                {/*<View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Teachers</Text>
                     <FlatList
                         contentContainerStyle={style.horizontalListContentContainer}
@@ -313,8 +347,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         )}
                     ></FlatList>
                     <AllButton>All teachers</AllButton>
-                </View>
-            </Content>
-        </Container>
+                </View>*/}
+            </Content >
+        </Container >
     )
 }

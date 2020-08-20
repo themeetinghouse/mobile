@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ViewStyle, ScrollView } from 'react-native'
+import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Keyboard, TouchableWithoutFeedback, ViewStyle, ScrollView } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton'
@@ -12,12 +12,14 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MediaContext from '../../contexts/MediaContext';
 
-const style = {
-    title: [Style.cardTitle, {
-        paddingLeft: 0,
-        paddingTop: 26,
-        lineHeight: 24,
-    }],
+const style = StyleSheet.create({
+    title: {
+        ...Style.cardTitle, ...{
+            paddingLeft: 0,
+            paddingTop: 26,
+            lineHeight: 24,
+        }
+    },
     locationSelector: {
         backgroundColor: Theme.colors.gray1,
         borderColor: Theme.colors.grey3,
@@ -27,7 +29,7 @@ const style = {
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingHorizontal: 20,
-    } as ViewStyle,
+    },
     locationText: {
         height: 56,
         lineHeight: 56,
@@ -80,7 +82,7 @@ const style = {
         lineHeight: 18,
         marginTop: 8
     }
-}
+})
 
 
 interface Props {

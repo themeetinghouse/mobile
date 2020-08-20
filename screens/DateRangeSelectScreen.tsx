@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { Theme, Style } from '../Theme.style';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { StatusBar, TouchableOpacity, StyleSheet } from 'react-native';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -21,21 +22,20 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    headerButtonText: [Style.header.buttonText, {}],
-    title: [Style.title, {
-    }],
-    body: [Style.body, {
-    }],
-
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    headerButtonText: HeaderStyle.buttonText,
+    title: Style.title,
+    body: Style.body,
     yearSection: {
         marginBottom: 32,
     },
@@ -50,7 +50,7 @@ const style = {
         flexDirection: "row",
         flexWrap: "wrap",
         justifyContent: "flex-start",
-    } as ViewStyle,
+    },
     monthItem: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.small,
@@ -75,7 +75,7 @@ const style = {
     monthHighlightSelected: {
         borderColor: Theme.colors.white,
     },
-}
+})
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList>;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import NotesService from '../services/NotesService';
 import { Text, Container, Header, Left, Body, Right, Button, Content, Icon } from 'native-base';
-import Theme, { Style } from '../Theme.style';
-import { StatusBar, TextStyle, ViewStyle } from 'react-native';
+import Theme, { Style, HeaderStyle } from '../Theme.style';
+import { StatusBar, TextStyle, ViewStyle, StyleSheet } from 'react-native';
 import NoteItem from '../components/teaching/notes/NoteItem';
 import Verse from '../components/teaching/notes/Verse';
 import VerseLink from '../components/teaching/notes/VerseLink';
@@ -30,14 +30,15 @@ interface Style {
     verseContainer: any;
 }
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.gray1,
-        paddingLeft: 0,
-        paddingRight: 0,
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.gray1,
+            paddingLeft: 0,
+            paddingRight: 0,
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -47,28 +48,28 @@ const style = {
         flexGrow: 3,
         justifyContent: "center",
         flexDirection: "row",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        //width: "100%",
-        marginLeft: 16,
-        marginRight: 16,
-        color: Theme.colors.gray4,
-    }] as TextStyle,
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            //width: "100%",
+            marginLeft: 16,
+            marginRight: 16,
+            color: Theme.colors.gray4,
+        }
+    },
     headerTitleSelected: {
         color: Theme.colors.white,
     },
-
     noteItem: {
         paddingLeft: 16,
         paddingRight: 16,
         marginBottom: 16,
     },
-
     note: {
         color: Theme.colors.white,
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -116,7 +117,7 @@ const style = {
         marginTop: 16,
         marginBottom: 16
     }
-}
+})
 
 interface Params {
     sermonId: string;
