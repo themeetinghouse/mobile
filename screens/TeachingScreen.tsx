@@ -80,11 +80,6 @@ const style = StyleSheet.create({
         width: "100%",
         height: 0.944 * screenWidth,
     },
-    seriesThumbnailSmall: {
-        width: "93.22%",
-        height: 0.88 * screenWidth,
-        opacity: 0.8
-    },
     seriesDetailContainer: {
         alignItems: "center",
         marginTop: 16,
@@ -108,8 +103,8 @@ const style = StyleSheet.create({
         marginTop: -10,
     },
     highlightsThumbnail: {
-        width: 80,
-        height: 112,
+        width: 80 * (16 / 9),
+        height: 80,
         marginLeft: 16,
     },
     teacherContainer: {
@@ -165,7 +160,6 @@ interface SeriesData extends LoadSeriesListData {
 }
 
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
-
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
@@ -221,13 +215,30 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
     }
 
-    const renderSeriesSwipeItem = (itemIndex: number, currentIndex: number, item: any) => {
+    const renderSeriesSwipeItem = (item: any, index: number, animatedValue: Animated.Value) => {
         if (item?.loading) {
             return <ActivityIndicator />
         }
         return (
             <TouchableOpacity key={item.id} onPress={() => navigation.push('SeriesLandingScreen', { item: item })} style={style.seriesThumbnailContainer}>
-                <Animated.Image source={{ uri: item.image }} style={itemIndex === currentIndex ? style.seriesThumbnail : style.seriesThumbnailSmall}></Animated.Image>
+                <Animated.Image
+                    style={[
+                        style.seriesThumbnail,
+                        {
+                            transform: [
+                                {
+                                    scale: animatedValue.interpolate({
+                                        inputRange: [index - 1, index, index + 1],
+                                        outputRange: [0.9, 1, 0.9],
+                                        extrapolate: 'clamp',
+                                    }),
+                                }
+                            ],
+                        },
+                    ]}
+                    source={{ uri: item.image }}
+                />
+
                 <View style={style.seriesDetailContainer}>
                     <Text style={style.seriesDetail1}>{item.title}</Text>
                     <Text style={style.seriesDetail2}>{getSeriesDate(item)} &bull; {item.videos.items.length} episodes</Text>
@@ -262,10 +273,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         threshold={0.35 * screenWidth}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}
-                        renderItem={({ itemIndex, currentIndex, item }) => renderSeriesSwipeItem(itemIndex, currentIndex, item)}
                         onEndReachedThreshold={0.2}
                         onEndReached={loadRecentSeriesAsync}
                         useVelocityForIndex={false}
+                        renderItem={({ item, itemIndex, animatedValue }) => renderSeriesSwipeItem(item, itemIndex, animatedValue)}
                     />
                     <AllButton handlePress={() => { navigation.push('AllSeriesScreen') }}>All series</AllButton>
                 </View>
