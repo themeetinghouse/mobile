@@ -140,7 +140,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
             if (mediaContext.media.playerType === 'audio') {
                 try {
                     await mediaContext.media.audio?.sound.unloadAsync();
-                    mediaContext.setAudioNull();
+                    mediaContext.closeAudio();
                 } catch (e) {
                     console.debug(e)
                 }

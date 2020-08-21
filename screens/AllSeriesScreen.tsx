@@ -9,6 +9,7 @@ import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const style = StyleSheet.create({
     content: {
@@ -56,10 +57,8 @@ const style = StyleSheet.create({
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.white,
         padding: 16,
-        paddingTop: 8,
+        paddingTop: 10,
         paddingBottom: 8,
-        marginRight: 8,
-        borderRadius: 100,
         backgroundColor: Theme.colors.gray2,
     },
     dateSelectYearSelected: {
@@ -97,18 +96,30 @@ interface Params {
 
 export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
-    const allYear = { id: "All" };
-
     const [searchText, setSearchText] = useState("");
-    const [selectedYear, setSelectedYear] = useState(allYear);
+    const [selectedYear, setSelectedYear] = useState("All");
+    const [seriesYears, setSeriesYears] = useState(["All"])
 
     const [allSeries, setAllSeries] = useState({ loading: true, items: [], nextToken: null });
 
     const loadAllSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
     }
+
+    const generateYears = () => {
+        let currentYear = new Date().getFullYear();
+        const years = [];
+
+        while (currentYear >= 2007) {
+            years.push(currentYear.toString())
+            currentYear--
+        }
+        setSeriesYears(["All"].concat(years));
+    }
+
     useEffect(() => {
         loadAllSeriesAsync();
+        generateYears();
     }, [])
 
     const series = allSeries.items.filter((s: any) => searchText ? s.title.toLowerCase().includes(searchText.toLowerCase()) : true);
@@ -116,9 +127,6 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     const getSeriesDate = (series: any) => {
         return moment(series.startDate || moment()).format("YYYY");
     }
-
-    const seriesYears = [allYear, { id: "2020" }, { id: "2019" }, { id: "2018" }, { id: "2017" }, { id: "2016" }, { id: "2015" }, { id: "2014" }, { id: "2013" }, { id: "2012" }];
-    console.log("AllSeriesScreen(): seriesYears = ", seriesYears);
 
     return (
         <Container>
@@ -150,12 +158,14 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                         style={style.horizontalListContentContainer}
                         horizontal={true}
                         data={seriesYears}
-                        renderItem={({ item, index, separators }) => (
-                            <TouchableOpacity onPress={() => setSelectedYear(item)}>
-                                <Text style={[style.dateSelectYear, item.id === selectedYear.id ? style.dateSelectYearSelected : {}]}>{item.id}</Text>
-                            </TouchableOpacity>
+                        showsHorizontalScrollIndicator={false}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                            <TouchableHighlight underlayColor={Theme.colors.grey3} onPress={() => setSelectedYear(item)} style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} >
+                                <Text style={[style.dateSelectYear, item === selectedYear ? style.dateSelectYearSelected : {}]}>{item}</Text>
+                            </TouchableHighlight>
                         )}
-                    ></FlatList>
+                    />
                 </View>
 
                 <View style={style.seriesListContainer}>
@@ -163,7 +173,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                         <ActivityIndicator />
                     }
                     {series.map((s: any) => (
-                        (selectedYear.id === "All" || getSeriesDate(s) === selectedYear.id) &&
+                        (selectedYear === "All" || getSeriesDate(s) === selectedYear) &&
                         <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
                             <Image style={style.seriesThumbnail} source={{ uri: s.image }}></Image>
                             <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>

@@ -7,8 +7,9 @@ const localStyle = StyleSheet.create({
     searchIcon: Style.icon,
     searchInput: {
         color: Theme.colors.white,
-        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
+        paddingLeft: 16
     },
 })
 

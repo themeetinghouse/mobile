@@ -15,21 +15,24 @@ type MediaContextType = {
     media: MediaData;
     setMedia: (data: MediaData) => void;
     setVideoTime: (time: number) => void;
+    closeAudio: () => void;
     setAudioNull: () => void;
 }
 
 const MediaContext = createContext<MediaContextType>(
-    { media: { 
-        playerType: 'none', 
-        playing: false, 
-        audio: null, 
-        video: null, 
-        videoTime: 0,
-        episode: '', 
-        series: '' 
-    }, 
-    setMedia: () => null,
-    setVideoTime: () => null,
-    setAudioNull: () => null
-});
+    {
+        media: {
+            playerType: 'none',
+            playing: false,
+            audio: null,
+            video: null,
+            videoTime: 0,
+            episode: '',
+            series: ''
+        },
+        setMedia: () => null,
+        setVideoTime: () => null,
+        closeAudio: () => null,
+        setAudioNull: () => null
+    });
 export default MediaContext

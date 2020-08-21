@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Content, Left, Right, Header, View, Body } from 'native-base';
+import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
@@ -15,6 +15,7 @@ import { loadSomeAsync } from '../utils/loading';
 import { LoadSeriesListData } from '../services/SeriesService';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import UserContext from '../contexts/UserContext';
 
 const screenWidth = Dimensions.get('screen').width;
 
@@ -135,20 +136,7 @@ const style = StyleSheet.create({
         textAlign: 'center',
         marginTop: 3,
     },
-    image: {
-        marginLeft: -50,
-        marginTop: -50,
-        width: 1280,
-        height: 720,
-    },
-    cropped: {
-        width: 150,
-        height: 150,
-        overflow: 'hidden',
-        position: 'absolute',
-        left: 50,
-        top: 50,
-    },
+    icon: Style.icon,
 })
 
 interface Params {
@@ -160,6 +148,8 @@ interface SeriesData extends LoadSeriesListData {
 }
 
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
+
+    const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
@@ -194,8 +184,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     const getTeachingImage = (teaching: any) => {
         const thumbnails = teaching.Youtube.snippet.thumbnails;
-
-        console.log(thumbnails.maxres.height, thumbnails.maxres.width)
 
         if (thumbnails.standard)
             return thumbnails.standard.url;
@@ -257,8 +245,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <Text style={style.headerTitle}>Teaching</Text>
                 </Body>
                 <Right style={style.headerRight}>
-                    <Button transparent>
-                        {/* <Thumbnail style={Style.icon} source={Theme.icons.white.user} square></Thumbnail> */}
+                    <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                        <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
                     </Button>
                 </Right>
             </Header>
