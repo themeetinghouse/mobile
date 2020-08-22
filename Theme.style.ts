@@ -37,6 +37,8 @@ import ShareWhite from './assets/images/white/Share.png';
 import MinimizeWhite from './assets/images/white/Downsize-Arrow.png';
 import SliderThumb from './assets/images/white/Ellipse.png';
 import ArrowBack from './assets/images/white/Arrow-Back.png';
+import Caret from './assets/images/white/Dropdown-Caret.png';
+
 
 
 export const Theme = {
@@ -107,7 +109,8 @@ export const Theme = {
             share: ShareWhite,
             mini: MinimizeWhite,
             sliderThumb: SliderThumb,
-            back: ArrowBack
+            back: ArrowBack,
+            caretDown: Caret
         },
         grey: {
             arrow: ArrowGrey,

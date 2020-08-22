@@ -69,14 +69,14 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           <ActivityIndicator />
         }
         {recentTeaching.items.length > 0 &&
-          <View style={style.categoryContainer}>
+          <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
             <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
+            <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
+              <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
+            </View>
           </View>
         }
 
-        <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]} >
-          <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
-        </View>
 
 
         {/*<View style={style.categoryContainer}>

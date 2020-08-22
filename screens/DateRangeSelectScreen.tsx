@@ -90,7 +90,7 @@ type Date = {
 export default function DateRangeSelectScreen({ navigation }: Params): JSX.Element {
 
     let currentYear = moment().get("year");
-    const startYear = moment("2007").get("year");
+    const startYear = moment("2006").get("year");
     const years = [];
     while (currentYear >= startYear) years.push(currentYear--);
     const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -142,15 +142,15 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
 
         if (firstMoment && secondMoment) {
             if (firstMoment.isBefore(secondMoment)) {
-                navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: secondMoment });
+                navigation.navigate('AllSermonsScreen', { startDate: firstMoment.format(), endDate: secondMoment.format() });
             } else {
-                navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: firstMoment });
+                navigation.navigate('AllSermonsScreen', { startDate: secondMoment.format(), endDate: firstMoment.format() });
             }
         } else {
             if (firstMoment) {
-                navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: firstMoment });
+                navigation.navigate('AllSermonsScreen', { startDate: firstMoment.format(), endDate: firstMoment.format() });
             } else if (secondMoment) {
-                navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: secondMoment });
+                navigation.navigate('AllSermonsScreen', { startDate: secondMoment.format(), endDate: secondMoment.format() });
             } else {
                 navigation.navigate('AllSermonsScreen');
             }

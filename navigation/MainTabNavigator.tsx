@@ -27,7 +27,6 @@ import SeriesLandingScreen from '../screens/SeriesLandingScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountScreen from '../screens/Profile/AccountScreen';
 import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
-import { Moment } from 'moment';
 import { Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext'
 
@@ -60,7 +59,7 @@ function HomeStack() {
 export type TeachingStackParamList = {
   Teaching: undefined;
   AllSeriesScreen: undefined;
-  AllSermonsScreen: { startDate: Moment, endDate: Moment } | undefined;
+  AllSermonsScreen: { startDate: string, endDate: string } | undefined;
   DateRangeSelectScreen: undefined;
   SeriesLandingScreen: { seriesId?: string, item?: any };
   SermonLandingScreen: { item: any };
@@ -68,7 +67,7 @@ export type TeachingStackParamList = {
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
-  HighlightScreen: { highlight: any };
+  HighlightScreen: { highlights: any, index: number };
 }
 
 const Teaching = createStackNavigator<TeachingStackParamList>();

@@ -144,6 +144,8 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 } catch (e) {
                     console.debug(e)
                 }
+            } else if (mediaContext.media.playerType === 'video') {
+                mediaContext.closeVideo();
             }
         });
         return unsub;

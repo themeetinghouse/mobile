@@ -16,6 +16,7 @@ type MediaContextType = {
     setMedia: (data: MediaData) => void;
     setVideoTime: (time: number) => void;
     closeAudio: () => void;
+    closeVideo: () => void;
     setAudioNull: () => void;
 }
 
@@ -33,6 +34,7 @@ const MediaContext = createContext<MediaContextType>(
         setMedia: () => null,
         setVideoTime: () => null,
         closeAudio: () => null,
-        setAudioNull: () => null
+        setAudioNull: () => null,
+        closeVideo: () => null
     });
 export default MediaContext

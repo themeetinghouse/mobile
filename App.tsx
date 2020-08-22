@@ -67,6 +67,10 @@ function App(props: Props): JSX.Element {
     setMedia(prevState => { return { ...prevState, audio: null, playing: false, playerType: 'none' } })
   }
 
+  const closeVideo = () => {
+    setMedia(prevState => { return { ...prevState, video: null, playing: false, playerType: 'none' } })
+  }
+
   const setAudioNull = () => {
     setMedia(prevState => { return { ...prevState, audio: null } })
   }
@@ -110,7 +114,7 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull }}>
+      <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo }}>
         <LocationContext.Provider value={{ locationData, setLocationData }}>
           <UserContext.Provider value={{ userData, setUserData }}>
             <SafeAreaProvider>

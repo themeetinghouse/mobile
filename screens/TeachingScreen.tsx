@@ -269,7 +269,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         contentContainerStyle={style.horizontalListContentContainer}
                         data={recentSeries?.items?.concat({ loading: true })}
                         itemWidth={isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10}
-                        threshold={isTablet ? 0.25 * screenWidth : 0.45 * screenWidth}
+                        threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}
                         onEndReachedThreshold={0.2}
@@ -307,10 +307,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         horizontal={true}
                         data={highlights.items}
                         renderItem={({ item, index, separators }) => (
-                            <Image
-                                style={[style.highlightsThumbnail, index === (highlights.items.length - 1) ? style.lastHorizontalListItem : {}]}
-                                source={{ uri: getTeachingImage(item) }}
-                            ></Image>
+                            <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items, index: index })} >
+                                <Image
+                                    style={[style.highlightsThumbnail, index === (highlights.items.length - 1) ? style.lastHorizontalListItem : {}]}
+                                    source={{ uri: getTeachingImage(item) }}
+                                />
+                            </TouchableOpacity>
                         )}
                         onEndReached={loadHighlightsAsync}
                         onEndReachedThreshold={0.8}

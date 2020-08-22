@@ -67,8 +67,10 @@ interface Params {
 
 export default function AllSermonsScreen({ navigation, route }: Params): JSX.Element {
 
-    const dateStart = route.params?.startDate;
-    const dateEnd = route.params?.endDate?.endOf('month');
+    const isSame = route.params?.startDate === route.params?.endDate
+
+    const dateStart = route.params?.startDate ? moment(route.params?.startDate) : null;
+    const dateEnd = route.params?.endDate ? moment(route.params?.endDate)?.endOf('month') : null;
     const [searchText, setSearchText] = useState("");
     const [sermons, setSermons] = useState({ loading: true, items: [], nextToken: null });
 
@@ -115,7 +117,7 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
 
                     <TouchableHighlight style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} onPress={() => { navigation.push('DateRangeSelectScreen') }} underlayColor={Theme.colors.grey3}  >
                         {(dateStart && dateEnd)
-                            ? (dateStart === dateEnd)
+                            ? isSame
                                 ? <Text style={style.dateRangeItemText}>{dateEndStr}</Text>
                                 : <Text style={style.dateRangeItemText}>{dateStartStr} - {dateEndStr}</Text> : <Text style={style.dateRangeItemText}>Date range</Text>
                         }

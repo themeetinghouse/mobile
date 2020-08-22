@@ -34,7 +34,8 @@ const style = StyleSheet.create({
     locationContainer: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "baseline",
+        alignItems: "center",
+        justifyContent: "center"
     },
     buttonContentsContainer: {
         display: "flex",
@@ -65,7 +66,7 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
                             <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName ? location?.locationData?.locationName : 'Select Location'}</Text>
-                            <Icon style={style.subtitle} name='arrow-dropdown'></Icon>
+                            <Thumbnail square source={Theme.icons.white.caretDown} style={{ width: 12, height: 24 }}></Thumbnail>
                         </View>
                     </View>
                 </Button>

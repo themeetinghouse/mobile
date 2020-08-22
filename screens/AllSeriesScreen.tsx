@@ -111,7 +111,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
         let currentYear = new Date().getFullYear();
         const years = [];
 
-        while (currentYear >= 2007) {
+        while (currentYear >= 2006) {
             years.push(currentYear.toString())
             currentYear--
         }
