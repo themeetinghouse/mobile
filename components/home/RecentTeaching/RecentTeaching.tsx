@@ -9,7 +9,7 @@ import { LoadSermonResult } from '../../../services/SermonsService';
 import { TabNavigatorParamList } from '../../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
 
-const screenWidth = Dimensions.get('window').width
+const screenWidth = Dimensions.get('window').width;
 
 const style = StyleSheet.create({
     container: {

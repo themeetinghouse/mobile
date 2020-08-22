@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Text, Button, Icon, Content, Left, Right, Header, View, Body, Container, Thumbnail } from 'native-base';
+import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { Dimensions, StyleSheet, Image, NativeSyntheticEvent, NativeScrollEvent, ImageBackground, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ImageBackground, TouchableOpacity } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
@@ -13,6 +13,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+
+const isTablet = Dimensions.get('screen').width >= 768;
 
 const style = StyleSheet.create({
     content: {
@@ -55,7 +57,7 @@ const style = StyleSheet.create({
     body: Style.body,
     seriesImage: {
         width: Dimensions.get('screen').width,
-        height: (1061 / 848) * Dimensions.get('screen').width,
+        height: (isTablet ? (1024 / 1280) : (1061 / 848)) * Dimensions.get('screen').width,
     },
 
     detailsTitle: {
@@ -82,7 +84,9 @@ const style = StyleSheet.create({
     },
 
     detailsContainer: {
-        position: 'absolute', top: (1061 / 848) * Dimensions.get('screen').width - 75, padding: 16,
+        position: 'absolute',
+        top: (isTablet ? (1024 / 1280) : (1061 / 848)) * Dimensions.get('screen').width - 75,
+        padding: 16,
     },
     seriesContainer: {
         marginTop: 75
@@ -156,7 +160,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
         <Content style={[style.content, { marginTop: -safeArea.top }]} onScroll={(e) => handleScroll(e)} >
             {series &&
                 <View >
-                    <ImageBackground style={style.seriesImage} source={{ uri: series.image }}>
+                    <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
                         <LinearGradient
                             colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.15)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
                             locations={[0, 0.12, 0.26, 0.6, 0.8, 1]}

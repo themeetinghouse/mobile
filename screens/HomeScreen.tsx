@@ -79,7 +79,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         </View>
 
 
-        <View style={style.categoryContainer}>
+        {/*<View style={style.categoryContainer}>
           {announcements.map((announcement: any) => (
             <AnnouncementCard
               key={announcement.id}
@@ -103,7 +103,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               }></EventCard>
           ))}
           <AllButton>See All Events</AllButton>
-        </View>
+            </View>*/}
 
       </Content>
     </Container>

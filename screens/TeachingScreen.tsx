@@ -18,6 +18,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import UserContext from '../contexts/UserContext';
 
 const screenWidth = Dimensions.get('screen').width;
+const isTablet = screenWidth >= 768;
 
 const style = StyleSheet.create({
     content: {
@@ -69,18 +70,28 @@ const style = StyleSheet.create({
     lastHorizontalListItem: {
         marginRight: 16,
     },
-    seriesThumbnailContainer: {
-        width: 0.7867 * screenWidth,
-        height: 1.11 * screenWidth,
+    seriesThumbnailContainer: isTablet ? {
+        width: 0.33 * screenWidth,
+        height: 0.4653 * screenWidth,
         marginHorizontal: 5,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-    },
-    seriesThumbnail: {
+    } : {
+            width: 0.7867 * screenWidth,
+            height: 1.11 * screenWidth,
+            marginHorizontal: 5,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+    seriesThumbnail: isTablet ? {
         width: "100%",
-        height: 0.944 * screenWidth,
-    },
+        height: 0.396 * screenWidth,
+    } : {
+            width: "100%",
+            height: 0.944 * screenWidth,
+        },
     seriesDetailContainer: {
         alignItems: "center",
         marginTop: 16,
@@ -257,8 +268,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <SideSwipe
                         contentContainerStyle={style.horizontalListContentContainer}
                         data={recentSeries?.items?.concat({ loading: true })}
-                        itemWidth={0.7867 * screenWidth + 10}
-                        threshold={0.35 * screenWidth}
+                        itemWidth={isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10}
+                        threshold={isTablet ? 0.25 * screenWidth : 0.35 * screenWidth}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}
                         onEndReachedThreshold={0.2}
