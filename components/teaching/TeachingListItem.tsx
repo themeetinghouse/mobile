@@ -9,7 +9,6 @@ const style = StyleSheet.create({
     container: {
         display: "flex",
         flexDirection: "row",
-        alignItems: "center",
         marginBottom: 16,
     },
     thumbnail: {
@@ -18,11 +17,11 @@ const style = StyleSheet.create({
         flexShrink: 0,
     },
     title: {
-        fontFamily: Theme.fonts.fontFamilySemiBold,
+        fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.white,
         flexWrap: 'wrap',
-        lineHeight: 20,
+        lineHeight: 18,
     },
     detailsContainer: {
         display: 'flex',
@@ -35,13 +34,13 @@ const style = StyleSheet.create({
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
         color: Theme.colors.white,
-        marginTop: 1,
+        lineHeight: 18
     },
     detailText2: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
         color: Theme.colors.gray5,
-        marginTop: 1,
+        lineHeight: 18
     },
 })
 
@@ -65,7 +64,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
                 {/* <Thumbnail style={style.thumbnail} source={teaching.thumbnail} square ></Thumbnail> */}
                 <View style={style.detailsContainer}>
                     <Text style={style.title}>{teaching?.episodeTitle}</Text>
-                    <Text style={style.detailText1}> {teaching?.episodeNumber || `E${teaching?.episodeNumber},`} {teaching?.seriesTitle}</Text>
+                    <Text style={style.detailText1}>{teaching?.episodeNumber ? `E${teaching?.episodeNumber},` : ''} {teaching?.seriesTitle}</Text>
                     {teaching?.publishedDate ?
                         <Text style={style.detailText2}>
                             {moment(teaching?.publishedDate).format("MMMM, D, YYYY")}

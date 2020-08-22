@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
+import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, StyleSheet } from 'react-native';
+import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
@@ -68,7 +68,7 @@ const style = StyleSheet.create({
     monthHighlight: {
         borderWidth: 1,
         borderColor: Theme.colors.black,
-        width: 85,
+        width: 0.22 * Dimensions.get('screen').width,
         marginRight: 3,
         marginBottom: 3,
     },
@@ -90,7 +90,7 @@ type Date = {
 export default function DateRangeSelectScreen({ navigation }: Params): JSX.Element {
 
     let currentYear = moment().get("year");
-    const startYear = moment("2005-01-01").get("year");
+    const startYear = moment("2007").get("year");
     const years = [];
     while (currentYear >= startYear) years.push(currentYear--);
     const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -99,8 +99,8 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     const [secondDate, setSecondDate] = useState<Date>({});
 
     const selectDateItem = (year: number, month: number) => {
-        console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate);
-        console.log("DateRangeSelectScreen.selectDateItem(): secondDate = ", secondDate);
+        console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate?.year, firstDate?.month);
+        console.log("DateRangeSelectScreen.selectDateItem(): secondDate = ", secondDate?.year, secondDate?.month);
         if (!firstDate.year) {
             firstDate.selectNext = true;
         } else if (!secondDate.year) {
@@ -133,12 +133,27 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     }
 
     const saveAndClose = () => {
-        const firstMoment = moment().startOf('month').set('year', firstDate.year || 1970).set('month', firstDate.month || 0);
-        const secondMoment = moment().startOf('month').set('year', secondDate.year || 1970).set('month', secondDate.month || 0);
-        if (firstMoment.isBefore(secondMoment)) {
-            navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: secondMoment });
+        let firstMoment = null;
+        let secondMoment = null;
+        if (firstDate.year && firstDate.month !== undefined)
+            firstMoment = moment().startOf('month').set('year', firstDate.year).set('month', firstDate.month);
+        if (secondDate.year && secondDate.month !== undefined)
+            secondMoment = moment().startOf('month').set('year', secondDate.year || 1970).set('month', secondDate.month || 0);
+
+        if (firstMoment && secondMoment) {
+            if (firstMoment.isBefore(secondMoment)) {
+                navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: secondMoment });
+            } else {
+                navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: firstMoment });
+            }
         } else {
-            navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: firstMoment });
+            if (firstMoment) {
+                navigation.navigate('AllSermonsScreen', { startDate: firstMoment, endDate: firstMoment });
+            } else if (secondMoment) {
+                navigation.navigate('AllSermonsScreen', { startDate: secondMoment, endDate: secondMoment });
+            } else {
+                navigation.navigate('AllSermonsScreen');
+            }
         }
     }
 
@@ -148,7 +163,7 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => navigation.goBack()}>
-                        <Icon name='close' />
+                        <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
                     </Button>
                 </Left>
                 <Body style={style.headerBody}>

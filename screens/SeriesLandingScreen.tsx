@@ -121,7 +121,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
         headerLeft: function render() {
             return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                 <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                <Text style={[style.headerButtonText, { transform: ([{ translateY: 2 }, { translateX: -4 }]) }]}>Teaching</Text>
+                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
             </TouchableOpacity>
         },
         headerRight: function render() {

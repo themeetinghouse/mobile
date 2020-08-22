@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
+import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, StatusBar, TouchableOpacity, Image, FlatList } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -22,7 +22,8 @@ const style = StyleSheet.create({
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 70,
+        left: 12
     },
     headerBody: {
         flexGrow: 3,
@@ -31,7 +32,7 @@ const style = StyleSheet.create({
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 70
     },
     headerTitle: {
         ...HeaderStyle.title, ...{
@@ -128,23 +129,22 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
         return moment(series.startDate || moment()).format("YYYY");
     }
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'All Series',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+    })
+
     return (
         <Container>
-
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
-                        <Icon name='arrow-back' />
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>All Series</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                </Right>
-            </Header>
-
             <Content style={style.content}>
 
                 <SearchBar

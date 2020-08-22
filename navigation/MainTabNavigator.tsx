@@ -18,6 +18,7 @@ import TabMoreActiveImage from '../assets/icons/tab-more-active.png';
 import EventDetailsScreen from '../screens/EventDetailsScreen';
 import AnnouncementDetailsScreen from '../screens/AnnouncementDetailsScreen';
 import LocationSelectionScreen from '../screens/LocationSelectionScreen';
+import HighlightScreen from '../screens/HighlightScreen';
 import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/SermonLandingScreen';
 import MoreScreen from '../screens/MoreScreen';
@@ -67,6 +68,7 @@ export type TeachingStackParamList = {
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
+  HighlightScreen: { highlight: any };
 }
 
 const Teaching = createStackNavigator<TeachingStackParamList>();
@@ -85,6 +87,7 @@ function TeachingStack() {
       <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
       <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
       <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
+      <Teaching.Screen name="HighlightScreen" component={HighlightScreen}></Teaching.Screen>
     </Teaching.Navigator>
   )
 }

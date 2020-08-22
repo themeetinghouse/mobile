@@ -168,7 +168,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const [bounce, setBounce] = useState(false);
 
     const loadRecentSermonsAsync = async () => {
-        loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 5);
+        loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 6);
     }
     const loadHighlightsAsync = async () => {
         loadSomeAsync(SermonsService.loadHighlightsList, highlights, setHighlights, 5);
@@ -177,7 +177,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSomeAsync(SpeakersService.loadSpeakersList, speakers, setSpeakers);
     }
     const loadRecentSeriesAsync = async () => {
-        loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 5);
+        loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
 
     useEffect(() => {
@@ -269,12 +269,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         contentContainerStyle={style.horizontalListContentContainer}
                         data={recentSeries?.items?.concat({ loading: true })}
                         itemWidth={isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10}
-                        threshold={isTablet ? 0.25 * screenWidth : 0.35 * screenWidth}
+                        threshold={isTablet ? 0.25 * screenWidth : 0.45 * screenWidth}
                         style={{ width: "100%" }}
                         contentOffset={contentOffset}
                         onEndReachedThreshold={0.2}
                         onEndReached={loadRecentSeriesAsync}
-                        useVelocityForIndex={false}
+                        useVelocityForIndex={true}
                         renderItem={({ item, itemIndex, animatedValue }) => renderSeriesSwipeItem(item, itemIndex, animatedValue)}
                     />
                     <AllButton handlePress={() => { navigation.push('AllSeriesScreen') }}>All series</AllButton>

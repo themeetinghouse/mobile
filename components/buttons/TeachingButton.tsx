@@ -14,6 +14,7 @@ const style = StyleSheet.create({
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
         paddingRight: 0,
+        paddingTop: 4,
     },
     buttonInactive: {
         backgroundColor: Theme.colors.grey2,
@@ -25,6 +26,7 @@ const style = StyleSheet.create({
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
         paddingRight: 0,
+        paddingTop: 4,
     },
     icon: {
         width: 24,
