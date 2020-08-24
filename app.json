@@ -29,7 +29,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
-      "buildNumber": "3",
+      "buildNumber": "4",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
@@ -38,7 +41,7 @@
     },
     "android": {
       "package": "com.themeetinghouse.androidapp",
-      "versionCode": 103
+      "versionCode": 104
     }
   }
 }
