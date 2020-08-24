@@ -24,10 +24,11 @@ const style = StyleSheet.create({
 interface Params {
     link: string;
     message: string;
-    show: boolean
+    show: boolean;
+    top: number;
 }
 
-export default function ShareModal({ link, show, message }: Params): JSX.Element {
+export default function ShareModal({ link, show, message, top }: Params): JSX.Element {
 
     const [copyLinkText, setCopyLinkText] = useState('Copy Link')
 
@@ -56,8 +57,8 @@ export default function ShareModal({ link, show, message }: Params): JSX.Element
     }
 
     if (show)
-        return <View style={{ position: 'absolute', zIndex: 9999, top: 56 - 10.5 - 6, right: 0 }} >
-            <View style={[style.triangle, { alignSelf: 'flex-end' }]}></View>
+        return <View style={{ position: 'absolute', zIndex: 9999, top: top - (Platform.OS === 'ios' ? 6 : 10.5), right: 0 }} >
+            <View style={[style.triangle, { alignSelf: 'flex-end', zIndex: -1 }]}></View>
             <View style={{ width: 254, height: 160, backgroundColor: 'white', padding: 16 }} >
                 <Button style={{ width: 222, height: 56, borderRadius: 0, backgroundColor: Theme.colors.background }} block onPress={() => { Clipboard.setString(link); setCopyLinkText('Copied') }}>
                     <Thumbnail square source={Theme.icons.white.link} style={{ width: 24, height: 24 }} ></Thumbnail>

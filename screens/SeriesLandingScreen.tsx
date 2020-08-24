@@ -9,7 +9,7 @@ import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -107,6 +107,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     const seriesId = route.params?.seriesId;
     const safeArea = useSafeAreaInsets();
     const [headerTransparent, setHeaderTransparent] = useState(true);
+    const headerHeight = useHeaderHeight();
 
     const [series, setSeries] = useState(seriesParam);
     const [sermonsInSeries, setSermonsInSeries] = useState<{ loading: boolean, items: any[], nextToken: null | string }>({ loading: true, items: [], nextToken: null });
@@ -131,7 +132,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
                 </Button>
                 <Share
-                    show={share}
+                    show={share} top={headerHeight - safeArea.top}
                     link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series.title.trim())}/${sermonsInSeries?.items.slice(-1)[0]?.id}`}
                     message={series.title}
                 />

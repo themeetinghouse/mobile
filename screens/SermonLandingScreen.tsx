@@ -10,7 +10,7 @@ import TeachingButton from '../components/buttons/TeachingButton';
 import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
@@ -134,6 +134,8 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [share, setShare] = useState(false)
     const safeArea = useSafeAreaInsets();
+    const headerHeight = useHeaderHeight();
+
 
     useEffect(() => {
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
@@ -329,7 +331,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
                 </Button>
                 <Share
-                    show={share}
+                    show={share} top={headerHeight - safeArea.top}
                     link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(sermon.seriesTitle.trim())}/${sermon.id}`}
                     message={sermon.episodeTitle ? sermon.episodeTitle : 'Check out this teaching video'}
                 />
