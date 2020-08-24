@@ -2,15 +2,15 @@ import React from 'react';
 import { View } from 'native-base';
 //import Theme, { Style } from '../../../Theme.style';
 //import Verse from './VerseLink';
-import { ViewStyle } from 'react-native';
+import { ViewStyle, StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     container: {
         flexDirection: "row",
         flexWrap: "wrap",
         alignItems: "baseline",
-    } as ViewStyle,
-}
+    },
+})
 
 interface Params {
     containerStyle: ViewStyle;

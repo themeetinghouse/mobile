@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Theme, Style } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Body } from 'native-base';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
+import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, ViewStyle, TextStyle } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import SermonsService from '../services/SermonsService';
@@ -12,13 +12,14 @@ import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    header: [Style.header, {
-    }],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -27,46 +28,37 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    title: [Style.title, {
-    }],
-    body: [Style.body, {
-    }],
-
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    title: Style.title,
+    body: Style.body,
     searchBar: {
         marginBottom: 16,
     },
-
     dateSelectBar: {
         marginBottom: 32,
         alignItems: "flex-start",
-    } as ViewStyle,
-    dateRangeItem: {
-        padding: 20,
-        paddingTop: 8,
-        paddingBottom: 12,
-        marginRight: 8,
-        borderRadius: 100,
-        backgroundColor: Theme.colors.gray2,
     },
     dateRangeItemText: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.gray5,
+        backgroundColor: Theme.colors.gray2,
+        borderRadius: 50,
+        padding: 16,
+        paddingTop: 10,
+        paddingBottom: 8,
     },
-
-    sermonListContainer: {
-
-    },
-}
+})
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList>;
@@ -75,9 +67,10 @@ interface Params {
 
 export default function AllSermonsScreen({ navigation, route }: Params): JSX.Element {
 
-    const dateStart = route.params?.startDate;
-    const dateEnd = route.params?.endDate;
+    const isSame = route.params?.startDate === route.params?.endDate
 
+    const dateStart = route.params?.startDate ? moment(route.params?.startDate) : null;
+    const dateEnd = route.params?.endDate ? moment(route.params?.endDate)?.endOf('month') : null;
     const [searchText, setSearchText] = useState("");
     const [sermons, setSermons] = useState({ loading: true, items: [], nextToken: null });
 
@@ -97,21 +90,23 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
         dateEndStr = dateEnd.format("MMM, YYYY");
         filteredSermons = filteredSermons.filter((s: any) => dateStart && dateEnd && moment(s.publishedDate).isBetween(dateStart, dateEnd));
     }
+
+    navigation.setOptions({
+        headerShown: true,
+        title: 'All Teaching',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+    })
+
     return (
         <Container>
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.navigate('Teaching')}>
-                        <Icon name='arrow-back' />
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>All Sermons</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                </Right>
-            </Header>
             <Content style={style.content}>
                 <SearchBar
                     style={style.searchBar}
@@ -119,15 +114,16 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name..."></SearchBar>
                 <View style={style.dateSelectBar}>
-                    <TouchableOpacity style={style.dateRangeItem} onPress={() => { navigation.push('DateRangeSelectScreen') }}>
-                        {(dateStart && dateEnd)
-                            ? <Text style={style.dateRangeItemText}>{dateStartStr} - {dateEndStr}</Text>
-                            : <Text style={style.dateRangeItemText}>Date range</Text>
-                        }
-                    </TouchableOpacity>
-                </View>
 
-                <View style={style.sermonListContainer}>
+                    <TouchableHighlight style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} onPress={() => { navigation.push('DateRangeSelectScreen') }} underlayColor={Theme.colors.grey3}  >
+                        {(dateStart && dateEnd)
+                            ? isSame
+                                ? <Text style={style.dateRangeItemText}>{dateEndStr}</Text>
+                                : <Text style={style.dateRangeItemText}>{dateStartStr} - {dateEndStr}</Text> : <Text style={style.dateRangeItemText}>Date range</Text>
+                        }
+                    </TouchableHighlight>
+                </View>
+                <View>
                     {sermons.loading
                         && <ActivityIndicator />
                     }

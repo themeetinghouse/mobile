@@ -1,16 +1,17 @@
 import React from 'react';
 import { View, Thumbnail, Item, Input } from 'native-base';
 import Theme, { Style } from '../Theme.style';
-import { TouchableOpacity, ViewStyle } from 'react-native';
+import { TouchableOpacity, ViewStyle, StyleSheet } from 'react-native';
 
-const localStyle = {
-    searchIcon: [Style.icon, {}],
+const localStyle = StyleSheet.create({
+    searchIcon: Style.icon,
     searchInput: {
         color: Theme.colors.white,
-        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
+        paddingLeft: 16
     },
-}
+})
 
 interface Params {
     style: ViewStyle;

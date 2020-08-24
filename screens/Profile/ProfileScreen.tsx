@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
-import Theme, { Style } from '../../Theme.style';
-import { StatusBar, ViewStyle, TextStyle } from 'react-native';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import { StatusBar, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Auth } from '@aws-amplify/auth'
 import ActivityIndicator from '../../components/ActivityIndicator';
@@ -12,11 +12,15 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
 import LocationContext from '../../contexts/LocationContext';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.background,
-    }],
-    header: [Style.header, {}],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.background,
+        }
+    },
+    header: {
+        backgroundColor: Theme.colors.header
+    },
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -25,25 +29,29 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50,
         right: 6,
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    headerButtonText: [Style.header.linkText, {}],
-    title: [Style.title, {
-        marginTop: 130,
-        marginBottom: 16,
-    }],
-    body: [Style.body, {
-        marginBottom: 40,
-    }],
-    searchIcon: [Style.icon, {}],
+    headerTitle: {
+        backgroundColor: Theme.colors.header
+    },
+    headerButtonText: HeaderStyle.linkText,
+    title: {
+        ...Style.title, ...{
+            marginTop: 130,
+            marginBottom: 16,
+        }
+    },
+    body: {
+        ...Style.body, ...{
+            marginBottom: 40,
+        }
+    },
+    searchIcon: Style.icon,
     searchInput: {
         color: Theme.colors.white,
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -64,19 +72,20 @@ const style = {
         color: Theme.colors.gray5,
         fontFamily: Theme.fonts.fontFamilyRegular,
     },
-    listIcon: [Style.icon, {
-        marginRight: 16,
-        marginLeft: 16,
-    }],
-    listArrowIcon: [Style.icon, {
-    }],
+    listIcon: {
+        ...Style.icon, ...{
+            marginRight: 16,
+            marginLeft: 16,
+        }
+    },
+    listArrowIcon: Style.icon,
     headerText: {
         fontSize: 16,
         fontFamily: Theme.fonts.fontFamilyRegular,
         color: 'white',
         lineHeight: 24,
     }
-}
+})
 
 interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<HomeStackParamList>, StackNavigationProp<MainStackParamList>>;

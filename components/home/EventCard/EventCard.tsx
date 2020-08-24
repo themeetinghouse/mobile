@@ -3,20 +3,24 @@ import { Text, Thumbnail, View } from 'native-base';
 import moment from 'moment';
 import { EventQueryResult } from '../../../services/EventsService';
 import { Style, Theme } from '../../../Theme.style';
-import { TouchableOpacity, ViewStyle } from 'react-native';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
 
-const style = {
-    container: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-        padding: 16
-    }],
-    dateTitleContainer: [Style.title, {
-        color: Theme.colors.gray5,
-        fontFamily: Theme.fonts.fontFamilyBold,
-        fontSize: Theme.fonts.smallMedium,
-        lineHeight: 15,
-    }],
+const style = StyleSheet.create({
+    container: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+            padding: 16
+        }
+    },
+    dateTitleContainer: {
+        ...Style.title, ...{
+            color: Theme.colors.gray5,
+            fontFamily: Theme.fonts.fontFamilyBold,
+            fontSize: Theme.fonts.smallMedium,
+            lineHeight: 15,
+        }
+    },
     titleButtonContainer: {
         display: "flex",
         flexDirection: "row",
@@ -25,26 +29,25 @@ const style = {
         marginLeft: 0,
         width: '100%',
         justifyContent: "flex-start"
-    } as ViewStyle,
-    title: [Style.cardTitle, {
-        paddingLeft: 0,
-        paddingTop: 5,
-        flexGrow: 1,
-        lineHeight: 24,
-    }],
-    icon: [Style.icon, {
-    }],
-    descriptionContainer: [Style.cardDescription, {
-        marginBottom: 16,
-        maxHeight: 150,
-    }],
-    locationContainer: [Style.cardSubtext, {
-
-    }],
-    dateTimeContainer: [Style.cardSubtext, {
-
-    }],
-}
+    },
+    title: {
+        ...Style.cardTitle, ...{
+            paddingLeft: 0,
+            paddingTop: 5,
+            flexGrow: 1,
+            lineHeight: 24,
+        }
+    },
+    icon: Style.icon,
+    descriptionContainer: {
+        ...Style.cardDescription, ...{
+            marginBottom: 16,
+            maxHeight: 150,
+        }
+    },
+    locationContainer: Style.cardSubtext,
+    dateTimeContainer: Style.cardSubtext,
+})
 
 type EventCardInput = {
     event: NonNullable<EventQueryResult>[0];

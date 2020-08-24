@@ -18,6 +18,7 @@ import TabMoreActiveImage from '../assets/icons/tab-more-active.png';
 import EventDetailsScreen from '../screens/EventDetailsScreen';
 import AnnouncementDetailsScreen from '../screens/AnnouncementDetailsScreen';
 import LocationSelectionScreen from '../screens/LocationSelectionScreen';
+import HighlightScreen from '../screens/HighlightScreen';
 import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/SermonLandingScreen';
 import MoreScreen from '../screens/MoreScreen';
@@ -26,7 +27,6 @@ import SeriesLandingScreen from '../screens/SeriesLandingScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountScreen from '../screens/Profile/AccountScreen';
 import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
-import { Moment } from 'moment';
 import { Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext'
 
@@ -59,7 +59,7 @@ function HomeStack() {
 export type TeachingStackParamList = {
   Teaching: undefined;
   AllSeriesScreen: undefined;
-  AllSermonsScreen: { startDate: Moment, endDate: Moment } | undefined;
+  AllSermonsScreen: { startDate: string, endDate: string } | undefined;
   DateRangeSelectScreen: undefined;
   SeriesLandingScreen: { seriesId?: string, item?: any };
   SermonLandingScreen: { item: any };
@@ -67,6 +67,7 @@ export type TeachingStackParamList = {
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
+  HighlightScreen: { highlights: any, index: number };
 }
 
 const Teaching = createStackNavigator<TeachingStackParamList>();
@@ -85,6 +86,7 @@ function TeachingStack() {
       <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
       <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
       <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
+      <Teaching.Screen name="HighlightScreen" component={HighlightScreen}></Teaching.Screen>
     </Teaching.Navigator>
   )
 }

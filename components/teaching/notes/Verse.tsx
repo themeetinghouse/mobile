@@ -1,12 +1,12 @@
 import React from 'react';
 import { View, Thumbnail } from 'native-base';
 import Theme, { Style } from '../../../Theme.style';
-import { TouchableOpacity, Text, ViewStyle } from 'react-native';
+import { TouchableOpacity, Text, ViewStyle, StyleSheet } from 'react-native';
 
 import xml2js from 'react-native-xml2js';
 const parser = new xml2js.Parser({ explicitChildren: true, preserveChildrenOrder: true, charsAsChildren: true })
 
-const style = {
+const style = StyleSheet.create({
     verseContainer: {
         borderRadius: 4,
         borderColor: Theme.colors.gray3,
@@ -19,7 +19,7 @@ const style = {
         flexDirection: "row",
         alignItems: "center",
         paddingRight: 8
-    } as ViewStyle,
+    },
     verseTitle: {
         fontFamily: Theme.fonts.fontFamilyRegular,
         color: Theme.colors.white,
@@ -62,7 +62,7 @@ const style = {
         height: 18,
         marginRight: 10,
     }
-}
+})
 
 interface Params {
     note: any;

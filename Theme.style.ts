@@ -1,3 +1,5 @@
+import { StyleSheet } from 'react-native';
+
 import Arrow from './assets/images/black/Arrow.png';
 import ArrowWhite from './assets/images/white/Arrow.png';
 import ArrowLeftWhite from './assets/images/white/Arrow-Left.png';
@@ -29,12 +31,17 @@ import PlaySolidWhite from './assets/images/white/Play-Solid.png';
 import PauseLargeWhite from './assets/images/white/Pause-Large.png';
 import PauseCircleWhite from './assets/images/white/Pause-Small.png';
 import PlayCircleWhite from './assets/images/white/Play-Small.png';
-import SkipForward from './assets/images/other/Skip-Backward.png'; 
-import SkipBackward from './assets/images/other/Skip-Forward.png'; 
-import ShareWhite from './assets/images/white/Share.png'; 
-import MinimizeWhite from './assets/images/white/Downsize-Arrow.png'; 
-import SliderThumb from './assets/images/white/Ellipse.png'; 
-
+import SkipForward from './assets/images/other/Skip-Backward.png';
+import SkipBackward from './assets/images/other/Skip-Forward.png';
+import ShareWhite from './assets/images/white/Share.png';
+import ShareBlack from './assets/images/black/Share.png';
+import MinimizeWhite from './assets/images/white/Downsize-Arrow.png';
+import SliderThumb from './assets/images/white/Ellipse.png';
+import ArrowBack from './assets/images/white/Arrow-Back.png';
+import Caret from './assets/images/white/Dropdown-Caret.png';
+import Link from './assets/images/white/Link.png';
+import Twitter from './assets/images/black/Twitter.png';
+import Facebook from './assets/images/black/Facebook.png';
 
 export const Theme = {
     colors: {
@@ -104,6 +111,9 @@ export const Theme = {
             share: ShareWhite,
             mini: MinimizeWhite,
             sliderThumb: SliderThumb,
+            back: ArrowBack,
+            caretDown: Caret,
+            link: Link
         },
         grey: {
             arrow: ArrowGrey,
@@ -113,41 +123,47 @@ export const Theme = {
         black: {
             arrow: Arrow,
             audio: AudioBlack,
-            watch: WatchBlack
+            watch: WatchBlack,
+            twitter: Twitter,
+            facebook: Facebook,
+            share: ShareBlack
         },
     }
 }
 
-export const Style = {
+export const HeaderStyle = StyleSheet.create({
+    title: {
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyBold,
+        textAlign: "center",
+    },
+    subtitle: {
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyMedium,
+        fontSize: Theme.fonts.small,
+    },
+    buttonText: {
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: Theme.fonts.medium,
+    },
+    linkText: {
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: Theme.fonts.medium,
+    },
+    linkTextInactive: {
+        color: Theme.colors.white,
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: Theme.fonts.medium,
+        opacity: 0.24,
+    }
+})
+
+export const Style = StyleSheet.create({
     header: {
         backgroundColor: Theme.colors.header,
-        color: Theme.colors.white,
-        title: {
-            color: Theme.colors.white,
-            fontFamily: Theme.fonts.fontFamilyBold,
-            textAlign: "center",
-        },
-        subtitle: {
-            color: Theme.colors.white,
-            fontFamily: Theme.fonts.fontFamilyMedium,
-            fontSize: Theme.fonts.small,
-        },
-        buttonText: {
-            color: Theme.colors.white,
-            fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.medium,
-        },
-        linkText: {
-            color: Theme.colors.white,
-            fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.medium,
-        },
-        linkTextInactive: {
-            color: Theme.colors.white,
-            fontFamily: Theme.fonts.fontFamilyRegular,
-            fontSize: Theme.fonts.medium,
-            opacity: 0.24,
-        }
+        color: 'white'
     },
     categoryTitle: {
         color: Theme.colors.white,
@@ -156,7 +172,7 @@ export const Style = {
         marginLeft: 16,
         marginRight: 16,
         marginBottom: 16,
-    }, 
+    },
     cardContainer: {
         borderColor: Theme.colors.gray2,
         borderTopWidth: 1
@@ -197,6 +213,6 @@ export const Style = {
         fontSize: Theme.fonts.medium,
         lineHeight: Theme.fonts.large
     }
-}
+})
 
 export default Theme;

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth'
-import { View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
@@ -10,12 +10,14 @@ import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import MediaContext from '../../contexts/MediaContext';
 
-const style = {
-    title: [Style.cardTitle, {
-        paddingLeft: 0,
-        paddingTop: 26,
-        lineHeight: 24,
-    }],
+const style = StyleSheet.create({
+    title: {
+        ...Style.cardTitle, ...{
+            paddingLeft: 0,
+            paddingTop: 26,
+            lineHeight: 24,
+        }
+    },
     input: {
         backgroundColor: Theme.colors.gray1,
         borderColor: Theme.colors.grey3,
@@ -50,7 +52,7 @@ const style = {
         lineHeight: 18,
         marginTop: 8
     }
-}
+})
 
 interface Props {
     navigation: CompositeNavigationProp<

@@ -8,45 +8,45 @@ export interface LoadSermonResult {
 
 export default class SermonsService {
 
-    static loadSermonsList = async (count = 20, nextToken?: string ): Promise<LoadSermonResult> => {
-      const queryResult = await runGraphQLQuery({ 
-        query: getVideoByVideoType,
-        variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, nextToken: nextToken },
-      });
-      return {
-        items: queryResult.getVideoByVideoType.items, 
-        nextToken: queryResult.getVideoByVideoType.nextToken
-      };
-    }
+  static loadSermonsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
+    const queryResult = await runGraphQLQuery({
+      query: getVideoByVideoType,
+      variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, nextToken: nextToken },
+    });
+    return {
+      items: queryResult.getVideoByVideoType.items,
+      nextToken: queryResult.getVideoByVideoType.nextToken
+    };
+  }
 
-    static loadRecentSermonsList = async (count = 20, nextToken?: string ): Promise<LoadSermonResult> => {
-      return SermonsService.loadSermonsList(count, nextToken)
-    }
+  static loadRecentSermonsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
+    return SermonsService.loadSermonsList(count, nextToken)
+  }
 
-    static loadSermonsInSeriesList = async (seriesTitle: string, count = 99999, nextToken?: string ): Promise<LoadSermonResult> => {
-      const query = { 
-        query: getVideoByVideoType,
-        variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, filter: { seriesTitle: { eq: seriesTitle } } },
-      };
-      const queryResult = await runGraphQLQuery(query);
-      return {
-        items: queryResult.getVideoByVideoType.items, 
-        nextToken: queryResult.getVideoByVideoType.nextToken
-      };
-    }
+  static loadSermonsInSeriesList = async (seriesTitle: string, count = 99999, nextToken?: string): Promise<LoadSermonResult> => {
+    const query = {
+      query: getVideoByVideoType,
+      variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, filter: { seriesTitle: { eq: seriesTitle } } },
+    };
+    const queryResult = await runGraphQLQuery(query);
+    return {
+      items: queryResult.getVideoByVideoType.items,
+      nextToken: queryResult.getVideoByVideoType.nextToken
+    };
+  }
 
-    static loadHighlightsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
-      const query = { 
-        query: getVideoByVideoType,
-        variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday-shortcut", publishedDate: { lt: "a" }, nextToken: nextToken },
-      };
-      const queryResult = await runGraphQLQuery(query);
+  static loadHighlightsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
+    const query = {
+      query: getVideoByVideoType,
+      variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday-shortcut", publishedDate: { lt: "a" }, nextToken: nextToken },
+    };
+    const queryResult = await runGraphQLQuery(query);
 
-      return {
-        items: queryResult.getVideoByVideoType.items, 
-        nextToken: queryResult.getVideoByVideoType.nextToken
-      };
-    }
+    return {
+      items: queryResult.getVideoByVideoType.items,
+      nextToken: queryResult.getVideoByVideoType.nextToken
+    };
+  }
 
 
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Button, Text } from 'native-base';
 import Theme from '../../Theme.style';
-import { ViewStyle } from 'react-native';
+import { ViewStyle, StyleSheet } from 'react-native';
 
-const style = {
+const style = StyleSheet.create({
     button: {
         backgroundColor: Theme.colors.white,
         borderRadius: 0,
@@ -26,7 +26,7 @@ const style = {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
     }
-}
+})
 
 interface Props {
     style?: ViewStyle;

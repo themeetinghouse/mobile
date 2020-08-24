@@ -1,18 +1,20 @@
 import React, { useContext } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
-import Theme, { Style } from '../Theme.style';
-import { StatusBar, ViewStyle, TextStyle } from 'react-native';
+import Theme, { Style, HeaderStyle } from '../Theme.style';
+import { StatusBar, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import UserContext from '../contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { MoreStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-const style = {
-    content: [Style.cardContainer, {
-        backgroundColor: Theme.colors.black,
-    }],
-    header: [Style.header, {}],
+const style = StyleSheet.create({
+    content: {
+        ...Style.cardContainer, ...{
+            backgroundColor: Theme.colors.black,
+        }
+    },
+    header: Style.header,
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
@@ -21,24 +23,30 @@ const style = {
     headerBody: {
         flexGrow: 3,
         justifyContent: "center",
-    } as ViewStyle,
+    },
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
         flexBasis: 50
     },
-    headerTitle: [Style.header.title, {
-        width: "100%",
-    }] as TextStyle,
-    headerButtonText: [Style.header.linkText, {}],
-    title: [Style.title, {
-        marginTop: 130,
-        marginBottom: 16,
-    }],
-    body: [Style.body, {
-        marginBottom: 40,
-    }],
-    searchIcon: [Style.icon, {}],
+    headerTitle: {
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
+    },
+    headerButtonText: HeaderStyle.linkText,
+    title: {
+        ...Style.title, ...{
+            marginTop: 130,
+            marginBottom: 16,
+        }
+    },
+    body: {
+        ...Style.body, ...{
+            marginBottom: 40,
+        }
+    },
+    searchIcon: Style.icon,
     searchInput: {
         color: Theme.colors.white,
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -58,15 +66,15 @@ const style = {
         color: Theme.colors.gray5,
         fontFamily: Theme.fonts.fontFamilyRegular,
     },
-    listIcon: [Style.icon, {
-        marginRight: 16,
-        marginLeft: 16,
-    }],
-    listArrowIcon: [Style.icon, {
-    }],
-    icon: [Style.icon, {
-    }],
-}
+    listIcon: {
+        ...Style.icon, ...{
+            marginRight: 16,
+            marginLeft: 16,
+        }
+    },
+    listArrowIcon: Style.icon,
+    icon: Style.icon,
+})
 
 function MoreScreen(): JSX.Element {
 
