@@ -1,21 +1,32 @@
-//import axios from 'axios';
-import { get } from './ApiService';
-
-type NoteData = {
-  notes: any;
-  verses: any;
-}
+import { GetNotesQuery } from './API';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api'; 
 
 export default class NotesService {
-
-  static loadNotes = async (sermonId: string): Promise<NoteData> => {
-    const response = await get("https://takenoteapp.com/takenote/api/v1/notes?user=-1&publicOnly=0&seriesId=1583071444753&sermonId=1583071464964&noteType=sermon");
-    return { notes: response.sermonNotes, verses: response.sermonVerses };
+  static loadNotes = async (date: string): Promise< NonNullable<GetNotesQuery['getNotes']>['jsonContent'] | undefined> => {
+    const notes = await API.graphql(graphqlOperation(getNotes, { id: date })) as GraphQLResult<GetNotesQuery>
+    return notes.data?.getNotes?.jsonContent;
   }
 
-  static loadQuestions = async (sermonId: string): Promise<NoteData> => {
-    const response = await get("https://takenoteapp.com/takenote/api/v1/notes?user=-1&publicOnly=0&seriesId=1583071444753&sermonId=1583071464964&noteType=homeChurch");
-    return { notes: response.homeChurchNotes, verses: response.homeChurchVerses };
+  static loadQuestions = async (date: string): Promise<NonNullable<GetNotesQuery['getNotes']>['jsonQuestions'] | undefined> => {
+    const notes = await API.graphql(graphqlOperation(getNotes, { id: date })) as GraphQLResult<GetNotesQuery>
+    return notes.data?.getNotes?.jsonQuestions;
   }
-
 }
+
+const getNotes = /* GraphQL */ `
+  query GetNotes($id: ID!) {
+    getNotes(id: $id) {
+      id
+      title
+      content
+      questions
+      jsonContent
+      jsonQuestions
+      pdf
+      topics
+      tags
+      createdAt
+      updatedAt
+    }
+  }
+`;
