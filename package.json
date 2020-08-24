@@ -26,6 +26,7 @@
     "expo": "^38.0.0",
     "expo-av": "~8.2.1",
     "expo-font": "~8.2.1",
+    "expo-linear-gradient": "~8.2.1",
     "expo-secure-store": "~9.0.1",
     "moment": "^2.24.0",
     "native-base": "^2.13.8",
@@ -40,9 +41,8 @@
     "react-native-web": "~0.11.7",
     "react-native-webview": "9.4.0",
     "react-native-xml2js": "^1.0.3",
-    "sentry-expo": "^2.1.2",
-    "tmh-temp-react-native-youtube-iframe": "https://github.com/JonEsparaz/react-native-youtube-iframe/archive/v1.0.tar.gz",
-    "expo-linear-gradient": "~8.2.1"
+    "react-native-youtube-iframe": "^1.3.0",
+    "sentry-expo": "^2.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",

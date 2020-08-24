@@ -3,7 +3,7 @@ import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { Theme } from '../Theme.style';
-import YoutubePlayer, { YoutubeIframeRef } from 'tmh-temp-react-native-youtube-iframe';
+import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 
 const style = StyleSheet.create({

@@ -15,9 +15,9 @@ import { RouteProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
 import Slider from '@react-native-community/slider';
-import YoutubePlayer, { YoutubeIframeRef } from 'tmh-temp-react-native-youtube-iframe';
 import Share from '../components/modals/Share';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 
 const style = StyleSheet.create({
     content: {
