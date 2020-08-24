@@ -34,12 +34,14 @@ import PlayCircleWhite from './assets/images/white/Play-Small.png';
 import SkipForward from './assets/images/other/Skip-Backward.png';
 import SkipBackward from './assets/images/other/Skip-Forward.png';
 import ShareWhite from './assets/images/white/Share.png';
+import ShareBlack from './assets/images/black/Share.png';
 import MinimizeWhite from './assets/images/white/Downsize-Arrow.png';
 import SliderThumb from './assets/images/white/Ellipse.png';
 import ArrowBack from './assets/images/white/Arrow-Back.png';
 import Caret from './assets/images/white/Dropdown-Caret.png';
-
-
+import Link from './assets/images/white/Link.png';
+import Twitter from './assets/images/black/Twitter.png';
+import Facebook from './assets/images/black/Facebook.png';
 
 export const Theme = {
     colors: {
@@ -110,7 +112,8 @@ export const Theme = {
             mini: MinimizeWhite,
             sliderThumb: SliderThumb,
             back: ArrowBack,
-            caretDown: Caret
+            caretDown: Caret,
+            link: Link
         },
         grey: {
             arrow: ArrowGrey,
@@ -120,7 +123,10 @@ export const Theme = {
         black: {
             arrow: Arrow,
             audio: AudioBlack,
-            watch: WatchBlack
+            watch: WatchBlack,
+            twitter: Twitter,
+            facebook: Facebook,
+            share: ShareBlack
         },
     }
 }

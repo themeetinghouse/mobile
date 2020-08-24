@@ -13,6 +13,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import Share from '../components/modals/Share';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -108,9 +109,9 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     const [headerTransparent, setHeaderTransparent] = useState(true);
 
     const [series, setSeries] = useState(seriesParam);
-    const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
+    const [sermonsInSeries, setSermonsInSeries] = useState<{ loading: boolean, items: any[], nextToken: null | string }>({ loading: true, items: [], nextToken: null });
 
-    //console.log("SeriesLandingScreen(): series = ", series);
+    const [share, setShare] = useState(false)
 
     navigation.setOptions({
         headerShown: true,
@@ -125,9 +126,17 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             </TouchableOpacity>
         },
         headerRight: function render() {
-            return <Button transparent>
-                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-            </Button>
+            return <View>
+                <Button transparent onPress={() => setShare(!share)}>
+                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+                </Button>
+                <Share
+                    show={share}
+                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series.title.trim())}/${sermonsInSeries?.items.slice(-1)[0]?.id}`}
+                    message={series.title}
+                />
+            </View>
+
         },
         headerLeftContainerStyle: { left: 16 },
         headerRightContainerStyle: { right: 16 }
@@ -159,7 +168,13 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     return (
         <Content style={[style.content, { marginTop: -safeArea.top }]} onScroll={(e) => handleScroll(e)} >
             {series &&
-                <View >
+                <View
+                    onStartShouldSetResponder={() => true}
+                    onMoveShouldSetResponder={() => true}
+                    onResponderGrant={() => setShare(false)}
+                    onResponderMove={() => setShare(false)}
+                    onResponderRelease={() => setShare(false)}
+                >
                     <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
                         <LinearGradient
                             colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.15)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
