@@ -36,6 +36,7 @@
         "usesNonExemptEncryption": false
       },
       "associatedDomains": [
+        "applinks:themeetinghouse.com",
         "applinks:www.themeetinghouse.com",
         "applinks:localhost:3006?mode=developer"
       ],
@@ -47,7 +48,23 @@
     },
     "android": {
       "package": "com.themeetinghouse.androidapp",
-      "versionCode": 105
+      "versionCode": 105,
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.themeetinghouse.com",
+              "pathPrefix": "/videos"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     }
   }
 }
