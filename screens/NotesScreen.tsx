@@ -9,9 +9,6 @@ import VerseLink from '../components/teaching/notes/VerseLink';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-const xml2js = require('react-native-xml2js');
-const parser = new xml2js.Parser({ explicitChildren: true, preserveChildrenOrder: true, charsAsChildren: true })
-
 interface Style {
     content: any;
     header: any;
@@ -129,90 +126,15 @@ const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
     const [notes, setNotes] = useState([]);
     const [verses, setVerses] = useState([]);
     const [notesMode, setNotesMode] = useState("notes");
-    const [visibleVerses, setVisibleVerses] = useState<any>([]);
 
     useEffect(() => {
-        const loadContentAsync = async () => {
-            const { notes, verses } = await (notesMode === 'notes' ? NotesService.loadNotes(sermonId) : NotesService.loadQuestions(sermonId));
-            for (const note of notes) {
-                console.log("NotesScreen.loadContentAsync(): processing : ", note);
-                note.content = "<root>" + note.content + "</root>";
-                parser.parseString(note.content, (err: any, result: any) => {
-                    if (!err) {
-                        note.content = result;
-                        console.log("NotesScreen.loadContentAsync(): xml = ", JSON.stringify(result, null, 2));
-                    }
-                })
-            }
-            setNotes(notes);
-            setVerses(verses);
+        const load = async () => {
+            const notes = await NotesService.loadNotes('2020-08-23')
+            if (notes)
+                console.log(JSON.parse(notes))
         }
-        loadContentAsync();
-    }, [notesMode])
-
-    const handleVersePress = ({ note, verseId, chapterVerse }: any) => {
-        console.log("NotesScreen.handleVersePress(): verseId, chapterVerse = ", verseId, chapterVerse);
-        const existingIndex = visibleVerses.findIndex((vvRef: any) => vvRef.noteId === note.id && vvRef.verseId === verseId);
-        if (existingIndex > -1) {
-            visibleVerses.splice(existingIndex, 1);
-            setVisibleVerses([].concat(visibleVerses));
-        } else {
-            setVisibleVerses(visibleVerses.concat({ noteId: note.id, verseId: verseId }));
-        }
-    }
-
-    const isVerseVisible = (verseId: any) => {
-        return visibleVerses.find((vvRef: any) => vvRef.verseId === verseId);
-    }
-
-    const renderChildren = (note: { content: { root: { $$: any[]; }; }; noteType: keyof Style; }) => {
-        return note.content.root.$$.map((child: any, index: number) => {
-
-            if (child['#name'] === '__text__') {
-                return <Text key={index} style={style[note.noteType] as TextStyle}>{child['_']}</Text>;
-
-            } else if (child['$'] && child['$'].class === 'verse') {
-                return <VerseLink
-                    key={index}
-                    onPress={handleVersePress}
-                    verseId={child['$'].verseid}
-                    chapterVerse={child['$'].chapterverse}
-                    note={note}
-                    selected={isVerseVisible(child['$'].verseid)}
-                >
-                    {child['_']}
-                </VerseLink>
-
-            } else if (child['$'] && child['$'].style) {
-                const s = child['$'].style.replace(/ /g, "").split(";");
-                const noteStyle: TextStyle = {
-                    fontStyle: s.includes('font-style:italic') ? "italic" : undefined,
-                    textDecorationLine: s.includes('text-decoration:underline') ? "underline" : undefined,
-                    fontWeight: s.includes('fontWeight:bold') ? "bold" : undefined
-                }
-                return <Text key={index} style={[style.note, noteStyle]}>{child['_']}</Text>
-            } else {
-                return null;
-            }
-        })
-    }
-
-    const renderSelectedVerses = (note: any) => {
-        const visibleVerseRefsForNote = visibleVerses.filter((vv: any) => vv.noteId === note.id);
-        return visibleVerseRefsForNote.map((vvRef: any) => {
-            const verse: any = verses.find((v: any) => v.id === vvRef.verseId);
-            return (
-                <Verse
-                    key={verse.id}
-                    onClosePressed={handleVersePress}
-                    containerStyle={style.verseContainer}
-                    note={note} verse={verse}
-                >
-                    {verse.content}
-                </Verse>
-            )
-        })
-    }
+        load();
+    }, [])
 
     return (
         <Container>
@@ -235,12 +157,6 @@ const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
             </Header>
 
             <Content style={style.content}>
-                {notes.map((note: any) => (
-                    <NoteItem key={note.id} containerStyle={style.noteItem} note={note}>
-                        {renderChildren(note)}
-                        {renderSelectedVerses(note)}
-                    </NoteItem>
-                ))}
             </Content>
         </Container>
     )
