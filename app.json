@@ -1,6 +1,7 @@
 {
   "expo": {
-    "name": "tmh-mobile",
+    "name": "The Meeting House",
+    "description": "When’s the last time someone asked you what you believe? You know—about the big things in life. We’re a church that loves to ask questions, and loves people with questions. We don’t have all the answers, but exploring together is pretty much our favourite thing.",
     "slug": "tmh-mobile",
     "privacy": "public",
     "platforms": [
@@ -13,13 +14,14 @@
       "backgroundColor": "#000000"
     },
     "version": "6.0.1",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icons/icon.png",
     "splash": {
       "image": "./assets/icons/splash-black.png",
       "resizeMode": "contain",
       "backgroundColor": "#000000"
     },
+    "scheme": "tmh",
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -29,10 +31,14 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "config": {
         "usesNonExemptEncryption": false
       },
+      "associatedDomains": [
+        "applinks:www.themeetinghouse.com",
+        "applinks:localhost:3006?mode=developer"
+      ],
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
@@ -41,7 +47,7 @@
     },
     "android": {
       "package": "com.themeetinghouse.androidapp",
-      "versionCode": 104
+      "versionCode": 105
     }
   }
 }
