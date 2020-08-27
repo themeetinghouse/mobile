@@ -3,11 +3,11 @@ import NotesService from '../services/NotesService';
 import { Text, Container, Header, Left, Body, Right, Button, Content, Icon } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, TextStyle, ViewStyle, StyleSheet } from 'react-native';
-import NoteItem from '../components/teaching/notes/NoteItem';
-import Verse from '../components/teaching/notes/Verse';
-import VerseLink from '../components/teaching/notes/VerseLink';
+import NoteReader from '../components/teaching/notes/NoteReader';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import GestureRecognizer from 'react-native-swipe-gestures';
+import { RouteProp } from '@react-navigation/native';
 
 interface Style {
     content: any;
@@ -117,24 +117,44 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    sermonId: string;
     navigation: StackNavigationProp<TeachingStackParamList>;
+    route: RouteProp<TeachingStackParamList, 'NotesScreen'>
 }
 
-const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
+function NotesScreen({ route, navigation }: Params): JSX.Element {
 
-    const [notes, setNotes] = useState([]);
-    const [verses, setVerses] = useState([]);
+    const date = route.params?.date;
+    console.log(route.params)
+
+    const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
+    const [questions, setQuestions] = useState({ blocks: [], entityMap: {} });
     const [notesMode, setNotesMode] = useState("notes");
 
     useEffect(() => {
         const load = async () => {
-            const notes = await NotesService.loadNotes('2020-08-23')
-            if (notes)
-                console.log(JSON.parse(notes))
+            const notes = await NotesService.loadNotes(date)
+            const questions = await NotesService.loadQuestions(date)
+
+            if (notes) {
+                try {
+                    const notesData = JSON.parse(notes);
+                    setNotes({ blocks: notesData.blocks, entityMap: notesData.entityMap })
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+
+            if (questions) {
+                try {
+                    const questionsData = JSON.parse(questions);
+                    setQuestions({ blocks: questionsData.blocks, entityMap: questionsData.entityMap })
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
         }
         load();
-    }, [])
+    }, []);
 
     return (
         <Container>
@@ -157,6 +177,20 @@ const NotesScreen = function ({ sermonId, navigation }: Params): JSX.Element {
             </Header>
 
             <Content style={style.content}>
+                <GestureRecognizer
+                    onSwipeRight={() => setNotesMode('notes')}
+                    onSwipeLeft={() => setNotesMode('questions')}
+                    config={{
+                        velocityThreshold: 0.5,
+                        directionalOffsetThreshold: 80
+                    }}
+                    style={{ flex: 1, backgroundColor: 'transparent' }}
+                >
+                    {notesMode === 'notes' ?
+                        <NoteReader blocks={notes.blocks} entityMap={notes.entityMap} mode='dark' />
+                        : <NoteReader blocks={questions.blocks} entityMap={questions.entityMap} mode='dark' />
+                    }
+                </GestureRecognizer>
             </Content>
         </Container>
     )

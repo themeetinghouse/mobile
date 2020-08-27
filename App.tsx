@@ -112,7 +112,6 @@ function App(props: Props): JSX.Element {
     return (
       <AppLoading
         startAsync={loadResourcesAsync}
-        onError={handleLoadingError}
         onFinish={() => setLoadingComplete(true)}
       />
     );
@@ -150,14 +149,7 @@ async function loadResourcesAsync() {
       'Graphik-Medium-App': require('./assets/fonts/Graphik-Medium-App.ttf'),
       'Graphik-Bold-App': require('./assets/fonts/Graphik-Bold-App.ttf'),
       'Graphik-Semibold-App': require('./assets/fonts/Graphik-Semibold-App.ttf'),
-      //This is the font that we are using for our tab bar
-      ...Ionicons.font,
+      'Graphik-RegularItalic': require('./assets/fonts/Graphik-RegularItalic.otf')
     }),
   ]);
-}
-
-function handleLoadingError(error: Error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
-  console.warn(error);
 }

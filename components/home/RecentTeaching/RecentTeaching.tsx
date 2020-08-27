@@ -85,7 +85,7 @@ export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.E
 
     const openNotes = (teachingId: string) => {
         console.log("RecentTeaching.openNotes(): teachingId = ", teachingId);
-        navigation.navigate("Teaching", { screen: "NotesScreen" })
+        navigation.navigate("Teaching", { screen: "NotesScreen", params: { date: moment(teaching.publishedDate as string).format("YYYY-MM-DD") } })
     }
 
     return (

@@ -63,7 +63,7 @@ export type TeachingStackParamList = {
   DateRangeSelectScreen: undefined;
   SeriesLandingScreen: { seriesId?: string, item?: any };
   SermonLandingScreen: { item: any };
-  NotesScreen: undefined;
+  NotesScreen: { date: string };
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
@@ -120,9 +120,9 @@ function MoreStack() {
 }
 
 export type TabNavigatorParamList = {
-  Home: undefined | { screen: keyof HomeStackParamList };
-  Teaching: undefined | { screen: keyof TeachingStackParamList };
-  More: undefined | { screen: keyof MoreStackParamList };
+  Home: undefined | { screen: keyof HomeStackParamList, params: HomeStackParamList[keyof HomeStackParamList] };
+  Teaching: undefined | { screen: keyof TeachingStackParamList, params: TeachingStackParamList[keyof TeachingStackParamList] };
+  More: undefined | { screen: keyof MoreStackParamList, params: MoreStackParamList[keyof MoreStackParamList] };
 }
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();

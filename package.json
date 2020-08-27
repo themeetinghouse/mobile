@@ -39,6 +39,7 @@
     "react-native-safe-area-context": "~3.0.7",
     "react-native-screens": "~2.9.0",
     "react-native-sideswipe": "^1.5.0",
+    "react-native-swipe-gestures": "^1.0.5",
     "react-native-web": "~0.11.7",
     "react-native-webview": "9.4.0",
     "react-native-xml2js": "^1.0.3",

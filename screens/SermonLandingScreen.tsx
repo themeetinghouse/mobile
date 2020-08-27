@@ -419,7 +419,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 <View style={style.detailsDescription}>
                     <Text style={style.body}>{sermon.description}</Text>
                 </View>
-                <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes"></IconButton>
+                <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => navigation.navigate('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })} ></IconButton>
             </View>
 
             <View style={style.categorySection}>

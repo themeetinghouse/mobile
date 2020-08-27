@@ -37,7 +37,9 @@ const style = StyleSheet.create({
         right: 6,
     },
     headerTitle: {
-        backgroundColor: Theme.colors.header
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
     },
     headerButtonText: HeaderStyle.linkText,
     title: {
@@ -109,7 +111,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }, [])
 
     const items = [
-        //{ id: "mycomments", text: "My Comments", subtext: "All your comments in one place", icon: Theme.icons.white.arrow },
+        { id: "mycomments", text: "My Comments", subtext: "This feature will be available soon", icon: Theme.icons.white.comments, action: () => null },
         { id: "myaccount", text: "My Account", subtext: "Email, password and location", icon: Theme.icons.white.account, action: () => navigation.navigate('AccountScreen') },
     ]
 

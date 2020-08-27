@@ -40,6 +40,7 @@ import SliderThumb from './assets/images/white/Ellipse.png';
 import ArrowBack from './assets/images/white/Arrow-Back.png';
 import Caret from './assets/images/white/Dropdown-Caret.png';
 import Link from './assets/images/white/Link.png';
+import Comments from './assets/images/white/Comments.png';
 import Twitter from './assets/images/black/Twitter.png';
 import Facebook from './assets/images/black/Facebook.png';
 
@@ -76,6 +77,7 @@ export const Theme = {
         fontFamilyMedium: "Graphik-Medium-App",
         fontFamilyBold: "Graphik-Bold-App",
         fontFamilySemiBold: "Graphik-Semibold-App",
+        fontFamilyItalic: "Graphik-RegularItalic"
     },
     icons: {
         width: 24,
@@ -113,7 +115,8 @@ export const Theme = {
             sliderThumb: SliderThumb,
             back: ArrowBack,
             caretDown: Caret,
-            link: Link
+            link: Link,
+            comments: Comments
         },
         grey: {
             arrow: ArrowGrey,
