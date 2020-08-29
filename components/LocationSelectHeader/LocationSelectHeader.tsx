@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native'
 import LocationContext from '../../contexts/LocationContext';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     left: {
@@ -52,7 +53,7 @@ interface LocationSelectHeaderInput {
 
 export default function LocationSelectHeader({ children }: LocationSelectHeaderInput): JSX.Element {
 
-    const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
 

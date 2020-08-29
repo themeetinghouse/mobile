@@ -6,73 +6,74 @@ import { Theme } from '../Theme.style';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 
-const style = StyleSheet.create({
-    containerVideo: {
-        position: 'absolute',
-        height: 56,
-        width: Dimensions.get('window').width,
-        bottom: 90,
-        backgroundColor: Theme.colors.black,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    containerAudioInner: {
-        height: 56,
-        width: Dimensions.get('window').width,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    containerAudioOuter: {
-        position: 'absolute',
-        height: 56,
-        width: Dimensions.get('window').width,
-        bottom: 90,
-        backgroundColor: Theme.colors.black,
-    },
-    title: {
-        fontFamily: Theme.fonts.fontFamilyBold,
-        fontSize: 12,
-        lineHeight: 18,
-        color: 'white'
-    },
-    subTitle: {
-        fontFamily: Theme.fonts.fontFamilyRegular,
-        fontSize: 12,
-        lineHeight: 18,
-        color: Theme.colors.grey5
-    },
-    skipText: {
-        fontFamily: Theme.fonts.fontFamilyBold,
-        fontSize: 12,
-        lineHeight: 18,
-        color: Theme.colors.grey5,
-        marginTop: 8
-    },
-    speedText: {
-        fontFamily: Theme.fonts.fontFamilyBold,
-        fontSize: 16,
-        lineHeight: 24,
-        color: Theme.colors.grey5
-    },
-    timeText: {
-        fontFamily: Theme.fonts.fontFamilyRegular,
-        fontSize: 12,
-        lineHeight: 18,
-        color: Theme.colors.grey5
-    }
-})
+interface Params {
+    marginBottom?: number
+}
 
-export default function MediaPlayer(): JSX.Element {
+export default function MediaPlayer({ marginBottom }: Params): JSX.Element {
 
     const width = Dimensions.get('window').width;
-
     const mediaContext = useContext(MediaContext);
     const [videoReady, setVideoReady] = useState(false);
     const [audioDuration, setAudioDuration] = useState(0.1);
     const [audioPosition, setAudioPosition] = useState(0);
     const playerRef = useRef<YoutubeIframeRef>(null);
+
+    const style = StyleSheet.create({
+        containerVideo: {
+            height: 56,
+            width: Dimensions.get('window').width,
+            backgroundColor: Theme.colors.black,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: marginBottom
+        },
+        containerAudioInner: {
+            height: 56,
+            width: Dimensions.get('window').width,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+        },
+        containerAudioOuter: {
+            height: 58,
+            width: Dimensions.get('window').width,
+            backgroundColor: Theme.colors.black,
+            marginBottom: marginBottom
+        },
+        title: {
+            fontFamily: Theme.fonts.fontFamilyBold,
+            fontSize: 12,
+            lineHeight: 18,
+            color: 'white'
+        },
+        subTitle: {
+            fontFamily: Theme.fonts.fontFamilyRegular,
+            fontSize: 12,
+            lineHeight: 18,
+            color: Theme.colors.grey5
+        },
+        skipText: {
+            fontFamily: Theme.fonts.fontFamilyBold,
+            fontSize: 12,
+            lineHeight: 18,
+            color: Theme.colors.grey5,
+            marginTop: 8
+        },
+        speedText: {
+            fontFamily: Theme.fonts.fontFamilyBold,
+            fontSize: 16,
+            lineHeight: 24,
+            color: Theme.colors.grey5
+        },
+        timeText: {
+            fontFamily: Theme.fonts.fontFamilyRegular,
+            fontSize: 12,
+            lineHeight: 18,
+            color: Theme.colors.grey5
+        }
+    })
 
     useEffect(() => {
         async function updateTime() {

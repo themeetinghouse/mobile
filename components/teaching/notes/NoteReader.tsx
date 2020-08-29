@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, Fragment } from 'react';
 import { View, Text, Image, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
 import * as Linking from 'expo-linking';
-
+import { Thumbnail } from 'native-base';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 type ContentType =
     "unstyled" |
@@ -39,12 +40,6 @@ type Blocks = {
     key: string;
     text: string;
     type: ContentType;
-}
-
-interface Params {
-    blocks: Blocks[];
-    entityMap: any;
-    mode: 'dark' | 'light';
 }
 
 const bookCodes: { [book: string]: string } = {
@@ -125,20 +120,105 @@ function getYouVersionURI(bibleRef: string): string {
     return `https://www.bible.com/bible/111/${book}.${chap}.NIV`
 }
 
-export default function NoteReader({ blocks, entityMap, mode }: Params): JSX.Element {
+interface HyperLinkParams {
+    block: Blocks;
+    links: Array<{ text: string, offset: number, length: number, uri: string }>;
+    styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
+}
+
+function HyperLink({ block, links, styles }: HyperLinkParams): JSX.Element {
+    const [show, setShow] = useState(false)
+    const [passage, setPassage] = useState<HyperLinkParams['links'][0]>({ text: '', offset: -1, length: -1, uri: '' });
+
+    const biblePassage = "The Beginning\n     [1] In the beginning God created the heavens and the earth.  [2] Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.\n    \n     [3] And God said, “Let there be light,” and there was light.  [4] God saw that the light was good, and he separated the light from the darkness.  [5] God called the light “day,” and the darkness he called “night.” And there was evening, and there was morning—the first day.\n    \n     [6] And God said, “Let there be a vault between the waters to separate water from water.”  [7] So God made the vault and separated the water under the vault from the water above it. And it was so.  [8] God called the vault “sky.” And there was evening, and there was morning—the second day.\n    \n     [9] And God said, “Let the water under the sky be gathered to one place, and let dry ground appear.” And it was so. \n"
+
+    const handleClick = async (link: HyperLinkParams['links'][0]) => {
+        if (link.uri.includes('biblegateway')) {
+            setPassage(link);
+            setShow(link.offset === passage.offset ? !show : true);
+        } else {
+            const canOpen = await Linking.canOpenURL(link.uri);
+            if (canOpen)
+                try {
+                    await Linking.openURL(link.uri)
+                } catch (e) {
+                    console.debug(e)
+                }
+        }
+    }
+
+    const superscript: { [num: string]: string } = {
+        '0': '\u2070',
+        '1': '\u00B9',
+        '2': '\u00B2',
+        '3': '\u00B3',
+        '4': '\u2074',
+        '5': '\u2075',
+        '6': '\u2076',
+        '7': '\u2077',
+        '8': '\u2078',
+        '9': '\u2079'
+    }
+
+    const regex = new RegExp("[0123456789]", "g");
+
+    const renderBibleVerse = (reference: string) => {
+        return <View style={{ backgroundColor: 'transparent', marginHorizontal: 16, borderColor: Theme.colors.grey3, borderRadius: 4, borderWidth: 1, marginBottom: 8 }} >
+            <View style={{ backgroundColor: Theme.colors.grey3, paddingVertical: 8, borderTopLeftRadius: 3, borderTopRightRadius: 3, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+                <Text style={[styles.textSmall, { color: 'white' }]}>{reference} (NIV)</Text>
+                <TouchableOpacity style={{ marginRight: 8 }} >
+                    <Thumbnail source={Theme.icons.white.newWindow} square style={{ width: 16, height: 16 }}></Thumbnail>
+                </TouchableOpacity>
+            </View>
+            <Text style={[styles.text, { paddingVertical: 12 }]}>{biblePassage.replace(regex, (x) => superscript[x]).replace(/[[\]]/g, '')}</Text>
+        </View>
+    }
+
+    return (
+        <Fragment>
+            <Text style={{ paddingHorizontal: 16, marginVertical: 12 }}>
+                <Text style={{ ...styles.text, }}>{block.text.slice(0, links[0].offset)}</Text>
+                {links.map((link, index) => {
+                    return <Text key={index}>
+                        <Text onPress={() => handleClick(link)} style={{ ...styles.text, ...{ textDecorationLine: 'underline', textDecorationColor: passage.offset === link.offset && show ? Theme.colors.red : undefined, textDecorationStyle: passage.offset === link.offset && show ? 'dotted' : undefined } }}>{block.text.slice(link.offset, link.offset + link.length)}</Text>
+                        {index + 1 < links.length ? <Text style={styles.text}>{block.text.slice(link.offset + link.length, links[index + 1].offset)}</Text> : null}
+                    </Text>
+                })}
+                <Text style={styles.text}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
+            </Text>
+            {show ? renderBibleVerse(block.text.slice(passage.offset, passage.offset + passage.length)) : null}
+        </Fragment>
+    )
+}
+
+interface NoteReaderParams {
+    blocks: Blocks[];
+    entityMap: any;
+    mode: 'dark' | 'light';
+    fontScale: number;
+    type: 'questions' | 'notes';
+}
+
+export default function NoteReader({ blocks, entityMap, mode, fontScale, type }: NoteReaderParams): JSX.Element {
 
     const color = mode === 'dark' ? 'white' : 'black'
     const styles = StyleSheet.create({
         text: {
             color: color,
-            fontSize: 16,
-            lineHeight: 24,
+            fontSize: 16 * fontScale,
+            lineHeight: 24 * fontScale,
             paddingHorizontal: 16
+        },
+        textSmall: {
+            color: color,
+            fontSize: 12 * fontScale,
+            lineHeight: 18 * fontScale,
+            paddingHorizontal: 8
         },
         header: {
             color: color,
-            fontSize: 24,
-            lineHeight: 32,
+            fontSize: 24 * fontScale,
+            lineHeight: 32 * fontScale,
             paddingHorizontal: 16,
             marginVertical: 24
         }
@@ -195,7 +275,7 @@ export default function NoteReader({ blocks, entityMap, mode }: Params): JSX.Ele
 
     for (const block of blocks) {
         if (block.entityRanges.length > 0) {
-            const links: Array<{ text: string, offset: number, length: number }> = [];
+            const links: Array<{ text: string, offset: number, length: number, uri: string }> = [];
             block.entityRanges.forEach((entity: any) => {
                 const data = entityMap[entity.key];
                 switch (data.type) {
@@ -203,23 +283,14 @@ export default function NoteReader({ blocks, entityMap, mode }: Params): JSX.Ele
                         markupArray.push(<Image key={block.key} resizeMode='contain' style={{ width: '100%', minHeight: 120 }} source={{ uri: data.data.src }} accessibilityLabel={data.data.alt}></Image>)
                         break;
                     case "LINK":
-                        links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length });
+                        links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
                         break;
                 }
             })
 
             if (links.length > 0) {
                 markupArray.push(
-                    <Text key={block.key} style={{ paddingHorizontal: 16, marginVertical: 12 }} >
-                        <Text style={{ ...styles.text, }}>{block.text.slice(0, links[0].offset)}</Text>
-                        {links.map((link, index) => {
-                            return <Text key={index}>
-                                <Text style={{ ...styles.text, ...{ textDecorationLine: 'underline' } }}>{block.text.slice(link.offset, link.offset + link.length)}</Text>
-                                {index + 1 < links.length ? <Text style={styles.text}>{block.text.slice(link.offset + link.length, links[index + 1].offset)}</Text> : null}
-                            </Text>
-                        })}
-                        <Text style={styles.text}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
-                    </Text>
+                    <HyperLink key={block.key + type} block={block} links={links} styles={styles} />
                 )
             }
         } else {

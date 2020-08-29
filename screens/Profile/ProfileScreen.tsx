@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import { Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -208,7 +207,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: Theme.colors.background }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>

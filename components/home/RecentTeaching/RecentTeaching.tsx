@@ -6,7 +6,7 @@ import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { LoadSermonResult } from '../../../services/SermonsService';
-import { TabNavigatorParamList } from '../../../navigation/MainTabNavigator'
+import { MainStackParamList } from '../../../navigation/AppNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
 
 const screenWidth = Dimensions.get('window').width;
@@ -68,7 +68,7 @@ interface RecentTeachingInput {
 export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.Element {
     //console.log("RecentTeaching.render(): props = ", props)
 
-    const navigation = useNavigation<StackNavigationProp<TabNavigatorParamList>>();
+    const navigation = useNavigation<StackNavigationProp<MainStackParamList, 'Main'>>();
     if (!teaching) {
         return <View />;
     }
@@ -83,9 +83,8 @@ export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.E
         teachingImage = teaching.Youtube.snippet.thumbnails.standard;
     }
 
-    const openNotes = (teachingId: string) => {
-        console.log("RecentTeaching.openNotes(): teachingId = ", teachingId);
-        navigation.navigate("Teaching", { screen: "NotesScreen", params: { date: moment(teaching.publishedDate as string).format("YYYY-MM-DD") } })
+    const openNotes = () => {
+        navigation.navigate("NotesScreen", { date: moment(teaching.publishedDate as string).format("YYYY-MM-DD") })
     }
 
     return (
@@ -102,7 +101,7 @@ export default function RecentTeaching({ teaching }: RecentTeachingInput): JSX.E
             <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")}</Text>
             <Text style={style.description}>{teaching.description}</Text>
             <View>
-                <IconButton icon={Theme.icons.white.notes} label="Notes" onPress={() => openNotes(teaching.id)}></IconButton>
+                <IconButton icon={Theme.icons.white.notes} label="Notes" onPress={openNotes}></IconButton>
             </View>
         </View>
     )

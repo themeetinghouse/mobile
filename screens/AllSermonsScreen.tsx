@@ -11,6 +11,7 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     content: {
@@ -61,7 +62,7 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList>;
+    navigation: StackNavigationProp<MainStackParamList>;
     route: RouteProp<TeachingStackParamList, 'AllSermonsScreen'>;
 }
 

@@ -92,7 +92,7 @@ const style = StyleSheet.create({
 });
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList>;
+    navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
 }
 
 export default function AllSeriesScreen({ navigation }: Params): JSX.Element {

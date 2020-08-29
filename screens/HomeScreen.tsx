@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Text, Content, View } from 'native-base';
-import AllButton from '../components/buttons/AllButton';
+import { Container, Content, View } from 'native-base';
+//import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
 import { Theme, Style } from '../Theme.style';
-import EventCard from '../components/home/EventCard/EventCard';
+//import EventCard from '../components/home/EventCard/EventCard';
 import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
-import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
+//import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
 import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 //import EventsService from '../services/EventsService';

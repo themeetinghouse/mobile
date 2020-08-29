@@ -145,7 +145,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Container>
+        <Container style={{ backgroundColor: Theme.colors.black }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>

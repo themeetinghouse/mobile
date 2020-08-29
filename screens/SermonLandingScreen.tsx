@@ -11,13 +11,15 @@ import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
 import Slider from '@react-native-community/slider';
 import Share from '../components/modals/Share';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
+import NotesService from '../services/NotesService';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     content: {
@@ -118,8 +120,8 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList, 'SermonLandingScreen'>;
-    route: RouteProp<TeachingStackParamList, 'SermonLandingScreen'>;
+    navigation: CompositeNavigationProp<StackNavigationProp<MainStackParamList, 'SermonLandingScreen'>, StackNavigationProp<TeachingStackParamList>>;
+    route: RouteProp<MainStackParamList, 'SermonLandingScreen'>;
 }
 
 export default function SermonLandingScreen({ navigation, route }: Params): JSX.Element {
@@ -135,9 +137,15 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const [share, setShare] = useState(false)
     const safeArea = useSafeAreaInsets();
     const headerHeight = useHeaderHeight();
+    const [notesExist, setNotesExist] = useState(false);
 
 
     useEffect(() => {
+        async function checkNotes() {
+            const check = await NotesService.noteExists(moment(sermon.publishedDate).format("YYYY-MM-DD"));
+            setNotesExist(check)
+        }
+        checkNotes();
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
     }, [])
 
@@ -419,10 +427,10 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 <View style={style.detailsDescription}>
                     <Text style={style.body}>{sermon.description}</Text>
                 </View>
-                <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => navigation.navigate('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })} ></IconButton>
+                {notesExist ? <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => navigation.push('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })} /> : null}
             </View>
 
-            <View style={style.categorySection}>
+            {sermonsInSeries.items.length > 1 ? <View style={style.categorySection}>
                 <Text style={style.categoryTitle}>More from this Series</Text>
                 <View style={style.listContentContainer}>
                     {sermonsInSeries.loading &&
@@ -437,7 +445,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                             : null
                     ))}
                 </View>
-            </View>
+            </View> : null}
         </Content>
     )
 }

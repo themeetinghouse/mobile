@@ -116,7 +116,7 @@ export const Theme = {
             back: ArrowBack,
             caretDown: Caret,
             link: Link,
-            comments: Comments
+            comments: Comments,
         },
         grey: {
             arrow: ArrowGrey,

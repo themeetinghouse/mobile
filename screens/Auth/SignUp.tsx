@@ -85,11 +85,11 @@ const style = StyleSheet.create({
 })
 
 
-interface Props {
+interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<AuthStackParamList>, StackNavigationProp<MainStackParamList>>;
 }
 
-export default function SignUp(props: Props): JSX.Element {
+export default function SignUp({ navigation }: Params): JSX.Element {
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
     const [site, setSite] = useState({ locationName: '', locationId: '' });
@@ -122,7 +122,7 @@ export default function SignUp(props: Props): JSX.Element {
         setPass('');
         setSite({ locationName: '', locationId: '' });
         setError('');
-        props.navigation.navigate(screen, screenProps)
+        navigation.navigate(screen, screenProps)
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -165,7 +165,7 @@ export default function SignUp(props: Props): JSX.Element {
             <Text style={style.title}>Password</Text>
             <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <Text style={style.title}>Choose Your Location</Text>
-            <TouchableOpacity style={style.locationSelector} onPress={() => props.navigation.navigate('LocationSelectionScreen')} >
+            <TouchableOpacity style={style.locationSelector} onPress={() => navigation.navigate('LocationSelectionScreen')} >
                 <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>
                 <AntDesign name="caretdown" size={8} color="white" />
             </TouchableOpacity>

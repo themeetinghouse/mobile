@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { StatusBar, StyleSheet, Text, View, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { TeachingStackParamList } from 'navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { Header, Left, Button, Thumbnail, Container, Body, Right } from 'native-base';
 import { Theme, Style } from '../Theme.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList, 'HighlightScreen'>;
-    route: RouteProp<TeachingStackParamList, 'HighlightScreen'>;
+    navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
+    route: RouteProp<MainStackParamList, 'HighlightScreen'>;
 }
 
 const style = StyleSheet.create({

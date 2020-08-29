@@ -2,7 +2,6 @@ import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import React, { useEffect, useState } from 'react';
 import { Platform, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService, { LocationKey } from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
@@ -13,7 +12,6 @@ import MediaContext, { MediaData } from './contexts/MediaContext';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import MiniPlayer from './components/MiniPlayer';
 import * as Sentry from 'sentry-expo';
 import { version } from './version'
 
@@ -120,11 +118,10 @@ function App(props: Props): JSX.Element {
       <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo }}>
         <LocationContext.Provider value={{ locationData, setLocationData }}>
           <UserContext.Provider value={{ userData, setUserData }}>
-            <SafeAreaProvider>
+            <SafeAreaProvider style={{ backgroundColor: 'black' }} >
               {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
               <NavigationContainer theme={CustomTheme}>
                 <AppNavigator />
-                <MiniPlayer />
               </NavigationContainer>
             </SafeAreaProvider>
           </UserContext.Provider>

@@ -16,6 +16,8 @@ import { LoadSeriesListData } from '../services/SeriesService';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import UserContext from '../contexts/UserContext';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import { CompositeNavigationProp } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -151,7 +153,7 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList>;
+    navigation: CompositeNavigationProp<StackNavigationProp<MainStackParamList>, StackNavigationProp<TeachingStackParamList>>;
 }
 
 interface SeriesData extends LoadSeriesListData {
@@ -267,7 +269,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 <View style={style.categorySection} >
                     <SideSwipe
                         contentContainerStyle={style.horizontalListContentContainer}
-                        data={recentSeries?.items?.concat({ loading: true })}
+                        data={recentSeries?.items?.concat({ loading: true }) ?? []}
                         itemWidth={isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10}
                         threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
                         style={{ width: "100%" }}
@@ -306,7 +308,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         contentContainerStyle={style.horizontalListContentContainer}
                         horizontal={true}
                         data={highlights.items}
-                        renderItem={({ item, index, separators }) => (
+                        renderItem={({ item, index }) => (
                             <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items, index: index })} >
                                 <Image
                                     style={[style.highlightsThumbnail, index === (highlights.items.length - 1) ? style.lastHorizontalListItem : {}]}

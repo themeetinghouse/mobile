@@ -5,6 +5,7 @@ import moment from 'moment';
 import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import WhiteButton from '../components/buttons/WhiteButton';
 
 const style = StyleSheet.create({
     content: {
@@ -99,8 +100,8 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     const [secondDate, setSecondDate] = useState<Date>({});
 
     const selectDateItem = (year: number, month: number) => {
-        console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate?.year, firstDate?.month);
-        console.log("DateRangeSelectScreen.selectDateItem(): secondDate = ", secondDate?.year, secondDate?.month);
+        //console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate?.year, firstDate?.month);
+        //console.log("DateRangeSelectScreen.selectDateItem(): secondDate = ", secondDate?.year, secondDate?.month);
         if (!firstDate.year) {
             firstDate.selectNext = true;
         } else if (!secondDate.year) {
@@ -158,7 +159,7 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     }
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: 'black' }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
@@ -170,10 +171,6 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
                     <Text style={style.headerTitle}>Date Range</Text>
                 </Body>
                 <Right style={style.headerRight}>
-                    <TouchableOpacity onPress={() => saveAndClose()}>
-                        <Text style={style.headerButtonText}>Done</Text>
-                    </TouchableOpacity>
-
                 </Right>
             </Header>
             <Content style={style.content}>
@@ -193,6 +190,10 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
                     </View>
                 ))}
             </Content>
+            <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%' }}>
+                <WhiteButton label="Save" onPress={() => saveAndClose()} style={{ height: 56 }} />
+                <WhiteButton outlined label="Clear All" onPress={() => { setFirstDate({}); setSecondDate({}) }} style={{ marginTop: 16, height: 56 }} />
+            </View>
         </Container>
     )
 }
