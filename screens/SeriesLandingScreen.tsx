@@ -110,6 +110,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     const headerHeight = useHeaderHeight();
 
     const [series, setSeries] = useState(seriesParam);
+    const [contentFills, setContentFills] = useState(false);
     const [sermonsInSeries, setSermonsInSeries] = useState<{ loading: boolean, items: any[], nextToken: null | string }>({ loading: true, items: [], nextToken: null });
 
     const [share, setShare] = useState(false);
@@ -131,7 +132,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 style={{
                     backgroundColor: Theme.colors.background,
                     ...StyleSheet.absoluteFillObject,
-                    opacity: headerOpacity,
+                    opacity: contentFills ? headerOpacity : 0,
                     borderBottomColor: colors.border,
                     borderBottomWidth: StyleSheet.hairlineWidth
                 }}
@@ -175,6 +176,13 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
         loadSermonsInSeriesAsync();
     }, [])
 
+
+    function handleOnLayout(height: number) {
+        if (height > Dimensions.get('screen').height) {
+            setContentFills(true);
+        }
+    }
+
     return (
         <Animated.ScrollView
             style={[style.content, { marginTop: -safeArea.top }]}
@@ -200,6 +208,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     onResponderMove={() => setShare(false)}
                     onResponderRelease={() => setShare(false)}
                     style={{ paddingBottom: 48 }}
+                    onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}
                 >
                     <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
                         <LinearGradient

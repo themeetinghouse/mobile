@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { StatusBar, StyleSheet, Text, View, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -7,6 +7,7 @@ import { Header, Left, Button, Thumbnail, Container, Body, Right } from 'native-
 import { Theme, Style } from '../Theme.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import MediaContext from '../contexts/MediaContext';
 
 interface Params {
     navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
@@ -61,6 +62,21 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
     const [index, setIndex] = useState(selectedIndex);
     const [elapsed, setElapsed] = useState(0);
     const [duration, setDuration] = useState(1);
+    const media = useContext(MediaContext);
+
+    useEffect(() => {
+        async function closeMedia() {
+            if (media.media.audio) {
+                try {
+                    await media.media.audio?.sound.unloadAsync();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+            media.setMedia({ video: null, videoTime: 0, audio: null, playerType: 'none', playing: false, series: '', episode: '' });
+        }
+        closeMedia();
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(async () => {

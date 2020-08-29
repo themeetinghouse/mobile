@@ -6,6 +6,7 @@ import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-nativ
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import WhiteButton from '../components/buttons/WhiteButton';
+import MiniPlayer from '../components/MiniPlayer';
 
 const style = StyleSheet.create({
     content: {
@@ -190,10 +191,11 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
                     </View>
                 ))}
             </Content>
-            <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%' }}>
+            <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%', zIndex: 1000 }}>
                 <WhiteButton label="Save" onPress={() => saveAndClose()} style={{ height: 56 }} />
                 <WhiteButton outlined label="Clear All" onPress={() => { setFirstDate({}); setSecondDate({}) }} style={{ marginTop: 16, height: 56 }} />
             </View>
+            <MiniPlayer absolutePosition />
         </Container>
     )
 }

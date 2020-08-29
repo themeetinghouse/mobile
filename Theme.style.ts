@@ -10,7 +10,9 @@ import MapLocationWhite from './assets/images/white/Map-Location.png';
 import AnnouncementWhite from './assets/images/white/Announcement.png';
 import SearchWhite from './assets/images/white/Search.png';
 import CheckWhite from './assets/images/white/Check.png';
+import CheckBlack from './assets/images/black/Check.png';
 import CloseCancelWhite from './assets/images/white/Close-Cancel.png';
+import CloseCancelBlack from './assets/images/black/Close-Cancel.png';
 import GiveWhite from './assets/images/white/Give.png';
 import VolunteerWhite from './assets/images/white/Volunteer.png';
 import ConnectWhite from './assets/images/white/Connect.png';
@@ -41,6 +43,7 @@ import ArrowBack from './assets/images/white/Arrow-Back.png';
 import Caret from './assets/images/white/Dropdown-Caret.png';
 import Link from './assets/images/white/Link.png';
 import Comments from './assets/images/white/Comments.png';
+import AddComment from './assets/images/white/Comment-Add.png';
 import Twitter from './assets/images/black/Twitter.png';
 import Facebook from './assets/images/black/Facebook.png';
 
@@ -117,6 +120,7 @@ export const Theme = {
             caretDown: Caret,
             link: Link,
             comments: Comments,
+            addComment: AddComment,
         },
         grey: {
             arrow: ArrowGrey,
@@ -129,7 +133,9 @@ export const Theme = {
             watch: WatchBlack,
             twitter: Twitter,
             facebook: Facebook,
-            share: ShareBlack
+            share: ShareBlack,
+            checkMark: CheckBlack,
+            closeCancel: CloseCancelBlack
         },
     }
 }

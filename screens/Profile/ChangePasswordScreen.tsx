@@ -9,6 +9,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CommonActions, CompositeNavigationProp } from '@react-navigation/native';
+import MiniPlayer from '../../components/MiniPlayer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
     content: {
@@ -101,6 +103,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     const [currentPass, setCurrentPass] = useState('');
     const [newPass, setNewPass] = useState('');
     const [error, setError] = useState('');
+    const safeArea = useSafeAreaInsets();
 
     function forgotPass(): void {
         setCurrentPass('');
@@ -145,7 +148,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <Container style={{ backgroundColor: Theme.colors.black }} >
+        <Container style={{ backgroundColor: Theme.colors.black, paddingBottom: safeArea.bottom }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
@@ -194,6 +197,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     </List>
                 </View>
             </Content>
+            <MiniPlayer />
         </Container>
     </TouchableWithoutFeedback>
 }

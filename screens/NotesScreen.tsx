@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import NotesService from '../services/NotesService';
 import { Text, Header, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StatusBar, TextStyle, ViewStyle, StyleSheet, View } from 'react-native';
+import { StatusBar, TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
 import NoteReader from '../components/teaching/notes/NoteReader';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -12,6 +12,8 @@ import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import MiniPlayer from '../components/MiniPlayer';
+import WhiteButton from '../components/buttons/WhiteButton';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 interface Style {
     content: any;
@@ -119,12 +121,58 @@ const style = StyleSheet.create({
     }
 })
 
+interface OpenVerseModalParams {
+    closeCallback: () => void;
+    rememberChoiceCallback: (remember: boolean) => void;
+    openPassageCallback: (openIn: 'app' | 'web') => Promise<void>;
+}
+
+function OpenVerseModal({ closeCallback, rememberChoiceCallback, openPassageCallback }: OpenVerseModalParams): JSX.Element {
+
+    const [rememberChoice, setRememberChoice] = useState(false);
+    const [openIn, setOpenIn] = useState<'' | 'app' | 'web'>('')
+
+    const handleRemberChoice = () => {
+        rememberChoiceCallback(!rememberChoice);
+        setRememberChoice(!rememberChoice);
+    }
+
+    const handleOpenPassage = () => {
+        if (openIn !== '')
+            openPassageCallback(openIn)
+    }
+
+    return <View style={{ bottom: 0, height: 386, backgroundColor: 'white', padding: 16 }} >
+        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
+            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 24, lineHeight: 32, color: 'black', width: '67%' }}>How would you like to open this verse?</Text>
+            <Button transparent onPress={closeCallback} ><Thumbnail source={Theme.icons.black.closeCancel} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
+        </View>
+        <TouchableOpacity onPress={() => setOpenIn('app')} style={{ height: 56, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomColor: Theme.colors.grey6, borderBottomWidth: 1 }} >
+            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 16, lineHeight: 24, color: 'black' }}>Open in Bible App</Text>
+            {openIn === 'app' ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setOpenIn('web')} style={{ height: 56, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomColor: Theme.colors.grey6, borderBottomWidth: 1 }} >
+            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 16, lineHeight: 24, color: 'black' }}>Open in Web Browser</Text>
+            {openIn === 'web' ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
+        </TouchableOpacity>
+        <View style={{ height: 80, display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+            <TouchableWithoutFeedback onPress={handleRemberChoice} style={{ width: 32, height: 32, borderWidth: 2, borderColor: Theme.colors.grey5, alignItems: 'center', justifyContent: 'center' }} >
+                {rememberChoice ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
+            </TouchableWithoutFeedback>
+            <Text style={{ fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 16, lineHeight: 24, color: 'black', marginLeft: 20 }}>Remember my choice</Text>
+        </View>
+        <View style={{ height: 56 }} >
+            <WhiteButton solidBlack label="Open Passage" onPress={handleOpenPassage} ></WhiteButton>
+        </View>
+    </View>
+}
+
 interface Params {
     navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
     route: RouteProp<MainStackParamList, 'NotesScreen'>
 }
 
-function NotesScreen({ route, navigation }: Params): JSX.Element {
+export default function NotesScreen({ route, navigation }: Params): JSX.Element {
 
     const date = route.params?.date;
 
@@ -134,6 +182,9 @@ function NotesScreen({ route, navigation }: Params): JSX.Element {
     const [mode, setMode] = useState<'dark' | 'light'>('dark');
     const [fontScale, setFontScale] = useState(1);
     const [textOptions, setTextOptions] = useState(false);
+    const [openVerse, setOpenVerse] = useState(false);
+    const [verseURLs, setVerseURLs] = useState({ youVersion: '', bibleGateway: '' })
+    const [userPreference, setUserPreference] = useState<'app' | 'web' | null>(null);
 
     const headerHeight = useHeaderHeight();
     const safeArea = useSafeAreaInsets();
@@ -232,19 +283,48 @@ function NotesScreen({ route, navigation }: Params): JSX.Element {
         load();
     }, []);
 
+    const handleOpenVerse = (youVersion: string, bibleGateway: string) => {
+        setVerseURLs({ youVersion, bibleGateway })
+        if (userPreference) {
+            handleOpenPassage(userPreference)
+        } else {
+            setOpenVerse(true)
+        }
+    }
+
+    const handleOpenPassage = async (openIn: 'app' | 'web'): Promise<void> => {
+        switch (openIn) {
+            case 'app':
+                try {
+                    const canOpen = await Linking.canOpenURL(verseURLs.youVersion);
+                    if (canOpen)
+                        await Linking.openURL(verseURLs.youVersion);
+                } catch (e) {
+                    console.debug(e)
+                }
+            case 'web':
+                try {
+                    const canOpen = await Linking.canOpenURL(verseURLs.bibleGateway);
+                    if (canOpen)
+                        await Linking.openURL(verseURLs.youVersion);
+                } catch (e) {
+                    console.debug(e)
+                }
+        }
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
-                    <NoteReader blocks={notes.blocks} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' />
+                    <NoteReader blocks={notes.blocks} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
                 </Content>
-                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions'>
-                    <NoteReader blocks={questions.blocks} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' />
+                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
+                    <NoteReader blocks={questions.blocks} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
                 </Content>
             </Swiper>
-            <MiniPlayer marginBottom={safeArea.bottom} />
+            <MiniPlayer marginBottom={safeArea.bottom} absolutePosition={openVerse} />
+            {openVerse ? <OpenVerseModal closeCallback={() => setOpenVerse(false)} rememberChoiceCallback={(e) => console.log(e)} openPassageCallback={handleOpenPassage} /> : null}
         </View>
     )
 }
-
-export default NotesScreen;

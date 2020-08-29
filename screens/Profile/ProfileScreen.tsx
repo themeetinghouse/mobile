@@ -10,6 +10,8 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
 import LocationContext from '../../contexts/LocationContext';
+import MiniPlayer from '../../components/MiniPlayer';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
     content: {
@@ -95,6 +97,7 @@ interface Params {
 export default function Profile({ navigation }: Params): JSX.Element {
 
     const [loggedIn, setLoggedIn] = useState('unknown');
+    const safeArea = useSafeAreaInsets();
 
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
@@ -207,7 +210,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }
 
     return (
-        <Container style={{ backgroundColor: Theme.colors.background }} >
+        <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
@@ -222,6 +225,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                 </Right>
             </Header>
             {renderContent()}
+            <MiniPlayer />
         </Container>
     )
 }

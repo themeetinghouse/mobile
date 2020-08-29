@@ -7,10 +7,11 @@ import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 
 interface Params {
-    marginBottom?: number
+    marginBottom?: number;
+    absolutePosition?: boolean;
 }
 
-export default function MediaPlayer({ marginBottom }: Params): JSX.Element {
+export default function MediaPlayer({ marginBottom, absolutePosition }: Params): JSX.Element {
 
     const width = Dimensions.get('window').width;
     const mediaContext = useContext(MediaContext);
@@ -27,7 +28,9 @@ export default function MediaPlayer({ marginBottom }: Params): JSX.Element {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: marginBottom
+            marginBottom: marginBottom,
+            position: absolutePosition ? 'absolute' : 'relative',
+            bottom: absolutePosition ? 0 : undefined,
         },
         containerAudioInner: {
             height: 56,
@@ -40,7 +43,9 @@ export default function MediaPlayer({ marginBottom }: Params): JSX.Element {
             height: 58,
             width: Dimensions.get('window').width,
             backgroundColor: Theme.colors.black,
-            marginBottom: marginBottom
+            marginBottom: marginBottom,
+            position: absolutePosition ? 'absolute' : 'relative',
+            bottom: absolutePosition ? 0 : undefined,
         },
         title: {
             fontFamily: Theme.fonts.fontFamilyBold,

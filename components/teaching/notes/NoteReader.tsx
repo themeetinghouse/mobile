@@ -1,9 +1,9 @@
 import React, { useState, Fragment } from 'react';
-import { View, Text, Image, StyleSheet, TextStyle } from 'react-native';
+import { View, Text, Image, StyleSheet, TextStyle, Dimensions } from 'react-native';
 import { Theme } from '../../../Theme.style';
 import * as Linking from 'expo-linking';
-import { Thumbnail } from 'native-base';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Thumbnail, Button } from 'native-base';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 type ContentType =
     "unstyled" |
@@ -42,7 +42,7 @@ type Blocks = {
     type: ContentType;
 }
 
-const bookCodes: { [book: string]: string } = {
+/*const bookCodes: { [book: string]: string } = {
     'genesis': 'GEN',
     'exodus': 'EXO',
     'leviticus': 'LEV',
@@ -118,17 +118,144 @@ function getYouVersionURI(bibleRef: string): string {
     const chap = temp[1].split(':')[0]
 
     return `https://www.bible.com/bible/111/${book}.${chap}.NIV`
+}*/
+
+const underline = StyleSheet.create({
+    selected: {
+        textDecorationColor: Theme.colors.red,
+        textDecorationLine: 'underline',
+        textDecorationStyle: 'dotted'
+    }
+})
+
+interface CustomTextParams {
+    processedStyles: InlineStyle[];
+    block: Blocks;
+    styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
+}
+
+function CustomText({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
+
+    const [selected, setSelected] = useState(false);
+    const [pos, setPos] = useState(0);
+
+    if (processedStyles.length === 0) {
+        return <Fragment>
+            <Text onPress={() => setSelected(false)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, fontFamily: Theme.fonts.fontFamilyRegular, ...selected ? underline.selected : {} }}>{block.text}</Text>
+            {selected ?
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                </Button> : null}
+        </Fragment>
+    } else {
+        return <Fragment>
+            <Text onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(false)} style={{ ...styles.text, marginVertical: 12 }} >
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
+                {processedStyles.map((style, index) => {
+                    return <Text key={index}>
+                        <Text style={{ ...styles.text, ...style.style, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
+                        {index + 1 < processedStyles.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
+                    </Text>
+                })}
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
+            </Text>
+            {selected ?
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                </Button> : null}
+        </Fragment>
+    }
+}
+
+function CustomListItem({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
+
+    const [selected, setSelected] = useState(false);
+    const [pos, setPos] = useState(0);
+
+    if (processedStyles.length === 0) {
+        return <Fragment>
+            <Text onPress={() => setSelected(false)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, ...{ marginLeft: 16 }, ...selected ? underline.selected : {} }}>&bull; {block.text}</Text>
+            {selected ?
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                </Button> : null}
+        </Fragment>
+    } else {
+        return <Fragment >
+            <Text onPress={() => setSelected(false)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, ...{ marginLeft: 16 }, ...selected ? underline.selected : {} }}>&bull;{' '}
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
+                {processedStyles.map((style, index) => {
+                    return <Text key={index}>
+                        <Text style={{ ...styles.text, ...style.style, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
+                        {index + 1 < processedStyles.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
+                    </Text>
+                })}
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
+            </Text>
+            {selected ?
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                </Button> : null}
+        </Fragment>
+    }
+}
+
+function CustomHeading({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
+
+    if (processedStyles.length === 0) {
+        return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyRegular }}>{block.text}</Text>
+    } else {
+        return <Text style={{ ...styles.header, marginVertical: 12 }} >
+            <Text style={{ ...styles.header }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
+            {processedStyles.map((style, index) => {
+                return <Text key={index}>
+                    <Text style={{ ...styles.header, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
+                    {index + 1 < processedStyles.length ? <Text style={styles.header}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
+                </Text>
+            })}
+            <Text style={styles.header}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
+        </Text>
+
+    }
+}
+
+interface ImageParams {
+    data: {
+        src: string;
+        alt: string;
+        width: string | number;
+        height: string | number;
+    }
+}
+
+function CustomImage({ data }: ImageParams): JSX.Element {
+    const [selected, setSelected] = useState(false);
+    const [pos, setPos] = useState(0);
+
+    return <Fragment>
+        <TouchableWithoutFeedback onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(false)} style={[{ width: Dimensions.get('screen').width - 72, marginLeft: 16, marginRight: 56, paddingVertical: 1, alignItems: 'center' }, selected ? { borderColor: 'red', borderStyle: 'dashed', borderWidth: 1 } : {}]} >
+            <Image resizeMode='contain' style={{ width: Dimensions.get('screen').width - 80, minHeight: 100 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
+        </TouchableWithoutFeedback>
+        {selected ?
+            <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+            </Button> : null}
+    </Fragment>
+
 }
 
 interface HyperLinkParams {
     block: Blocks;
     links: Array<{ text: string, offset: number, length: number, uri: string }>;
     styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
+    openVerseCallback: (youVersionUri: string, bibleGatewayUri: string) => void;
 }
 
-function HyperLink({ block, links, styles }: HyperLinkParams): JSX.Element {
+function HyperLink({ block, links, styles, openVerseCallback }: HyperLinkParams): JSX.Element {
     const [show, setShow] = useState(false)
     const [passage, setPassage] = useState<HyperLinkParams['links'][0]>({ text: '', offset: -1, length: -1, uri: '' });
+    const [pos, setPos] = useState(0);
+    const [selected, setSelected] = useState(false);
 
     const biblePassage = "The Beginning\n     [1] In the beginning God created the heavens and the earth.  [2] Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.\n    \n     [3] And God said, “Let there be light,” and there was light.  [4] God saw that the light was good, and he separated the light from the darkness.  [5] God called the light “day,” and the darkness he called “night.” And there was evening, and there was morning—the first day.\n    \n     [6] And God said, “Let there be a vault between the waters to separate water from water.”  [7] So God made the vault and separated the water under the vault from the water above it. And it was so.  [8] God called the vault “sky.” And there was evening, and there was morning—the second day.\n    \n     [9] And God said, “Let the water under the sky be gathered to one place, and let dry ground appear.” And it was so. \n"
 
@@ -166,7 +293,7 @@ function HyperLink({ block, links, styles }: HyperLinkParams): JSX.Element {
         return <View style={{ backgroundColor: 'transparent', marginHorizontal: 16, borderColor: Theme.colors.grey3, borderRadius: 4, borderWidth: 1, marginBottom: 8 }} >
             <View style={{ backgroundColor: Theme.colors.grey3, paddingVertical: 8, borderTopLeftRadius: 3, borderTopRightRadius: 3, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
                 <Text style={[styles.textSmall, { color: 'white' }]}>{reference} (NIV)</Text>
-                <TouchableOpacity style={{ marginRight: 8 }} >
+                <TouchableOpacity style={{ marginRight: 8 }} onPress={() => openVerseCallback(passage.uri, passage.uri)} >
                     <Thumbnail source={Theme.icons.white.newWindow} square style={{ width: 16, height: 16 }}></Thumbnail>
                 </TouchableOpacity>
             </View>
@@ -176,18 +303,24 @@ function HyperLink({ block, links, styles }: HyperLinkParams): JSX.Element {
 
     return (
         <Fragment>
-            <Text style={{ paddingHorizontal: 16, marginVertical: 12 }}>
-                <Text style={{ ...styles.text, }}>{block.text.slice(0, links[0].offset)}</Text>
+            <Text style={{ ...styles.text, marginVertical: 12 }} onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(false)} >
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, links[0].offset)}</Text>
                 {links.map((link, index) => {
                     return <Text key={index}>
-                        <Text onPress={() => handleClick(link)} style={{ ...styles.text, ...{ textDecorationLine: 'underline', textDecorationColor: passage.offset === link.offset && show ? Theme.colors.red : undefined, textDecorationStyle: passage.offset === link.offset && show ? 'dotted' : undefined } }}>{block.text.slice(link.offset, link.offset + link.length)}</Text>
-                        {index + 1 < links.length ? <Text style={styles.text}>{block.text.slice(link.offset + link.length, links[index + 1].offset)}</Text> : null}
+                        <Text onPress={() => handleClick(link)} style={{ ...styles.text, ...{ textDecorationLine: 'underline', textDecorationColor: passage.offset === link.offset && show ? Theme.colors.red : undefined, textDecorationStyle: passage.offset === link.offset && show ? 'dotted' : undefined }, ...selected ? underline.selected : {} }}>{block.text.slice(link.offset, link.offset + link.length)}</Text>
+                        {index + 1 < links.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(link.offset + link.length, links[index + 1].offset)}</Text> : null}
                     </Text>
                 })}
-                <Text style={styles.text}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
+                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
             </Text>
             {show ? renderBibleVerse(block.text.slice(passage.offset, passage.offset + passage.length)) : null}
-        </Fragment>
+
+            {/* show || select ? <Button></Button> : null  */}
+
+            {selected ? <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
+                <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+            </Button> : null}
+        </Fragment >
     )
 }
 
@@ -197,9 +330,10 @@ interface NoteReaderParams {
     mode: 'dark' | 'light';
     fontScale: number;
     type: 'questions' | 'notes';
+    openVerseCallback: (youVersionUri: string, bibleGatewayUri: string) => void;
 }
 
-export default function NoteReader({ blocks, entityMap, mode, fontScale, type }: NoteReaderParams): JSX.Element {
+export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback }: NoteReaderParams): JSX.Element {
 
     const color = mode === 'dark' ? 'white' : 'black'
     const styles = StyleSheet.create({
@@ -207,7 +341,8 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
             color: color,
             fontSize: 16 * fontScale,
             lineHeight: 24 * fontScale,
-            paddingHorizontal: 16
+            paddingLeft: 16,
+            marginRight: 56
         },
         textSmall: {
             color: color,
@@ -219,7 +354,8 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
             color: color,
             fontSize: 24 * fontScale,
             lineHeight: 32 * fontScale,
-            paddingHorizontal: 16,
+            paddingLeft: 16,
+            marginRight: 56,
             marginVertical: 24
         }
     })
@@ -245,8 +381,6 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
         flatStyles.forEach(style => {
             let fontFamily: TextStyle['fontFamily'] = Theme.fonts.fontFamilyRegular;
             let textDecorationLine: TextStyle['textDecorationLine'] = 'none';
-
-
 
             if (style.style.includes("BOLD")) {
                 fontFamily = Theme.fonts.fontFamilyBold;
@@ -280,7 +414,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        markupArray.push(<Image key={block.key} resizeMode='contain' style={{ width: '100%', minHeight: 120 }} source={{ uri: data.data.src }} accessibilityLabel={data.data.alt}></Image>)
+                        markupArray.push(<CustomImage data={data.data} key={block.key + type} />)
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
@@ -290,7 +424,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
 
             if (links.length > 0) {
                 markupArray.push(
-                    <HyperLink key={block.key + type} block={block} links={links} styles={styles} />
+                    <HyperLink key={block.key + type} block={block} links={links} styles={styles} openVerseCallback={openVerseCallback} />
                 )
             }
         } else {
@@ -304,22 +438,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
                 case "paragraph":
                 case "blockquote":
                 case "code-block":
-                    if (processedStyles.length === 0) {
-                        markupArray.push(<Text key={block.key} style={{ ...styles.text, fontFamily: Theme.fonts.fontFamilyRegular }}>{block.text}</Text>)
-                    } else {
-                        markupArray.push(
-                            <Text key={block.key} style={{ paddingHorizontal: 16, marginVertical: 12 }} >
-                                <Text style={styles.text}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-                                {processedStyles.map((style, index) => {
-                                    return <Text key={index}>
-                                        <Text style={{ ...styles.text, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                                        {index + 1 < processedStyles.length ? <Text style={styles.text}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                                    </Text>
-                                })}
-                                <Text style={styles.text}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-                            </Text>
-                        )
-                    }
+                    markupArray.push(<CustomText key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
                     break;
 
                 case "header-one":
@@ -328,44 +447,13 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type }:
                 case "header-four":
                 case "header-five":
                 case "header-six":
-                    if (processedStyles.length === 0) {
-                        markupArray.push(<Text key={block.key} style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyRegular }}>{block.text}</Text>)
-                    } else {
-                        markupArray.push(
-                            <Text key={block.key} style={{ paddingHorizontal: 16, marginVertical: 12 }} >
-                                <Text style={{ ...styles.header }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-                                {processedStyles.map((style, index) => {
-                                    return <Text key={index}>
-                                        <Text style={{ ...styles.header, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                                        {index + 1 < processedStyles.length ? <Text style={styles.header}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                                    </Text>
-                                })}
-                                <Text style={styles.header}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-                            </Text>
-                        )
-                    }
+                    markupArray.push(<CustomHeading key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
                     break;
 
                 case "unordered-list-item":
                 case "ordered-list-item":
-                    if (processedStyles.length === 0) {
-                        markupArray.push(<Text key={block.key} style={{ ...styles.text, ...{ marginLeft: 16 } }}>&bull; {block.text}</Text>)
-                    } else {
-                        markupArray.push(
-                            <Text key={block.key} style={{ ...styles.text, ...{ marginLeft: 16 } }}>&bull;{' '}
-                                <Text style={styles.text}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-                                {processedStyles.map((style, index) => {
-                                    return <Text key={index}>
-                                        <Text style={{ ...styles.text, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                                        {index + 1 < processedStyles.length ? <Text style={styles.text}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                                    </Text>
-                                })}
-                                <Text style={styles.text}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-                            </Text>
-                        )
-                    }
+                    markupArray.push(<CustomListItem key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
                     break;
-
                 case "atomic":
                     break;
             }
