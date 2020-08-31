@@ -67,10 +67,10 @@ interface CustomTextParams {
     processedStyles: InlineStyle[];
     block: Blocks;
     styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
+    mode: 'light' | 'dark';
 }
 
-function CustomText({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
-
+function CustomText({ processedStyles, block, styles, mode }: CustomTextParams): JSX.Element {
     const [selected, setSelected] = useState(false);
     const [pos, setPos] = useState(0);
 
@@ -78,8 +78,8 @@ function CustomText({ processedStyles, block, styles }: CustomTextParams): JSX.E
         return <Fragment>
             <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, fontFamily: Theme.fonts.fontFamilyRegular, ...selected ? underline.selected : {} }}>{block.text}</Text>
             {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
                 </Button> : null}
         </Fragment>
     } else {
@@ -95,14 +95,14 @@ function CustomText({ processedStyles, block, styles }: CustomTextParams): JSX.E
                 <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
             </Text>
             {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
                 </Button> : null}
         </Fragment>
     }
 }
 
-function CustomListItem({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
+function CustomListItem({ processedStyles, block, styles, mode }: CustomTextParams): JSX.Element {
 
     const [selected, setSelected] = useState(false);
     const [pos, setPos] = useState(0);
@@ -111,8 +111,8 @@ function CustomListItem({ processedStyles, block, styles }: CustomTextParams): J
         return <Fragment>
             <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, ...{ marginLeft: 16 }, ...selected ? underline.selected : {} }}>&bull; {block.text}</Text>
             {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
                 </Button> : null}
         </Fragment>
     } else {
@@ -128,8 +128,8 @@ function CustomListItem({ processedStyles, block, styles }: CustomTextParams): J
                 <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
             </Text>
             {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                    <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
                 </Button> : null}
         </Fragment>
     }
@@ -160,10 +160,11 @@ interface ImageParams {
         alt: string;
         width: string | number;
         height: string | number;
-    }
+    },
+    mode: 'light' | 'dark';
 }
 
-function CustomImage({ data }: ImageParams): JSX.Element {
+function CustomImage({ data, mode }: ImageParams): JSX.Element {
     const [selected, setSelected] = useState(false);
     const [pos, setPos] = useState(0);
 
@@ -172,8 +173,8 @@ function CustomImage({ data }: ImageParams): JSX.Element {
             <Image resizeMode='contain' style={{ width: Dimensions.get('screen').width - 80, minHeight: 100 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
         </TouchableWithoutFeedback>
         {selected ?
-            <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+            <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
             </Button> : null}
     </Fragment>
 
@@ -187,9 +188,10 @@ interface HyperLinkParams {
     verses: VerseType[];
     type: 'questions' | 'notes';
     date: string;
+    mode: 'light' | 'dark'
 }
 
-function HyperLink({ block, links, styles, openVerseCallback, verses, type, date }: HyperLinkParams): JSX.Element {
+function HyperLink({ block, links, styles, openVerseCallback, verses, type, date, mode }: HyperLinkParams): JSX.Element {
     const [show, setShow] = useState(false)
     const [passage, setPassage] = useState<HyperLinkParams['links'][0]>({ text: '', offset: -1, length: -1, uri: '' });
     const [pos, setPos] = useState(0);
@@ -242,8 +244,8 @@ function HyperLink({ block, links, styles, openVerseCallback, verses, type, date
 
             {/* show || select ? <Button></Button> : null  */}
 
-            {selected ? <Button transparent style={{ position: 'absolute', right: 16, top: pos }} >
-                <Thumbnail source={Theme.icons.white.addComment} square style={{ width: 24, height: 24 }} />
+            {selected || show ? <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
             </Button> : null}
         </Fragment >
     )
@@ -341,7 +343,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        markupArray.push(<CustomImage data={data.data} key={block.key + type} />)
+                        markupArray.push(<CustomImage mode={mode} data={data.data} key={block.key + type} />)
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
@@ -351,7 +353,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
 
             if (links.length > 0) {
                 markupArray.push(
-                    <HyperLink key={block.key + type} block={block} links={links} styles={styles} verses={verses} type={type} date={date} openVerseCallback={openVerseCallback} />
+                    <HyperLink mode={mode} key={block.key + type} block={block} links={links} styles={styles} verses={verses} type={type} date={date} openVerseCallback={openVerseCallback} />
                 )
             }
         } else {
@@ -365,7 +367,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 case "paragraph":
                 case "blockquote":
                 case "code-block":
-                    markupArray.push(<CustomText key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
+                    markupArray.push(<CustomText mode={mode} key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
                     break;
 
                 case "header-one":
@@ -379,7 +381,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
 
                 case "unordered-list-item":
                 case "ordered-list-item":
-                    markupArray.push(<CustomListItem key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
+                    markupArray.push(<CustomListItem mode={mode} key={block.key + type} block={block} processedStyles={processedStyles} styles={styles} />)
                     break;
                 case "atomic":
                     break;

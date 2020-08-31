@@ -44,6 +44,7 @@ import Caret from './assets/images/white/Dropdown-Caret.png';
 import Link from './assets/images/white/Link.png';
 import Comments from './assets/images/white/Comments.png';
 import AddComment from './assets/images/white/Comment-Add.png';
+import AddCommentBlack from './assets/images/black/Comment-Add.png';
 import Twitter from './assets/images/black/Twitter.png';
 import Facebook from './assets/images/black/Facebook.png';
 
@@ -135,7 +136,8 @@ export const Theme = {
             facebook: Facebook,
             share: ShareBlack,
             checkMark: CheckBlack,
-            closeCancel: CloseCancelBlack
+            closeCancel: CloseCancelBlack,
+            addComment: AddCommentBlack,
         },
     }
 }
