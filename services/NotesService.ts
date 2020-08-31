@@ -1,15 +1,10 @@
-import { GetNotesQuery } from './API';
+//import { GetNotesQuery } from './API';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 export default class NotesService {
-  static loadNotes = async (date: string): Promise<NonNullable<GetNotesQuery['getNotes']>['jsonContent'] | undefined> => {
-    const notes = await API.graphql(graphqlOperation(getNotes, { id: date })) as GraphQLResult<GetNotesQuery>
-    return notes.data?.getNotes?.jsonContent;
-  }
-
-  static loadQuestions = async (date: string): Promise<NonNullable<GetNotesQuery['getNotes']>['jsonQuestions'] | undefined> => {
-    const notes = await API.graphql(graphqlOperation(getNotes, { id: date })) as GraphQLResult<GetNotesQuery>
-    return notes.data?.getNotes?.jsonQuestions;
+  static loadNotes = async (date: string): Promise<any> => {
+    const notes = await API.graphql(graphqlOperation(getNotes, { id: date })) as GraphQLResult<any>
+    return notes.data?.getNotes;
   }
 }
 
@@ -27,6 +22,21 @@ const getNotes = /* GraphQL */ `
       tags
       createdAt
       updatedAt
+      verses {
+        items {
+          id
+          key
+          offset
+          length
+          dataType
+          content
+          youVersionUri
+          noteId
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
     }
   }
 `;

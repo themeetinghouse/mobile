@@ -130,7 +130,7 @@ interface OpenVerseModalParams {
 function OpenVerseModal({ closeCallback, rememberChoiceCallback, openPassageCallback }: OpenVerseModalParams): JSX.Element {
 
     const [rememberChoice, setRememberChoice] = useState(false);
-    const [openIn, setOpenIn] = useState<'' | 'app' | 'web'>('')
+    const [openIn, setOpenIn] = useState<'' | 'app' | 'web'>('');
 
     const handleRemberChoice = () => {
         rememberChoiceCallback(!rememberChoice);
@@ -167,6 +167,19 @@ function OpenVerseModal({ closeCallback, rememberChoiceCallback, openPassageCall
     </View>
 }
 
+type VerseType = {
+    id: string;
+    key: string;
+    offset: string;
+    length: string;
+    dataType: string;
+    content: string;
+    youVersionUri: string;
+    noteId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 interface Params {
     navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
     route: RouteProp<MainStackParamList, 'NotesScreen'>
@@ -179,6 +192,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
     const [questions, setQuestions] = useState({ blocks: [], entityMap: {} });
     const [notesMode, setNotesMode] = useState("notes");
+    const [verses, setVerses] = useState<VerseType[]>([]);
     const [mode, setMode] = useState<'dark' | 'light'>('dark');
     const [fontScale, setFontScale] = useState(1);
     const [textOptions, setTextOptions] = useState(false);
@@ -244,8 +258,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
 
     useEffect(() => {
         const load = async () => {
-            const notes = await NotesService.loadNotes(date);
-            const questions = await NotesService.loadQuestions(date);
+            const queryNotes = await NotesService.loadNotes(date);
 
             try {
                 const fontScale = await SecureStore.getItemAsync('fontScale');
@@ -262,18 +275,17 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
             }
 
 
-            if (notes) {
+            if (queryNotes) {
+                setVerses(queryNotes.verses?.items)
                 try {
-                    const notesData = JSON.parse(notes);
+                    const notesData = JSON.parse(queryNotes.jsonContent);
                     setNotes({ blocks: notesData.blocks, entityMap: notesData.entityMap })
                 } catch (e) {
                     console.debug(e)
                 }
-            }
 
-            if (questions) {
                 try {
-                    const questionsData = JSON.parse(questions);
+                    const questionsData = JSON.parse(queryNotes.jsonQuestions);
                     setQuestions({ blocks: questionsData.blocks, entityMap: questionsData.entityMap })
                 } catch (e) {
                     console.debug(e)
@@ -297,16 +309,20 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
             case 'app':
                 try {
                     const canOpen = await Linking.canOpenURL(verseURLs.youVersion);
-                    if (canOpen)
+                    if (canOpen) {
                         await Linking.openURL(verseURLs.youVersion);
+                        setOpenVerse(false)
+                    }
                 } catch (e) {
                     console.debug(e)
                 }
             case 'web':
                 try {
                     const canOpen = await Linking.canOpenURL(verseURLs.bibleGateway);
-                    if (canOpen)
-                        await Linking.openURL(verseURLs.youVersion);
+                    if (canOpen) {
+                        await Linking.openURL(verseURLs.bibleGateway);
+                        setOpenVerse(false)
+                    }
                 } catch (e) {
                     console.debug(e)
                 }
@@ -317,10 +333,10 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         <View style={{ flex: 1 }}>
             <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
-                    <NoteReader blocks={notes.blocks} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
+                    <NoteReader blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
                 </Content>
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
-                    <NoteReader blocks={questions.blocks} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
+                    <NoteReader blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
                 </Content>
             </Swiper>
             <MiniPlayer marginBottom={safeArea.bottom} absolutePosition={openVerse} />
