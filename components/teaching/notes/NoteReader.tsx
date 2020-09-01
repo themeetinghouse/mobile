@@ -241,14 +241,9 @@ function HyperLink({ block, links, styles, openVerseCallback, verses, type, date
 
         if (data?.attrs?.style === 's1') {
             return <Text style={styles.header} key={index}>
-                {data.items.map((item: any) => {
+                {data.items.map((item: any, index: number) => {
                     if (item.text) {
-                        return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }}>{item.text + '\n'}</Text>
-                    } else if (item.items) {
-                        return <Text>
-                            {item.items.map((item2: any, index: number) => {
-                                return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }} key={index}>{item2.text}</Text>
-                            })}</Text>
+                        return <Text key={item.text + index} style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }}>{item.text + '\n'}</Text>
                     } else {
                         return null
                     }
@@ -256,14 +251,14 @@ function HyperLink({ block, links, styles, openVerseCallback, verses, type, date
             </Text>
         } else if (data?.attrs.style === 'q1' || data?.attrs.style === 'q2') {
             return <Text key={index} style={styles.text} >
-                {data.items.map((item: any) => {
+                {data.items.map((item: any, index: number) => {
                     if (item.attrs?.style === 'v') {
-                        return <Text style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
+                        return <Text key={index + 'v'} style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
                     } else if (item.text) {
-                        return <Text style={styles.text}>{(data.attrs.style === 'q2' ? '   ' : '') + item.text + (index === length - 1 ? '' : '\n')}</Text>
+                        return <Text key={item.text + index} style={styles.text}>{(data.attrs.style === 'q2' ? '   ' : '') + item.text + (index === length - 1 ? '' : '\n')}</Text>
                     } else if (item.items) {
-                        return <Text style={styles.text}>{item.items.map((item2: any, index: number) => {
-                            return <Text key={index} style={styles.text}>{item2.text}</Text>
+                        return <Text key={index} style={styles.text}>{item.items.map((item2: any) => {
+                            return <Text key={item2.text + index} style={styles.text}>{item2.text}</Text>
                         })}</Text>
                     } else {
                         return null
@@ -272,14 +267,14 @@ function HyperLink({ block, links, styles, openVerseCallback, verses, type, date
             </Text>
         } else {
             return <Text key={index} style={styles.text} >{index === 0 ? '' : '   '}
-                {data.items.map((item: any) => {
+                {data.items.map((item: any, index: number) => {
                     if (item.attrs?.style === 'v') {
-                        return <Text style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
+                        return <Text key={index + 'v'} style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
                     } else if (item.text) {
-                        return <Text style={styles.text}>{item.text}</Text>
+                        return <Text key={item.text + index} style={styles.text}>{item.text}</Text>
                     } else if (item.items) {
-                        return <Text style={styles.text}>{item.items.map((item2: any, index: number) => {
-                            return <Text key={index} style={styles.text}>{item2.text}</Text>
+                        return <Text key={index} style={styles.text}>{item.items.map((item2: any) => {
+                            return <Text key={item2.text + index} style={styles.text}>{item2.text}</Text>
                         })}</Text>
                     } else {
                         return null
