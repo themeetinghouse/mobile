@@ -123,23 +123,17 @@ const style = StyleSheet.create({
 
 interface OpenVerseModalParams {
     closeCallback: () => void;
-    rememberChoiceCallback: (remember: boolean) => void;
-    openPassageCallback: (openIn: 'app' | 'web') => Promise<void>;
+    openPassageCallback: (openIn: 'app' | 'web', remember: boolean) => Promise<void>;
 }
 
-function OpenVerseModal({ closeCallback, rememberChoiceCallback, openPassageCallback }: OpenVerseModalParams): JSX.Element {
+function OpenVerseModal({ closeCallback, openPassageCallback }: OpenVerseModalParams): JSX.Element {
 
     const [rememberChoice, setRememberChoice] = useState(false);
     const [openIn, setOpenIn] = useState<'' | 'app' | 'web'>('');
 
-    const handleRemberChoice = () => {
-        rememberChoiceCallback(!rememberChoice);
-        setRememberChoice(!rememberChoice);
-    }
-
     const handleOpenPassage = () => {
         if (openIn !== '')
-            openPassageCallback(openIn)
+            openPassageCallback(openIn, rememberChoice)
     }
 
     return <View style={{ bottom: 0, height: 386, backgroundColor: 'white', padding: 16 }} >
@@ -156,7 +150,7 @@ function OpenVerseModal({ closeCallback, rememberChoiceCallback, openPassageCall
             {openIn === 'web' ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
         </TouchableOpacity>
         <View style={{ height: 80, display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-            <TouchableWithoutFeedback onPress={handleRemberChoice} style={{ width: 32, height: 32, borderWidth: 2, borderColor: Theme.colors.grey5, alignItems: 'center', justifyContent: 'center' }} >
+            <TouchableWithoutFeedback onPress={() => setRememberChoice(!rememberChoice)} style={{ width: 32, height: 32, borderWidth: 2, borderColor: Theme.colors.grey5, alignItems: 'center', justifyContent: 'center' }} >
                 {rememberChoice ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
             </TouchableWithoutFeedback>
             <Text style={{ fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 16, lineHeight: 24, color: 'black', marginLeft: 20 }}>Remember my choice</Text>
@@ -197,7 +191,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [fontScale, setFontScale] = useState(1);
     const [textOptions, setTextOptions] = useState(false);
     const [openVerse, setOpenVerse] = useState(false);
-    const [verseURLs, setVerseURLs] = useState({ youVersion: '', bibleGateway: '' })
+    const [verseURLs, setVerseURLs] = useState<{ youVersion: string | undefined, bibleGateway: string }>({ youVersion: '', bibleGateway: '' })
     const [userPreference, setUserPreference] = useState<'app' | 'web' | null>(null);
 
     const headerHeight = useHeaderHeight();
@@ -295,27 +289,42 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         load();
     }, []);
 
-    const handleOpenVerse = (youVersion: string, bibleGateway: string) => {
+    const handleOpenVerse = (youVersion: string | undefined, bibleGateway: string) => {
         setVerseURLs({ youVersion, bibleGateway })
+        if (!youVersion) {
+            handleOpenPassage('web', false)
+            return
+        }
+
         if (userPreference) {
-            handleOpenPassage(userPreference)
+            handleOpenPassage(userPreference, false)
         } else {
             setOpenVerse(true)
         }
     }
 
-    const handleOpenPassage = async (openIn: 'app' | 'web'): Promise<void> => {
+    const handleOpenPassage = async (openIn: 'app' | 'web', rememberChoice: boolean): Promise<void> => {
+
+        if (rememberChoice) {
+            setUserPreference(openIn);
+
+            // await set cognito attribute
+        }
+
         switch (openIn) {
             case 'app':
                 try {
-                    const canOpen = await Linking.canOpenURL(verseURLs.youVersion);
-                    if (canOpen) {
-                        await Linking.openURL(verseURLs.youVersion);
-                        setOpenVerse(false)
+                    if (verseURLs.youVersion) {
+                        const canOpen = await Linking.canOpenURL(verseURLs.youVersion);
+                        if (canOpen) {
+                            await Linking.openURL(verseURLs.youVersion);
+                            setOpenVerse(false)
+                        }
                     }
                 } catch (e) {
                     console.debug(e)
                 }
+                break;
             case 'web':
                 try {
                     const canOpen = await Linking.canOpenURL(verseURLs.bibleGateway);
@@ -326,6 +335,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 } catch (e) {
                     console.debug(e)
                 }
+                break;
         }
     }
 
@@ -340,7 +350,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 </Content>
             </Swiper>
             <MiniPlayer marginBottom={safeArea.bottom} absolutePosition={openVerse} />
-            {openVerse ? <OpenVerseModal closeCallback={() => setOpenVerse(false)} rememberChoiceCallback={(e) => console.log(e)} openPassageCallback={handleOpenPassage} /> : null}
+            {openVerse ? <OpenVerseModal closeCallback={() => setOpenVerse(false)} openPassageCallback={handleOpenPassage} /> : null}
         </View>
     )
 }
