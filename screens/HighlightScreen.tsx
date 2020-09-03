@@ -66,6 +66,7 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
 
     useEffect(() => {
         async function closeMedia() {
+            media.setPlayerTypeNone();
             if (media.media.audio) {
                 try {
                     await media.media.audio?.sound.unloadAsync();
@@ -142,13 +143,13 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
                 />
             </View>
             <View style={{ height: 4, width: (elapsed / duration) * screenWidth, backgroundColor: 'white' }} />
-            <View style={{ paddingBottom: 24, paddingTop: 16, backgroundColor: Theme.colors.background }} >
+            <View style={{ paddingBottom: 48, paddingTop: 16, backgroundColor: Theme.colors.background }} >
                 <Text style={style.categoryTitle}>Up Next</Text>
                 <FlatList
                     //contentContainerStyle={style.horizontalListContentContainer}
                     horizontal={true}
                     data={allHighlights}
-                    initialScrollIndex={selectedIndex + 1}
+                    //initialScrollIndex={selectedIndex + 1}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity onPress={() => { setHighlight(allHighlights[index]); setIndex(index); setElapsed(0); }} >
                             <Image

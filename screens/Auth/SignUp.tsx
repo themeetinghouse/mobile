@@ -117,12 +117,20 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             setSite({ locationName: route.params.locationName, locationId: route.params.locationId })
     }, [route]);
 
-    function navigate(screen: keyof AuthStackParamList | keyof MainStackParamList, screenProps?: any): void {
+    function navigateInAuthStack(screen: keyof AuthStackParamList): void {
         setUser('');
         setPass('');
         setSite({ locationName: '', locationId: '' });
         setError('');
-        navigation.navigate(screen, screenProps)
+        navigation.push(screen)
+    }
+
+    function navigateHome() {
+        setUser('');
+        setPass('');
+        setSite({ locationName: '', locationId: '' });
+        setError('');
+        navigation.push('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -139,7 +147,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         }
 
         try {
-            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigate('ConfirmSignUpScreen'))
+            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigateInAuthStack('ConfirmSignUpScreen'))
         } catch (e) {
             console.debug(e)
             if (e.code === 'InvalidPasswordException')
@@ -153,10 +161,10 @@ export default function SignUp({ navigation }: Params): JSX.Element {
 
     return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
-            <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
+            <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigateHome()} >
                 <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
             </Button>
-            <Text onPress={() => navigate('LoginScreen')} style={style.headerTextInactive}>Login</Text>
+            <Text onPress={() => navigateInAuthStack('LoginScreen')} style={style.headerTextInactive}>Login</Text>
             <Text style={style.headerTextActive}>Sign Up</Text>
         </View>
         <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
@@ -165,7 +173,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             <Text style={style.title}>Password</Text>
             <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <Text style={style.title}>Choose Your Location</Text>
-            <TouchableOpacity style={style.locationSelector} onPress={() => navigation.navigate('LocationSelectionScreen')} >
+            <TouchableOpacity style={style.locationSelector} onPress={() => navigateInAuthStack('LocationSelectionScreen')} >
                 <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>
                 <AntDesign name="caretdown" size={8} color="white" />
             </TouchableOpacity>
@@ -173,11 +181,11 @@ export default function SignUp({ navigation }: Params): JSX.Element {
                 <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
             </View>
             <WhiteButton label={"Create Account"} onPress={signUp} style={{ marginTop: 12, height: 56 }} />
-            <TouchableOpacity onPress={() => navigate('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateInAuthStack('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
         </View>
         <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
             <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Already have an account?</Text>
-            <WhiteButton outlined label="Login" onPress={() => navigate('LoginScreen')} style={{ marginTop: 12, height: 56 }} />
+            <WhiteButton outlined label="Login" onPress={() => navigateInAuthStack('LoginScreen')} style={{ marginTop: 12, height: 56 }} />
         </View>
     </ScrollView>
 }

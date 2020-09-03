@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator, BottomTabBarProps, BottomTabBarOptions } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import TeachingScreen from '../screens/TeachingScreen';
 import AllSeriesScreen from '../screens/AllSeriesScreen';
@@ -20,11 +20,8 @@ import AnnouncementDetailsScreen from '../screens/AnnouncementDetailsScreen';
 import MoreScreen from '../screens/MoreScreen';
 import SeriesLandingScreen from '../screens/SeriesLandingScreen';
 import { Theme } from '../Theme.style';
-import { StyleSheet, View } from 'react-native';
-import MiniPlayer from '../components/MiniPlayer';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useTheme } from '@react-navigation/native'
+import { StyleSheet } from 'react-native';
+import MediaContext from '../contexts/MediaContext';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -97,73 +94,50 @@ const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
 export default function MainTabNavigator(): JSX.Element {
 
-  return (
-    <Tab.Navigator
-      tabBar={props => <MyTabNavigator {...props} />}
-    >
-      <Tab.Screen name="Home" component={HomeStack} />
-      <Tab.Screen name="Teaching" component={TeachingStack} />
-      <Tab.Screen name="More" component={MoreStack} />
-    </Tab.Navigator>
-  )
-}
-
-function MyTabNavigator({ state, navigation }: BottomTabBarProps<BottomTabBarOptions>): JSX.Element {
-
-  const safeArea = useSafeAreaInsets();
-  const { colors } = useTheme();
+  const media = useContext(MediaContext);
 
   const style = StyleSheet.create({
     tabIcon: {
       width: 45,
       height: 45
     }
-  });
+  })
 
-  const renderIcon = (focused: boolean, routeName: string) => {
-    let icon;
-
-    if (routeName === 'Home') {
-      icon = focused
-        ? TabHomeActiveImage
-        : TabHomeImage;
-    } else if (routeName === 'Teaching') {
-      icon = focused
-        ? TabTeachingActiveImage
-        : TabTeachingImage;
-    } else if (routeName === 'More') {
-      icon = focused
-        ? TabMoreActiveImage
-        : TabMoreImage;
-    }
-    return <TouchableWithoutFeedback key={routeName} onPress={() => navigation.navigate(routeName)} >
-      <Thumbnail square source={icon} style={style.tabIcon} />
-    </TouchableWithoutFeedback>;
-  }
-
-  return <Fragment>
-    <MiniPlayer />
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingBottom: safeArea.bottom,
-        paddingTop: 10,
-        backgroundColor: Theme.colors.background,
-        borderTopColor: colors.border,
-        borderTopWidth: StyleSheet.hairlineWidth,
-        elevation: 8
+  return (
+    <Tab.Navigator
+      tabBarOptions={{
+        showLabel: false,
+        style: {
+          height: 90,
+          backgroundColor: Theme.colors.background,
+          marginTop: media.media.playerType.includes('mini') ? 56 : 0
+        }
       }}
-    >
-      {state.routes.map((route, index) => {
-        const isFocused = state.index === index;
-        return renderIcon(isFocused, route.name)
-      }
-      )}
-    </View>
-  </Fragment>
+      screenOptions={({ route }) => ({
+        tabBarIcon: function render({ focused }: { focused: boolean }) {
+          let icon;
 
+          if (route.name === 'Home') {
+            icon = focused
+              ? TabHomeActiveImage
+              : TabHomeImage;
+          } else if (route.name === 'Teaching') {
+            icon = focused
+              ? TabTeachingActiveImage
+              : TabTeachingImage;
+          } else if (route.name === 'More') {
+            icon = focused
+              ? TabMoreActiveImage
+              : TabMoreImage;
+          }
+          return <Thumbnail square source={icon} style={style.tabIcon}></Thumbnail>;
+        },
+      })}>
+      <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="Teaching" component={TeachingStack} />
+      <Tab.Screen name="More" component={MoreStack} />
+    </Tab.Navigator>
+  )
 }
 
 

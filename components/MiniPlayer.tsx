@@ -5,13 +5,14 @@ import MediaContext from '../contexts/MediaContext';
 import { Theme } from '../Theme.style';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 
 interface Params {
-    marginBottom?: number;
-    absolutePosition?: boolean;
+    currentScreen: string;
 }
 
-export default function MediaPlayer({ marginBottom, absolutePosition }: Params): JSX.Element {
+export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
 
     const width = Dimensions.get('window').width;
     const mediaContext = useContext(MediaContext);
@@ -19,18 +20,22 @@ export default function MediaPlayer({ marginBottom, absolutePosition }: Params):
     const [audioDuration, setAudioDuration] = useState(0.1);
     const [audioPosition, setAudioPosition] = useState(0);
     const playerRef = useRef<YoutubeIframeRef>(null);
+    const [bottomPos, setBottomPos] = useState(90);
+
+    const safeArea = useSafeAreaInsets();
+    const display = useContext(MiniPlayerStyleContext);
 
     const style = StyleSheet.create({
         containerVideo: {
             height: 56,
             width: Dimensions.get('window').width,
             backgroundColor: Theme.colors.black,
-            display: 'flex',
+            display: display.display,
             flexDirection: 'row',
             alignItems: 'center',
-            marginBottom: marginBottom,
-            position: absolutePosition ? 'absolute' : 'relative',
-            bottom: absolutePosition ? 0 : undefined,
+            position: bottomPos ? 'absolute' : 'relative',
+            bottom: bottomPos,
+            marginBottom: bottomPos ? 0 : safeArea.bottom
         },
         containerAudioInner: {
             height: 56,
@@ -43,9 +48,10 @@ export default function MediaPlayer({ marginBottom, absolutePosition }: Params):
             height: 58,
             width: Dimensions.get('window').width,
             backgroundColor: Theme.colors.black,
-            marginBottom: marginBottom,
-            position: absolutePosition ? 'absolute' : 'relative',
-            bottom: absolutePosition ? 0 : undefined,
+            position: bottomPos ? 'absolute' : 'relative',
+            bottom: bottomPos,
+            marginBottom: bottomPos ? 0 : safeArea.bottom,
+            display: display.display
         },
         title: {
             fontFamily: Theme.fonts.fontFamilyBold,
@@ -79,6 +85,24 @@ export default function MediaPlayer({ marginBottom, absolutePosition }: Params):
             color: Theme.colors.grey5
         }
     })
+
+    const bottomTabHidden = [
+        'NotesScreen',
+        'ProfileScreen',
+        'AccountScreen',
+        'ChangePasswordScreen',
+        'LocationSelectionScreen',
+        'DateRangeSelectScreen',
+        'SermonLandingScreen'
+    ]
+
+    useEffect(() => {
+        if (bottomTabHidden.includes(currentScreen)) {
+            setBottomPos(0)
+        } else {
+            setBottomPos(90)
+        }
+    }, [currentScreen])
 
     useEffect(() => {
         async function updateTime() {

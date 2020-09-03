@@ -18,7 +18,6 @@ import Slider from '@react-native-community/slider';
 import Share from '../components/modals/Share';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import MiniPlayer from '../components/MiniPlayer';
 import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
@@ -345,7 +344,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     })
 
     return (
-        <View style={{ flex: 1, marginBottom: safeArea.bottom }} >
+        <View style={{ flex: 1 }} >
             <Content
                 style={style.content}
                 onStartShouldSetResponder={() => true}
@@ -442,8 +441,6 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     </View>
                 </View> : null}
             </Content>
-            <MiniPlayer />
         </View>
-
     )
 }

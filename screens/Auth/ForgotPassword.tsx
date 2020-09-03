@@ -57,7 +57,7 @@ const style = StyleSheet.create({
 interface Params {
     navigation: CompositeNavigationProp<
         StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>,
-        StackNavigationProp<MainStackParamList>
+        StackNavigationProp<MainStackParamList, 'Auth'>
     >;
 }
 
@@ -97,7 +97,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         setCode('');
         setError('');
         setCodeSent(false);
-        navigation.navigate('LoginScreen')
+        navigation.push("LoginScreen")
     }
 
     function toHome(): void {
@@ -106,7 +106,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         setCode('');
         setError('');
         setCodeSent(false);
-        navigation.navigate("Main", { screen: "Home", params: { screen: "HomeScreen" } })
+        navigation.push("Main", { screen: "Home", params: { screen: "HomeScreen" } })
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {

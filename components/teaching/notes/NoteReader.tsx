@@ -78,7 +78,7 @@ function CustomText({ processedStyles, block, styles, mode }: CustomTextParams):
         return <Fragment>
             <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, fontFamily: Theme.fonts.fontFamilyRegular, ...selected ? underline.selected : {} }}>{block.text}</Text>
             {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+                <Button onPress={() => console.log(block)} transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
                     <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
                 </Button> : null}
         </Fragment>
@@ -326,7 +326,7 @@ function HyperLink({ block, links, styles, openVerseCallback, verses, type, date
                 <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
             </Text>
             {show ? renderBibleVerse(block.text.slice(passage.offset, passage.offset + passage.length)) : null}
-            {selected || show ? <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
+            {selected || show ? <Button onPress={() => console.log(block)} transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
                 <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
             </Button> : null}
         </Fragment >

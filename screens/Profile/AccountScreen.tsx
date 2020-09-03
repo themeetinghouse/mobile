@@ -6,7 +6,6 @@ import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
 import LocationsService, { LocationKey } from '../../services/LocationsService';
 import { MainStackParamList } from 'navigation/AppNavigator';
-import MiniPlayer from '../../components/MiniPlayer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
@@ -184,7 +183,6 @@ function Account({ navigation }: Params): JSX.Element {
                     </List>
                 </View>
             </Content>
-            <MiniPlayer />
         </Container>
 
     )

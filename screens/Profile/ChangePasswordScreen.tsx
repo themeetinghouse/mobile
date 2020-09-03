@@ -9,7 +9,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CommonActions, CompositeNavigationProp } from '@react-navigation/native';
-import MiniPlayer from '../../components/MiniPlayer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
@@ -197,7 +196,6 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     </List>
                 </View>
             </Content>
-            <MiniPlayer />
         </Container>
     </TouchableWithoutFeedback>
 }

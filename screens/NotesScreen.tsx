@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import NotesService from '../services/NotesService';
 import { Text, Header, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
@@ -11,9 +11,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import { MainStackParamList } from 'navigation/AppNavigator';
-import MiniPlayer from '../components/MiniPlayer';
 import WhiteButton from '../components/buttons/WhiteButton';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import ActivityIndicator from '../components/ActivityIndicator';
+import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 
 interface Style {
     content: any;
@@ -197,7 +198,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const headerHeight = useHeaderHeight();
     const safeArea = useSafeAreaInsets();
     const ref = React.createRef<Swiper>();
-
+    const miniPlayerStyle = useContext(MiniPlayerStyleContext);
 
     navigation.setOptions({
         headerShown: true,
@@ -291,19 +292,21 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
 
     const handleOpenVerse = (youVersion: string | undefined, bibleGateway: string) => {
         setVerseURLs({ youVersion, bibleGateway })
+
         if (!youVersion) {
-            handleOpenPassage('web', false)
+            handleOpenPassage('web', false, bibleGateway)
             return
         }
 
         if (userPreference) {
             handleOpenPassage(userPreference, false)
         } else {
-            setOpenVerse(true)
+            miniPlayerStyle.setDisplay('none');
+            setOpenVerse(true);
         }
     }
 
-    const handleOpenPassage = async (openIn: 'app' | 'web', rememberChoice: boolean): Promise<void> => {
+    const handleOpenPassage = async (openIn: 'app' | 'web', rememberChoice: boolean, url?: string): Promise<void> => {
 
         if (rememberChoice) {
             setUserPreference(openIn);
@@ -315,11 +318,9 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
             case 'app':
                 try {
                     if (verseURLs.youVersion) {
-                        const canOpen = await Linking.canOpenURL(verseURLs.youVersion);
-                        if (canOpen) {
-                            await Linking.openURL(verseURLs.youVersion);
-                            setOpenVerse(false)
-                        }
+                        await Linking.openURL(verseURLs.youVersion);
+                        setOpenVerse(false);
+                        miniPlayerStyle.setDisplay('flex');
                     }
                 } catch (e) {
                     console.debug(e)
@@ -327,11 +328,9 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 break;
             case 'web':
                 try {
-                    const canOpen = await Linking.canOpenURL(verseURLs.bibleGateway);
-                    if (canOpen) {
-                        await Linking.openURL(verseURLs.bibleGateway);
-                        setOpenVerse(false)
-                    }
+                    await Linking.openURL(url ?? verseURLs.bibleGateway);
+                    setOpenVerse(false);
+                    miniPlayerStyle.setDisplay('flex');
                 } catch (e) {
                     console.debug(e)
                 }
@@ -341,16 +340,17 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
 
     return (
         <View style={{ flex: 1 }}>
-            <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
-                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
-                    <NoteReader blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
-                </Content>
-                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
-                    <NoteReader blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
-                </Content>
-            </Swiper>
-            <MiniPlayer marginBottom={safeArea.bottom} absolutePosition={openVerse} />
-            {openVerse ? <OpenVerseModal closeCallback={() => setOpenVerse(false)} openPassageCallback={handleOpenPassage} /> : null}
+            {notes.blocks.length > 0 ?
+                <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
+                    <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
+                        <NoteReader blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
+                    </Content>
+                    <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
+                        <NoteReader blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
+                    </Content>
+                </Swiper> : <ActivityIndicator />
+            }
+            {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={handleOpenPassage} /> : null}
         </View>
     )
 }

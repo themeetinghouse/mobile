@@ -11,7 +11,6 @@ import UserContext from '../contexts/UserContext';
 import * as SecureStore from 'expo-secure-store';
 import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from 'navigation/AppNavigator';
-import MiniPlayer from '../components/MiniPlayer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
@@ -179,7 +178,6 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
                     </List>
                 </View>
             </Content>
-            <MiniPlayer marginBottom={safeArea.bottom} />
         </Container>
     )
 }

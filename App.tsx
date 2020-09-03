@@ -1,15 +1,17 @@
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import React, { useEffect, useState } from 'react';
-import { Platform, StatusBar } from 'react-native';
+import React, { useEffect, useState, createRef } from 'react';
+import { Platform, StatusBar, ViewStyle } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService, { LocationKey } from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
+import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import MediaContext, { MediaData } from './contexts/MediaContext';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import MiniPlayer from './components/MiniPlayer';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Sentry from 'sentry-expo';
@@ -52,14 +54,10 @@ function App(props: Props): JSX.Element {
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
   const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, episode: '', series: '' });
+  const [currentScreen, setCurrentScreen] = useState('HomeScreen');
+  const [display, setDisplay] = useState<ViewStyle['display']>('flex');
 
-  /*useEffect(() => {
-    const setInitialAppState = async () => {
-      const selectedLocation = await LocationsService.getLocationById("oakville");
-      props.dispatch(selectLocation(selectedLocation));
-    }
-    setInitialAppState();
-  }, [])*/
+  const navRef = createRef<NavigationContainerRef>();
 
   const setVideoTime = (data: number) => {
     setMedia(prevState => { return { ...prevState, videoTime: data } })
@@ -76,6 +74,20 @@ function App(props: Props): JSX.Element {
   const setAudioNull = () => {
     setMedia(prevState => { return { ...prevState, audio: null } })
   }
+
+  const setPlayerTypeNone = () => {
+    setMedia(prevState => { return { ...prevState, playerType: 'none' } })
+
+  }
+
+  useEffect(() => {
+    const unsub = navRef?.current?.addListener('state', () => {
+      const screen = navRef.current?.getCurrentRoute()?.name;
+      if (screen)
+        setCurrentScreen(screen);
+    })
+    return unsub;
+  }, [navRef])
 
   useEffect(() => {
     async function checkForUser() {
@@ -115,18 +127,21 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo }}>
-        <LocationContext.Provider value={{ locationData, setLocationData }}>
-          <UserContext.Provider value={{ userData, setUserData }}>
-            <SafeAreaProvider style={{ backgroundColor: 'black' }} >
-              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-              <NavigationContainer theme={CustomTheme}>
-                <AppNavigator />
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </UserContext.Provider>
-        </LocationContext.Provider>
-      </MediaContext.Provider>
+      <MiniPlayerStyleContext.Provider value={{ display, setDisplay }} >
+        <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo, setPlayerTypeNone }}>
+          <LocationContext.Provider value={{ locationData, setLocationData }}>
+            <UserContext.Provider value={{ userData, setUserData }}>
+              <SafeAreaProvider style={{ backgroundColor: 'black' }} >
+                {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                <NavigationContainer theme={CustomTheme} ref={navRef} >
+                  <AppNavigator />
+                  <MiniPlayer currentScreen={currentScreen} />
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </UserContext.Provider>
+          </LocationContext.Provider>
+        </MediaContext.Provider>
+      </MiniPlayerStyleContext.Provider>
     );
   }
 }

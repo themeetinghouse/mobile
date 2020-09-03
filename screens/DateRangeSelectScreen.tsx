@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -6,7 +6,7 @@ import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-nativ
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import WhiteButton from '../components/buttons/WhiteButton';
-import MiniPlayer from '../components/MiniPlayer';
+import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 
 const style = StyleSheet.create({
     content: {
@@ -99,6 +99,19 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
 
     const [firstDate, setFirstDate] = useState<Date>({});
     const [secondDate, setSecondDate] = useState<Date>({});
+    const miniPlayerStyle = useContext(MiniPlayerStyleContext);
+
+
+    useEffect(() => {
+        miniPlayerStyle.setDisplay('none')
+    }, [])
+
+    useEffect(() => {
+        const unsub = navigation.addListener('blur', () => {
+            miniPlayerStyle.setDisplay('flex')
+        });
+        return unsub;
+    }, [])
 
     const selectDateItem = (year: number, month: number) => {
         //console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate?.year, firstDate?.month);
@@ -191,11 +204,10 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
                     </View>
                 ))}
             </Content>
-            <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%', zIndex: 1000 }}>
+            <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%', zIndex: 10000 }}>
                 <WhiteButton label="Save" onPress={() => saveAndClose()} style={{ height: 56 }} />
                 <WhiteButton outlined label="Clear All" onPress={() => { setFirstDate({}); setSecondDate({}) }} style={{ marginTop: 16, height: 56 }} />
             </View>
-            <MiniPlayer absolutePosition />
         </Container>
     )
 }
