@@ -22,7 +22,7 @@ export type MainStackParamList = {
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
   LocationSelectionScreen: { persist: boolean };
-  HighlightScreen: { highlights: any, index: number };
+  HighlightScreen: { highlights: any[] };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
 }

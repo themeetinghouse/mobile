@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, createRef } from 'react';
 import { StatusBar, StyleSheet, Text, View, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -53,16 +53,17 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
 
     const screenWidth = Dimensions.get('screen').width;
 
-    const selectedIndex = route.params?.index;
     const allHighlights = route.params?.highlights;
     const playerRef = useRef<YoutubeIframeRef>(null);
     const safeArea = useSafeAreaInsets();
 
-    const [highlight, setHighlight] = useState(allHighlights[selectedIndex]);
-    const [index, setIndex] = useState(selectedIndex);
+    const [highlight, setHighlight] = useState(allHighlights[0]);
+    const [index, setIndex] = useState(0);
     const [elapsed, setElapsed] = useState(0);
     const [duration, setDuration] = useState(1);
+
     const media = useContext(MediaContext);
+
 
     useEffect(() => {
         async function closeMedia() {
@@ -96,8 +97,8 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
 
     function handleStateChange(event: string) {
         if (event === 'ended') {
-            setHighlight(allHighlights[index + 1])
-            setIndex(index + 1)
+            setHighlight(allHighlights[index + 1]);
+            setIndex(index + 1);
             setElapsed(0);
         }
     }
@@ -146,10 +147,10 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
             <View style={{ paddingBottom: 48, paddingTop: 16, backgroundColor: Theme.colors.background }} >
                 <Text style={style.categoryTitle}>Up Next</Text>
                 <FlatList
-                    //contentContainerStyle={style.horizontalListContentContainer}
                     horizontal={true}
                     data={allHighlights}
-                    //initialScrollIndex={selectedIndex + 1}
+                    initialScrollIndex={1}
+                    getItemLayout={(data, index) => { return { length: 80 * (16 / 9), offset: 80 * (16 / 9) + 16, index } }}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity onPress={() => { setHighlight(allHighlights[index]); setIndex(index); setElapsed(0); }} >
                             <Image

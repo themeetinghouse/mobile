@@ -306,10 +306,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <Text style={style.highlightsText}>Short snippets of teaching</Text>
                     <FlatList
                         contentContainerStyle={style.horizontalListContentContainer}
+                        getItemLayout={(data, index) => { return { length: 80 * (16 / 9), offset: 80 * (16 / 9) + 16, index } }}
                         horizontal={true}
                         data={highlights.items}
                         renderItem={({ item, index }) => (
-                            <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items, index: index })} >
+                            <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items.slice(index) })} >
                                 <Image
                                     style={[style.highlightsThumbnail, index === (highlights.items.length - 1) ? style.lastHorizontalListItem : {}]}
                                     source={{ uri: getTeachingImage(item) }}
