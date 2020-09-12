@@ -14,6 +14,9 @@ import { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { API } from '@aws-amplify/api';
 import { nanoid } from 'nanoid/async/index.native';
 import CommentContext from '../contexts/CommentContext';
+import UserContext from '../contexts/UserContext';
+import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
+import NeedsSignUpModal from '../components/modals/NeedsSignUpModal';
 
 const style = StyleSheet.create({
     content: {
@@ -198,8 +201,25 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     const [mode, setMode] = useState<'comment' | 'tags'>('comment');
     const [newTag, setNewTag] = useState('');
     const commentContext = useContext(CommentContext);
+    const userContext = useContext(UserContext);
+    const miniPlayerStyle = useContext(MiniPlayerStyleContext);
+    const [signUpModal, setSignUpModal] = useState(false);
 
     const routeParams = route.params;
+
+    useEffect(() => {
+        miniPlayerStyle.setDisplay('none');
+
+        if (!userContext?.userData?.email_verified)
+            setSignUpModal(true);
+    }, [])
+
+    useEffect(() => {
+        const unsub = navigation.addListener('blur', () => {
+            miniPlayerStyle.setDisplay('flex')
+        });
+        return unsub;
+    }, [])
 
     useEffect(() => {
         const getTags = async () => {
@@ -385,7 +405,8 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
         </TouchableOpacity>
     }
 
-    return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom }}>
+    return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom, }}>
+        <NeedsSignUpModal initState={signUpModal} />
         {mode === 'comment' ?
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={headerHeight} style={{ flex: 1, backgroundColor: 'black' }} >
                 <View style={{ flexGrow: 1, padding: 16 }} >

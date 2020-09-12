@@ -11,14 +11,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import { MainStackParamList } from 'navigation/AppNavigator';
-import WhiteButton from '../components/buttons/WhiteButton';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ActivityIndicator from '../components/ActivityIndicator';
 import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 import Auth from '@aws-amplify/auth';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables } from '../services/API';
 import CommentContext from '../contexts/CommentContext';
+import OpenVerseModal from '../components/modals/OpenVerseModal';
 
 interface Style {
     content: any;
@@ -125,46 +124,6 @@ const style = StyleSheet.create({
         marginBottom: 16
     }
 })
-
-interface OpenVerseModalParams {
-    closeCallback: () => void;
-    openPassageCallback: (openIn: 'app' | 'web', remember: boolean) => Promise<void>;
-}
-
-function OpenVerseModal({ closeCallback, openPassageCallback }: OpenVerseModalParams): JSX.Element {
-
-    const [rememberChoice, setRememberChoice] = useState(false);
-    const [openIn, setOpenIn] = useState<'' | 'app' | 'web'>('');
-
-    const handleOpenPassage = () => {
-        if (openIn !== '')
-            openPassageCallback(openIn, rememberChoice)
-    }
-
-    return <View style={{ bottom: 0, height: 386, backgroundColor: 'white', padding: 16 }} >
-        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
-            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 24, lineHeight: 32, color: 'black', width: '67%' }}>How would you like to open this verse?</Text>
-            <Button transparent onPress={closeCallback} ><Thumbnail source={Theme.icons.black.closeCancel} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
-        </View>
-        <TouchableOpacity onPress={() => setOpenIn('app')} style={{ height: 56, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomColor: Theme.colors.grey6, borderBottomWidth: 1 }} >
-            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 16, lineHeight: 24, color: 'black' }}>Open in Bible App</Text>
-            {openIn === 'app' ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setOpenIn('web')} style={{ height: 56, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomColor: Theme.colors.grey6, borderBottomWidth: 1 }} >
-            <Text style={{ fontFamily: Theme.fonts.fontFamilyBold, fontSize: 16, lineHeight: 24, color: 'black' }}>Open in Web Browser</Text>
-            {openIn === 'web' ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
-        </TouchableOpacity>
-        <View style={{ height: 80, display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-            <TouchableWithoutFeedback onPress={() => setRememberChoice(!rememberChoice)} style={{ width: 32, height: 32, borderWidth: 2, borderColor: Theme.colors.grey5, alignItems: 'center', justifyContent: 'center' }} >
-                {rememberChoice ? <Thumbnail source={Theme.icons.black.checkMark} style={{ width: 24, height: 24 }} square /> : null}
-            </TouchableWithoutFeedback>
-            <Text style={{ fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 16, lineHeight: 24, color: 'black', marginLeft: 20 }}>Remember my choice</Text>
-        </View>
-        <View style={{ height: 56 }} >
-            <WhiteButton solidBlack label="Open Passage" onPress={handleOpenPassage} ></WhiteButton>
-        </View>
-    </View>
-}
 
 type VerseType = {
     id: string;
