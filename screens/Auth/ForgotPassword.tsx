@@ -132,7 +132,9 @@ export default function Login({ navigation }: Params): JSX.Element {
 
     const reset = async () => {
         try {
-            await Auth.forgotPasswordSubmit(user, code, pass).then(() => updateCodeState(true))
+            await Auth.forgotPasswordSubmit(user, code, pass);
+            updateCodeState(true);
+            toLogin();
         } catch (e) {
             console.error(e)
             setError(e.message)

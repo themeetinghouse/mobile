@@ -15,6 +15,10 @@ import WhiteButton from '../components/buttons/WhiteButton';
 import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import ActivityIndicator from '../components/ActivityIndicator';
 import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
+import Auth from '@aws-amplify/auth';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables } from '../services/API';
+import CommentContext from '../contexts/CommentContext';
 
 interface Style {
     content: any;
@@ -181,7 +185,6 @@ interface Params {
 }
 
 export default function NotesScreen({ route, navigation }: Params): JSX.Element {
-
     const date = route.params?.date;
 
     const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
@@ -194,6 +197,8 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [openVerse, setOpenVerse] = useState(false);
     const [verseURLs, setVerseURLs] = useState<{ youVersion: string | undefined, bibleGateway: string }>({ youVersion: '', bibleGateway: '' })
     const [userPreference, setUserPreference] = useState<'app' | 'web' | null>(null);
+    const [noteId, setNoteId] = useState('');
+    const commentContext = useContext(CommentContext);
 
     const headerHeight = useHeaderHeight();
     const safeArea = useSafeAreaInsets();
@@ -206,7 +211,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         headerStyle: { backgroundColor: Theme.colors.background },
         safeAreaInsets: { top: safeArea.top },
         header: function render() {
-            return <Header style={style.header}>
+            return <Header style={style.header} >
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => navigation.goBack()}>
@@ -271,7 +276,8 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
 
 
             if (queryNotes) {
-                setVerses(queryNotes.verses?.items)
+                setVerses(queryNotes.verses?.items);
+                setNoteId(queryNotes.id);
                 try {
                     const notesData = JSON.parse(queryNotes.jsonContent);
                     setNotes({ blocks: notesData.blocks, entityMap: notesData.entityMap })
@@ -289,6 +295,30 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         }
         load();
     }, []);
+
+    useEffect(() => {
+        const getComments = async () => {
+            if (noteId)
+                try {
+                    const cognitoUser = await Auth.currentAuthenticatedUser();
+                    const input: GetCommentsByOwnerQueryVariables = {
+                        owner: cognitoUser.username,
+                        noteId: { eq: noteId },
+                    }
+                    const json = await API.graphql({
+                        query: getCommentsByOwner,
+                        variables: input,
+                        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
+                    }) as GraphQLResult<GetCommentsByOwnerQuery>;
+
+                    if (json.data?.getCommentsByOwner?.items)
+                        commentContext.setComments(json.data?.getCommentsByOwner?.items)
+                } catch (e) {
+                    console.error(e)
+                }
+        }
+        getComments();
+    }, [noteId])
 
     const handleOpenVerse = (youVersion: string | undefined, bibleGateway: string) => {
         setVerseURLs({ youVersion, bibleGateway })
@@ -338,19 +368,56 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         }
     }
 
-    return (
-        <View style={{ flex: 1 }}>
-            {notes.blocks.length > 0 ?
-                <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
-                    <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
-                        <NoteReader blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
-                    </Content>
-                    <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
-                        <NoteReader blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
-                    </Content>
-                </Swiper> : <ActivityIndicator />
-            }
-            {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={handleOpenPassage} /> : null}
-        </View>
-    )
+    return <View style={{ flex: 1 }}>
+        {notes.blocks.length > 0 ?
+            <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
+                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
+                    <NoteReader noteId={noteId} blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
+                </Content>
+                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
+                    <NoteReader noteId={noteId} blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
+                </Content>
+            </Swiper> : <ActivityIndicator />
+        }
+        {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={handleOpenPassage} /> : null}
+    </View>
+
 }
+
+const getCommentsByOwner = /* GraphQL */ `
+  query GetCommentsByOwner(
+    $owner: String
+    $noteId: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelCommentFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getCommentsByOwner(
+      owner: $owner
+      noteId: $noteId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        comment
+        tags
+        noteType
+        commentType
+        noteId
+        textSnippet
+        imageUri
+        key
+        date
+        time
+        owner
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;

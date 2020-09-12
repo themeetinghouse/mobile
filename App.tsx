@@ -7,6 +7,7 @@ import LocationsService, { LocationKey } from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
+import CommentContext, { CommentContextType } from './contexts/CommentContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
 import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import MediaContext, { MediaData } from './contexts/MediaContext';
@@ -56,6 +57,7 @@ function App(props: Props): JSX.Element {
   const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, episode: '', series: '' });
   const [currentScreen, setCurrentScreen] = useState('HomeScreen');
   const [display, setDisplay] = useState<ViewStyle['display']>('flex');
+  const [comments, setComments] = useState<CommentContextType['comments']>([]);
 
   const navRef = createRef<NavigationContainerRef>();
 
@@ -127,21 +129,23 @@ function App(props: Props): JSX.Element {
     );
   } else {
     return (
-      <MiniPlayerStyleContext.Provider value={{ display, setDisplay }} >
-        <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo, setPlayerTypeNone }}>
-          <LocationContext.Provider value={{ locationData, setLocationData }}>
-            <UserContext.Provider value={{ userData, setUserData }}>
-              <SafeAreaProvider style={{ backgroundColor: 'black' }} >
-                {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-                <NavigationContainer theme={CustomTheme} ref={navRef} >
-                  <AppNavigator />
-                  <MiniPlayer currentScreen={currentScreen} />
-                </NavigationContainer>
-              </SafeAreaProvider>
-            </UserContext.Provider>
-          </LocationContext.Provider>
-        </MediaContext.Provider>
-      </MiniPlayerStyleContext.Provider>
+      <CommentContext.Provider value={{ comments, setComments }} >
+        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }} >
+          <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo, setPlayerTypeNone }}>
+            <LocationContext.Provider value={{ locationData, setLocationData }}>
+              <UserContext.Provider value={{ userData, setUserData }}>
+                <SafeAreaProvider style={{ backgroundColor: 'black' }} >
+                  {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                  <NavigationContainer theme={CustomTheme} ref={navRef} >
+                    <AppNavigator />
+                    <MiniPlayer currentScreen={currentScreen} />
+                  </NavigationContainer>
+                </SafeAreaProvider>
+              </UserContext.Provider>
+            </LocationContext.Provider>
+          </MediaContext.Provider>
+        </MiniPlayerStyleContext.Provider>
+      </CommentContext.Provider>
     );
   }
 }

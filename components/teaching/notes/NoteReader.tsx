@@ -1,9 +1,7 @@
-import React, { useState, Fragment } from 'react';
-import { View, Text, Image, StyleSheet, TextStyle, Dimensions } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
-import * as Linking from 'expo-linking';
-import { Thumbnail, Button } from 'native-base';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText } from './TextComponents';
 
 type ContentType =
     "unstyled" |
@@ -55,284 +53,6 @@ type VerseType = {
     updatedAt: string;
 }
 
-const underline = StyleSheet.create({
-    selected: {
-        textDecorationColor: Theme.colors.red,
-        textDecorationLine: 'underline',
-        textDecorationStyle: 'dotted'
-    }
-})
-
-interface CustomTextParams {
-    processedStyles: InlineStyle[];
-    block: Blocks;
-    styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
-    mode: 'light' | 'dark';
-}
-
-function CustomText({ processedStyles, block, styles, mode }: CustomTextParams): JSX.Element {
-    const [selected, setSelected] = useState(false);
-    const [pos, setPos] = useState(0);
-
-    if (processedStyles.length === 0) {
-        return <Fragment>
-            <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, fontFamily: Theme.fonts.fontFamilyRegular, ...selected ? underline.selected : {} }}>{block.text}</Text>
-            {selected ?
-                <Button onPress={() => console.log(block)} transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-                </Button> : null}
-        </Fragment>
-    } else {
-        return <Fragment>
-            <Text selectable onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(!selected)} style={{ ...styles.text, marginVertical: 12 }} >
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-                {processedStyles.map((style, index) => {
-                    return <Text key={index}>
-                        <Text style={{ ...styles.text, ...style.style, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                        {index + 1 < processedStyles.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                    </Text>
-                })}
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-            </Text>
-            {selected ?
-                <Button onPress={() => console.log(block)} transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-                </Button> : null}
-        </Fragment>
-    }
-}
-
-function CustomListItem({ processedStyles, block, styles, mode }: CustomTextParams): JSX.Element {
-
-    const [selected, setSelected] = useState(false);
-    const [pos, setPos] = useState(0);
-
-    if (processedStyles.length === 0) {
-        return <Fragment>
-            <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, ...{ marginLeft: 16 }, ...selected ? underline.selected : {} }}>&bull; {block.text}</Text>
-            {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-                </Button> : null}
-        </Fragment>
-    } else {
-        return <Fragment>
-            <Text onPress={() => setSelected(!selected)} onLayout={(e) => setPos(e.nativeEvent.layout.y)} style={{ ...styles.text, ...{ marginLeft: 16 }, ...selected ? underline.selected : {} }}>&bull;{' '}
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-                {processedStyles.map((style, index) => {
-                    return <Text key={index}>
-                        <Text style={{ ...styles.text, ...style.style, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                        {index + 1 < processedStyles.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                    </Text>
-                })}
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-            </Text>
-            {selected ?
-                <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                    <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-                </Button> : null}
-        </Fragment>
-    }
-}
-
-function CustomHeading({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
-
-    if (processedStyles.length === 0) {
-        return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyRegular }}>{block.text}</Text>
-    } else {
-        return <Text style={{ ...styles.header, marginVertical: 12 }} >
-            <Text style={{ ...styles.header }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-            {processedStyles.map((style, index) => {
-                return <Text key={index}>
-                    <Text style={{ ...styles.header, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                    {index + 1 < processedStyles.length ? <Text style={styles.header}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                </Text>
-            })}
-            <Text style={styles.header}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-        </Text>
-
-    }
-}
-
-interface ImageParams {
-    data: {
-        src: string;
-        alt: string;
-        width: string | number;
-        height: string | number;
-    },
-    mode: 'light' | 'dark';
-}
-
-function CustomImage({ data, mode }: ImageParams): JSX.Element {
-    const [selected, setSelected] = useState(false);
-    const [pos, setPos] = useState(0);
-
-    return <Fragment>
-        <TouchableWithoutFeedback onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(!selected)} style={[{ width: Dimensions.get('screen').width - 72, marginLeft: 16, marginRight: 56, paddingVertical: 1, alignItems: 'center' }, selected ? { borderColor: 'red', borderStyle: 'dashed', borderWidth: 1 } : {}]} >
-            <Image resizeMode='contain' style={{ width: Dimensions.get('screen').width - 80, minHeight: 100 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
-        </TouchableWithoutFeedback>
-        {selected ?
-            <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-            </Button> : null}
-    </Fragment>
-
-}
-
-interface HyperLinkParams {
-    block: Blocks;
-    links: Array<{ text: string, offset: number, length: number, uri: string }>;
-    styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
-    openVerseCallback: (youVersionUri: string | undefined, bibleGatewayUri: string) => void;
-    verses: VerseType[];
-    type: 'questions' | 'notes';
-    date: string;
-    mode: 'light' | 'dark';
-}
-
-function HyperLink({ block, links, styles, openVerseCallback, verses, type, date, mode }: HyperLinkParams): JSX.Element {
-    const [show, setShow] = useState(false)
-    const [passage, setPassage] = useState<HyperLinkParams['links'][0]>({ text: '', offset: -1, length: -1, uri: '' });
-    const [pos, setPos] = useState(0);
-    const [selected, setSelected] = useState(false);
-
-    const handleClick = async (link: HyperLinkParams['links'][0]) => {
-        if (link.uri.includes('biblegateway')) {
-            setPassage(link);
-            setShow(link.offset === passage.offset ? !show : true);
-        } else {
-            const canOpen = await Linking.canOpenURL(link.uri);
-            if (canOpen)
-                try {
-                    await Linking.openURL(link.uri)
-                } catch (e) {
-                    console.debug(e)
-                }
-        }
-    }
-
-    const replaceVerseNumbers = (content: string) => {
-        const superscript: { [key: string]: string } = {
-            '0': '\u2070',
-            '1': '\u00B9',
-            '2': '\u00B2',
-            '3': '\u00B3',
-            '4': '\u2074',
-            '5': '\u2075',
-            '6': '\u2076',
-            '7': '\u2077',
-            '8': '\u2078',
-            '9': '\u2079'
-        }
-
-        const processed = content.replace(/[0123456789]/g,
-            (num) => {
-                return superscript[num]
-            }
-        )
-
-        return processed + ' '
-    }
-
-    const parseBibleJSON = (data: any, index: number, length: number) => {
-
-        console.log(data)
-
-        if (data?.attrs?.style === 's1') {
-            return <Text style={styles.header} key={index}>
-                {data.items.map((item: any, index: number) => {
-                    if (item.text) {
-                        return <Text key={item.text + index} style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }}>{item.text + '\n'}</Text>
-                    } else {
-                        return null
-                    }
-                })}
-            </Text>
-        } else if (data?.attrs.style === 'q1' || data?.attrs.style === 'q2') {
-            return <Text key={index} style={styles.text} >
-                {data.items.map((item: any, index: number) => {
-                    if (item.attrs?.style === 'v') {
-                        return <Text key={index + 'v'} style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
-                    } else if (item.text) {
-                        return <Text key={item.text + index} style={styles.text}>{(data.attrs.style === 'q2' ? '   ' : '') + item.text + (index === length - 1 ? '' : '\n')}</Text>
-                    } else if (item.items) {
-                        return <Text key={index} style={styles.text}>{item.items.map((item2: any) => {
-                            return <Text key={item2.text + index} style={styles.text}>{item2.text}</Text>
-                        })}</Text>
-                    } else {
-                        return null
-                    }
-                })}
-            </Text>
-        } else {
-            return <Text key={index} style={styles.text} >{index === 0 ? '' : '   '}
-                {data.items.map((item: any, index: number) => {
-                    if (item.attrs?.style === 'v') {
-                        return <Text key={index + 'v'} style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
-                    } else if (item.text) {
-                        return <Text key={item.text + index} style={styles.text}>{item.text}</Text>
-                    } else if (item.items) {
-                        return <Text key={index} style={styles.text}>{item.items.map((item2: any) => {
-                            return <Text key={item2.text + index} style={styles.text}>{item2.text}</Text>
-                        })}</Text>
-                    } else {
-                        return null
-                    }
-                })}
-                {(index === length - 1) ? '' : data.items[data.items.length - 1]?.text?.includes(':') ? '\n' : '\n \n'}</Text>
-        }
-    }
-
-    const renderBibleVerse = (reference: string) => {
-        const testId = `${type}-${date}-${block.key}-${passage.offset}-${passage.length}`;
-        const biblePassage = verses.find(item => item.id === testId);
-
-        let passageJSON = null;
-
-        if (biblePassage?.content) {
-            try {
-                passageJSON = JSON.parse(biblePassage?.content);
-            } catch (e) {
-                passageJSON = null;
-                console.debug(e);
-            }
-        }
-
-        return <View style={{ backgroundColor: 'transparent', marginHorizontal: 16, borderColor: Theme.colors.grey3, borderRadius: 4, borderWidth: 1, marginBottom: 8 }} >
-            <View style={{ backgroundColor: Theme.colors.grey3, paddingVertical: 8, borderTopLeftRadius: 3, borderTopRightRadius: 3, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }} >
-                <Text style={[styles.textSmall, { color: 'white' }]}>{reference} (NIV)</Text>
-                <TouchableOpacity style={{ marginRight: 8 }} onPress={() => openVerseCallback(biblePassage?.youVersionUri, passage.uri)}>
-                    <Thumbnail source={Theme.icons.white.newWindow} square style={{ width: 16, height: 16 }}></Thumbnail>
-                </TouchableOpacity>
-            </View>
-            {!passageJSON ?
-                <Text style={[styles.text, { paddingVertical: 12 }]}>Oops. Something went wrong. Please try opening this passage in the browser.</Text>
-                : <Text style={{ padding: 12 }}>{passageJSON.map((item: any, index: number) => { return parseBibleJSON(item, index, passageJSON.length) })}</Text>
-            }
-        </View>
-    }
-
-    return (
-        <Fragment>
-            <Text style={{ ...styles.text, marginVertical: 12 }} onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(!selected)} >
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(0, links[0].offset)}</Text>
-                {links.map((link, index) => {
-                    return <Text key={index}>
-                        <Text onPress={() => handleClick(link)} style={{ ...styles.text, ...{ textDecorationLine: 'underline', textDecorationColor: passage.offset === link.offset && show ? Theme.colors.red : undefined, textDecorationStyle: passage.offset === link.offset && show ? 'dotted' : undefined }, ...selected ? underline.selected : {} }}>{block.text.slice(link.offset, link.offset + link.length)}</Text>
-                        {index + 1 < links.length ? <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(link.offset + link.length, links[index + 1].offset)}</Text> : null}
-                    </Text>
-                })}
-                <Text style={{ ...styles.text, ...selected ? underline.selected : {} }}>{block.text.slice(links[links.length - 1].offset + links[links.length - 1].length)}</Text>
-            </Text>
-            {show ? renderBibleVerse(block.text.slice(passage.offset, passage.offset + passage.length)) : null}
-            {selected || show ? <Button onPress={() => console.log(block)} transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} >
-                <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
-            </Button> : null}
-        </Fragment >
-    )
-}
-
 interface NoteReaderParams {
     blocks: Blocks[];
     entityMap: any;
@@ -342,9 +62,10 @@ interface NoteReaderParams {
     openVerseCallback: (youVersionUri: string | undefined, bibleGatewayUri: string) => void;
     verses: VerseType[];
     date: string;
+    noteId: string;
 }
 
-export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date }: NoteReaderParams): JSX.Element {
+export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date, noteId }: NoteReaderParams): JSX.Element {
 
     const color = mode === 'dark' ? 'white' : 'black'
     const styles = StyleSheet.create({
@@ -425,7 +146,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        markupArray.push(<CustomImage mode={mode} data={data.data} key={block.key + type} />)
+                        markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
@@ -435,7 +156,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
 
             if (links.length > 0) {
                 markupArray.push(
-                    <HyperLink mode={mode} key={block.key + type} block={block} links={links} styles={styles} verses={verses} type={type} date={date} openVerseCallback={openVerseCallback} />
+                    <HyperLink noteId={noteId} mode={mode} key={block.key + type} block={block} links={links} styles={styles} verses={verses} type={type} date={date} openVerseCallback={openVerseCallback} />
                 )
             }
         } else {
@@ -450,6 +171,8 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 block: block,
                 processedStyles: processedStyles,
                 styles: styles,
+                type: type,
+                noteId: noteId
             }
 
             switch (block.type) {

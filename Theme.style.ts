@@ -47,6 +47,8 @@ import AddComment from './assets/images/white/Comment-Add.png';
 import AddCommentBlack from './assets/images/black/Comment-Add.png';
 import Twitter from './assets/images/black/Twitter.png';
 import Facebook from './assets/images/black/Facebook.png';
+import Delete from './assets/images/white/Delete-1.png';
+import Tags from './assets/images/white/Tags.png';
 
 export const Theme = {
     colors: {
@@ -122,6 +124,8 @@ export const Theme = {
             link: Link,
             comments: Comments,
             addComment: AddComment,
+            delete: Delete,
+            tags: Tags
         },
         grey: {
             arrow: ArrowGrey,

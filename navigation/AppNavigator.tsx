@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { TabNavigatorParamList, HomeStackParamList } from './MainTabNavigator';
 import { AuthStackParamList } from './AuthNavigator';
 import NotesScreen from '../screens/NotesScreen';
+import CommentScreen from '../screens/CommentScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import AccountScreen from '../screens/Profile/AccountScreen';
 import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
@@ -12,6 +13,7 @@ import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 import HighlightScreen from '../screens/HighlightScreen';
 import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/SermonLandingScreen';
+import { CommentDataType } from '../services/API';
 
 export type MainStackParamList = {
   Main: undefined | { screen: keyof TabNavigatorParamList, params: { screen: keyof HomeStackParamList } };
@@ -25,6 +27,7 @@ export type MainStackParamList = {
   HighlightScreen: { highlights: any[] };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
+  CommentScreen: { key: string, noteId: string, commentType: CommentDataType, noteType: 'notes' | 'questions', textSnippet?: string, imageUri?: string } | { commentId: string, comment: string, tags: Array<string | null>, textSnippet?: string, imageUri?: string, commentType: CommentDataType, noteId: string };
 }
 
 const Main = createStackNavigator<MainStackParamList>();
@@ -42,6 +45,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="HighlightScreen" component={HighlightScreen} />
       <Main.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} />
       <Main.Screen name="SermonLandingScreen" component={SermonLandingScreen} />
+      <Main.Screen name="CommentScreen" component={CommentScreen} />
     </Main.Navigator>
   )
 }
