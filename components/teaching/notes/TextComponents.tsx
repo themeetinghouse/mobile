@@ -98,7 +98,7 @@ export function Comment({ comment, styles }: CommentParams): JSX.Element {
         {comment?.tags && comment?.tags.length > 0 ? <View style={{ display: 'flex', flexDirection: 'row', paddingLeft: 16, paddingBottom: 8, flexWrap: 'wrap' }} >
             {comment?.tags?.map((tag, index) => {
                 return <View key={index + (tag as string)} style={{ backgroundColor: '#FFFFFF10', borderRadius: 2, paddingTop: 4, paddingBottom: 2, paddingHorizontal: 8, marginRight: 4, marginBottom: 4 }} >
-                    <Text style={{ color: 'white', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, lineHeight: 18 }} >{tag}</Text>
+                    <Text style={[styles.textSmall, { color: 'white', fontFamily: Theme.fonts.fontFamilyRegular, lineHeight: 18 }]} >{tag}</Text>
                 </View>
             })}
         </View> : null}

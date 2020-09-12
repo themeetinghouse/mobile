@@ -34,7 +34,7 @@ const Main = createStackNavigator<MainStackParamList>();
 
 export default function NavigationRoot(): JSX.Element {
   return (
-    <Main.Navigator screenOptions={{ headerShown: false }} initialRouteName="Main">
+    <Main.Navigator screenOptions={{ headerShown: false }} initialRouteName="Main" headerMode="screen">
       <Main.Screen name="Main" component={MainTabNavigator} />
       <Main.Screen name="Auth" component={AuthNavigator} />
       <Main.Screen name="NotesScreen" component={NotesScreen} />

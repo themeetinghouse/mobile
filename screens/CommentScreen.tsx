@@ -263,31 +263,6 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
         }
     }, [])
 
-    navigation.setOptions({
-        headerShown: true,
-        title: '',
-        headerStyle: { backgroundColor: Theme.colors.background },
-        safeAreaInsets: { top: safeArea.top },
-        header: function render() {
-            return <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
-                <Left style={style.headerLeft}>
-                    <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
-                        <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
-                    </TouchableOpacity>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>{mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags'}</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
-                        <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
-                    </TouchableOpacity>
-                </Right>
-            </Header>
-        }
-    })
-
     const removeTag = (toRemove: string) => {
         setTags(prevState => { return prevState.filter(item => item !== toRemove) })
     }
@@ -406,6 +381,22 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     }
 
     return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom, }}>
+        <Header style={style.header}>
+            <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+            <Left style={style.headerLeft}>
+                <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
+                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
+                </TouchableOpacity>
+            </Left>
+            <Body style={style.headerBody}>
+                <Text style={style.headerTitle}>{mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags'}</Text>
+            </Body>
+            <Right style={style.headerRight}>
+                <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
+                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
+                </TouchableOpacity>
+            </Right>
+        </Header>
         <NeedsSignUpModal initState={signUpModal} />
         {mode === 'comment' ?
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={headerHeight} style={{ flex: 1, backgroundColor: 'black' }} >
@@ -417,7 +408,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                     <TextInput value={comment} onChange={e => setComment(e.nativeEvent.text)} keyboardAppearance='dark' placeholder='Write a comment' placeholderTextColor={Theme.colors.grey4} style={style.input}></TextInput>
                 </View>
                 <View style={{ flexGrow: 0 }} >
-                    <Button transparent style={{ alignSelf: 'flex-end', marginBottom: 12, marginRight: 16 }} onPress={removeComment} ><Thumbnail source={Theme.icons.white.delete} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
+                    <Button transparent style={{ alignSelf: 'flex-end', marginBottom: 12, marginRight: 16 }} onLongPress={removeComment} ><Thumbnail source={Theme.icons.white.delete} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
                     <View style={{ backgroundColor: Theme.colors.background, minHeight: 64, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24 }} >
                         <Thumbnail source={Theme.icons.white.tags} square style={{ width: 16, height: 16, marginRight: 16 }} ></Thumbnail>
                         <FlatList showsHorizontalScrollIndicator={false} data={tags} renderItem={({ item }) => renderTag(item)} horizontal keyExtractor={(_item, index) => index.toString()} />
