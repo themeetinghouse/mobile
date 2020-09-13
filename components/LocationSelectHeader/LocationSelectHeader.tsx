@@ -66,7 +66,7 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
                     <View style={style.buttonContentsContainer}>
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
-                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName ? location?.locationData?.locationName : 'Select Location'}</Text>
+                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName === 'unknown' ? 'Select Location' : location?.locationData?.locationName}</Text>
                             <Thumbnail square source={Theme.icons.white.caretDown} style={{ width: 12, height: 24 }}></Thumbnail>
                         </View>
                     </View>

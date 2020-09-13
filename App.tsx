@@ -105,6 +105,7 @@ function App(props: Props): JSX.Element {
         }
       } catch (e) {
         console.debug(e)
+        setLocationData({ locationId: "unknown", locationName: "unknown" });
         try {
           const location = await SecureStore.getItemAsync('location')
           if (location) {
@@ -113,7 +114,6 @@ function App(props: Props): JSX.Element {
           }
         } catch (e) {
           console.debug(e)
-          setLocationData({ locationId: "", locationName: "" });
         }
       }
     }

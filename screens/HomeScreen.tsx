@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Content, View } from 'native-base';
+import { Container, Content, View, Text } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
 import { Theme, Style } from '../Theme.style';
@@ -17,7 +17,10 @@ import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
+import InstagramService, { LocationKey, InstagramData } from '../services/Instagram';
+import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
+import AllButton from '../components/buttons/AllButton';
 
 const style = StyleSheet.create({
   categoryContainer: {
@@ -34,12 +37,14 @@ interface Params {
 export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
-  const [announcements, setAnnouncements] = useState<any>([]);
-  const [events, setEvents] = useState<any>([]);
+  //const [announcements, setAnnouncements] = useState<any>([]);
+  //const [events, setEvents] = useState<any>([]);
   const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
+  const [images, setImages] = useState<InstagramData>([]);
+  const [instaUsername, setInstaUsername] = useState("");
 
   useEffect(() => {
-    const loadAnnouncements = async () => {
+    /*const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
     }
@@ -49,13 +54,22 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       //const eventsResult = await EventsService.loadEventsList(location?.locationData);
       //setEvents(eventsResult);
     }
-    loadEvents();
+    loadEvents();*/
 
     const loadRecentTeaching = async () => {
       loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 1)
     }
     loadRecentTeaching();
   }, [])
+
+  useEffect(() => {
+    const loadInstagramImages = async () => {
+      const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId as LocationKey)
+      setImages(data.images);
+      setInstaUsername(data.username);
+    }
+    loadInstagramImages();
+  }, [location])
 
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
@@ -77,6 +91,11 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           </View>
         }
 
+        <View style={style.categoryContainer}>
+          <Text style={style.categoryTitle}>@{instaUsername}</Text>
+          <InstagramFeed images={images} />
+          <AllButton handlePress={() => Linking.openURL(`https://instagram.com/${instaUsername}`)} icon={Theme.icons.white.instagram}>Follow us on Instagram</AllButton>
+        </View>
 
 
         {/*<View style={style.categoryContainer}>
