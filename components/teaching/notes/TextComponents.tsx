@@ -7,7 +7,7 @@ import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../../navigation/AppNavigator';
-import { CommentDataType } from '../../../services/API';
+import { CommentDataType, GetNotesQuery } from '../../../services/API';
 import CommentContext, { CommentContextType } from '../../../contexts/CommentContext';
 import moment from 'moment';
 
@@ -48,18 +48,7 @@ type Blocks = {
     type: ContentType;
 }
 
-type VerseType = {
-    id: string;
-    key: string;
-    offset: string;
-    length: string;
-    dataType: string;
-    content: string;
-    youVersionUri: string;
-    noteId: string;
-    createdAt: string;
-    updatedAt: string;
-}
+type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 const underline = StyleSheet.create({
     selected: {
@@ -277,7 +266,7 @@ interface HyperLinkParams {
     links: Array<{ text: string, offset: number, length: number, uri: string }>;
     styles: { text: TextStyle, header: TextStyle, textSmall: TextStyle };
     openVerseCallback: (youVersionUri: string | undefined, bibleGatewayUri: string) => void;
-    verses: VerseType[];
+    verses: VerseType;
     type: 'questions' | 'notes';
     date: string;
     mode: 'light' | 'dark';
@@ -394,7 +383,7 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
 
     const renderBibleVerse = (reference: string) => {
         const testId = `${type}-${date}-${block.key}-${passage.offset}-${passage.length}`;
-        const biblePassage = verses.find(item => item.id === testId);
+        const biblePassage = verses?.find(item => item?.id === testId);
 
         let passageJSON = null;
 

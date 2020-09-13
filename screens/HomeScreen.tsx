@@ -39,12 +39,11 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   //const [announcements, setAnnouncements] = useState<any>([]);
   //const [events, setEvents] = useState<any>([]);
-  const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
 
-  useEffect(() => {
-    /*const loadAnnouncements = async () => {
+  /*useEffect(() => {
+    const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
     }
@@ -54,13 +53,8 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       //const eventsResult = await EventsService.loadEventsList(location?.locationData);
       //setEvents(eventsResult);
     }
-    loadEvents();*/
-
-    const loadRecentTeaching = async () => {
-      loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 1)
-    }
-    loadRecentTeaching();
-  }, [])
+    loadEvents();
+  }, [])*/
 
   useEffect(() => {
     const loadInstagramImages = async () => {
@@ -79,17 +73,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
-        {recentTeaching.loading &&
-          <ActivityIndicator />
-        }
-        {recentTeaching.items.length > 0 &&
-          <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
-            <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
-            <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
-              <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
-            </View>
+        <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
+          <RecentTeaching />
+          <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
+            <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
-        }
+        </View>
 
         <View style={style.categoryContainer}>
           <Text style={style.categoryTitle}>@{instaUsername}</Text>

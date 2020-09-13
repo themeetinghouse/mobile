@@ -15,7 +15,7 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 import Auth from '@aws-amplify/auth';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables } from '../services/API';
+import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables, GetNotesQuery } from '../services/API';
 import CommentContext from '../contexts/CommentContext';
 import OpenVerseModal from '../components/modals/OpenVerseModal';
 
@@ -125,18 +125,7 @@ const style = StyleSheet.create({
     }
 })
 
-type VerseType = {
-    id: string;
-    key: string;
-    offset: string;
-    length: string;
-    dataType: string;
-    content: string;
-    youVersionUri: string;
-    noteId: string;
-    createdAt: string;
-    updatedAt: string;
-}
+type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface Params {
     navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
@@ -149,7 +138,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
     const [questions, setQuestions] = useState({ blocks: [], entityMap: {} });
     const [notesMode, setNotesMode] = useState("notes");
-    const [verses, setVerses] = useState<VerseType[]>([]);
+    const [verses, setVerses] = useState<VerseType>([]);
     const [mode, setMode] = useState<'dark' | 'light'>('dark');
     const [fontScale, setFontScale] = useState(1);
     const [textOptions, setTextOptions] = useState(false);
@@ -235,20 +224,22 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
 
 
             if (queryNotes) {
-                setVerses(queryNotes.verses?.items);
-                setNoteId(queryNotes.id);
-                try {
-                    const notesData = JSON.parse(queryNotes.jsonContent);
-                    setNotes({ blocks: notesData.blocks, entityMap: notesData.entityMap })
-                } catch (e) {
-                    console.debug(e)
-                }
+                if (queryNotes.verses?.items && queryNotes.jsonContent && queryNotes.jsonQuestions) {
+                    setVerses(queryNotes.verses?.items);
+                    setNoteId(queryNotes.id);
+                    try {
+                        const notesData = JSON.parse(queryNotes.jsonContent);
+                        setNotes({ blocks: notesData.blocks, entityMap: notesData.entityMap })
+                    } catch (e) {
+                        console.debug(e)
+                    }
 
-                try {
-                    const questionsData = JSON.parse(queryNotes.jsonQuestions);
-                    setQuestions({ blocks: questionsData.blocks, entityMap: questionsData.entityMap })
-                } catch (e) {
-                    console.debug(e)
+                    try {
+                        const questionsData = JSON.parse(queryNotes.jsonQuestions);
+                        setQuestions({ blocks: questionsData.blocks, entityMap: questionsData.entityMap })
+                    } catch (e) {
+                        console.debug(e)
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
 import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText } from './TextComponents';
+import { GetNotesQuery } from '../../../services/API';
 
 type ContentType =
     "unstyled" |
@@ -40,18 +41,7 @@ type Blocks = {
     type: ContentType;
 }
 
-type VerseType = {
-    id: string;
-    key: string;
-    offset: string;
-    length: string;
-    dataType: string;
-    content: string;
-    youVersionUri: string;
-    noteId: string;
-    createdAt: string;
-    updatedAt: string;
-}
+type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface NoteReaderParams {
     blocks: Blocks[];
@@ -60,7 +50,7 @@ interface NoteReaderParams {
     fontScale: number;
     type: 'questions' | 'notes';
     openVerseCallback: (youVersionUri: string | undefined, bibleGatewayUri: string) => void;
-    verses: VerseType[];
+    verses: VerseType;
     date: string;
     noteId: string;
 }
