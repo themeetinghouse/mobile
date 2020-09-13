@@ -124,7 +124,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     const signOut = async () => {
         await Auth.signOut().then(() => {
             user?.setUserData(null);
-            location?.setLocationData(null);
+            location?.setLocationData({ locationId: "unknown", locationName: "unknown" });
             navigation.dispatch(
                 CommonActions.reset({
                     index: 1,

@@ -4,7 +4,7 @@ import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
-import LocationsService, { LocationKey } from '../../services/LocationsService';
+import LocationsService from '../../services/LocationsService';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -134,7 +134,7 @@ function Account({ navigation }: Params): JSX.Element {
             id: "loc",
             text: "Location",
             icon: Theme.icons.grey.arrow,
-            data: user?.userData?.["custom:home_location"] ? LocationsService.mapLocationIdToName(user?.userData?.["custom:home_location"] as LocationKey) : 'None Selected',
+            data: user?.userData?.["custom:home_location"] ? LocationsService.mapLocationIdToName(user?.userData?.["custom:home_location"]) : 'None Selected',
             action: () => navigation.navigate('LocationSelectionScreen', { persist: true })
         }
     ]

@@ -8,25 +8,26 @@ type loadSpeakersListData = {
 
 export default class SpeakersService {
 
-    static loadSpeakersList = async (limit = 9999, nextToken = null): Promise<loadSpeakersListData> => {
-      const queryResult = await runGraphQLQuery({ 
-        query: listSpeakersQuery,
-        variables: { limit: limit, nextToken: nextToken},
-      })
+  static loadSpeakersList = async (limit = 9999, nextToken = null): Promise<loadSpeakersListData> => {
+    const queryResult = await runGraphQLQuery({
+      query: listSpeakersQuery,
+      variables: { limit: limit, nextToken: nextToken },
+    })
 
-       queryResult.listSpeakers.items.sort((a: any, b: any) => {
-        if (a.videos.items.length > b.videos.items.length){
-          return -1;
-        } else if (a.videos.items.length < b.videos.items.length){
-          return 1;
-        } else {
-          return a.name.localeCompare(b.name);
-        }
-      });
-      return {
-        items: queryResult.listSpeakers.items, 
-        nextToken: queryResult.listSpeakers.nextToken};
-    }
+    queryResult.listSpeakers.items.sort((a: any, b: any) => {
+      if (a.videos.items.length > b.videos.items.length) {
+        return -1;
+      } else if (a.videos.items.length < b.videos.items.length) {
+        return 1;
+      } else {
+        return a.name.localeCompare(b.name);
+      }
+    });
+    return {
+      items: queryResult.listSpeakers.items,
+      nextToken: queryResult.listSpeakers.nextToken
+    };
+  }
 
 }
 

@@ -3,7 +3,7 @@ import * as Font from 'expo-font';
 import React, { useEffect, useState, createRef } from 'react';
 import { Platform, StatusBar, ViewStyle } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
-import LocationsService, { LocationKey } from './services/LocationsService';
+import LocationsService from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
@@ -109,7 +109,7 @@ function App(props: Props): JSX.Element {
         try {
           const location = await SecureStore.getItemAsync('location')
           if (location) {
-            const selectedLocation = LocationsService.mapLocationIdToName(location as LocationKey);
+            const selectedLocation = LocationsService.mapLocationIdToName(location);
             setLocationData({ locationId: location, locationName: selectedLocation });
           }
         } catch (e) {

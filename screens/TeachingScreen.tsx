@@ -18,6 +18,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import UserContext from '../contexts/UserContext';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
+import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
+import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -152,6 +154,8 @@ const style = StyleSheet.create({
     icon: Style.icon,
 })
 
+type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
+
 interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<MainStackParamList>, StackNavigationProp<TeachingStackParamList>>;
 }
@@ -168,6 +172,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
     const [bounce, setBounce] = useState(false);
+    const [popular, setPopular] = useState<PopularVideoData>([]);
 
     const loadRecentSermonsAsync = async () => {
         loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 6);
@@ -182,11 +187,37 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
 
+    const getPopularTeaching = async (nextToken?: string) => {
+
+        const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
+        const variables: GetVideoByVideoTypeQueryVariables = {
+            nextToken: nextToken,
+            limit: 20,
+            videoTypes: 'adult-sunday',
+            publishedDate: { gt: startDate },
+        };
+
+        const json = await API.graphql({
+            query: getVideoByVideoType,
+            variables,
+            authMode: GRAPHQL_AUTH_MODE.API_KEY,
+        }) as GraphQLResult<GetVideoByVideoTypeQuery>;
+        const items = json?.data?.getVideoByVideoType?.items ?? [];
+        const popular = items.filter(item => item?.viewCount ? parseInt(item?.viewCount, 10) >= 700 : false);
+
+        setPopular(prev => { return prev.concat(popular) });
+
+        if (json?.data?.getVideoByVideoType?.nextToken) {
+            getPopularTeaching(json?.data?.getVideoByVideoType?.nextToken);
+        }
+    }
+
     useEffect(() => {
         loadRecentSeriesAsync();
         loadRecentSermonsAsync();
         loadHighlightsAsync();
         loadSpeakersAsync();
+        getPopularTeaching();
     }, [])
 
     const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
@@ -246,6 +277,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 </View>
             </TouchableOpacity>
         )
+    }
+
+    function sortByViews(a: PopularVideoData[0], b: PopularVideoData[0]) {
+        if (!a?.viewCount || !b?.viewCount)
+            return -1
+        return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10)
     }
 
     return (
@@ -325,20 +362,19 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     ></FlatList>
                 </View>
 
-
                 <View style={style.categorySection}>
-                    <Text style={style.categoryTitle}>Popular Sermons</Text>
+                    <Text style={style.categoryTitle}>Popular Teaching</Text>
                     <View style={style.listContentContainer}>
-                        {recentTeaching.items.map((teaching: any) => (
+                        {popular.sort((a, b) => sortByViews(a, b)).slice(0, 6).map(video => (
                             <TeachingListItem
-                                key={teaching.id}
-                                teaching={teaching}
+                                key={video?.id}
+                                teaching={video}
                                 handlePress={() =>
-                                    navigation.push('SermonLandingScreen', { item: teaching })
+                                    navigation.push('SermonLandingScreen', { item: video })
                                 } />
                         ))}
                     </View>
-                    <AllButton>More popular sermons</AllButton>
+                    <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
 
                 {/*<View style={style.categorySection}>
@@ -367,3 +403,63 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         </Container >
     )
 }
+
+export const getVideoByVideoType = `query GetVideoByVideoType(
+    $videoTypes: String
+    $publishedDate: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelVideoFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getVideoByVideoType(
+      videoTypes: $videoTypes
+      publishedDate: $publishedDate
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        episodeTitle
+        episodeNumber
+        seriesTitle
+        series {
+          id
+        }
+        publishedDate
+        description
+        length
+        viewCount
+        YoutubeIdent
+        Youtube {
+          snippet {
+            thumbnails {
+              default {
+                url
+              }
+              medium {
+                url
+              }
+              high {
+                url
+              }
+              standard {
+                url
+              }
+              maxres {
+                url
+              }
+            }
+          }
+        }
+        videoTypes
+        notesURL
+        videoURL
+        audioURL
+      }
+      nextToken
+    }
+  }
+  `;

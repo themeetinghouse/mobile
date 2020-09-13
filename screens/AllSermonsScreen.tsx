@@ -76,14 +76,23 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
     const dateEnd = route.params?.endDate ? moment(route.params?.endDate)?.endOf('month') : null;
     const [searchText, setSearchText] = useState("");
     const [sermons, setSermons] = useState<VideoData>([]);
+    const [blurred, setBlurred] = useState(false);
+
+    useEffect(() => {
+        navigation.addListener('blur', () => {
+            setBlurred(true);
+        })
+    }, [])
 
     async function loadSermonsAsync(nextToken?: string) {
-        const query: GetVideoByVideoTypeQueryVariables = { limit: 50, nextToken: nextToken, videoTypes: 'adult-sunday', sortDirection: ModelSortDirection.DESC };
-        const videos = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
-        if (videos.data?.getVideoByVideoType?.items)
-            setSermons(prevState => { return prevState.concat(videos.data?.getVideoByVideoType?.items ?? []) })
-        if (videos.data?.getVideoByVideoType?.nextToken) {
-            loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken)
+        if (!blurred) {
+            const query: GetVideoByVideoTypeQueryVariables = { limit: 50, nextToken: nextToken, videoTypes: 'adult-sunday', sortDirection: ModelSortDirection.DESC };
+            const videos = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
+            if (videos.data?.getVideoByVideoType?.items)
+                setSermons(prevState => { return prevState.concat(videos.data?.getVideoByVideoType?.items ?? []) })
+            if (videos.data?.getVideoByVideoType?.nextToken) {
+                loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken)
+            }
         }
     }
 

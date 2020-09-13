@@ -19,9 +19,11 @@ import EventDetailsScreen from '../screens/EventDetailsScreen';
 import AnnouncementDetailsScreen from '../screens/AnnouncementDetailsScreen';
 import MoreScreen from '../screens/MoreScreen';
 import SeriesLandingScreen from '../screens/SeriesLandingScreen';
+import PopularTeachingScreen from '../screens/PopularTeachingScreen';
 import { Theme } from '../Theme.style';
 import { StyleSheet } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
+import { GetVideoByVideoTypeQuery } from '../services/API';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -41,11 +43,14 @@ function HomeStack() {
   )
 }
 
+type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
+
 export type TeachingStackParamList = {
   Teaching: undefined;
   AllSeriesScreen: undefined;
   AllSermonsScreen: { startDate: string, endDate: string } | undefined;
   SeriesLandingScreen: { seriesId?: string, item?: any };
+  PopularTeachingScreen: { popularTeaching: PopularVideoData }
 }
 
 const Teaching = createStackNavigator<TeachingStackParamList>();
@@ -58,6 +63,7 @@ function TeachingStack() {
       <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} />
       <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} />
       <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} />
+      <Teaching.Screen name="PopularTeachingScreen" component={PopularTeachingScreen} />
     </Teaching.Navigator>
   )
 }

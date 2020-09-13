@@ -238,7 +238,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                         <View style={style.listContentContainer}>
                             {!videos ?
                                 <ActivityIndicator />
-                                : videos.map((seriesSermon: any) => (
+                                : videos.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
                                     <TeachingListItem
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}

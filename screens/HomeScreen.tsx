@@ -6,18 +6,18 @@ import { Theme, Style } from '../Theme.style';
 //import EventCard from '../components/home/EventCard/EventCard';
 import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 //import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
-import AnnouncementService from '../services/AnnouncementService';
+// import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 //import EventsService from '../services/EventsService';
-import SermonsService from '../services/SermonsService';
-import { loadSomeAsync } from '../utils/loading';
-import ActivityIndicator from '../components/ActivityIndicator';
+// import SermonsService from '../services/SermonsService';
+// import { loadSomeAsync } from '../utils/loading';
+// import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
-import InstagramService, { LocationKey, InstagramData } from '../services/Instagram';
+import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
@@ -58,7 +58,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   useEffect(() => {
     const loadInstagramImages = async () => {
-      const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId as LocationKey)
+      const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId ?? '')
       setImages(data.images);
       setInstaUsername(data.username);
     }

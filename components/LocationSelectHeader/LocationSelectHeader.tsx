@@ -1,11 +1,10 @@
 import React, { useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Header, Body, Icon, View, Button, Text, Right, Left, Thumbnail } from "native-base";
+import { Header, Body, View, Button, Text, Right, Left, Thumbnail } from "native-base";
 import { Style, Theme, HeaderStyle } from '../../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import LocationContext from '../../contexts/LocationContext';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { MainStackParamList } from 'navigation/AppNavigator';
 

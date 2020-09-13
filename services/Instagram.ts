@@ -1,30 +1,7 @@
 import { GetInstagramByLocationQuery } from './API'
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
-export type LocationKey = "alliston"
-  | "sandbanks"
-  | "ancaster"
-  | "brampton"
-  | "brantford"
-  | "burlington"
-  | "hamilton-downtown"
-  | "toronto-downtown"
-  | "hamilton-mountain"
-  | "toronto-east"
-  | "toronto-high-park"
-  | "kitchener"
-  | "london"
-  | "newmarket"
-  | "oakville"
-  | "ottawa"
-  | "owen-sound"
-  | "parry-sound"
-  | "richmond-hill"
-  | "toronto-uptown"
-  | "waterloo"
-  | "unknown"
-
-const locationsToUsername = {
+const locationsToUsername: { [loc: string]: string } = {
   "alliston": "themeetinghousealliston",
   "sandbanks": "tmhsandbanks",
   "ancaster": "tmhancaster",
@@ -53,13 +30,18 @@ export type InstagramData = NonNullable<GetInstagramByLocationQuery['getInstagra
 
 export default class InstagramService {
 
-  static async getInstagramByLocation(loc: LocationKey): Promise<{ images: InstagramData, username: string }> {
+  static async getInstagramByLocation(loc: string): Promise<{ images: InstagramData, username: string }> {
     const username = InstagramService.mapLocationToInstagram(loc);
-    const data = await InstagramService.getInstagram(username);
-    return data;
+
+    if (username) {
+      const data = await InstagramService.getInstagram(username);
+      return data;
+    } else {
+      return { images: [], username: '' }
+    }
   }
 
-  static mapLocationToInstagram(loc: LocationKey): string {
+  static mapLocationToInstagram(loc: string): string | undefined {
     return locationsToUsername[loc];
   }
 

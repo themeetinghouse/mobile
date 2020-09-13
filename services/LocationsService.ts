@@ -13,30 +13,7 @@ export interface Location {
     serviceTimes: string[];
 }
 
-export type LocationKey = "alliston"
-    | "sandbanks"
-    | "ancaster"
-    | "brampton"
-    | "brantford"
-    | "burlington"
-    | "hamilton-downtown"
-    | "toronto-downtown"
-    | "hamilton-mountain"
-    | "toronto-east"
-    | "toronto-high-park"
-    | "kitchener"
-    | "london"
-    | "newmarket"
-    | "oakville"
-    | "ottawa"
-    | "owen-sound"
-    | "parry-sound"
-    | "richmond-hill"
-    | "toronto-uptown"
-    | "waterloo"
-    | "unknown"
-
-const locations = {
+const locations: { [key: string]: string } = {
     "alliston": "Alliston",
     "sandbanks": "Sandbanks",
     "ancaster": "Ancaster",
@@ -67,7 +44,7 @@ export default class LocationsService {
         return allLocations.find(location => location.id === locationId);
     }
 
-    static mapLocationIdToName(id: LocationKey): string {
+    static mapLocationIdToName(id: string): string {
         return locations[id];
     }
 
