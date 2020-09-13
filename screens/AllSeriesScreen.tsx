@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableOpacity, Image, FlatList } from 'react-native';
+import { StyleSheet, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -10,6 +10,9 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import FallbackImage from '../components/FallbackImage';
+
+const width = Dimensions.get('screen').width;
 
 const style = StyleSheet.create({
     content: {
@@ -70,17 +73,15 @@ const style = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
     },
     seriesItem: {
         marginBottom: 20,
-        marginLeft: 8,
-        marginRight: 8,
         marginTop: 0,
     },
     seriesThumbnail: {
-        width: 160,
-        height: 160 * (1248 / 1056),
+        width: width * 0.44,
+        height: width * 0.44 * (1248 / 1056),
     },
     seriesDetail: {
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -119,8 +120,8 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     }
 
     useEffect(() => {
-        loadAllSeriesAsync();
         generateYears();
+        loadAllSeriesAsync();
     }, [])
 
     const series = allSeries.items.filter((s: any) => searchText ? s.title.toLowerCase().includes(searchText.toLowerCase()) : true);
@@ -146,13 +147,11 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     return (
         <Container>
             <Content style={style.content}>
-
                 <SearchBar
                     style={style.searchBar}
                     searchText={searchText}
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name..."></SearchBar>
-
                 <View style={style.dateSelectBar}>
                     <FlatList
                         style={style.horizontalListContentContainer}
@@ -167,15 +166,16 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                         )}
                     />
                 </View>
-
                 <View style={style.seriesListContainer}>
                     {allSeries.loading &&
-                        <ActivityIndicator />
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                            <ActivityIndicator />
+                        </View>
                     }
                     {series.map((s: any) => (
                         (selectedYear === "All" || getSeriesDate(s) === selectedYear) &&
                         <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
-                            <Image style={style.seriesThumbnail} source={{ uri: s.image }}></Image>
+                            <FallbackImage style={style.seriesThumbnail} uri={s.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
                             <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>
                         </TouchableOpacity>
                     ))}

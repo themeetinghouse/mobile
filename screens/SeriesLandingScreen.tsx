@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Share from '../components/modals/Share';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { GetSeriesQuery } from 'services/API';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -97,6 +99,8 @@ const style = StyleSheet.create({
 
 })
 
+type VideoData = NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items'];
+
 interface Params {
     navigation: StackNavigationProp<MainStackParamList>;
     route: RouteProp<TeachingStackParamList, 'SeriesLandingScreen'>;
@@ -111,7 +115,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
     const [series, setSeries] = useState(seriesParam);
     const [contentFills, setContentFills] = useState(false);
-    const [sermonsInSeries, setSermonsInSeries] = useState<{ loading: boolean, items: any[], nextToken: null | string }>({ loading: true, items: [], nextToken: null });
+    const [videos, setVideos] = useState<VideoData>();
 
     const [share, setShare] = useState(false);
 
@@ -153,7 +157,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 </Button>
                 <Share
                     show={share} top={headerHeight - safeArea.top}
-                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series?.title.trim())}/${sermonsInSeries?.items.slice(-1)[0]?.id}`}
+                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series?.title.trim())}/${videos?.slice(-1)[0]?.id}`}
                     message={series?.title}
                 />
             </View>
@@ -170,8 +174,11 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }
+            const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
 
-            loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(loadedSeries.title), sermonsInSeries, setSermonsInSeries)
+            console.log(json)
+
+            setVideos(json.data?.getSeries?.videos?.items);
         }
         loadSermonsInSeriesAsync();
     }, [])
@@ -229,17 +236,16 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     </View>
                     <View style={style.seriesContainer}>
                         <View style={style.listContentContainer}>
-                            {sermonsInSeries.loading &&
+                            {!videos ?
                                 <ActivityIndicator />
-                            }
-                            {sermonsInSeries.items.map((seriesSermon: any) => (
-                                <TeachingListItem
-                                    key={seriesSermon.id}
-                                    teaching={seriesSermon}
-                                    handlePress={() =>
-                                        navigation.push('SermonLandingScreen', { item: seriesSermon })
-                                    } />
-                            ))}
+                                : videos.map((seriesSermon: any) => (
+                                    <TeachingListItem
+                                        key={seriesSermon.id}
+                                        teaching={seriesSermon}
+                                        handlePress={() =>
+                                            navigation.push('SermonLandingScreen', { item: seriesSermon })
+                                        } />
+                                ))}
                         </View>
                     </View>
                 </View>
@@ -250,3 +256,70 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
 
 export default SeriesLandingScreen;
+
+const getSeries = `
+  query GetSeries($id: ID!) {
+    getSeries(id: $id) {
+      id
+      seriesType
+      title
+      description
+      image
+      startDate
+      endDate
+      videos {
+        items {
+          id
+          episodeTitle
+          episodeNumber
+          seriesTitle
+          series {
+            id
+          }
+          publishedDate
+          description
+          length
+          YoutubeIdent
+          videoTypes
+          Youtube {
+            snippet {
+              thumbnails {
+                default {
+                  url
+                  width
+                  height
+                }
+                medium {
+                  url
+                  width
+                  height
+                }
+                high {
+                  url
+                  width
+                  height
+                }
+                standard {
+                  url
+                  width
+                  height
+                }
+                maxres {
+                  url
+                  width
+                  height
+                }
+              }
+              channelTitle
+              localized {
+                title
+                description
+              }
+            }
+          }
+        }
+        nextToken
+      }
+    }
+  }
+`;

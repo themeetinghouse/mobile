@@ -212,9 +212,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         }
     }
 
-    const getSpeakerImage = (speaker: any) => {
+    /*const getSpeakerImage = (speaker: any) => {
         return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
-    }
+    }*/
 
     const renderSeriesSwipeItem = (item: any, index: number, animatedValue: Animated.Value) => {
         if (item?.loading) {
