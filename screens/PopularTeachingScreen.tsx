@@ -61,6 +61,7 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
             </TouchableOpacity>
         },
         headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
     })
 
     return (

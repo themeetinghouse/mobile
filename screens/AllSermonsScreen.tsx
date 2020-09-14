@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -56,7 +56,7 @@ const style = StyleSheet.create({
         backgroundColor: Theme.colors.gray2,
         borderRadius: 50,
         padding: 16,
-        paddingTop: 10,
+        paddingTop: Platform.OS === 'android' ? 8 : 10,
         paddingBottom: 8,
     },
 })
@@ -87,11 +87,15 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
     async function loadSermonsAsync(nextToken?: string) {
         if (!blurred) {
             const query: GetVideoByVideoTypeQueryVariables = { limit: 50, nextToken: nextToken, videoTypes: 'adult-sunday', sortDirection: ModelSortDirection.DESC };
-            const videos = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
-            if (videos.data?.getVideoByVideoType?.items)
-                setSermons(prevState => { return prevState.concat(videos.data?.getVideoByVideoType?.items ?? []) })
-            if (videos.data?.getVideoByVideoType?.nextToken) {
-                loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken)
+            try {
+                const videos = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
+                if (videos.data?.getVideoByVideoType?.items)
+                    setSermons(prevState => { return prevState.concat(videos.data?.getVideoByVideoType?.items ?? []) })
+                if (videos.data?.getVideoByVideoType?.nextToken) {
+                    loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken)
+                }
+            } catch (e) {
+                console.debug(e)
             }
         }
     }
@@ -121,6 +125,7 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
             </TouchableOpacity>
         },
         headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
     })
 
     return (

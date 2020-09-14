@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { StyleSheet, TouchableOpacity, FlatList, Dimensions, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -37,11 +37,7 @@ const style = StyleSheet.create({
         flexShrink: 0,
         flexBasis: 70
     },
-    headerTitle: {
-        ...HeaderStyle.title, ...{
-            width: "100%",
-        }
-    },
+    headerTitle: HeaderStyle.title,
     title: Style.title,
     body: Style.body,
     horizontalListContentContainer: {
@@ -61,7 +57,7 @@ const style = StyleSheet.create({
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.white,
         padding: 16,
-        paddingTop: 10,
+        paddingTop: Platform.OS === 'android' ? 8 : 10,
         paddingBottom: 8,
         backgroundColor: Theme.colors.gray2,
     },
@@ -142,6 +138,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
             </TouchableOpacity>
         },
         headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
     })
 
     return (
