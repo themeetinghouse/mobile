@@ -101,7 +101,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
                                 {moment(teaching?.publishedDate).format("MMMM, D, YYYY")}
                             </Text> : null
                         }
-                        {hasComments ? <Thumbnail source={Theme.icons.grey.comment} style={{ width: 12, height: 12 }} /> : null}
+                        {hasComments ? <Thumbnail square source={Theme.icons.grey.comment} style={{ width: 12, height: 12 }} /> : null}
                     </View>
                 </View>
             </View>

@@ -103,7 +103,6 @@ export default function RecentTeaching(): JSX.Element {
                 }
             }
         }
-
         load();
     }, [])
 

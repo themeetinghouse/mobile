@@ -24,7 +24,7 @@ export type MainStackParamList = {
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
   LocationSelectionScreen: { persist: boolean };
-  HighlightScreen: { highlights: any[] };
+  HighlightScreen: { highlights: any[], nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
   CommentScreen: { key: string, noteId: string, commentType: CommentDataType, noteType: 'notes' | 'questions', textSnippet?: string, imageUri?: string } | { commentId: string, comment: string, tags: Array<string | null>, textSnippet?: string, imageUri?: string, commentType: CommentDataType, noteId: string };

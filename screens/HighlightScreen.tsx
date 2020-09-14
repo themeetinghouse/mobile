@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, createRef } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { StatusBar, StyleSheet, Text, View, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,6 +8,8 @@ import { Theme, Style } from '../Theme.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import MediaContext from '../contexts/MediaContext';
+import SermonsService from '../services/SermonsService';
+import ActivityIndicator from '../components/ActivityIndicator';
 
 interface Params {
     navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
@@ -52,18 +54,23 @@ const style = StyleSheet.create({
 export default function HighlightPlayer({ navigation, route }: Params): JSX.Element {
 
     const screenWidth = Dimensions.get('screen').width;
-
-    const allHighlights = route.params?.highlights;
     const playerRef = useRef<YoutubeIframeRef>(null);
     const safeArea = useSafeAreaInsets();
 
-    const [highlight, setHighlight] = useState(allHighlights[0]);
+    const [highlight, setHighlight] = useState(route.params?.highlights[0]);
+    const [allHighlights, setAllHighlights] = useState(route.params?.highlights);
     const [index, setIndex] = useState(0);
     const [elapsed, setElapsed] = useState(0);
     const [duration, setDuration] = useState(1);
+    const [nextToken, setNextToken] = useState(route.params.nextToken);
 
     const media = useContext(MediaContext);
 
+    const getMoreHighlights = async () => {
+        const data = await SermonsService.loadHighlightsList(20, nextToken);
+        setAllHighlights(prev => { return prev.concat(data.items) });
+        setNextToken(data.nextToken ?? undefined);
+    }
 
     useEffect(() => {
         async function closeMedia() {
@@ -158,6 +165,11 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
                                 source={{ uri: getTeachingImage(item) }}
                             />
                         </TouchableOpacity>
+                    )}
+                    onEndReached={getMoreHighlights}
+                    onEndReachedThreshold={0.8}
+                    ListFooterComponent={() => (
+                        <ActivityIndicator />
                     )}
                 ></FlatList>
             </View>

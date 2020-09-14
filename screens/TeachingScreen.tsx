@@ -169,7 +169,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
-    const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: null });
+    const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: undefined });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
     const [bounce, setBounce] = useState(false);
     const [popular, setPopular] = useState<PopularVideoData>([]);
@@ -187,12 +187,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
 
-    const getPopularTeaching = async (nextToken?: string) => {
-
+    const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
-            nextToken: nextToken,
-            limit: 20,
+            limit: 30,
             videoTypes: 'adult-sunday',
             publishedDate: { gt: startDate },
         };
@@ -204,12 +202,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         }) as GraphQLResult<GetVideoByVideoTypeQuery>;
         const items = json?.data?.getVideoByVideoType?.items ?? [];
         const popular = items.filter(item => item?.viewCount ? parseInt(item?.viewCount, 10) >= 700 : false);
-
-        setPopular(prev => { return prev.concat(popular) });
-
-        if (json?.data?.getVideoByVideoType?.nextToken) {
-            getPopularTeaching(json?.data?.getVideoByVideoType?.nextToken);
-        }
+        setPopular(popular);
     }
 
     useEffect(() => {
@@ -347,7 +340,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         horizontal={true}
                         data={highlights.items}
                         renderItem={({ item, index }) => (
-                            <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items.slice(index) })} >
+                            <TouchableOpacity onPress={() => navigation.push('HighlightScreen', { highlights: highlights.items.slice(index), nextToken: highlights.nextToken })} >
                                 <Image
                                     style={[style.highlightsThumbnail, index === (highlights.items.length - 1) ? style.lastHorizontalListItem : {}]}
                                     source={{ uri: getTeachingImage(item) }}
