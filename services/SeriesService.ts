@@ -1,11 +1,12 @@
 import { runGraphQLQuery } from './ApiService';
 import { GetSeriesBySeriesTypeQuery, GetSeriesQuery } from './API';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 type SeriesByTypeQueryResult = NonNullable<GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']>;
 
 export interface LoadSeriesListData {
-  items: Array<NonNullable<SeriesByTypeQueryResult['items']>[0] | { loading: boolean }>;
-  nextToken: SeriesByTypeQueryResult['nextToken'];
+  items: Array<NonNullable<SeriesByTypeQueryResult['items']>[0] | { loading: boolean }> | undefined;
+  nextToken: SeriesByTypeQueryResult['nextToken'] | undefined;
 }
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>
@@ -16,42 +17,43 @@ interface SeriesDataWithHeroImage extends SeriesData {
 
 export default class SeriesService {
 
-    static loadSeriesList = async (limit: number, nextToken?: string): Promise<LoadSeriesListData> => {
-      const queryResult = await runGraphQLQuery({ 
-        query: getSeriesBySeriesType,
-        variables: { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken },
-      });
-      console.log("SeriesService.loadSeriesList(): loaded.  nextToken = ", queryResult.getSeriesBySeriesType.nextToken);
-      const items = queryResult.getSeriesBySeriesType.items;
+  static loadSeriesList = async (limit: number, nextToken?: string): Promise<LoadSeriesListData> => {
+    const queryResult = await API.graphql(graphqlOperation(getSeriesBySeriesType, { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken })) as GraphQLResult<GetSeriesBySeriesTypeQuery>
+
+    const items = queryResult?.data?.getSeriesBySeriesType?.items;
+    if (items) {
       for (const item of items) {
-        SeriesService.updateSeriesImage(item);
-      }
-      return {
-        items: items,
-        nextToken: queryResult.getSeriesBySeriesType.nextToken
-      };
-    }
-
-    static loadSeriesById = async (seriesId: string): Promise<SeriesDataWithHeroImage> => {
-      const queryResult = await runGraphQLQuery({ 
-        query: getSeries,
-        variables: { id: seriesId },
-      });
-      //console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
-      const series = queryResult.getSeries;
-      SeriesService.updateSeriesImage(series);
-      return series;
-    }
-
-    static updateSeriesImage = async (series: SeriesDataWithHeroImage): Promise<void> => {
-      if (series.title){
-        series.image = `https://themeetinghouse.com/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
-        series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(/ /g, "%20")}.jpg`;
-      } else {
-        series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
-        series.heroImage = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
+        if (item) {
+          SeriesService.updateSeriesImage(item as any);
+        }
       }
     }
+    return {
+      items: items?.filter(item => item?.videos?.items && item?.videos?.items?.length > 0),
+      nextToken: queryResult?.data?.getSeriesBySeriesType?.nextToken
+    };
+  }
+
+  static loadSeriesById = async (seriesId: string): Promise<SeriesDataWithHeroImage> => {
+    const queryResult = await runGraphQLQuery({
+      query: getSeries,
+      variables: { id: seriesId },
+    });
+    //console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
+    const series = queryResult.getSeries;
+    SeriesService.updateSeriesImage(series);
+    return series;
+  }
+
+  static updateSeriesImage = async (series: SeriesDataWithHeroImage): Promise<void> => {
+    if (series.title) {
+      series.image = `https://themeetinghouse.com/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
+      series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(/ /g, "%20")}.jpg`;
+    } else {
+      series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
+      series.heroImage = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
+    }
+  }
 }
 
 const getSeriesBySeriesType = `

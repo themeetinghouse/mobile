@@ -50,11 +50,11 @@ const style = StyleSheet.create({
     }
 })
 
-interface Props {
+interface Params {
     navigation: StackNavigationProp<AuthStackParamList, 'ConfirmSignUpScreen'>;
 }
 
-export default function Login(props: Props): JSX.Element {
+export default function Login({ navigation }: Params): JSX.Element {
     const [user, setUser] = useState('');
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
@@ -65,7 +65,7 @@ export default function Login(props: Props): JSX.Element {
         setCode('');
         setError('');
         setNeedsNewCode(false);
-        props.navigation.navigate('LoginScreen')
+        navigation.navigate('LoginScreen')
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>): void {

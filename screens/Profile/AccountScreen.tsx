@@ -1,14 +1,12 @@
 import React, { useContext } from 'react';
 import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Button } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, ViewStyle, TextStyle, StyleSheet } from 'react-native';
-//import { TouchableOpacity } from 'react-native';
-//import LocationsService from '../services/LocationsService';
-//import { selectLocation } from '../reducers/locationReducer';
+import { StatusBar, StyleSheet } from 'react-native';
 import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator';
-import LocationsService, { LocationKey } from '../../services/LocationsService';
+import LocationsService from '../../services/LocationsService';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
     content: {
@@ -110,12 +108,13 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    navigation: StackNavigationProp<HomeStackParamList>;
+    navigation: StackNavigationProp<MainStackParamList>;
 }
 
 function Account({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
+    const safeArea = useSafeAreaInsets();
 
     const items = [
         "Login",
@@ -135,13 +134,13 @@ function Account({ navigation }: Params): JSX.Element {
             id: "loc",
             text: "Location",
             icon: Theme.icons.grey.arrow,
-            data: user?.userData?.["custom:home_location"] ? LocationsService.mapLocationIdToName(user?.userData?.["custom:home_location"] as LocationKey) : 'None Selected',
+            data: user?.userData?.["custom:home_location"] ? LocationsService.mapLocationIdToName(user?.userData?.["custom:home_location"]) : 'None Selected',
             action: () => navigation.navigate('LocationSelectionScreen', { persist: true })
         }
     ]
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: Theme.colors.black, paddingBottom: safeArea.bottom }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>
@@ -155,7 +154,7 @@ function Account({ navigation }: Params): JSX.Element {
                 <Right style={style.headerRight}>
                 </Right>
             </Header>
-            <Content style={style.content}>
+            <Content style={[style.content, { flex: 1 }]}>
                 <View>
                     <List>
                         {items.map(item => {

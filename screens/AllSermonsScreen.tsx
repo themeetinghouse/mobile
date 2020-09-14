@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { TouchableOpacity, StyleSheet, TouchableHighlight } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SermonsService from '../services/SermonsService';
-import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { GetVideoByVideoTypeQuery, GetVideoByVideoTypeQueryVariables, ModelSortDirection } from '../services/API';
 
 const style = StyleSheet.create({
     content: {
@@ -55,13 +56,15 @@ const style = StyleSheet.create({
         backgroundColor: Theme.colors.gray2,
         borderRadius: 50,
         padding: 16,
-        paddingTop: 10,
+        paddingTop: Platform.OS === 'android' ? 8 : 10,
         paddingBottom: 8,
     },
 })
 
+type VideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
+
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList>;
+    navigation: StackNavigationProp<MainStackParamList>;
     route: RouteProp<TeachingStackParamList, 'AllSermonsScreen'>;
 }
 
@@ -72,17 +75,36 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
     const dateStart = route.params?.startDate ? moment(route.params?.startDate) : null;
     const dateEnd = route.params?.endDate ? moment(route.params?.endDate)?.endOf('month') : null;
     const [searchText, setSearchText] = useState("");
-    const [sermons, setSermons] = useState({ loading: true, items: [], nextToken: null });
+    const [sermons, setSermons] = useState<VideoData>([]);
+    const [blurred, setBlurred] = useState(false);
 
-    const loadSermonsAsync = async () => {
-        loadSomeAsync(SermonsService.loadSermonsList, sermons, setSermons, 30);
+    useEffect(() => {
+        navigation.addListener('blur', () => {
+            setBlurred(true);
+        })
+    }, [])
+
+    async function loadSermonsAsync(nextToken?: string) {
+        if (!blurred) {
+            const query: GetVideoByVideoTypeQueryVariables = { limit: 50, nextToken: nextToken, videoTypes: 'adult-sunday', sortDirection: ModelSortDirection.DESC };
+            try {
+                const videos = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
+                if (videos.data?.getVideoByVideoType?.items)
+                    setSermons(prevState => { return prevState.concat(videos.data?.getVideoByVideoType?.items ?? []) })
+                if (videos.data?.getVideoByVideoType?.nextToken) {
+                    loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken)
+                }
+            } catch (e) {
+                console.debug(e)
+            }
+        }
     }
 
     useEffect(() => {
         loadSermonsAsync();
     }, [])
 
-    let filteredSermons = sermons.items.filter((s: any) => searchText ? (s.episodeTitle).toLowerCase().includes(searchText.toLowerCase()) : true);
+    let filteredSermons = sermons.filter(s => searchText ? (s?.episodeTitle ?? '').toLowerCase().includes(searchText.toLowerCase()) : true);
 
     let dateStartStr = "", dateEndStr = "";
     if (dateStart && dateEnd) {
@@ -103,6 +125,7 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
             </TouchableOpacity>
         },
         headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
     })
 
     return (
@@ -124,19 +147,77 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
                     </TouchableHighlight>
                 </View>
                 <View>
-                    {sermons.loading
-                        && <ActivityIndicator />
-                    }
-                    {filteredSermons.map((sermon: any) => (
-                        <TeachingListItem
-                            key={sermon.id}
-                            teaching={sermon}
-                            handlePress={() =>
-                                navigation.push('SermonLandingScreen', { item: sermon })
-                            } />
-                    ))}
+                    {sermons && sermons.length > 0 ?
+                        filteredSermons.map((sermon: any) => (
+                            <TeachingListItem
+                                key={sermon.id}
+                                teaching={sermon}
+                                handlePress={() =>
+                                    navigation.push('SermonLandingScreen', { item: sermon })
+                                } />))
+                        : <ActivityIndicator />}
                 </View>
             </Content>
         </Container>
     )
 }
+
+export const getVideoByVideoType = `query GetVideoByVideoType(
+    $videoTypes: String
+    $publishedDate: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelVideoFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getVideoByVideoType(
+      videoTypes: $videoTypes
+      publishedDate: $publishedDate
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        episodeTitle
+        episodeNumber
+        seriesTitle
+        series {
+          id
+        }
+        publishedDate
+        description
+        length
+        viewCount
+        YoutubeIdent
+        Youtube {
+          snippet {
+            thumbnails {
+              default {
+                url
+              }
+              medium {
+                url
+              }
+              high {
+                url
+              }
+              standard {
+                url
+              }
+              maxres {
+                url
+              }
+            }
+          }
+        }
+        videoTypes
+        notesURL
+        videoURL
+        audioURL
+      }
+      nextToken
+    }
+  }
+  `;

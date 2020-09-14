@@ -1,23 +1,26 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Text, Content, View } from 'native-base';
-import AllButton from '../components/buttons/AllButton';
+import { Container, Content, View, Text } from 'native-base';
+//import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
 import { Theme, Style } from '../Theme.style';
-import EventCard from '../components/home/EventCard/EventCard';
+//import EventCard from '../components/home/EventCard/EventCard';
 import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
-import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
-import AnnouncementService from '../services/AnnouncementService';
+//import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
+// import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 //import EventsService from '../services/EventsService';
-import SermonsService from '../services/SermonsService';
-import { loadSomeAsync } from '../utils/loading';
-import ActivityIndicator from '../components/ActivityIndicator';
+// import SermonsService from '../services/SermonsService';
+// import { loadSomeAsync } from '../utils/loading';
+// import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
+import InstagramService, { InstagramData } from '../services/Instagram';
+import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
+import AllButton from '../components/buttons/AllButton';
 
 const style = StyleSheet.create({
   categoryContainer: {
@@ -34,11 +37,12 @@ interface Params {
 export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
-  const [announcements, setAnnouncements] = useState<any>([]);
-  const [events, setEvents] = useState<any>([]);
-  const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
+  //const [announcements, setAnnouncements] = useState<any>([]);
+  //const [events, setEvents] = useState<any>([]);
+  const [images, setImages] = useState<InstagramData>([]);
+  const [instaUsername, setInstaUsername] = useState("");
 
-  useEffect(() => {
+  /*useEffect(() => {
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
@@ -50,12 +54,16 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       //setEvents(eventsResult);
     }
     loadEvents();
+  }, [])*/
 
-    const loadRecentTeaching = async () => {
-      loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 1)
+  useEffect(() => {
+    const loadInstagramImages = async () => {
+      const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId ?? '')
+      setImages(data.images);
+      setInstaUsername(data.username);
     }
-    loadRecentTeaching();
-  }, [])
+    loadInstagramImages();
+  }, [location])
 
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
@@ -65,18 +73,18 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
-        {recentTeaching.loading &&
-          <ActivityIndicator />
-        }
-        {recentTeaching.items.length > 0 &&
-          <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
-            <RecentTeaching teaching={recentTeaching.items[0]}></RecentTeaching>
-            <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
-              <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
-            </View>
+        <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
+          <RecentTeaching />
+          <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
+            <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
-        }
+        </View>
 
+        <View style={style.categoryContainer}>
+          <Text style={style.categoryTitle}>@{instaUsername}</Text>
+          <InstagramFeed images={images} />
+          <AllButton handlePress={() => Linking.openURL(`https://instagram.com/${instaUsername}`)} icon={Theme.icons.white.instagram}>Follow us on Instagram</AllButton>
+        </View>
 
 
         {/*<View style={style.categoryContainer}>

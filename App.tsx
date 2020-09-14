@@ -1,19 +1,20 @@
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import React, { useEffect, useState } from 'react';
-import { Platform, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState, createRef } from 'react';
+import { Platform, StatusBar, ViewStyle } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
-import LocationsService, { LocationKey } from './services/LocationsService';
+import LocationsService from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import UserContext, { UserData } from './contexts/UserContext';
+import CommentContext, { CommentContextType } from './contexts/CommentContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
+import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import MediaContext, { MediaData } from './contexts/MediaContext';
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
+import { DefaultTheme, NavigationContainer, NavigationContainerRef } from '@react-navigation/native';
+import MiniPlayer from './components/MiniPlayer';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import MiniPlayer from './components/MiniPlayer';
 import * as Sentry from 'sentry-expo';
 import { version } from './version'
 
@@ -30,7 +31,11 @@ Amplify.configure({
     region: 'us-east-1',
     userPoolId: 'us-east-1_KiJzP2dH5',
     userPoolWebClientId: '3pf37ngd57hsk9ld12aha9bm2f',
-  }
+  },
+  aws_appsync_graphqlEndpoint: "https://qt6manqtzbhkvd6tcxvchusmyq.appsync-api.us-east-1.amazonaws.com/graphql",
+  aws_appsync_region: "us-east-1",
+  aws_appsync_authenticationType: "API_KEY",
+  aws_appsync_apiKey: "da2-6zfuocqmhvecrfkng7hx2oipni",
 });
 
 interface Props {
@@ -50,14 +55,11 @@ function App(props: Props): JSX.Element {
   const [userData, setUserData] = useState<UserData>(null)
   const [locationData, setLocationData] = useState<LocationData>(null);
   const [media, setMedia] = useState<MediaData>({ playerType: 'none', playing: false, audio: null, video: null, videoTime: 0, episode: '', series: '' });
+  const [currentScreen, setCurrentScreen] = useState('HomeScreen');
+  const [display, setDisplay] = useState<ViewStyle['display']>('flex');
+  const [comments, setComments] = useState<CommentContextType['comments']>([]);
 
-  /*useEffect(() => {
-    const setInitialAppState = async () => {
-      const selectedLocation = await LocationsService.getLocationById("oakville");
-      props.dispatch(selectLocation(selectedLocation));
-    }
-    setInitialAppState();
-  }, [])*/
+  const navRef = createRef<NavigationContainerRef>();
 
   const setVideoTime = (data: number) => {
     setMedia(prevState => { return { ...prevState, videoTime: data } })
@@ -75,6 +77,20 @@ function App(props: Props): JSX.Element {
     setMedia(prevState => { return { ...prevState, audio: null } })
   }
 
+  const setPlayerTypeNone = () => {
+    setMedia(prevState => { return { ...prevState, playerType: 'none' } })
+
+  }
+
+  useEffect(() => {
+    const unsub = navRef?.current?.addListener('state', () => {
+      const screen = navRef.current?.getCurrentRoute()?.name;
+      if (screen)
+        setCurrentScreen(screen);
+    })
+    return unsub;
+  }, [navRef])
+
   useEffect(() => {
     async function checkForUser() {
       try {
@@ -89,15 +105,15 @@ function App(props: Props): JSX.Element {
         }
       } catch (e) {
         console.debug(e)
+        setLocationData({ locationId: "unknown", locationName: "unknown" });
         try {
           const location = await SecureStore.getItemAsync('location')
           if (location) {
-            const selectedLocation = LocationsService.mapLocationIdToName(location as LocationKey);
+            const selectedLocation = LocationsService.mapLocationIdToName(location);
             setLocationData({ locationId: location, locationName: selectedLocation });
           }
         } catch (e) {
           console.debug(e)
-          setLocationData({ locationId: "", locationName: "" });
         }
       }
     }
@@ -108,25 +124,28 @@ function App(props: Props): JSX.Element {
     return (
       <AppLoading
         startAsync={loadResourcesAsync}
-        onError={handleLoadingError}
         onFinish={() => setLoadingComplete(true)}
       />
     );
   } else {
     return (
-      <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo }}>
-        <LocationContext.Provider value={{ locationData, setLocationData }}>
-          <UserContext.Provider value={{ userData, setUserData }}>
-            <SafeAreaProvider>
-              {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-              <NavigationContainer theme={CustomTheme}>
-                <AppNavigator />
-                <MiniPlayer />
-              </NavigationContainer>
-            </SafeAreaProvider>
-          </UserContext.Provider>
-        </LocationContext.Provider>
-      </MediaContext.Provider>
+      <CommentContext.Provider value={{ comments, setComments }} >
+        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }} >
+          <MediaContext.Provider value={{ media, setMedia, setVideoTime, closeAudio, setAudioNull, closeVideo, setPlayerTypeNone }}>
+            <LocationContext.Provider value={{ locationData, setLocationData }}>
+              <UserContext.Provider value={{ userData, setUserData }}>
+                <SafeAreaProvider style={{ backgroundColor: 'black' }} >
+                  {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                  <NavigationContainer theme={CustomTheme} ref={navRef} >
+                    <AppNavigator />
+                    <MiniPlayer currentScreen={currentScreen} />
+                  </NavigationContainer>
+                </SafeAreaProvider>
+              </UserContext.Provider>
+            </LocationContext.Provider>
+          </MediaContext.Provider>
+        </MiniPlayerStyleContext.Provider>
+      </CommentContext.Provider>
     );
   }
 }
@@ -146,14 +165,7 @@ async function loadResourcesAsync() {
       'Graphik-Medium-App': require('./assets/fonts/Graphik-Medium-App.ttf'),
       'Graphik-Bold-App': require('./assets/fonts/Graphik-Bold-App.ttf'),
       'Graphik-Semibold-App': require('./assets/fonts/Graphik-Semibold-App.ttf'),
-      //This is the font that we are using for our tab bar
-      ...Ionicons.font,
+      'Graphik-RegularItalic': require('./assets/fonts/Graphik-RegularItalic.otf')
     }),
   ]);
-}
-
-function handleLoadingError(error: Error) {
-  // In this case, you might want to report the error to your error reporting
-  // service, for example Sentry
-  console.warn(error);
 }

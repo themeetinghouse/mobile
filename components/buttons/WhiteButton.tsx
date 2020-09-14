@@ -3,7 +3,7 @@ import { View, Button, Text } from 'native-base';
 import Theme from '../../Theme.style';
 import { ViewStyle, StyleSheet } from 'react-native';
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
     button: {
         backgroundColor: Theme.colors.white,
         borderRadius: 0,
@@ -11,6 +11,16 @@ const style = StyleSheet.create({
     },
     label: {
         color: Theme.colors.black,
+        fontFamily: Theme.fonts.fontFamilyBold,
+        fontSize: Theme.fonts.medium,
+    },
+    buttonBlack: {
+        backgroundColor: 'black',
+        borderRadius: 0,
+        height: '100%'
+    },
+    labelBlack: {
+        color: 'white',
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
     },
@@ -28,18 +38,20 @@ const style = StyleSheet.create({
     }
 })
 
-interface Props {
+interface Params {
     style?: ViewStyle;
     label: string;
     onPress?: () => any;
     outlined?: boolean;
+    solidBlack?: boolean;
 }
 
-export default function WhiteButton(props: Props): JSX.Element {
+export default function WhiteButton({ style, label, onPress, outlined, solidBlack }: Params): JSX.Element {
+
     return (
-        <View style={props.style}>
-            <Button style={props.outlined ? style.buttonOutlined : style.button} block onPress={props.onPress}>
-                <Text style={props.outlined ? style.labelOutlined : style.label} uppercase={false}>{props.label}</Text>
+        <View style={style}>
+            <Button style={outlined ? styles.buttonOutlined : solidBlack ? styles.buttonBlack : styles.button} block onPress={onPress}>
+                <Text style={outlined ? styles.labelOutlined : solidBlack ? styles.labelBlack : styles.label} uppercase={false}>{label}</Text>
             </Button>
         </View>
     )

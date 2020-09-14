@@ -94,7 +94,7 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
     }, []);
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: 'black' }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>

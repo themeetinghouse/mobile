@@ -72,13 +72,15 @@ const style = StyleSheet.create({
 })
 
 
-interface Props {
-    navigation: CompositeNavigationProp<StackNavigationProp<AuthStackParamList>, StackNavigationProp<MainStackParamList>>;
+interface Params {
+    navigation: CompositeNavigationProp<
+        StackNavigationProp<AuthStackParamList, 'LocationSelectionScreen'>,
+        StackNavigationProp<MainStackParamList, 'Auth'>
+    >;
 }
 
-type Screens = keyof AuthStackParamList | keyof MainStackParamList
 
-export default function Login(props: Props): JSX.Element {
+export default function Login({ navigation }: Params): JSX.Element {
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
@@ -102,11 +104,18 @@ export default function Login(props: Props): JSX.Element {
         closeMedia();
     }, []);
 
-    function navigate(screen: Screens, screenProps?: any): void {
+    function navigateInAuthStack(screen: keyof AuthStackParamList): void {
         setUser('');
         setPass('');
         setError('');
-        props.navigation.navigate(screen, screenProps)
+        navigation.push(screen)
+    }
+
+    function navigateHome(): void {
+        setUser('');
+        setPass('');
+        setError('');
+        navigation.push('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -123,7 +132,7 @@ export default function Login(props: Props): JSX.Element {
                 locationId: userSignedIn.attributes['custom:home_location'],
                 locationName: LocationsService.mapLocationIdToName(userSignedIn.attributes['custom:home_location'])
             });
-            navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })
+            navigateHome();
         } catch (e) {
             console.error(e)
             setError(e.message)
@@ -132,18 +141,18 @@ export default function Login(props: Props): JSX.Element {
 
     return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: 'black', paddingTop: 20 }}>
-            <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigate('Main', { screen: 'Home', params: { screen: 'HomeScreen' } })} >
+            <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigateHome()} >
                 <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
             </Button>
             <Text style={style.headerTextActive}>Login</Text>
-            <Text onPress={() => navigate('SignUpScreen')} style={style.headerTextInactive}>Sign Up</Text>
+            <Text onPress={() => navigateInAuthStack('SignUpScreen')} style={style.headerTextInactive}>Sign Up</Text>
         </View>
         <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
             <Text style={style.title}>Email</Text>
             <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text)} />
             <Text style={style.title}>Password</Text>
             <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
-            <TouchableOpacity onPress={() => navigate('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => navigateInAuthStack('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>
             <View style={{ marginTop: 12 }}>
                 <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
             </View>
@@ -151,7 +160,7 @@ export default function Login(props: Props): JSX.Element {
         </View>
         <View style={{ flexGrow: 0, paddingVertical: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
             <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>
-            <WhiteButton outlined label="Sign Up" onPress={() => navigate('SignUpScreen')} style={{ marginTop: 12, height: 56 }} />
+            <WhiteButton outlined label="Sign Up" onPress={() => navigateInAuthStack('SignUpScreen')} style={{ marginTop: 12, height: 56 }} />
         </View>
     </ScrollView>
 }

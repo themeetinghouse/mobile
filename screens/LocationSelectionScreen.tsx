@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StatusBar, ViewStyle, TextStyle, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import LocationsService from '../services/LocationsService';
 import LocationContext, { LocationData } from '../contexts/LocationContext';
-import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Auth } from '@aws-amplify/auth';
 import UserContext from '../contexts/UserContext';
 import * as SecureStore from 'expo-secure-store';
 import { RouteProp } from '@react-navigation/native';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     content: {
@@ -78,8 +78,8 @@ const style = StyleSheet.create({
 })
 
 type LocationSelectionScreenInput = {
-    navigation: StackNavigationProp<HomeStackParamList>;
-    route: RouteProp<HomeStackParamList, 'LocationSelectionScreen'>;
+    navigation: StackNavigationProp<MainStackParamList>;
+    route: RouteProp<MainStackParamList, 'LocationSelectionScreen'>;
 }
 
 
@@ -123,7 +123,7 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
     }
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: 'black' }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>

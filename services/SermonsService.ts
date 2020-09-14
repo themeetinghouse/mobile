@@ -1,5 +1,6 @@
 import { runGraphQLQuery } from './ApiService';
 import { GetVideoByVideoTypeQuery } from './API';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 export interface LoadSermonResult {
   items: NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items'];
@@ -8,15 +9,17 @@ export interface LoadSermonResult {
 
 export default class SermonsService {
 
-  static loadSermonsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
-    const queryResult = await runGraphQLQuery({
-      query: getVideoByVideoType,
-      variables: { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, nextToken: nextToken },
-    });
-    return {
-      items: queryResult.getVideoByVideoType.items,
-      nextToken: queryResult.getVideoByVideoType.nextToken
-    };
+  static loadSermonsList = async (count = 20, nextToken?: string): Promise<any> => {
+    const query = { sortDirection: "DESC", limit: count, videoTypes: "adult-sunday", publishedDate: { lt: "a" }, nextToken: nextToken }
+    try {
+      const result = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
+      return {
+        items: result?.data?.getVideoByVideoType?.items,
+        nextToken: result?.data?.getVideoByVideoType?.nextToken
+      };
+    } catch (e) {
+      console.debug(e)
+    }
   }
 
   static loadRecentSermonsList = async (count = 20, nextToken?: string): Promise<LoadSermonResult> => {
@@ -47,13 +50,9 @@ export default class SermonsService {
       nextToken: queryResult.getVideoByVideoType.nextToken
     };
   }
-
-
-
-
 }
 
-export const getVideoByVideoType = `
+export const getVideoByVideoType = /* GraphQL */`
   query GetVideoByVideoType(
     $videoTypes: String
     $publishedDate: ModelStringKeyConditionInput
@@ -184,57 +183,3 @@ export const getVideoByVideoType = `
     }
   }
   `;
-
-
-
-//   const allSermons = [
-//     {
-//         id: "1",
-//         title: "Q & eh?",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2019-12-27",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-//     {
-//         id: "2",
-//         title: "Q & eh? 2",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2020-01-09",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-//     {
-//         id: "3",
-//         title: "Q & eh? 3",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2020-01-16",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-//     {
-//         id: "4",
-//         title: "Q & eh? 3",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2020-01-16",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-//     {
-//         id: "5",
-//         title: "Q & eh? 3",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2020-01-16",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-//     {
-//         id: "6",
-//         title: "Q & eh? 3",
-//         episode: 5,
-//         series: "Origins",
-//         date: "2020-01-16",
-//         thumbnail: "https://i.ytimg.com/vi/07jUBhJicCo/hqdefault.jpg",
-//     },
-// ]
-

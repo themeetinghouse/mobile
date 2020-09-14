@@ -1,16 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { StatusBar, StyleSheet, Text, View, Image, Dimensions, FlatList, TouchableOpacity } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { TeachingStackParamList } from 'navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { Header, Left, Button, Thumbnail, Container, Body, Right } from 'native-base';
 import { Theme, Style } from '../Theme.style';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import MediaContext from '../contexts/MediaContext';
+import SermonsService from '../services/SermonsService';
+import ActivityIndicator from '../components/ActivityIndicator';
 
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList, 'HighlightScreen'>;
-    route: RouteProp<TeachingStackParamList, 'HighlightScreen'>;
+    navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
+    route: RouteProp<MainStackParamList, 'HighlightScreen'>;
 }
 
 const style = StyleSheet.create({
@@ -51,16 +54,38 @@ const style = StyleSheet.create({
 export default function HighlightPlayer({ navigation, route }: Params): JSX.Element {
 
     const screenWidth = Dimensions.get('screen').width;
-
-    const selectedIndex = route.params?.index;
-    const allHighlights = route.params?.highlights;
     const playerRef = useRef<YoutubeIframeRef>(null);
     const safeArea = useSafeAreaInsets();
 
-    const [highlight, setHighlight] = useState(allHighlights[selectedIndex]);
-    const [index, setIndex] = useState(selectedIndex);
+    const [highlight, setHighlight] = useState(route.params?.highlights[0]);
+    const [allHighlights, setAllHighlights] = useState(route.params?.highlights);
+    const [index, setIndex] = useState(0);
     const [elapsed, setElapsed] = useState(0);
     const [duration, setDuration] = useState(1);
+    const [nextToken, setNextToken] = useState(route.params.nextToken);
+
+    const media = useContext(MediaContext);
+
+    const getMoreHighlights = async () => {
+        const data = await SermonsService.loadHighlightsList(20, nextToken);
+        setAllHighlights(prev => { return prev.concat(data.items) });
+        setNextToken(data.nextToken ?? undefined);
+    }
+
+    useEffect(() => {
+        async function closeMedia() {
+            media.setPlayerTypeNone();
+            if (media.media.audio) {
+                try {
+                    await media.media.audio?.sound.unloadAsync();
+                } catch (e) {
+                    console.debug(e)
+                }
+            }
+            media.setMedia({ video: null, videoTime: 0, audio: null, playerType: 'none', playing: false, series: '', episode: '' });
+        }
+        closeMedia();
+    }, []);
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -79,8 +104,8 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
 
     function handleStateChange(event: string) {
         if (event === 'ended') {
-            setHighlight(allHighlights[index + 1])
-            setIndex(index + 1)
+            setHighlight(allHighlights[index + 1]);
+            setIndex(index + 1);
             setElapsed(0);
         }
     }
@@ -126,13 +151,13 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
                 />
             </View>
             <View style={{ height: 4, width: (elapsed / duration) * screenWidth, backgroundColor: 'white' }} />
-            <View style={{ paddingBottom: 24, paddingTop: 16, backgroundColor: Theme.colors.background }} >
+            <View style={{ paddingBottom: 48, paddingTop: 16, backgroundColor: Theme.colors.background }} >
                 <Text style={style.categoryTitle}>Up Next</Text>
                 <FlatList
-                    //contentContainerStyle={style.horizontalListContentContainer}
                     horizontal={true}
                     data={allHighlights}
-                    initialScrollIndex={selectedIndex + 1}
+                    initialScrollIndex={1}
+                    getItemLayout={(data, index) => { return { length: 80 * (16 / 9), offset: 80 * (16 / 9) + 16, index } }}
                     renderItem={({ item, index }) => (
                         <TouchableOpacity onPress={() => { setHighlight(allHighlights[index]); setIndex(index); setElapsed(0); }} >
                             <Image
@@ -140,6 +165,11 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
                                 source={{ uri: getTeachingImage(item) }}
                             />
                         </TouchableOpacity>
+                    )}
+                    onEndReached={getMoreHighlights}
+                    onEndReachedThreshold={0.8}
+                    ListFooterComponent={() => (
+                        <ActivityIndicator />
                     )}
                 ></FlatList>
             </View>

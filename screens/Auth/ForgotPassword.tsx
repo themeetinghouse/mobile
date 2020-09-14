@@ -54,14 +54,14 @@ const style = StyleSheet.create({
     }
 })
 
-interface Props {
+interface Params {
     navigation: CompositeNavigationProp<
         StackNavigationProp<AuthStackParamList, 'ForgotPasswordScreen'>,
-        StackNavigationProp<MainStackParamList>
+        StackNavigationProp<MainStackParamList, 'Auth'>
     >;
 }
 
-export default function Login(props: Props): JSX.Element {
+export default function Login({ navigation }: Params): JSX.Element {
     const userContext = useContext(UserContext);
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
@@ -97,7 +97,7 @@ export default function Login(props: Props): JSX.Element {
         setCode('');
         setError('');
         setCodeSent(false);
-        props.navigation.navigate('LoginScreen')
+        navigation.push("LoginScreen")
     }
 
     function toHome(): void {
@@ -106,7 +106,7 @@ export default function Login(props: Props): JSX.Element {
         setCode('');
         setError('');
         setCodeSent(false);
-        props.navigation.navigate("Main", { screen: "Home", params: { screen: "HomeScreen" } })
+        navigation.push("Main", { screen: "Home", params: { screen: "HomeScreen" } })
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>, cb: () => any): void {
@@ -132,7 +132,9 @@ export default function Login(props: Props): JSX.Element {
 
     const reset = async () => {
         try {
-            await Auth.forgotPasswordSubmit(user, code, pass).then(() => updateCodeState(true))
+            await Auth.forgotPasswordSubmit(user, code, pass);
+            updateCodeState(true);
+            toLogin();
         } catch (e) {
             console.error(e)
             setError(e.message)

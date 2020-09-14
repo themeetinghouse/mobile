@@ -1,19 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Text, Button, Content, View, Thumbnail } from 'native-base';
+import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { Dimensions, StyleSheet, NativeSyntheticEvent, NativeScrollEvent, ImageBackground, TouchableOpacity } from 'react-native';
+import { Dimensions, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
-import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import Share from '../components/modals/Share';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { GetSeriesQuery } from 'services/API';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -96,8 +97,10 @@ const style = StyleSheet.create({
 
 })
 
+type VideoData = NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items'];
+
 interface Params {
-    navigation: StackNavigationProp<TeachingStackParamList>;
+    navigation: StackNavigationProp<MainStackParamList>;
     route: RouteProp<TeachingStackParamList, 'SeriesLandingScreen'>;
 }
 
@@ -106,19 +109,38 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     const seriesParam = route.params?.item;
     const seriesId = route.params?.seriesId;
     const safeArea = useSafeAreaInsets();
-    const [headerTransparent, setHeaderTransparent] = useState(true);
     const headerHeight = useHeaderHeight();
 
     const [series, setSeries] = useState(seriesParam);
-    const [sermonsInSeries, setSermonsInSeries] = useState<{ loading: boolean, items: any[], nextToken: null | string }>({ loading: true, items: [], nextToken: null });
+    const [contentFills, setContentFills] = useState(false);
+    const [videos, setVideos] = useState<VideoData>();
 
-    const [share, setShare] = useState(false)
+    const [share, setShare] = useState(false);
+
+    const { colors } = useTheme();
+
+    const yOffset = useRef(new Animated.Value(0)).current;
+    const headerOpacity = yOffset.interpolate({
+        inputRange: [0, 75],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+    });
 
     navigation.setOptions({
         headerShown: true,
-        headerTransparent: headerTransparent,
+        headerTransparent: true,
+        headerBackground: function render() {
+            return <Animated.View
+                style={{
+                    backgroundColor: Theme.colors.background,
+                    ...StyleSheet.absoluteFillObject,
+                    opacity: contentFills ? headerOpacity : 0,
+                    borderBottomColor: colors.border,
+                    borderBottomWidth: StyleSheet.hairlineWidth
+                }}
+            />
+        },
         title: '',
-        headerStyle: { backgroundColor: Theme.colors.background },
         safeAreaInsets: { top: safeArea.top },
         headerLeft: function render() {
             return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
@@ -133,8 +155,8 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 </Button>
                 <Share
                     show={share} top={headerHeight - safeArea.top}
-                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series.title.trim())}/${sermonsInSeries?.items.slice(-1)[0]?.id}`}
-                    message={series.title}
+                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series?.title.trim())}/${videos?.slice(-1)[0]?.id}`}
+                    message={series?.title}
                 />
             </View>
 
@@ -150,31 +172,48 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }
+            const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
 
-            loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(loadedSeries.title), sermonsInSeries, setSermonsInSeries)
+            console.log(json)
+
+            setVideos(json.data?.getSeries?.videos?.items);
         }
         loadSermonsInSeriesAsync();
     }, [])
 
-    //console.log(series)
 
-    function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
-        if (event.nativeEvent.contentOffset.y > 50) {
-            setHeaderTransparent(false)
-        } else {
-            setHeaderTransparent(true)
+    function handleOnLayout(height: number) {
+        if (height > Dimensions.get('screen').height) {
+            setContentFills(true);
         }
     }
 
     return (
-        <Content style={[style.content, { marginTop: -safeArea.top }]} onScroll={(e) => handleScroll(e)} >
-            {series &&
+        <Animated.ScrollView
+            style={[style.content, { marginTop: -safeArea.top }]}
+            onScroll={Animated.event(
+                [
+                    {
+                        nativeEvent: {
+                            contentOffset: {
+                                y: yOffset,
+                            },
+                        },
+                    },
+                ],
+                { useNativeDriver: true }
+            )}
+            scrollEventThrottle={16}
+        >
+            {series ?
                 <View
                     onStartShouldSetResponder={() => true}
                     onMoveShouldSetResponder={() => true}
                     onResponderGrant={() => setShare(false)}
                     onResponderMove={() => setShare(false)}
                     onResponderRelease={() => setShare(false)}
+                    style={{ paddingBottom: 48 }}
+                    onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}
                 >
                     <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
                         <LinearGradient
@@ -195,24 +234,93 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     </View>
                     <View style={style.seriesContainer}>
                         <View style={style.listContentContainer}>
-                            {sermonsInSeries.loading &&
+                            {!videos ?
                                 <ActivityIndicator />
-                            }
-                            {sermonsInSeries.items.map((seriesSermon: any) => (
-                                <TeachingListItem
-                                    key={seriesSermon.id}
-                                    teaching={seriesSermon}
-                                    handlePress={() =>
-                                        navigation.push('SermonLandingScreen', { item: seriesSermon })
-                                    } />
-                            ))}
+                                : videos.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
+                                    <TeachingListItem
+                                        key={seriesSermon.id}
+                                        teaching={seriesSermon}
+                                        handlePress={() =>
+                                            navigation.push('SermonLandingScreen', { item: seriesSermon })
+                                        } />
+                                ))}
                         </View>
                     </View>
                 </View>
-            }
-        </Content>
+                : null}
+        </Animated.ScrollView>
     )
 }
 
 
 export default SeriesLandingScreen;
+
+const getSeries = `
+  query GetSeries($id: ID!) {
+    getSeries(id: $id) {
+      id
+      seriesType
+      title
+      description
+      image
+      startDate
+      endDate
+      videos {
+        items {
+          id
+          episodeTitle
+          episodeNumber
+          seriesTitle
+          series {
+            id
+          }
+          publishedDate
+          description
+          length
+          notesURL
+          videoURL
+          audioURL
+          YoutubeIdent
+          videoTypes
+          Youtube {
+            snippet {
+              thumbnails {
+                default {
+                  url
+                  width
+                  height
+                }
+                medium {
+                  url
+                  width
+                  height
+                }
+                high {
+                  url
+                  width
+                  height
+                }
+                standard {
+                  url
+                  width
+                  height
+                }
+                maxres {
+                  url
+                  width
+                  height
+                }
+              }
+              channelTitle
+              localized {
+                title
+                description
+              }
+            }
+          }
+        }
+        nextToken
+      }
+    }
+  }
+`;

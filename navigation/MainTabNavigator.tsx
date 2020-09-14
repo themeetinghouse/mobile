@@ -17,27 +17,18 @@ import TabMoreImage from '../assets/icons/tab-more.png';
 import TabMoreActiveImage from '../assets/icons/tab-more-active.png';
 import EventDetailsScreen from '../screens/EventDetailsScreen';
 import AnnouncementDetailsScreen from '../screens/AnnouncementDetailsScreen';
-import LocationSelectionScreen from '../screens/LocationSelectionScreen';
-import HighlightScreen from '../screens/HighlightScreen';
-import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
-import SermonLandingScreen from '../screens/SermonLandingScreen';
 import MoreScreen from '../screens/MoreScreen';
-import NotesScreen from '../screens/NotesScreen';
 import SeriesLandingScreen from '../screens/SeriesLandingScreen';
-import ProfileScreen from '../screens/Profile/ProfileScreen';
-import AccountScreen from '../screens/Profile/AccountScreen';
-import ChangePasswordScreen from '../screens/Profile/ChangePasswordScreen';
+import PopularTeachingScreen from '../screens/PopularTeachingScreen';
 import { Theme } from '../Theme.style';
-import MediaContext from '../contexts/MediaContext'
+import { StyleSheet } from 'react-native';
+import MediaContext from '../contexts/MediaContext';
+import { GetVideoByVideoTypeQuery } from '../services/API';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
   EventDetailsScreen: { item: any };
   AnnouncementDetailsScreen: { item: any };
-  LocationSelectionScreen: { persist: boolean };
-  ProfileScreen: undefined;
-  AccountScreen: undefined;
-  ChangePasswordScreen: undefined;
 }
 
 const Home = createStackNavigator<HomeStackParamList>();
@@ -45,29 +36,21 @@ const Home = createStackNavigator<HomeStackParamList>();
 function HomeStack() {
   return (
     <Home.Navigator screenOptions={{ headerShown: false }}>
-      <Home.Screen name="HomeScreen" component={HomeScreen}></Home.Screen>
-      <Home.Screen name="EventDetailsScreen" component={EventDetailsScreen} ></Home.Screen>
-      <Home.Screen name="AnnouncementDetailsScreen" component={AnnouncementDetailsScreen} ></Home.Screen>
-      <Home.Screen name="LocationSelectionScreen" component={LocationSelectionScreen} ></Home.Screen>
-      <Home.Screen name="ProfileScreen" component={ProfileScreen}></Home.Screen>
-      <Home.Screen name="AccountScreen" component={AccountScreen}></Home.Screen>
-      <Home.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Home.Screen>
+      <Home.Screen name="HomeScreen" component={HomeScreen} />
+      <Home.Screen name="EventDetailsScreen" component={EventDetailsScreen} />
+      <Home.Screen name="AnnouncementDetailsScreen" component={AnnouncementDetailsScreen} />
     </Home.Navigator>
   )
 }
+
+type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
 
 export type TeachingStackParamList = {
   Teaching: undefined;
   AllSeriesScreen: undefined;
   AllSermonsScreen: { startDate: string, endDate: string } | undefined;
-  DateRangeSelectScreen: undefined;
   SeriesLandingScreen: { seriesId?: string, item?: any };
-  SermonLandingScreen: { item: any };
-  NotesScreen: undefined;
-  ProfileScreen: undefined;
-  AccountScreen: undefined;
-  ChangePasswordScreen: undefined;
-  HighlightScreen: { highlights: any, index: number };
+  PopularTeachingScreen: { popularTeaching: PopularVideoData }
 }
 
 const Teaching = createStackNavigator<TeachingStackParamList>();
@@ -76,17 +59,11 @@ function TeachingStack() {
 
   return (
     <Teaching.Navigator screenOptions={{ headerShown: false }}>
-      <Teaching.Screen name="Teaching" component={TeachingScreen}></Teaching.Screen>
-      <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} ></Teaching.Screen>
-      <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} ></Teaching.Screen>
-      <Teaching.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} ></Teaching.Screen>
-      <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} ></Teaching.Screen>
-      <Teaching.Screen name="SermonLandingScreen" component={SermonLandingScreen} ></Teaching.Screen>
-      <Teaching.Screen name="NotesScreen" component={NotesScreen} ></Teaching.Screen>
-      <Teaching.Screen name="ProfileScreen" component={ProfileScreen}></Teaching.Screen>
-      <Teaching.Screen name="AccountScreen" component={AccountScreen}></Teaching.Screen>
-      <Teaching.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></Teaching.Screen>
-      <Teaching.Screen name="HighlightScreen" component={HighlightScreen}></Teaching.Screen>
+      <Teaching.Screen name="Teaching" component={TeachingScreen} />
+      <Teaching.Screen name="AllSeriesScreen" component={AllSeriesScreen} />
+      <Teaching.Screen name="AllSermonsScreen" component={AllSermonsScreen} />
+      <Teaching.Screen name="SeriesLandingScreen" component={SeriesLandingScreen} />
+      <Teaching.Screen name="PopularTeachingScreen" component={PopularTeachingScreen} />
     </Teaching.Navigator>
   )
 }
@@ -101,9 +78,6 @@ function TeachingStack() {
 
 export type MoreStackParamList = {
   MoreScreen: undefined;
-  ProfileScreen: undefined;
-  AccountScreen: undefined;
-  ChangePasswordScreen: undefined;
 }
 
 const More = createStackNavigator<MoreStackParamList>();
@@ -111,32 +85,29 @@ const More = createStackNavigator<MoreStackParamList>();
 function MoreStack() {
   return (
     <More.Navigator screenOptions={{ headerShown: false }}>
-      <More.Screen name="MoreScreen" component={MoreScreen}></More.Screen>
-      <More.Screen name="ProfileScreen" component={ProfileScreen}></More.Screen>
-      <More.Screen name="AccountScreen" component={AccountScreen}></More.Screen>
-      <More.Screen name="ChangePasswordScreen" component={ChangePasswordScreen}></More.Screen>
+      <More.Screen name="MoreScreen" component={MoreScreen} />
     </More.Navigator>
   )
 }
 
 export type TabNavigatorParamList = {
-  Home: undefined | { screen: keyof HomeStackParamList };
-  Teaching: undefined | { screen: keyof TeachingStackParamList };
-  More: undefined | { screen: keyof MoreStackParamList };
+  Home: undefined | { screen: keyof HomeStackParamList, params: HomeStackParamList[keyof HomeStackParamList] };
+  Teaching: undefined | { screen: keyof TeachingStackParamList, params: TeachingStackParamList[keyof TeachingStackParamList] };
+  More: undefined | { screen: keyof MoreStackParamList, params: MoreStackParamList[keyof MoreStackParamList] };
 }
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
-const style = {
-  tabIcon: {
-    width: 45,
-    height: 45
-  }
-}
-
 export default function MainTabNavigator(): JSX.Element {
 
   const media = useContext(MediaContext);
+
+  const style = StyleSheet.create({
+    tabIcon: {
+      width: 45,
+      height: 45
+    }
+  })
 
   return (
     <Tab.Navigator
@@ -174,3 +145,5 @@ export default function MainTabNavigator(): JSX.Element {
     </Tab.Navigator>
   )
 }
+
+

@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import { Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -11,6 +10,7 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
 import LocationContext from '../../contexts/LocationContext';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
     content: {
@@ -37,7 +37,9 @@ const style = StyleSheet.create({
         right: 6,
     },
     headerTitle: {
-        backgroundColor: Theme.colors.header
+        ...HeaderStyle.title, ...{
+            width: "100%",
+        }
     },
     headerButtonText: HeaderStyle.linkText,
     title: {
@@ -94,6 +96,7 @@ interface Params {
 export default function Profile({ navigation }: Params): JSX.Element {
 
     const [loggedIn, setLoggedIn] = useState('unknown');
+    const safeArea = useSafeAreaInsets();
 
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
@@ -109,7 +112,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }, [])
 
     const items = [
-        //{ id: "mycomments", text: "My Comments", subtext: "All your comments in one place", icon: Theme.icons.white.arrow },
+        { id: "mycomments", text: "My Comments", subtext: "This feature is coming soon", icon: Theme.icons.white.comments, action: () => null },
         { id: "myaccount", text: "My Account", subtext: "Email, password and location", icon: Theme.icons.white.account, action: () => navigation.navigate('AccountScreen') },
     ]
 
@@ -121,7 +124,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     const signOut = async () => {
         await Auth.signOut().then(() => {
             user?.setUserData(null);
-            location?.setLocationData(null);
+            location?.setLocationData({ locationId: "unknown", locationName: "unknown" });
             navigation.dispatch(
                 CommonActions.reset({
                     index: 1,
@@ -206,7 +209,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }
 
     return (
-        <Container>
+        <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
                 <Left style={style.headerLeft}>

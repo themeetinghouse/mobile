@@ -10,7 +10,9 @@ import MapLocationWhite from './assets/images/white/Map-Location.png';
 import AnnouncementWhite from './assets/images/white/Announcement.png';
 import SearchWhite from './assets/images/white/Search.png';
 import CheckWhite from './assets/images/white/Check.png';
+import CheckBlack from './assets/images/black/Check.png';
 import CloseCancelWhite from './assets/images/white/Close-Cancel.png';
+import CloseCancelBlack from './assets/images/black/Close-Cancel.png';
 import GiveWhite from './assets/images/white/Give.png';
 import VolunteerWhite from './assets/images/white/Volunteer.png';
 import ConnectWhite from './assets/images/white/Connect.png';
@@ -40,8 +42,15 @@ import SliderThumb from './assets/images/white/Ellipse.png';
 import ArrowBack from './assets/images/white/Arrow-Back.png';
 import Caret from './assets/images/white/Dropdown-Caret.png';
 import Link from './assets/images/white/Link.png';
+import Comments from './assets/images/white/Comments.png';
+import AddComment from './assets/images/white/Comment-Add.png';
+import AddCommentBlack from './assets/images/black/Comment-Add.png';
 import Twitter from './assets/images/black/Twitter.png';
 import Facebook from './assets/images/black/Facebook.png';
+import Delete from './assets/images/white/Delete-1.png';
+import Tags from './assets/images/white/Tags.png';
+import InstagramWhite from './assets/images/white/Instagram.png';
+import CommentSmall from './assets/images/other/Comment-Small.png'
 
 export const Theme = {
     colors: {
@@ -76,6 +85,7 @@ export const Theme = {
         fontFamilyMedium: "Graphik-Medium-App",
         fontFamilyBold: "Graphik-Bold-App",
         fontFamilySemiBold: "Graphik-Semibold-App",
+        fontFamilyItalic: "Graphik-RegularItalic"
     },
     icons: {
         width: 24,
@@ -113,12 +123,18 @@ export const Theme = {
             sliderThumb: SliderThumb,
             back: ArrowBack,
             caretDown: Caret,
-            link: Link
+            link: Link,
+            comments: Comments,
+            addComment: AddComment,
+            delete: Delete,
+            tags: Tags,
+            instagram: InstagramWhite
         },
         grey: {
             arrow: ArrowGrey,
             skipForward: SkipBackward,
-            skipBack: SkipForward
+            skipBack: SkipForward,
+            comment: CommentSmall
         },
         black: {
             arrow: Arrow,
@@ -126,7 +142,10 @@ export const Theme = {
             watch: WatchBlack,
             twitter: Twitter,
             facebook: Facebook,
-            share: ShareBlack
+            share: ShareBlack,
+            checkMark: CheckBlack,
+            closeCancel: CloseCancelBlack,
+            addComment: AddCommentBlack,
         },
     }
 }

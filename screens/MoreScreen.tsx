@@ -5,8 +5,8 @@ import { StatusBar, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import UserContext from '../contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
-import { MoreStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     content: {
@@ -79,7 +79,7 @@ const style = StyleSheet.create({
 function MoreScreen(): JSX.Element {
 
     const user = useContext(UserContext);
-    const navigation = useNavigation<StackNavigationProp<MoreStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
 
     const items = [
         { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
@@ -148,7 +148,6 @@ function MoreScreen(): JSX.Element {
                 </View>
             </Content>
         </Container>
-
     )
 }
 

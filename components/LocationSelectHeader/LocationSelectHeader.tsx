@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Header, Body, Icon, View, Button, Text, Right, Left, Thumbnail } from "native-base";
+import { Header, Body, View, Button, Text, Right, Left, Thumbnail } from "native-base";
 import { Style, Theme, HeaderStyle } from '../../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native'
 import LocationContext from '../../contexts/LocationContext';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator'
 import { StackNavigationProp } from '@react-navigation/stack'
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
     left: {
@@ -52,7 +52,7 @@ interface LocationSelectHeaderInput {
 
 export default function LocationSelectHeader({ children }: LocationSelectHeaderInput): JSX.Element {
 
-    const navigation = useNavigation<StackNavigationProp<HomeStackParamList>>();
+    const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
 
@@ -65,7 +65,7 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
                     <View style={style.buttonContentsContainer}>
                         <Text style={style.title}>{children}</Text>
                         <View style={style.locationContainer}>
-                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName ? location?.locationData?.locationName : 'Select Location'}</Text>
+                            <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName === 'unknown' ? 'Select Location' : location?.locationData?.locationName}</Text>
                             <Thumbnail square source={Theme.icons.white.caretDown} style={{ width: 12, height: 24 }}></Thumbnail>
                         </View>
                     </View>
