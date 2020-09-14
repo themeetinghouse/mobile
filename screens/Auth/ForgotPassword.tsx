@@ -118,7 +118,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         try {
             await Auth.forgotPassword(user).then(() => updateCodeState(true))
         } catch (e) {
-            console.error(e)
+            console.debug(e)
             if (e.code === "UserNotFoundException")
                 setError('Username not found.')
             else if (e.code === 'InvalidPasswordException')
@@ -136,7 +136,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             updateCodeState(true);
             toLogin();
         } catch (e) {
-            console.error(e)
+            console.debug(e)
             setError(e.message)
         }
     }

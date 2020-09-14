@@ -64,7 +64,7 @@ export default class InstagramService {
       }
 
     } catch (e) {
-      console.error(e)
+      console.debug(e)
     }
     return { images: [], username: '' }
   }

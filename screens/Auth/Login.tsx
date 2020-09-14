@@ -134,7 +134,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             });
             navigateHome();
         } catch (e) {
-            console.error(e)
+            console.debug(e)
             setError(e.message)
         }
     }

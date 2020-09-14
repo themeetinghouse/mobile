@@ -81,7 +81,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
                 if (json.data?.getCommentsByOwner?.items && json.data?.getCommentsByOwner?.items?.length > 0)
                     setHasComments(true)
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         }
         getComments();

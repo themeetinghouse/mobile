@@ -247,7 +247,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                     })
                 }
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         }
 
@@ -284,7 +284,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
 
             navigation.goBack();
         } catch (e) {
-            console.error(e)
+            console.debug(e)
         }
     }
 
@@ -312,7 +312,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                 navigation.goBack();
 
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         } else if ('key' in routeParams && comment) {
             try {
@@ -347,7 +347,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                 navigation.goBack();
 
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         }
     }

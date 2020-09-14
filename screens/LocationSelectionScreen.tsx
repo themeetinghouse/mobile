@@ -108,14 +108,14 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
                 const update = await Auth.updateUserAttributes(user, { ...user.attributes, 'custom:home_location': locationId });
                 console.log(update);
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         } else if (locationId) {
             try {
                 const updateLocalStore = await SecureStore.setItemAsync('location', locationId);
                 console.log(updateLocalStore)
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         } else {
             console.debug('locationId is undefined');
