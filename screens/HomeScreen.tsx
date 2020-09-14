@@ -80,11 +80,11 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           </View>
         </View>
 
-        <View style={style.categoryContainer}>
+        {images && images.length > 1 ? <View style={style.categoryContainer}>
           <Text style={style.categoryTitle}>@{instaUsername}</Text>
           <InstagramFeed images={images} />
           <AllButton handlePress={() => Linking.openURL(`https://instagram.com/${instaUsername}`)} icon={Theme.icons.white.instagram}>Follow us on Instagram</AllButton>
-        </View>
+        </View> : null}
 
 
         {/*<View style={style.categoryContainer}>

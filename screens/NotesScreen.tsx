@@ -270,7 +270,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                     if (json.data?.getCommentsByOwner?.items)
                         commentContext.setComments(json.data?.getCommentsByOwner?.items)
                 } catch (e) {
-                    console.error(e)
+                    console.debug(e)
                 }
         }
         getComments();
@@ -300,7 +300,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 const update = await Auth.updateUserAttributes(user, { ...user.attributes, 'custom:preference_openBible': openIn });
                 console.log(update);
             } catch (e) {
-                console.error(e)
+                console.debug(e)
             }
         }
 
