@@ -112,7 +112,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     }, [])
 
     const items = [
-        { id: "mycomments", text: "My Comments", subtext: "This feature will be available soon", icon: Theme.icons.white.comments, action: () => null },
+        { id: "mycomments", text: "My Comments", subtext: "This feature is coming soon", icon: Theme.icons.white.comments, action: () => null },
         { id: "myaccount", text: "My Account", subtext: "Email, password and location", icon: Theme.icons.white.account, action: () => navigation.navigate('AccountScreen') },
     ]
 

@@ -5,6 +5,7 @@ export type UserData = {
     email_verified: boolean;
     email: string;
     'custom:home_location'?: string;
+    'custom:preference_openBible'?: 'app' | 'web';
 } | null
 
 type UserContext = {

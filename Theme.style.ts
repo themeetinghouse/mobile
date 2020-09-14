@@ -50,6 +50,7 @@ import Facebook from './assets/images/black/Facebook.png';
 import Delete from './assets/images/white/Delete-1.png';
 import Tags from './assets/images/white/Tags.png';
 import InstagramWhite from './assets/images/white/Instagram.png';
+import CommentSmall from './assets/images/other/Comment-Small.png'
 
 export const Theme = {
     colors: {
@@ -132,7 +133,8 @@ export const Theme = {
         grey: {
             arrow: ArrowGrey,
             skipForward: SkipBackward,
-            skipBack: SkipForward
+            skipBack: SkipForward,
+            comment: CommentSmall
         },
         black: {
             arrow: Arrow,

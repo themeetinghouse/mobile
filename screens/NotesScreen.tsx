@@ -18,6 +18,7 @@ import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables, GetNotesQuery } from '../services/API';
 import CommentContext from '../contexts/CommentContext';
 import OpenVerseModal from '../components/modals/OpenVerseModal';
+import UserContext from '../contexts/UserContext';
 
 interface Style {
     content: any;
@@ -144,7 +145,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [textOptions, setTextOptions] = useState(false);
     const [openVerse, setOpenVerse] = useState(false);
     const [verseURLs, setVerseURLs] = useState<{ youVersion: string | undefined, bibleGateway: string }>({ youVersion: '', bibleGateway: '' })
-    const [userPreference, setUserPreference] = useState<'app' | 'web' | null>(null);
+    const [userPreference, setUserPreference] = useState<'app' | 'web'>();
     const [noteId, setNoteId] = useState('');
     const commentContext = useContext(CommentContext);
 
@@ -152,6 +153,11 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const safeArea = useSafeAreaInsets();
     const ref = React.createRef<Swiper>();
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);
+    const userContext = useContext(UserContext);
+
+    useEffect(() => {
+        setUserPreference(userContext?.userData?.["custom:preference_openBible"])
+    }, [])
 
     navigation.setOptions({
         headerShown: true,
@@ -271,34 +277,38 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     }, [noteId])
 
     const handleOpenVerse = (youVersion: string | undefined, bibleGateway: string) => {
-        setVerseURLs({ youVersion, bibleGateway })
-
         if (!youVersion) {
-            handleOpenPassage('web', false, bibleGateway)
+            handleOpenPassage('web', false, youVersion, bibleGateway)
             return
         }
 
         if (userPreference) {
-            handleOpenPassage(userPreference, false)
+            handleOpenPassage(userPreference, false, youVersion, bibleGateway)
         } else {
             miniPlayerStyle.setDisplay('none');
             setOpenVerse(true);
+            setVerseURLs({ youVersion, bibleGateway })
         }
     }
 
-    const handleOpenPassage = async (openIn: 'app' | 'web', rememberChoice: boolean, url?: string): Promise<void> => {
-
+    const handleOpenPassage = async (openIn: 'app' | 'web', rememberChoice: boolean, youVersion?: string, bibleGateway?: string): Promise<void> => {
         if (rememberChoice) {
             setUserPreference(openIn);
-
-            // await set cognito attribute
+            try {
+                const user = await Auth.currentAuthenticatedUser();
+                userContext?.setUserData({ ...user.attributes, 'custom:preference_openBible': openIn });
+                const update = await Auth.updateUserAttributes(user, { ...user.attributes, 'custom:preference_openBible': openIn });
+                console.log(update);
+            } catch (e) {
+                console.error(e)
+            }
         }
 
         switch (openIn) {
             case 'app':
                 try {
-                    if (verseURLs.youVersion) {
-                        await Linking.openURL(verseURLs.youVersion);
+                    if (youVersion) {
+                        await Linking.openURL(youVersion);
                         setOpenVerse(false);
                         miniPlayerStyle.setDisplay('flex');
                     }
@@ -308,9 +318,11 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 break;
             case 'web':
                 try {
-                    await Linking.openURL(url ?? verseURLs.bibleGateway);
-                    setOpenVerse(false);
-                    miniPlayerStyle.setDisplay('flex');
+                    if (bibleGateway) {
+                        await Linking.openURL(bibleGateway);
+                        setOpenVerse(false);
+                        miniPlayerStyle.setDisplay('flex');
+                    }
                 } catch (e) {
                     console.debug(e)
                 }
@@ -329,7 +341,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                 </Content>
             </Swiper> : <ActivityIndicator />
         }
-        {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={handleOpenPassage} /> : null}
+        {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={(openIn, remember) => handleOpenPassage(openIn, remember, verseURLs.youVersion, verseURLs.bibleGateway)} /> : null}
     </View>
 
 }

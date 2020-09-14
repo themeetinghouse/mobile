@@ -390,7 +390,6 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
         if (biblePassage?.content) {
             try {
                 passageJSON = JSON.parse(biblePassage?.content);
-                console.log(passageJSON)
             } catch (e) {
                 passageJSON = null;
                 console.debug(e);

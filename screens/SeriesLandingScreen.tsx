@@ -4,9 +4,7 @@ import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { Dimensions, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SermonsService from '../services/SermonsService';
 import SeriesService from '../services/SeriesService';
-import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
@@ -279,6 +277,9 @@ const getSeries = `
           publishedDate
           description
           length
+          notesURL
+          videoURL
+          audioURL
           YoutubeIdent
           videoTypes
           Youtube {
