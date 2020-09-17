@@ -178,7 +178,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             <Text style={style.title}>Password</Text>
             <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <Text style={style.title}>Choose Your Location</Text>
-            <TouchableOpacity style={style.locationSelector} onPress={() => navigateInAuthStack('LocationSelectionScreen')} >
+            <TouchableOpacity style={style.locationSelector} onPress={() => navigation.push('LocationSelectionScreen')} >
                 <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>
                 <AntDesign name="caretdown" size={8} color="white" />
             </TouchableOpacity>
