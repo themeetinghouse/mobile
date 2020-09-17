@@ -50,7 +50,7 @@ export default function ShareModal({ link, show, message, top }: Params): JSX.El
                 : { message: link, title: message }
 
         try {
-            Share.share(params)
+            await Share.share(params);
         } catch (e) {
             console.debug(e)
         }
