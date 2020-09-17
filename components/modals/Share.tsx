@@ -36,8 +36,7 @@ export default function ShareModal({ link, show, message, top }: Params): JSX.El
         const url = `https://twitter.com/intent/tweet?text=${message}&url=${link}&via=themeetinghouse`
 
         try {
-            await Linking.canOpenURL(url)
-            Linking.openURL(url)
+            await Linking.openURL(url)
         } catch (e) {
             console.debug(e)
         }
