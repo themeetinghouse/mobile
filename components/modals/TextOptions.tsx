@@ -52,6 +52,7 @@ interface Params {
 
 export default function ShareModal({ show, top, modeCallback, fontScaleCallback, defaultMode, defaultFontScale }: Params): JSX.Element {
 
+    const isAndroid = Platform.OS === 'android';
 
     const [mode, setMode] = useState<'light' | 'dark'>('dark');
     const [fontScale, setFontScale] = useState(1);
@@ -76,21 +77,21 @@ export default function ShareModal({ show, top, modeCallback, fontScaleCallback,
             <View style={[style.triangle, { alignSelf: 'flex-end', zIndex: -1 }]}></View>
             <View style={{ width: 254, height: 124, backgroundColor: 'white', padding: 16 }} >
                 <View style={{ width: 222, height: 36, backgroundColor: Theme.colors.grey2, borderRadius: 50, marginBottom: 16, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={[style.textWrapper, { paddingTop: 2, backgroundColor: fontScale === 1 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1)} >
+                    <TouchableOpacity style={[style.textWrapper, { paddingTop: isAndroid ? 0 : 2, backgroundColor: fontScale === 1 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1)} >
                         <Text style={[style.text, { fontSize: 12 }]}>A</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[style.textWrapper, { paddingTop: 4, backgroundColor: fontScale === 1.25 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1.25)}>
+                    <TouchableOpacity style={[style.textWrapper, { paddingTop: isAndroid ? 0 : 4, backgroundColor: fontScale === 1.25 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1.25)}>
                         <Text style={[style.text, { fontSize: 16 }]}>A</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[style.textWrapper, { paddingTop: 6, backgroundColor: fontScale === 1.5 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1.5)}>
+                    <TouchableOpacity style={[style.textWrapper, { paddingTop: isAndroid ? 0 : 6, backgroundColor: fontScale === 1.5 ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleFontScale(1.5)}>
                         <Text style={[style.text, { fontSize: 24 }]}>A</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={{ width: 222, height: 36, backgroundColor: Theme.colors.grey2, borderRadius: 50, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <TouchableOpacity style={[style.textWrapper2, { paddingTop: 2, backgroundColor: mode === 'dark' ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleDarkMode('dark')}>
+                    <TouchableOpacity style={[style.textWrapper2, { paddingTop: isAndroid ? 0 : 2, backgroundColor: mode === 'dark' ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleDarkMode('dark')}>
                         <Text style={[style.text, { fontSize: 12 }]}>Dark Mode</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[style.textWrapper2, { paddingTop: 4, backgroundColor: mode === 'light' ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleDarkMode('light')} >
+                    <TouchableOpacity style={[style.textWrapper2, { paddingTop: isAndroid ? 0 : 4, backgroundColor: mode === 'light' ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleDarkMode('light')} >
                         <Text style={[style.text, { fontSize: 12 }]}>Light Mode</Text>
                     </TouchableOpacity>
                 </View>

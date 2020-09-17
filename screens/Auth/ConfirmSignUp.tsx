@@ -45,7 +45,7 @@ const style = StyleSheet.create({
         color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: 12,
-        lineHeight: 18,
+        lineHeight: 20,
         marginTop: 8
     }
 })
@@ -116,7 +116,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                 <Text style={style.title}>Email</Text>
                 <TextInput keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text)} />
                 <View style={{ marginTop: 12 }}>
-                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
                 </View>
                 <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={getNewCode} style={{ marginTop: 12, height: 56 }} />
             </View>
@@ -126,7 +126,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                     <Text style={style.title}>One-Time Security Code</Text>
                     <TextInput onKeyPress={(e) => handleEnter(e)} keyboardAppearance="dark" textContentType="oneTimeCode" keyboardType="number-pad" style={style.input} value={code} onChange={(e) => setCode(e.nativeEvent.text)} />
                     <View style={{ marginTop: 12 }}>
-                        <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                        <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
                     </View>
                     <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={confirm} style={{ marginTop: 12, height: 56 }} />
                     <TouchableOpacity onPress={() => { setNeedsNewCode(true); setError(''); setCode(''); setUser('') }} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Need a new code?</Text></TouchableOpacity>

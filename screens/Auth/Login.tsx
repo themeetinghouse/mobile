@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Dimensions, StatusBar, Platform } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
@@ -66,7 +66,7 @@ const style = StyleSheet.create({
         color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: 12,
-        lineHeight: 18,
+        lineHeight: 20,
         marginTop: 8
     }
 })
@@ -142,7 +142,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         setSending(false);
     }
 
-    return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
+    return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Platform.OS === 'android' ? (Dimensions.get('window').height - (StatusBar.currentHeight ?? 24)) : (Dimensions.get('screen').height - safeArea.top) }} >
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: 'black', paddingTop: 20 }}>
             <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigateHome()} >
                 <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
@@ -157,7 +157,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             <TextInput keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <TouchableOpacity onPress={() => navigateInAuthStack('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>
             <View style={{ marginTop: 12 }}>
-                <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
             </View>
             <WhiteButtonAsync isLoading={sending} label={"Log In"} onPress={signIn} style={{ marginTop: 12, height: 56 }} />
         </View>

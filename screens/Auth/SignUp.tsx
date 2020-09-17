@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
+import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, ScrollView, Dimensions, Platform, StatusBar } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
@@ -79,7 +79,7 @@ const style = StyleSheet.create({
         color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: 12,
-        lineHeight: 18,
+        lineHeight: 20,
         marginTop: 8
     }
 })
@@ -164,7 +164,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         setSending(false);
     }
 
-    return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
+    return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Platform.OS === 'android' ? (Dimensions.get('window').height - (StatusBar.currentHeight ?? 24)) : (Dimensions.get('screen').height - safeArea.top) }} >
         <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingTop: 20, backgroundColor: 'black' }}>
             <Button transparent style={{ position: 'absolute', left: '5%' }} onPress={() => navigateHome()} >
                 <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }}></Thumbnail>
@@ -183,7 +183,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
                 <AntDesign name="caretdown" size={8} color="white" />
             </TouchableOpacity>
             <View style={{ marginTop: 12 }}>
-                <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
             </View>
             <WhiteButtonAsync isLoading={sending} label={"Create Account"} onPress={signUp} style={{ marginTop: 12, height: 56 }} />
             <TouchableOpacity onPress={() => navigateInAuthStack('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
