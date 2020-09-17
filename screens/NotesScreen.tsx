@@ -166,7 +166,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         safeAreaInsets: { top: safeArea.top },
         header: function render() {
             return <Header style={style.header} >
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => navigation.goBack()}>
                         <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>

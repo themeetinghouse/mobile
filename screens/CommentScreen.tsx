@@ -382,7 +382,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
 
     return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom, }}>
         <Header style={style.header}>
-            <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+            <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
             <Left style={style.headerLeft}>
                 <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
                     <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>

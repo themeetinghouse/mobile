@@ -121,7 +121,7 @@ export default function HighlightPlayer({ navigation, route }: Params): JSX.Elem
     return (
         <Container style={{ backgroundColor: 'black', flex: 1 }} >
             <Header style={{ backgroundColor: 'black', height: 68 + safeArea.top }}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={[style.headerLeft, { height: 68 }]}>
                     <Button transparent onPress={() => navigation.goBack()} >
                         <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />

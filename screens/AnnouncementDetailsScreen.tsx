@@ -61,7 +61,7 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
     return (
         <Container>
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => props.navigation.goBack()}>
                         <Icon name='close' />

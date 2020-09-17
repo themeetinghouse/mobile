@@ -135,7 +135,7 @@ function App(props: Props): JSX.Element {
             <LocationContext.Provider value={{ locationData, setLocationData }}>
               <UserContext.Provider value={{ userData, setUserData }}>
                 <SafeAreaProvider style={{ backgroundColor: 'black' }} >
-                  {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+                  {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
                   <NavigationContainer theme={CustomTheme} ref={navRef} >
                     <AppNavigator />
                     <MiniPlayer currentScreen={currentScreen} />

@@ -58,7 +58,7 @@ export default function LocationSelectHeader({ children }: LocationSelectHeaderI
 
     return (
         <Header style={{ backgroundColor: Theme.colors.background }}>
-            <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+            <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
             <Left style={style.left}></Left>
             <Body style={style.body}>
                 <Button style={style.headerButton} onPress={() => navigation.navigate('LocationSelectionScreen', { persist: !Boolean(user?.userData?.email_verified) })}>

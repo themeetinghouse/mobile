@@ -211,7 +211,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
     return (
         <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                 </Left>
                 <Body style={style.headerBody}>

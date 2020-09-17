@@ -72,7 +72,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     return (
         <Container>
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left>
                     <Button transparent onPress={() => props.navigation.goBack()}>
                         <Icon name='arrow-back' />
