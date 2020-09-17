@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth'
 import { StyleSheet, View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
-import WhiteButton from '../../components/buttons/WhiteButton'
+import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -69,6 +69,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     const [error, setError] = useState('');
     const [codeSent, setCodeSent] = useState(false);
     const media = useContext(MediaContext);
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         async function closeMedia() {
@@ -115,6 +116,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     }
 
     const sendCode = async () => {
+        setSending(true);
         try {
             await Auth.forgotPassword(user).then(() => updateCodeState(true))
         } catch (e) {
@@ -128,9 +130,11 @@ export default function Login({ navigation }: Params): JSX.Element {
             else
                 setError(e.message)
         }
+        setSending(false);
     }
 
     const reset = async () => {
+        setSending(true);
         try {
             await Auth.forgotPasswordSubmit(user, code, pass);
             updateCodeState(true);
@@ -139,6 +143,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             console.debug(e)
             setError(e.message)
         }
+        setSending(false);
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -153,7 +158,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                 <View style={{ marginTop: 12 }}>
                     <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
                 </View>
-                <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 12, height: 56 }} />
+                <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={sendCode} style={{ marginTop: 12, height: 56 }} />
                 <TouchableOpacity onPress={() => updateCodeState(true)} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Submit a Code</Text></TouchableOpacity>
             </View>
                 : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
@@ -166,7 +171,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                     <View style={{ marginTop: 12 }}>
                         <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
                     </View>
-                    <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 12, height: 56 }} />
+                    <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={reset} style={{ marginTop: 12, height: 56 }} />
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"}

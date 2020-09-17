@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Dimensions } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
-import WhiteButton from '../../components/buttons/WhiteButton'
+import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
 import UserContext from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
@@ -84,6 +84,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     const [user, setUser] = useState('');
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
+    const [sending, setSending] = useState(false);
 
     const safeArea = useSafeAreaInsets();
     const media = useContext(MediaContext);
@@ -124,6 +125,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     }
 
     const signIn = async () => {
+        setSending(true);
         try {
             await Auth.signIn(user, pass)
             const userSignedIn = await Auth.currentAuthenticatedUser();
@@ -134,9 +136,10 @@ export default function Login({ navigation }: Params): JSX.Element {
             });
             navigateHome();
         } catch (e) {
-            console.debug(e)
-            setError(e.message)
+            console.debug(e);
+            setError(e.message);
         }
+        setSending(false);
     }
 
     return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
@@ -156,7 +159,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             <View style={{ marginTop: 12 }}>
                 <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
             </View>
-            <WhiteButton label={"Log In"} onPress={signIn} style={{ marginTop: 12, height: 56 }} />
+            <WhiteButtonAsync isLoading={sending} label={"Log In"} onPress={signIn} style={{ marginTop: 12, height: 56 }} />
         </View>
         <View style={{ flexGrow: 0, paddingVertical: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
             <Text style={{ color: Theme.colors.grey5, alignSelf: 'center', fontSize: 16, fontFamily: Theme.fonts.fontFamilyRegular }}>Don&apos;t have an account?</Text>

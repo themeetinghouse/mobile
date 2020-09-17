@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
 import { Theme, Style } from '../../Theme.style';
-import WhiteButton from '../../components/buttons/WhiteButton'
+import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
 import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
@@ -97,6 +97,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
     const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
     const safeArea = useSafeAreaInsets();
     const media = useContext(MediaContext);
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         async function closeMedia() {
@@ -146,6 +147,8 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             return
         }
 
+        setSending(true);
+
         try {
             await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigateInAuthStack('ConfirmSignUpScreen'))
         } catch (e) {
@@ -157,6 +160,8 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             else
                 setError(e.message)
         }
+
+        setSending(false);
     }
 
     return <ScrollView style={{ width: '100%', paddingTop: safeArea.top }} contentContainerStyle={{ minHeight: Dimensions.get('screen').height - safeArea.top }} >
@@ -180,7 +185,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             <View style={{ marginTop: 12 }}>
                 <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
             </View>
-            <WhiteButton label={"Create Account"} onPress={signUp} style={{ marginTop: 12, height: 56 }} />
+            <WhiteButtonAsync isLoading={sending} label={"Create Account"} onPress={signUp} style={{ marginTop: 12, height: 56 }} />
             <TouchableOpacity onPress={() => navigateInAuthStack('ConfirmSignUpScreen')} style={{ alignSelf: 'flex-end' }} ><Text style={style.forgotPassText}>Verify a Code</Text></TouchableOpacity>
         </View>
         <View style={{ flexGrow: 0, paddingTop: 16, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
