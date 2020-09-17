@@ -204,6 +204,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     const userContext = useContext(UserContext);
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);
     const [signUpModal, setSignUpModal] = useState(false);
+    const [showHint, setShowHint] = useState(false);
 
     const routeParams = route.params;
 
@@ -247,7 +248,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                     })
                 }
             } catch (e) {
-                console.debug(e)
+                console.debug(e);
             }
         }
 
@@ -276,8 +277,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                 query: deleteComment,
                 variables: { input },
                 authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS
-            }) as GraphQLResult<GetCommentsByOwnerQuery>;
-
+            });
             const index = commentContext.comments.findIndex(item => item?.id === commentId);
             if (index !== -1)
                 commentContext.comments.splice(index, 1)
@@ -286,6 +286,13 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
         } catch (e) {
             console.debug(e)
         }
+    }
+
+    const handleShortPress = () => {
+        setShowHint(true);
+        setTimeout(() => {
+            setShowHint(false)
+        }, 3000)
     }
 
     const postComment = async () => {
@@ -358,7 +365,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
 
     function handlePress(e: NativeSyntheticEvent<TextInputKeyPressEventData>) {
         if (e.nativeEvent.key === ',') {
-            addTag(newTag)
+            addTag(newTag.replace(',', ''))
             setTimeout(() => {
                 setNewTag('')
             }, 100)
@@ -408,7 +415,10 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
                     <TextInput value={comment} onChange={e => setComment(e.nativeEvent.text)} keyboardAppearance='dark' placeholder='Write a comment' placeholderTextColor={Theme.colors.grey4} style={style.input}></TextInput>
                 </View>
                 <View style={{ flexGrow: 0 }} >
-                    <Button transparent style={{ alignSelf: 'flex-end', marginBottom: 12, marginRight: 16 }} onLongPress={removeComment} ><Thumbnail source={Theme.icons.white.delete} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
+                    <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', marginBottom: 12, marginRight: 16, alignItems: 'center' }} >
+                        {showHint ? <Text style={{ fontSize: 14, color: 'white', marginRight: 16 }} >Long press to delete</Text> : null}
+                        <Button transparent style={{}} onLongPress={removeComment} onPress={handleShortPress}><Thumbnail source={Theme.icons.white.delete} square style={{ width: 24, height: 24 }}></Thumbnail></Button>
+                    </View>
                     <View style={{ backgroundColor: Theme.colors.background, minHeight: 64, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24 }} >
                         <Thumbnail source={Theme.icons.white.tags} square style={{ width: 16, height: 16, marginRight: 16 }} ></Thumbnail>
                         <FlatList showsHorizontalScrollIndicator={false} data={tags} renderItem={({ item }) => renderTag(item)} horizontal keyExtractor={(_item, index) => index.toString()} />
