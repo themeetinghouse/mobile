@@ -4,7 +4,7 @@ import { Text, Header, Left, Body, Right, Button, Content, Thumbnail } from 'nat
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
 import NoteReader from '../components/teaching/notes/NoteReader';
-import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import TextOptions from '../components/modals/TextOptions'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -149,7 +149,6 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     const [noteId, setNoteId] = useState('');
     const commentContext = useContext(CommentContext);
 
-    const headerHeight = useHeaderHeight();
     const safeArea = useSafeAreaInsets();
     const ref = React.createRef<Swiper>();
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);

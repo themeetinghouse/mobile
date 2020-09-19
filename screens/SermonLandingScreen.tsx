@@ -4,22 +4,21 @@ import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SermonsService from '../services/SermonsService';
 import IconButton from '../components/buttons/IconButton';
 import TeachingButton from '../components/buttons/TeachingButton';
-import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
-import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
 import Slider from '@react-native-community/slider';
-import Share from '../components/modals/Share';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import ShareModal from '../components/modals/Share';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { GetSeriesQuery } from '../services/API';
 
 const style = StyleSheet.create({
     content: {
@@ -119,6 +118,8 @@ const style = StyleSheet.create({
     }
 })
 
+type VideoData = NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items'];
+
 interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<MainStackParamList, 'SermonLandingScreen'>, StackNavigationProp<TeachingStackParamList>>;
     route: RouteProp<MainStackParamList, 'SermonLandingScreen'>;
@@ -128,7 +129,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
     const sermon = route.params?.item;
     const mediaContext = useContext(MediaContext);
-    const [sermonsInSeries, setSermonsInSeries] = useState({ loading: true, items: [], nextToken: null });
+    const [sermonsInSeries, setSermonsInSeries] = useState<VideoData>();
     const [time, setTime] = useState({ elapsed: '', remaining: '' });
     const [audioSpeed, setAudioSpeed] = useState(1);
     const [audioPosition, setAudioPosition] = useState(0);
@@ -138,8 +139,12 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const safeArea = useSafeAreaInsets();
 
     useEffect(() => {
-        loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
-    }, [])
+        const loadSermonsInSeriesAsync = async () => {
+            const json = await API.graphql(graphqlOperation(getSeries, { id: sermon.seriesTitle })) as GraphQLResult<GetSeriesQuery>;
+            setSermonsInSeries(json.data?.getSeries?.videos?.items);
+        }
+        loadSermonsInSeriesAsync();
+    }, []);
 
     useEffect(() => {
         const unsub = navigation.addListener('blur', async () => {
@@ -408,22 +413,20 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     {moment(sermon.publishedDate).isAfter('2020-06-01') ? <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => navigation.push('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })} /> : null}
                 </View>
 
-                {sermonsInSeries.items.length > 1 ? <View style={style.categorySection}>
+                <View style={style.categorySection}>
                     <Text style={style.categoryTitle}>More from this Series</Text>
                     <View style={style.listContentContainer}>
-                        {sermonsInSeries.loading &&
-                            <ActivityIndicator />
-                        }
-                        {sermonsInSeries.items.map((seriesSermon: any) => (
-                            (seriesSermon.id !== sermon.id) ?
-                                <TeachingListItem
-                                    key={seriesSermon.id}
-                                    teaching={seriesSermon}
-                                    handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
-                                : null
-                        ))}
+                        {!sermonsInSeries ?
+                            <ActivityIndicator /> : sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
+                                (seriesSermon.id !== sermon.id) ?
+                                    <TeachingListItem
+                                        key={seriesSermon.id}
+                                        teaching={seriesSermon}
+                                        handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
+                                    : null
+                            ))}
                     </View>
-                </View> : null}
+                </View>
             </Content>
             {share ? <ShareModal closeCallback={() => setShare(false)}
                 link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(sermon.seriesTitle.trim())}/${sermon.id}`}
@@ -431,3 +434,73 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
         </View>
     )
 }
+
+const getSeries = `
+  query GetSeries($id: ID!) {
+    getSeries(id: $id) {
+      id
+      seriesType
+      title
+      description
+      image
+      startDate
+      endDate
+      videos {
+        items {
+          id
+          episodeTitle
+          episodeNumber
+          seriesTitle
+          series {
+            id
+          }
+          publishedDate
+          description
+          length
+          notesURL
+          videoURL
+          audioURL
+          YoutubeIdent
+          videoTypes
+          Youtube {
+            snippet {
+              thumbnails {
+                default {
+                  url
+                  width
+                  height
+                }
+                medium {
+                  url
+                  width
+                  height
+                }
+                high {
+                  url
+                  width
+                  height
+                }
+                standard {
+                  url
+                  width
+                  height
+                }
+                maxres {
+                  url
+                  width
+                  height
+                }
+              }
+              channelTitle
+              localized {
+                title
+                description
+              }
+            }
+          }
+        }
+        nextToken
+      }
+    }
+  }
+`;

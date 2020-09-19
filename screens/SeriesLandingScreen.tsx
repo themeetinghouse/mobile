@@ -170,7 +170,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             setVideos(json.data?.getSeries?.videos?.items);
         }
         loadSermonsInSeriesAsync();
-    }, [])
+    }, []);
 
 
     function handleOnLayout(height: number) {
