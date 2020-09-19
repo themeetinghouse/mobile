@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -7,11 +7,11 @@ import TeachingListItem from '../components/teaching/TeachingListItem';
 import SeriesService from '../services/SeriesService';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
-import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import Share from '../components/modals/Share';
+import ShareModal from '../components/modals/Share';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetSeriesQuery } from 'services/API';
@@ -109,7 +109,6 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
     const seriesParam = route.params?.item;
     const seriesId = route.params?.seriesId;
     const safeArea = useSafeAreaInsets();
-    const headerHeight = useHeaderHeight();
 
     const [series, setSeries] = useState(seriesParam);
     const [contentFills, setContentFills] = useState(false);
@@ -149,17 +148,9 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             </TouchableOpacity>
         },
         headerRight: function render() {
-            return <View>
-                <Button transparent onPress={() => setShare(!share)}>
-                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-                </Button>
-                <Share
-                    show={share} top={headerHeight - safeArea.top}
-                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series?.title.trim())}/${videos?.slice(-1)[0]?.id}`}
-                    message={series?.title}
-                />
-            </View>
-
+            return <Button transparent onPress={() => setShare(!share)}>
+                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+            </Button>
         },
         headerLeftContainerStyle: { left: 16 },
         headerRightContainerStyle: { right: 16 }
@@ -188,7 +179,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
         }
     }
 
-    return (
+    return <Fragment>
         <Animated.ScrollView
             style={[style.content, { marginTop: -safeArea.top }]}
             onScroll={Animated.event(
@@ -206,15 +197,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             scrollEventThrottle={16}
         >
             {series ?
-                <View
-                    onStartShouldSetResponder={() => true}
-                    onMoveShouldSetResponder={() => true}
-                    onResponderGrant={() => setShare(false)}
-                    onResponderMove={() => setShare(false)}
-                    onResponderRelease={() => setShare(false)}
-                    style={{ paddingBottom: 48 }}
-                    onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}
-                >
+                <View onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}>
                     <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
                         <LinearGradient
                             colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.15)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
@@ -249,7 +232,10 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 </View>
                 : null}
         </Animated.ScrollView>
-    )
+        {share ? <ShareModal closeCallback={() => setShare(false)} noBottomPadding
+            link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(series?.title.trim())}/${videos?.slice(-1)[0]?.id}`}
+            message={series?.title} /> : null}
+    </Fragment>
 }
 
 

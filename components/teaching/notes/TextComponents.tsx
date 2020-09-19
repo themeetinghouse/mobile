@@ -103,7 +103,7 @@ interface CustomTextParams {
     noteId: string;
 }
 
-export function CustomText({ processedStyles, block, styles, mode, type, noteId }: CustomTextParams): JSX.Element {
+export function CustomText({ processedStyles, block, styles, mode, type, noteId }: CustomTextParams): JSX.Element | null {
     const [selected, setSelected] = useState(false);
     const [pos, setPos] = useState(0);
     const allComments = useContext(CommentContext);

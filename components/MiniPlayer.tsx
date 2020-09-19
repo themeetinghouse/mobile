@@ -97,6 +97,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     ]
 
     useEffect(() => {
+        console.log(currentScreen)
         if (bottomTabHidden.includes(currentScreen)) {
             setBottomPos(0)
         } else {

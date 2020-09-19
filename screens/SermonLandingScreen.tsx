@@ -19,6 +19,7 @@ import Share from '../components/modals/Share';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import ShareModal from '../components/modals/Share';
 
 const style = StyleSheet.create({
     content: {
@@ -135,8 +136,6 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [share, setShare] = useState(false)
     const safeArea = useSafeAreaInsets();
-    const headerHeight = useHeaderHeight();
-
 
     useEffect(() => {
         loadSomeAsync(() => SermonsService.loadSermonsInSeriesList(sermon.seriesTitle), sermonsInSeries, setSermonsInSeries);
@@ -327,17 +326,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
             </Button>
         },
         headerRight: function render() {
-            return <View>
-                <Button transparent onPress={() => setShare(!share)} >
-                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-                </Button>
-                <Share
-                    show={share} top={headerHeight - safeArea.top}
-                    link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(sermon.seriesTitle.trim())}/${sermon.id}`}
-                    message={sermon.episodeTitle ? sermon.episodeTitle : 'Check out this teaching video'}
-                />
-            </View>
-
+            return <Button transparent onPress={() => setShare(!share)} >
+                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+            </Button>
         },
         headerLeftContainerStyle: { left: 16 },
         headerRightContainerStyle: { right: 16 }
@@ -345,14 +336,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
     return (
         <View style={{ flex: 1 }} >
-            <Content
-                style={style.content}
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
-                onResponderGrant={() => setShare(false)}
-                onResponderMove={() => setShare(false)}
-                onResponderRelease={() => setShare(false)}
-            >
+            <Content>
                 {mediaContext.media.playerType === 'video' ? <View style={{ height: Math.round(Dimensions.get('window').width * (9 / 16)), marginBottom: 8 }}>
                     <YoutubePlayer
                         ref={playerRef}
@@ -441,6 +425,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     </View>
                 </View> : null}
             </Content>
+            {share ? <ShareModal closeCallback={() => setShare(false)}
+                link={`https://www.themeetinghouse.com/videos/${encodeURIComponent(sermon.seriesTitle.trim())}/${sermon.id}`}
+                message={sermon.episodeTitle ? sermon.episodeTitle : 'Check out this teaching video'} /> : null}
         </View>
     )
 }

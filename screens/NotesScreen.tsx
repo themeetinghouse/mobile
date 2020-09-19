@@ -180,13 +180,6 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                     <Button transparent onPress={() => setTextOptions(!textOptions)}>
                         <Thumbnail style={Style.icon} source={Theme.icons.white.textOptions} square></Thumbnail>
                     </Button>
-                    <TextOptions
-                        show={textOptions} top={headerHeight - safeArea.top}
-                        defaultMode={mode}
-                        defaultFontScale={fontScale}
-                        fontScaleCallback={(data) => handleFontScale(data)}
-                        modeCallback={(data) => handleTheme(data)}
-                    />
                 </Right>
             </Header>
         }
@@ -342,6 +335,13 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
             </Swiper> : <ActivityIndicator />
         }
         {openVerse ? <OpenVerseModal closeCallback={() => { setOpenVerse(false); miniPlayerStyle.setDisplay('flex') }} openPassageCallback={(openIn, remember) => handleOpenPassage(openIn, remember, verseURLs.youVersion, verseURLs.bibleGateway)} /> : null}
+        {textOptions ? <TextOptions
+            defaultMode={mode}
+            defaultFontScale={fontScale}
+            fontScaleCallback={(data) => handleFontScale(data)}
+            modeCallback={(data) => handleTheme(data)}
+            closeCallback={() => setTextOptions(false)}
+        /> : null}
     </View>
 
 }
