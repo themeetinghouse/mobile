@@ -1,15 +1,44 @@
-import React, { useState } from 'react';
-import { Image, ImageStyle } from 'react-native';
+import React from 'react';
+import { Image, ImageStyle, ImageBackground } from 'react-native';
 
-interface Params {
+interface Props {
     uri: string;
     catchUri: string;
-    style?: ImageStyle
+    style?: ImageStyle;
 }
 
-export default function Img({ uri, catchUri, style }: Params): JSX.Element {
+interface State {
+    source: string;
+}
 
-    const [source, setSource] = useState(uri);
+export default class Img extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            source: props.uri
+        }
+    }
 
-    return <Image source={{ uri: source }} style={style} onError={() => setSource(catchUri)} />
+    render(): JSX.Element {
+        return <Image source={{ uri: this.state.source }} style={this.props.style} onError={() => this.setState({ source: this.props.catchUri })} />
+    }
+}
+
+interface PropsWithChildren extends Props {
+    children: JSX.Element
+}
+
+export class FallbackImageBackground extends React.Component<PropsWithChildren, State> {
+    constructor(props: PropsWithChildren) {
+        super(props);
+        this.state = {
+            source: props.uri
+        }
+    }
+
+    render(): JSX.Element {
+        return <ImageBackground source={{ uri: this.state.source }} style={this.props.style} onError={() => this.setState({ source: this.props.catchUri })} >
+            {this.props.children}
+        </ImageBackground>
+    }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { Dimensions, StyleSheet, ImageBackground, TouchableOpacity, Animated } from 'react-native';
+import { Dimensions, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import SeriesService from '../services/SeriesService';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -15,6 +15,7 @@ import ShareModal from '../components/modals/Share';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetSeriesQuery } from 'services/API';
+import { FallbackImageBackground } from '../components/FallbackImage';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -164,9 +165,6 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 setSeries(loadedSeries);
             }
             const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
-
-            console.log(json)
-
             setVideos(json.data?.getSeries?.videos?.items);
         }
         loadSermonsInSeriesAsync();
@@ -197,8 +195,11 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             scrollEventThrottle={16}
         >
             {series ?
-                <View onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}>
-                    <ImageBackground style={style.seriesImage} source={{ uri: isTablet ? series.heroImage : series.image }}>
+                <View
+                    style={{ paddingBottom: 48 }}
+                    onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}
+                >
+                    <FallbackImageBackground style={style.seriesImage} uri={isTablet ? series.heroImage : series.image640px} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback.jpg' >
                         <LinearGradient
                             colors={['rgba(0,0,0,0.85)', 'rgba(0,0,0,0.15)', 'rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,1)']}
                             locations={[0, 0.12, 0.26, 0.6, 0.8, 1]}
@@ -208,7 +209,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                                 width: '100%'
                             }}
                         />
-                    </ImageBackground>
+                    </FallbackImageBackground>
                     <View style={style.detailsContainer}>
                         <Text style={style.detailsTitle}>{series.title}</Text>
                         <View>

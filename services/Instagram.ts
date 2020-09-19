@@ -1,4 +1,4 @@
-import { GetInstagramByLocationQuery } from './API'
+import { GetInstagramByLocationQuery, GetInstagramByLocationQueryVariables, ModelSortDirection } from './API'
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 const locationsToUsername: { [loc: string]: string } = {
@@ -48,7 +48,8 @@ export default class InstagramService {
   static async getInstagram(username: string): Promise<{ images: InstagramData, username: string }> {
 
     try {
-      const json = await API.graphql(graphqlOperation(getInstagramByLocation, { locationId: username, limit: 8 })) as GraphQLResult<GetInstagramByLocationQuery>
+      const query: GetInstagramByLocationQueryVariables = { locationId: username, limit: 8, sortDirection: ModelSortDirection.DESC }
+      const json = await API.graphql(graphqlOperation(getInstagramByLocation, query)) as GraphQLResult<GetInstagramByLocationQuery>
       const images = json.data?.getInstagramByLocation?.items;
 
       if (images && images.length > 0) {
@@ -56,7 +57,8 @@ export default class InstagramService {
       }
 
       else if (username !== 'themeetinghouse') {
-        const json2 = await API.graphql(graphqlOperation(getInstagramByLocation, { locationId: 'themeetinghouse', limit: 8 })) as GraphQLResult<GetInstagramByLocationQuery>
+        const query2: GetInstagramByLocationQueryVariables = { locationId: 'themeetinghouse', limit: 8, sortDirection: ModelSortDirection.DESC }
+        const json2 = await API.graphql(graphqlOperation(getInstagramByLocation, query2)) as GraphQLResult<GetInstagramByLocationQuery>
         const backupImages = json2.data?.getInstagramByLocation?.items;
         if (backupImages) {
           return { images: backupImages, username: 'themeetinghouse' }
@@ -73,6 +75,7 @@ export default class InstagramService {
 export const getInstagramByLocation = /* GraphQL */ `
   query GetInstagramByLocation(
     $locationId: String
+    $timestamp: ModelIntKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelInstagramFilterInput
     $limit: Int
@@ -80,6 +83,7 @@ export const getInstagramByLocation = /* GraphQL */ `
   ) {
     getInstagramByLocation(
       locationId: $locationId
+      timestamp: $timestamp
       sortDirection: $sortDirection
       filter: $filter
       limit: $limit
@@ -94,6 +98,7 @@ export const getInstagramByLocation = /* GraphQL */ `
           config_height
         }
         altText
+        timestamp
         createdAt
         updatedAt
       }

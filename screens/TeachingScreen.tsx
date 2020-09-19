@@ -20,6 +20,7 @@ import { MainStackParamList } from 'navigation/AppNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
+import FallbackImage from '../components/FallbackImage';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -166,6 +167,8 @@ interface SeriesData extends LoadSeriesListData {
 
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
+    const AnimatedFallbackImage = Animated.createAnimatedComponent(FallbackImage)
+
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
@@ -246,7 +249,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         }
         return (
             <TouchableOpacity key={item.id} onPress={() => navigation.push('SeriesLandingScreen', { item: item })} style={style.seriesThumbnailContainer}>
-                <Animated.Image
+                <AnimatedFallbackImage
                     style={[
                         style.seriesThumbnail,
                         {
@@ -261,7 +264,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                             ],
                         },
                     ]}
-                    source={{ uri: item.image }}
+
+                    uri={item.image640px}
+                    catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg'
                 />
 
                 <View style={style.seriesDetailContainer}>
