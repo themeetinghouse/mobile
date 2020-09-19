@@ -13,6 +13,7 @@ type SeriesData = NonNullable<GetSeriesQuery['getSeries']>
 
 interface SeriesDataWithHeroImage extends SeriesData {
   heroImage?: string;
+  image640px?: string;
 }
 
 export default class SeriesService {
@@ -47,7 +48,8 @@ export default class SeriesService {
 
   static updateSeriesImage = async (series: SeriesDataWithHeroImage): Promise<void> => {
     if (series.title) {
-      series.image = `https://themeetinghouse.com/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
+      series.image = `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
+      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
       series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(/ /g, "%20")}.jpg`;
     } else {
       series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
