@@ -18,7 +18,7 @@
     "@aws-amplify/core": "^3.4.5",
     "@expo/vector-icons": "^10.0.0",
     "@react-native-community/masked-view": "0.1.10",
-    "@react-native-community/netinfo": "^5.9.6",
+    "@react-native-community/netinfo": "5.9.2",
     "@react-native-community/slider": "3.0.0",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
@@ -60,7 +60,7 @@
     "babel-preset-expo": "^8.2.3",
     "eslint": "^7.6.0",
     "eslint-plugin-react": "^7.20.5",
-    "expo-cli": "^3.25.1",
+    "expo-cli": "^3.27.6",
     "jest-expo": "^38.0.0",
     "typescript": "^3.9.7"
   },
