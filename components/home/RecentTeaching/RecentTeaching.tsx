@@ -123,7 +123,7 @@ export default function RecentTeaching(): JSX.Element {
         }
 
         const openNotes = () => {
-            navigation.navigate("NotesScreen", { date: moment(teaching.publishedDate as string).format("YYYY-MM-DD") })
+            navigation.push("NotesScreen", { date: moment(teaching.publishedDate as string).format("YYYY-MM-DD") })
         }
 
         return (

@@ -92,7 +92,7 @@ function MoreScreen(): JSX.Element {
     return (
         <Container>
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                 </Left>
                 <Body style={style.headerBody}>

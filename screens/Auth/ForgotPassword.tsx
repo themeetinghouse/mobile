@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth'
 import { StyleSheet, View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, SafeAreaView, Keyboard, TouchableOpacity } from 'react-native';
-import WhiteButton from '../../components/buttons/WhiteButton'
+import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
 import { Theme, Style } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 import { CompositeNavigationProp } from '@react-navigation/native';
@@ -49,7 +49,7 @@ const style = StyleSheet.create({
         color: Theme.colors.grey5,
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: 12,
-        lineHeight: 18,
+        lineHeight: 20,
         marginTop: 8
     }
 })
@@ -69,6 +69,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     const [error, setError] = useState('');
     const [codeSent, setCodeSent] = useState(false);
     const media = useContext(MediaContext);
+    const [sending, setSending] = useState(false);
 
     useEffect(() => {
         async function closeMedia() {
@@ -115,6 +116,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     }
 
     const sendCode = async () => {
+        setSending(true);
         try {
             await Auth.forgotPassword(user).then(() => updateCodeState(true))
         } catch (e) {
@@ -128,9 +130,11 @@ export default function Login({ navigation }: Params): JSX.Element {
             else
                 setError(e.message)
         }
+        setSending(false);
     }
 
     const reset = async () => {
+        setSending(true);
         try {
             await Auth.forgotPasswordSubmit(user, code, pass);
             updateCodeState(true);
@@ -139,6 +143,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             console.debug(e)
             setError(e.message)
         }
+        setSending(false);
     }
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -151,9 +156,9 @@ export default function Login({ navigation }: Params): JSX.Element {
                 <Text style={style.title}>Email</Text>
                 <TextInput onKeyPress={(e) => handleEnter(e, sendCode)} keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text)} />
                 <View style={{ marginTop: 12 }}>
-                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                    <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
                 </View>
-                <WhiteButton label={"Submit"} onPress={sendCode} style={{ marginTop: 12, height: 56 }} />
+                <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={sendCode} style={{ marginTop: 12, height: 56 }} />
                 <TouchableOpacity onPress={() => updateCodeState(true)} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Submit a Code</Text></TouchableOpacity>
             </View>
                 : <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
@@ -164,9 +169,9 @@ export default function Login({ navigation }: Params): JSX.Element {
                     <Text style={style.title}>New Password</Text>
                     <TextInput textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, reset)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
                     <View style={{ marginTop: 12 }}>
-                        <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12, height: 12 }}>{error}</Text>
+                        <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
                     </View>
-                    <WhiteButton label={"Submit"} onPress={reset} style={{ marginTop: 12, height: 56 }} />
+                    <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={reset} style={{ marginTop: 12, height: 56 }} />
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <WhiteButton outlined label={userContext?.userData?.email_verified ? "Back to home" : "Back to login"}

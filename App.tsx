@@ -82,14 +82,10 @@ function App(props: Props): JSX.Element {
 
   }
 
-  useEffect(() => {
-    const unsub = navRef?.current?.addListener('state', () => {
-      const screen = navRef.current?.getCurrentRoute()?.name;
-      if (screen)
-        setCurrentScreen(screen);
-    })
-    return unsub;
-  }, [navRef])
+  const handleRouteChange = () => {
+    const screen = navRef.current?.getCurrentRoute()?.name;
+    setCurrentScreen(screen ?? 'unknown');
+  }
 
   useEffect(() => {
     async function checkForUser() {
@@ -135,8 +131,8 @@ function App(props: Props): JSX.Element {
             <LocationContext.Provider value={{ locationData, setLocationData }}>
               <UserContext.Provider value={{ userData, setUserData }}>
                 <SafeAreaProvider style={{ backgroundColor: 'black' }} >
-                  {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-                  <NavigationContainer theme={CustomTheme} ref={navRef} >
+                  {Platform.OS === 'ios' && <StatusBar barStyle="light-content" />}
+                  <NavigationContainer theme={CustomTheme} ref={navRef} onStateChange={handleRouteChange} >
                     <AppNavigator />
                     <MiniPlayer currentScreen={currentScreen} />
                   </NavigationContainer>

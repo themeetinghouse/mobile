@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Button, Text } from 'native-base';
 import Theme from '../../Theme.style';
-import { ViewStyle, StyleSheet } from 'react-native';
+import { ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
+import { isLoaded } from 'expo-font';
 
 const styles = StyleSheet.create({
     button: {
@@ -55,4 +56,17 @@ export default function WhiteButton({ style, label, onPress, outlined, solidBlac
             </Button>
         </View>
     )
+}
+
+interface AsyncParams extends Params {
+    isLoading: boolean;
+}
+
+// eslint-disable-next-line react/prop-types
+export function WhiteButtonAsync({ style, label, onPress, outlined, solidBlack, isLoading }: AsyncParams): JSX.Element {
+    return <View style={style}>
+        <Button disabled={isLoading} style={outlined ? styles.buttonOutlined : solidBlack ? styles.buttonBlack : styles.button} block onPress={onPress}>
+            {isLoading ? <ActivityIndicator color='black' /> : <Text style={outlined ? styles.labelOutlined : solidBlack ? styles.labelBlack : styles.label} uppercase={false}>{label}</Text>}
+        </Button>
+    </View>
 }

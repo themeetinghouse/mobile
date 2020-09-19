@@ -125,7 +125,7 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
     return (
         <Container style={{ backgroundColor: 'black' }} >
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Text style={style.headerButtonText}>Cancel</Text>

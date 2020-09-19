@@ -175,7 +175,7 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     return (
         <Container style={{ backgroundColor: 'black' }} >
             <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="default" />
+                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => navigation.goBack()}>
                         <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
