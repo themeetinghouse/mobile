@@ -176,7 +176,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
                     <Text onPress={() => { setNotesMode('questions'); ref.current?.scrollTo(1) }} style={[style.headerTitle, notesMode === 'questions' ? style.headerTitleSelected : {}]}>Questions</Text>
                 </Body>
                 <Right style={style.headerRight}>
-                    <Button transparent onPress={() => setTextOptions(!textOptions)}>
+                    <Button transparent onPress={handleOpenTextOptions}>
                         <Thumbnail style={Style.icon} source={Theme.icons.white.textOptions} square></Thumbnail>
                     </Button>
                 </Right>
@@ -268,6 +268,18 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         getComments();
     }, [noteId])
 
+    const handleOpenTextOptions = () => {
+        if (!textOptions) {
+            miniPlayerStyle.setDisplay('none');
+            setOpenVerse(false);
+            setTextOptions(true);
+        } else {
+            miniPlayerStyle.setDisplay('flex');
+            setTextOptions(false);
+        }
+
+    }
+
     const handleOpenVerse = (youVersion: string | undefined, bibleGateway: string) => {
         if (!youVersion) {
             handleOpenPassage('web', false, youVersion, bibleGateway)
@@ -279,6 +291,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         } else {
             miniPlayerStyle.setDisplay('none');
             setOpenVerse(true);
+            setTextOptions(false);
             setVerseURLs({ youVersion, bibleGateway })
         }
     }
@@ -325,10 +338,10 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
     return <View style={{ flex: 1 }}>
         {notes.blocks.length > 0 ?
             <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
-                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='notes'>
+                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} key='notes'>
                     <NoteReader noteId={noteId} blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
                 </Content>
-                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} onScroll={() => setTextOptions(false)} key='questions' >
+                <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} key='questions' >
                     <NoteReader noteId={noteId} blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
                 </Content>
             </Swiper> : <ActivityIndicator />
@@ -339,7 +352,7 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
             defaultFontScale={fontScale}
             fontScaleCallback={(data) => handleFontScale(data)}
             modeCallback={(data) => handleTheme(data)}
-            closeCallback={() => setTextOptions(false)}
+            closeCallback={() => { setTextOptions(false); miniPlayerStyle.setDisplay('flex') }}
         /> : null}
     </View>
 

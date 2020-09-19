@@ -50,7 +50,7 @@ export default function TextOpts({ modeCallback, fontScaleCallback, defaultMode,
     const handleGesture = Animated.event([{ nativeEvent: { translationY: translateY } }], { useNativeDriver: true });
 
     function handleGestureEnd(e: PanGestureHandlerStateChangeEvent) {
-        if (e.nativeEvent.translationY > 60) {
+        if (e.nativeEvent.translationY > 20) {
             Animated.timing(translateY, { duration: 500, useNativeDriver: true, toValue: 275 }).start();
             setTimeout(closeCallback, 500);
         } else {
@@ -76,7 +76,7 @@ export default function TextOpts({ modeCallback, fontScaleCallback, defaultMode,
     return <PanGestureHandler onGestureEvent={handleGesture} onHandlerStateChange={e => handleGestureEnd(e)} >
         <Animated.View style={{
             position: 'absolute', width: '100%',
-            bottom: 0, height: 130 + (noBottomPadding ? 0 : safeArea.bottom), backgroundColor: 'white', paddingHorizontal: 16,
+            bottom: 0, height: 150 + (noBottomPadding ? 0 : safeArea.bottom), backgroundColor: 'white', paddingHorizontal: 16,
             alignItems: 'center',
             transform: [
                 {
@@ -102,7 +102,7 @@ export default function TextOpts({ modeCallback, fontScaleCallback, defaultMode,
                     <Text style={[style.text, { fontSize: 24 }]}>A</Text>
                 </TouchableOpacity>
             </View>
-            <View style={{ width: 300, height: 36, backgroundColor: Theme.colors.grey2, borderRadius: 50, marginBottom: 16, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <View style={{ width: 300, height: 36, backgroundColor: Theme.colors.grey2, borderRadius: 50, marginBottom: 16, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
                 <TouchableOpacity style={[style.textWrapper2, { paddingTop: isAndroid ? 0 : 2, backgroundColor: mode === 'dark' ? Theme.colors.grey4 : 'transparent' }]} onPress={() => toggleDarkMode('dark')}>
                     <Text style={[style.text, { fontSize: 12 }]}>Dark Mode</Text>
                 </TouchableOpacity>

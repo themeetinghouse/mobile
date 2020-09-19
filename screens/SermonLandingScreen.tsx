@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, Fragment } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -414,18 +414,23 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 </View>
 
                 <View style={style.categorySection}>
-                    <Text style={style.categoryTitle}>More from this Series</Text>
-                    <View style={style.listContentContainer}>
-                        {!sermonsInSeries ?
-                            <ActivityIndicator /> : sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
-                                (seriesSermon.id !== sermon.id) ?
-                                    <TeachingListItem
-                                        key={seriesSermon.id}
-                                        teaching={seriesSermon}
-                                        handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
-                                    : null
-                            ))}
-                    </View>
+                    {!sermonsInSeries ?
+                        <ActivityIndicator /> :
+                        sermonsInSeries?.length > 1 ?
+                            <Fragment>
+                                <Text style={style.categoryTitle}>More from this Series</Text>
+                                <View style={style.listContentContainer}>
+                                    {sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum })
+                                        .map((seriesSermon: any) => (
+                                            seriesSermon?.id !== sermon.id ?
+                                                <TeachingListItem
+                                                    key={seriesSermon?.id}
+                                                    teaching={seriesSermon}
+                                                    handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
+                                                : null
+                                        ))}
+                                </View>
+                            </Fragment> : null}
                 </View>
             </Content>
             {share ? <ShareModal closeCallback={() => setShare(false)}
