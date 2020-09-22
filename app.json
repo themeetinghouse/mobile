@@ -31,7 +31,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.fluidesign.mobileroadie.13460",
-      "buildNumber": "7",
+      "buildNumber": "8",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -48,7 +48,7 @@
     },
     "android": {
       "package": "org.tmh.takenote",
-      "versionCode": 107,
+      "versionCode": 108,
       "intentFilters": [
         {
           "action": "VIEW",
