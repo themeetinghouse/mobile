@@ -299,13 +299,11 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
             setPassage(link);
             setShow(link.offset === passage.offset ? !show : true);
         } else {
-            const canOpen = await Linking.canOpenURL(link.uri);
-            if (canOpen)
-                try {
-                    await Linking.openURL(link.uri)
-                } catch (e) {
-                    console.debug(e)
-                }
+            try {
+                await Linking.openURL(link.uri)
+            } catch (e) {
+                console.debug(e)
+            }
         }
     }
 
