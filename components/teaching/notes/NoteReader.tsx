@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
-import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText } from './TextComponents';
+import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText, HeaderImage } from './TextComponents';
 import { GetNotesQuery } from '../../../services/API';
 
 type ContentType =
@@ -129,6 +129,8 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
         return processedStyles
     }
 
+    let numberOfImages = 0;
+
     for (const block of blocks) {
         if (block.entityRanges.length > 0) {
             const links: Array<{ text: string, offset: number, length: number, uri: string }> = [];
@@ -136,7 +138,11 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                        if (numberOfImages === 0)
+                            markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                        else
+                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                        numberOfImages++
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
