@@ -98,7 +98,7 @@ function PasswordRequirement({ meetsRequirement, requirement }: PasswordIconPara
         paddingLeft: 6, borderRadius: 40, marginRight: 8, paddingVertical: 4
     }}>
         {meetsRequirement ?
-            <Entypo name="check" size={14} color="#32CD32" />
+            <Entypo name="check" size={14} color={Theme.colors.green} />
             : <Entypo name="cross" size={14} color={Theme.colors.red} />
         }
         <Text style={{ color: 'white', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 14, marginLeft: 4 }}>{requirement}</Text>
@@ -146,6 +146,13 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         navigation.push(screen)
     }
 
+    function confirmUser(): void {
+        setPass('');
+        setSite({ locationName: '', locationId: '' });
+        setError('');
+        navigation.push('ConfirmSignUpScreen', { email: user });
+    }
+
     function navigateHome() {
         setUser('');
         setPass('');
@@ -170,7 +177,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         setSending(true);
 
         try {
-            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigateInAuthStack('ConfirmSignUpScreen'))
+            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => confirmUser())
         } catch (e) {
             console.debug(e)
             if (e.code === 'InvalidPasswordException')
