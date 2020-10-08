@@ -75,8 +75,8 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching />
-          <View style={[style.categoryContainer, { paddingHorizontal: '5%', }]} >
-            <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
+          <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]} >
+            <WhiteButton outlined label="Send Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
 

@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View } from 'native-base';
-import { Image, StyleSheet, Dimensions } from 'react-native';
+import { Image, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 import { Theme, Style } from '../../../Theme.style';
 import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
 import { GetVideoByVideoTypeQuery, GetVideoByVideoTypeQueryVariables, ModelSortDirection, GetNotesQuery } from '../../../services/API';
-import { MainStackParamList } from '../../../navigation/AppNavigator'
-import { StackNavigationProp } from '@react-navigation/stack'
+import { MainStackParamList } from '../../../navigation/AppNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
 import ActivityIndicator from '../../../components/ActivityIndicator';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import NotesService from '../../../services/NotesService';
+import { TeachingStackParamList } from '../../../navigation/MainTabNavigator';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -68,7 +69,7 @@ type VideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVid
 
 export default function RecentTeaching(): JSX.Element {
 
-    const navigation = useNavigation<StackNavigationProp<MainStackParamList, 'Main'>>();
+    const navigation = useNavigation<CompositeNavigationProp<StackNavigationProp<MainStackParamList>, StackNavigationProp<TeachingStackParamList>>>();
     const [teaching, setTeaching] = useState<VideoData>(null);
     const [note, setNote] = useState<GetNotesQuery['getNotes']>();
     const [fullDescription, setFullDescription] = useState(false);
@@ -130,8 +131,12 @@ export default function RecentTeaching(): JSX.Element {
             <View style={style.container}>
                 {teachingImage?.url ?
                     <View style={{ width: '100%' }}>
-                        <Image style={style.teachingImage} source={{ uri: teachingImage.url }}></Image>
-                        <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }}></Image>
+                        <TouchableWithoutFeedback onPress={() => navigation.navigate('SermonLandingScreen', { item: teaching })} >
+                            <Image style={style.teachingImage} source={{ uri: teachingImage.url }} />
+                        </TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback onPress={() => navigation.navigate('SeriesLandingScreen', { seriesId: teaching.series?.id })}>
+                            <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }} />
+                        </TouchableWithoutFeedback>
                     </View>
                     : <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
                 }
