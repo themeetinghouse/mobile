@@ -3,12 +3,12 @@ import { Container, Content, View, Text } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
 import { Theme, Style } from '../Theme.style';
-//import EventCard from '../components/home/EventCard/EventCard';
+import EventCard from '../components/home/EventCard/EventCard';
 import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 //import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
 // import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
-//import EventsService from '../services/EventsService';
+import EventsService from '../services/EventsService';
 // import SermonsService from '../services/SermonsService';
 // import { loadSomeAsync } from '../utils/loading';
 // import ActivityIndicator from '../components/ActivityIndicator';
@@ -38,23 +38,24 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
   //const [announcements, setAnnouncements] = useState<any>([]);
-  //const [events, setEvents] = useState<any>([]);
+  const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
 
-  /*useEffect(() => {
+  useEffect(() => {
+    /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
     }
     loadAnnouncements();
-
+    */
     const loadEvents = async () => {
-      //const eventsResult = await EventsService.loadEventsList(location?.locationData);
-      //setEvents(eventsResult);
+      const eventsResult = await EventsService.loadEventsList(location?.locationData);
+      setEvents(eventsResult);
     }
     loadEvents();
-  }, [])*/
+  }, [location])
 
   useEffect(() => {
     const loadInstagramImages = async () => {
@@ -97,21 +98,27 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               } />
           ))}
           <AllButton>See all announcements</AllButton>
-        </View>
+            </View>*/}
 
 
         <View style={style.categoryContainer}>
-          <Text style={style.categoryTitle}>Upcoming Events</Text>
-          {events.map((event: any) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              handlePress={() =>
-                navigation.push('EventDetailsScreen', { item: event })
-              }></EventCard>
-          ))}
-          <AllButton>See All Events</AllButton>
-            </View>*/}
+          {events === null ? null :
+            <Text style={style.categoryTitle} >Upcoming Events</Text>}
+
+          {events !== null ?
+            events.map((event: any) => (
+              <>
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  handlePress={() =>
+                    navigation.push('EventDetailsScreen', { item: event })
+                  }></EventCard>
+                <AllButton>See All Events</AllButton>
+              </>
+            )) : null}
+
+        </View>
 
       </Content>
     </Container>

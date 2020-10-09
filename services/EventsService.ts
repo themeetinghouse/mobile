@@ -1,6 +1,6 @@
 //import axios from 'axios';
 import { runGraphQLQuery } from './ApiService';
-import { Location } from './LocationsService'; 
+import LocationService, { Location } from './LocationsService';
 import { GetFbEventsQuery } from './API'
 
 export type EventQueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['data']
@@ -8,17 +8,34 @@ export type EventQueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['dat
 export default class EventsService {
 
   static loadEventsList = async (location: Location | null | undefined): Promise<EventQueryResult> => {
-    const query = { 
-      query: getFbEvents,
-      variables: { pageId: location?.facebookEvents[0] },
-    }
-    //console.log("EventsService.loadEventsList(): query = ", query);
-    const queryResult = await runGraphQLQuery(query);
-    //console.log("EventsService.loadEventsList(): queryResult.getFBEvents.data = ", queryResult.getFBEvents.data);
-    return queryResult.getFBEvents.data;
-  }
+    console.log(`logging location ${JSON.stringify(location)}`)
 
+    const locations = await LocationService.loadLocations();
+    const currentLocation = locations.filter((ayy) => {
+      return ayy.id === location?.locationId;
+    })
+    let x: any;
+    await fetch(`https://www.themeetinghouse.com/static/content/${currentLocation[0].id}.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        const item: any = data?.page?.content.filter((item: any) => {
+          return item.class === 'events'
+        })
+        x = item[0]?.facebookEvents;
+        return x;
+      })
+    console.log("x is " + x)
+    if (x !== null) {
+      const query = {
+        query: getFbEvents,
+        variables: { pageId: x[0] },
+      }
+      const queryResult = await runGraphQLQuery(query);
+      return queryResult.getFBEvents.data;      // sorting needs to occur here
+    }
+  }
 }
+
 
 const getFbEvents = `
   query GetFbEvents($pageId: String) {
