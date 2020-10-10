@@ -73,6 +73,7 @@ export const Theme = {
         red: "#ff595a",
         yellow: "#FFC60B",
         transparent: "transparent",
+        green: "#32CD32"
     },
     fonts: {
         small: 12,

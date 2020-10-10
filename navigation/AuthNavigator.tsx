@@ -7,11 +7,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
 export type AuthStackParamList = {
-  LoginScreen: undefined;
+  LoginScreen: undefined | { newUser: boolean };
   SignUpScreen: undefined | { locationName: string, locationId: string };
   LocationSelectionScreen: undefined;
   ForgotPasswordScreen: undefined;
-  ConfirmSignUpScreen: undefined;
+  ConfirmSignUpScreen: undefined | { email: string };
 }
 
 const Auth = createStackNavigator<AuthStackParamList>();

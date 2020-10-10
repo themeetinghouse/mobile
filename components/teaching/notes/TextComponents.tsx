@@ -199,23 +199,8 @@ export function CustomListItem({ processedStyles, block, styles, mode, noteId, t
     }
 }
 
-export function CustomHeading({ processedStyles, block, styles }: CustomTextParams): JSX.Element {
-
-    if (processedStyles.length === 0) {
-        return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyRegular }}>{block.text}</Text>
-    } else {
-        return <Text style={{ ...styles.header, marginVertical: 12 }} >
-            <Text style={{ ...styles.header }}>{block.text.slice(0, processedStyles[0].offset)}</Text>
-            {processedStyles.map((style, index) => {
-                return <Text key={index}>
-                    <Text style={{ ...styles.header, ...style.style }}>{block.text.slice(style.offset, style.offset + style.length)}</Text>
-                    {index + 1 < processedStyles.length ? <Text style={styles.header}>{block.text.slice(style.offset + style.length, processedStyles[index + 1].offset)}</Text> : null}
-                </Text>
-            })}
-            <Text style={styles.header}>{block.text.slice(processedStyles[processedStyles.length - 1].offset + processedStyles[processedStyles.length - 1].length)}</Text>
-        </Text>
-
-    }
+export function CustomHeading({ block, styles }: CustomTextParams): JSX.Element {
+    return <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }}>{block.text}</Text>
 }
 
 interface ImageParams {
@@ -249,16 +234,23 @@ export function CustomImage({ data, mode, type, block, noteId, styles }: ImagePa
     }
 
     return <Fragment>
-        <TouchableWithoutFeedback onLayout={(e) => setPos(e.nativeEvent.layout.y)} onPress={() => setSelected(!selected)} style={[{ width: Dimensions.get('screen').width - 72, marginLeft: 16, marginRight: 56, paddingVertical: 1, alignItems: 'center' }, selected ? { borderColor: 'red', borderStyle: 'dashed', borderWidth: 1 } : {}]} >
-            <Image resizeMode='contain' style={{ width: Dimensions.get('screen').width - 80, minHeight: 100 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
-        </TouchableWithoutFeedback>
+        <View onLayout={e => setPos(e.nativeEvent.layout.y)} style={{ justifyContent: 'flex-start', display: 'flex', flexDirection: 'row' }} >
+            <TouchableWithoutFeedback onPress={() => setSelected(!selected)} style={[{ marginLeft: 16, marginRight: 56, padding: 4, alignItems: 'center' }, selected ? { borderColor: 'red', borderStyle: 'dashed', borderWidth: 1 } : {}]} >
+                <Image resizeMode='contain' style={{ minWidth: 200, minHeight: 200 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
+            </TouchableWithoutFeedback>
+        </View>
         {selected ?
             <Button transparent style={{ position: 'absolute', right: 16, top: pos - 5 }} onPress={openComment}>
                 <Thumbnail source={mode === 'dark' ? Theme.icons.white.addComment : Theme.icons.black.addComment} square style={{ width: 24, height: 24 }} />
             </Button> : null}
         {comments.map(comment => <Comment key={comment?.id} comment={comment} styles={styles} />)}
     </Fragment>
+}
 
+type HeaderImageParams = Pick<ImageParams, 'data'>;
+
+export function HeaderImage({ data }: HeaderImageParams): JSX.Element {
+    return <Image resizeMode='contain' style={{ width: Dimensions.get('screen').width, minHeight: 100 }} source={{ uri: data.src }} accessibilityLabel={data.alt} />
 }
 
 interface HyperLinkParams {
@@ -331,9 +323,6 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
     }
 
     const parseBibleJSON = (data: any, index: number, length: number) => {
-
-        //console.log(data)
-
         if (data?.attrs?.style === 's1') {
             return <Text style={styles.header} key={index}>
                 {data.items.map((item: any, index: number) => {
@@ -375,7 +364,7 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
                         return null
                     }
                 })}
-                {(index === length - 1) ? '' : data.items[data.items.length - 1]?.text?.includes(':') ? '\n' : '\n \n'}</Text>
+                {(index === length - 1 || index === 0) ? '' : data.items[data.items.length - 1]?.text?.includes(':') ? '\n' : '\n \n'}</Text>
         }
     }
 

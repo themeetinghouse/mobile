@@ -11,6 +11,7 @@ import { Thumbnail, Button } from 'native-base';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MediaContext from '../../contexts/MediaContext';
+import { Entypo } from '@expo/vector-icons';
 
 const style = StyleSheet.create({
     title: {
@@ -84,6 +85,25 @@ const style = StyleSheet.create({
     }
 })
 
+interface PasswordIconParams {
+    meetsRequirement: boolean;
+    requirement: string;
+}
+
+function PasswordRequirement({ meetsRequirement, requirement }: PasswordIconParams) {
+    return <View style={{
+        display: 'flex', flexDirection: 'row',
+        alignItems: 'center', marginBottom: 4,
+        backgroundColor: Theme.colors.grey1, paddingRight: 10,
+        paddingLeft: 6, borderRadius: 40, marginRight: 8, paddingVertical: 4
+    }}>
+        {meetsRequirement ?
+            <Entypo name="check" size={14} color={Theme.colors.green} />
+            : <Entypo name="cross" size={14} color={Theme.colors.red} />
+        }
+        <Text style={{ color: 'white', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 14, marginLeft: 4 }}>{requirement}</Text>
+    </View>
+}
 
 interface Params {
     navigation: CompositeNavigationProp<StackNavigationProp<AuthStackParamList>, StackNavigationProp<MainStackParamList>>;
@@ -126,6 +146,13 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         navigation.push(screen)
     }
 
+    function confirmUser(): void {
+        setPass('');
+        setSite({ locationName: '', locationId: '' });
+        setError('');
+        navigation.push('ConfirmSignUpScreen', { email: user });
+    }
+
     function navigateHome() {
         setUser('');
         setPass('');
@@ -150,7 +177,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         setSending(true);
 
         try {
-            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => navigateInAuthStack('ConfirmSignUpScreen'))
+            await Auth.signUp({ username: user, password: pass, attributes: { email: user, 'custom:home_location': site.locationId } }).then(() => confirmUser())
         } catch (e) {
             console.debug(e)
             if (e.code === 'InvalidPasswordException')
@@ -177,6 +204,13 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             <TextInput accessibilityLabel="Email Address" keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
             <Text style={style.title}>Password</Text>
             <TextInput accessibilityLabel="Password" textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
+            <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', marginTop: 12 }}>
+                <Text style={{ color: 'white', fontFamily: Theme.fonts.fontFamilyBold, fontSize: 14, marginRight: 8 }}>Password must contain at least:</Text>
+                <PasswordRequirement meetsRequirement={pass.length >= 8} requirement='8 characters' />
+                <PasswordRequirement meetsRequirement={/(?=.*[A-Z])/.test(pass)} requirement='upper &amp; lowercase letters' />
+                <PasswordRequirement meetsRequirement={/(?=.*[0-9])/.test(pass)} requirement='1 number' />
+                <PasswordRequirement meetsRequirement={/(?=.*[\^$*.\[\]{}\(\)?\-“!@#%&/,><\’:;|_~`])/.test(pass)} requirement='1 special character (e.g. @ ! $ ^ ?)' />
+            </View>
             <Text style={style.title}>Choose Your Location</Text>
             <TouchableOpacity style={style.locationSelector} onPress={() => navigation.push('LocationSelectionScreen')} >
                 <Text style={style.locationText}>{site.locationName ? site.locationName : 'None Selected'}</Text>

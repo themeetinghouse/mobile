@@ -6,7 +6,7 @@ import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteBut
 import UserContext from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, useRoute, RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from '../../navigation/AppNavigator'
 import { Thumbnail, Button } from 'native-base';
 import LocationContext from '../../contexts/LocationContext';
@@ -74,11 +74,12 @@ const style = StyleSheet.create({
 
 interface Params {
     navigation: CompositeNavigationProp<
-        StackNavigationProp<AuthStackParamList, 'LocationSelectionScreen'>,
+        StackNavigationProp<AuthStackParamList, 'LoginScreen'>,
         StackNavigationProp<MainStackParamList, 'Auth'>
     >;
 }
 
+const accountVerifiedMessage = 'Your account is verified. Please log in.'
 
 export default function Login({ navigation }: Params): JSX.Element {
     const [user, setUser] = useState('');
@@ -90,6 +91,13 @@ export default function Login({ navigation }: Params): JSX.Element {
     const media = useContext(MediaContext);
     const userContext = useContext(UserContext);
     const location = useContext(LocationContext);
+    const route = useRoute<RouteProp<AuthStackParamList, 'LoginScreen'>>();
+
+    useEffect(() => {
+        if (route.params?.newUser) {
+            setError(accountVerifiedMessage)
+        }
+    }, [route])
 
     useEffect(() => {
         async function closeMedia() {
@@ -157,7 +165,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             <TextInput accessibilityLabel="Password" keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <TouchableOpacity onPress={() => navigateInAuthStack('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>
             <View style={{ marginTop: 12 }}>
-                <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
+                <Text style={{ color: (error === accountVerifiedMessage ? Theme.colors.green : Theme.colors.red), alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
             </View>
             <WhiteButtonAsync isLoading={sending} label={"Log In"} onPress={signIn} style={{ marginTop: 12, height: 56 }} />
         </View>

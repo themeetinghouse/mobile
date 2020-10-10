@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Auth } from '@aws-amplify/auth'
 import { StyleSheet, View, TextInput, Text, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableWithoutFeedback, Keyboard, SafeAreaView, TouchableOpacity } from 'react-native';
 import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton';
 import { Theme, Style } from '../../Theme.style';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useRoute, RouteProp } from '@react-navigation/native';
 
 const style = StyleSheet.create({
     title: {
@@ -60,13 +61,19 @@ export default function Login({ navigation }: Params): JSX.Element {
     const [error, setError] = useState('');
     const [sending, setSending] = useState(false);
     const [needsNewCode, setNeedsNewCode] = useState(false);
+    const route = useRoute<RouteProp<AuthStackParamList, 'ConfirmSignUpScreen'>>();
+
+    useEffect(() => {
+        if (route.params?.email)
+            setUser(route.params.email)
+    }, [route])
 
     function toLogin(): void {
         setUser('');
         setCode('');
         setError('');
         setNeedsNewCode(false);
-        navigation.navigate('LoginScreen')
+        navigation.navigate('LoginScreen', { newUser: true });
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>): void {
@@ -79,7 +86,6 @@ export default function Login({ navigation }: Params): JSX.Element {
         try {
             await Auth.resendSignUp(user)
             setNeedsNewCode(false);
-            setUser('');
             setCode('');
             setError('');
         } catch (e) {
@@ -129,7 +135,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                         <Text style={{ color: Theme.colors.red, alignSelf: 'center', fontFamily: Theme.fonts.fontFamilyRegular, fontSize: 12 }}>{error}</Text>
                     </View>
                     <WhiteButtonAsync isLoading={sending} label={"Submit"} onPress={confirm} style={{ marginTop: 12, height: 56 }} />
-                    <TouchableOpacity onPress={() => { setNeedsNewCode(true); setError(''); setCode(''); setUser('') }} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Need a new code?</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={() => { setNeedsNewCode(true); setError(''); setCode(''); }} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Need a new code?</Text></TouchableOpacity>
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
                 <WhiteButton outlined label="Back to login" onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />

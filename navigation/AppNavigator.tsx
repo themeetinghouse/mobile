@@ -19,7 +19,6 @@ export type MainStackParamList = {
   Main: undefined | { screen: keyof TabNavigatorParamList, params: { screen: keyof HomeStackParamList } };
   Auth: undefined | { screen: keyof AuthStackParamList };
   NotesScreen: { date: string };
-  MiniPlayer: undefined;
   ProfileScreen: undefined;
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
