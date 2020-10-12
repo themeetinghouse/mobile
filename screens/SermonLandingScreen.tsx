@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef, useEffect, Fragment } from 'react'
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
+import { Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import IconButton from '../components/buttons/IconButton';
 import TeachingButton from '../components/buttons/TeachingButton';
@@ -19,6 +19,7 @@ import { MainStackParamList } from 'navigation/AppNavigator';
 import ShareModal from '../components/modals/Share';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetSeriesQuery } from '../services/API';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 const style = StyleSheet.create({
     content: {
@@ -137,6 +138,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const playerRef = useRef<YoutubeIframeRef>(null);
     const [share, setShare] = useState(false)
     const safeArea = useSafeAreaInsets();
+    const [justOpened, setJustOpened] = useState(true);
+
+    const deviceWidth = Dimensions.get('window').width
 
     useEffect(() => {
         const loadSermonsInSeriesAsync = async () => {
@@ -149,18 +153,22 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     useEffect(() => {
         const unsub = navigation.addListener('blur', async () => {
             if (mediaContext.media.playerType === 'audio') {
-                try {
-                    await mediaContext.media.audio?.sound.unloadAsync();
-                    mediaContext.closeAudio();
-                } catch (e) {
-                    console.debug(e)
-                }
+                await closeAudio();
             } else if (mediaContext.media.playerType === 'video') {
                 mediaContext.closeVideo();
             }
         });
         return unsub;
     }, [mediaContext])
+
+    const closeAudio = async () => {
+        try {
+            await mediaContext.media.audio?.sound.unloadAsync();
+            mediaContext.closeAudio();
+        } catch (e) {
+            console.debug(e);
+        }
+    }
 
     const setPlaybackSpeed = async () => {
         if (mediaContext?.media.audio?.status.isLoaded) {
@@ -255,6 +263,8 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const loadVideo = async () => {
+        setJustOpened(false);
+
         try {
             await mediaContext.media.audio?.sound.unloadAsync();
             mediaContext.setAudioNull();
@@ -270,6 +280,8 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const loadAudio = async () => {
+        setJustOpened(false);
+
         if (mediaContext.media.playerType === 'mini audio' && sermon.seriesTitle === mediaContext.media.series && sermon.episodeTitle === mediaContext.media.episode) {
             mediaContext.setMedia({ ...mediaContext.media, playerType: 'audio' });
             mediaContext.media.audio?.sound.setOnPlaybackStatusUpdate((e) => updateAudioPosition(e));
@@ -351,20 +363,28 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     return (
         <View style={{ flex: 1 }} >
             <Content>
-                {mediaContext.media.playerType === 'video' ? <View style={{ height: Math.round(Dimensions.get('window').width * (9 / 16)), marginBottom: 8 }}>
+                {justOpened && mediaContext.media.playerType !== 'video' && mediaContext.media.playerType !== 'audio' ?
+                    <TouchableWithoutFeedback onPress={loadVideo}>
+                        <Image
+                            source={{ uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url }}
+                            style={{ height: Math.round(deviceWidth * (9 / 16)), width: Math.round(deviceWidth) }}
+                        />
+                    </TouchableWithoutFeedback> : null}
+
+                {mediaContext.media.playerType === 'video' ? <View style={{ height: Math.round(deviceWidth * (9 / 16)), marginBottom: 8 }}>
                     <YoutubePlayer
                         ref={playerRef}
                         onReady={handleVideoReady}
                         forceAndroidAutoplay
-                        height={Math.round(Dimensions.get('window').width * (9 / 16))}
-                        width={Math.round(Dimensions.get('window').width)}
+                        height={Math.round(deviceWidth * (9 / 16))}
+                        width={Math.round(deviceWidth)}
                         videoId={mediaContext.media.video as string}
                         play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
                         initialPlayerParams={{ modestbranding: true }}
                     />
                 </View > : null}
 
-                {audioDuration && mediaContext.media.playerType === 'audio' ? <View style={{ paddingTop: 30, paddingBottom: 50, marginBottom: 8, height: Math.round(Dimensions.get('window').width * (9 / 16)), paddingHorizontal: 16 }}>
+                {audioDuration && mediaContext.media.playerType === 'audio' ? <View style={{ paddingTop: 30, paddingBottom: 50, marginBottom: 8, height: Math.round(deviceWidth * (9 / 16)), paddingHorizontal: 16 }}>
                     <Slider minimumValue={0} maximumValue={audioDuration} value={audioPosition} onSlidingStart={pauseAudio} onSlidingComplete={(e) => seekTo(e)} minimumTrackTintColor={Theme.colors.grey5} maximumTrackTintColor={Theme.colors.grey2} thumbTintColor='white' />
                     <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginTop: 6 }} >
                         <Text style={style.timeText}>{time.elapsed}</Text>
@@ -376,7 +396,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                             <Text style={style.skipText}>15s</Text>
                         </TouchableOpacity>
                         <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <TouchableOpacity onPress={pauseAudio}><Thumbnail square style={{ width: 40, height: 40, marginBottom: 24 }} source={mediaContext.media.playing ? Theme.icons.white.pauseAudio : Theme.icons.white.playAudio} /></TouchableOpacity>
+                            <TouchableOpacity onPress={pauseAudio}>
+                                <Thumbnail square style={{ width: 40, height: 40, marginBottom: 24 }} source={mediaContext.media.playing ? Theme.icons.white.pauseAudio : Theme.icons.white.playAudio} />
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={setPlaybackSpeed}>
                                 <Text style={style.speedText}>{audioSpeed.toString()}x</Text>
                             </TouchableOpacity>
@@ -392,13 +414,13 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                         {sermon.id ? <TeachingButton
                             wrapperStyle={{ flex: 1, height: 56, marginRight: sermon.audioURL ? 16 : 0 }}
                             active={mediaContext.media.playerType === 'video'} label={"Watch"} iconActive={Theme.icons.black.watch}
-                            iconInactive={Theme.icons.white.watch} onPress={loadVideo} />
+                            iconInactive={Theme.icons.white.watch} onPress={mediaContext.media.playerType === 'video' ? () => mediaContext.closeVideo() : loadVideo} />
                             : null
                         }
                         {sermon.audioURL ? <TeachingButton
                             wrapperStyle={{ flex: 1, height: 56 }} active={mediaContext.media.playerType === 'audio'}
                             label={"Listen"} iconActive={Theme.icons.black.audio}
-                            iconInactive={Theme.icons.white.audio} onPress={loadAudio} />
+                            iconInactive={Theme.icons.white.audio} onPress={mediaContext.media.playerType === 'audio' ? closeAudio : loadAudio} />
                             : null
                         }
                     </View>
