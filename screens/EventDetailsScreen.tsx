@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
@@ -7,6 +7,7 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import ShareModal from '../components/modals/Share';
 
 const style = StyleSheet.create({
     content: {
@@ -66,9 +67,11 @@ interface Props {
 }
 
 export default function EventDetailsScreen(props: Props): JSX.Element {
-
+    const [share, setShare] = useState(false);
     const eventItem = props.route.params?.item;
-
+    useEffect(() => {
+        console.log(JSON.stringify(eventItem.id))
+    }, [eventItem])
     return (
         <Container>
             <Header style={style.header}>
@@ -79,7 +82,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     </Button>
                 </Left>
                 <Right>
-                    <Button transparent>
+                    <Button transparent onPress={() => setShare(!share)}>
                         <Icon name='share' />
                     </Button>
                 </Right>
@@ -107,7 +110,11 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 </View>
 
             </Content>
+            {share ? <ShareModal closeCallback={() => setShare(false)}
+                link={`https://www.facebook.com/events/${eventItem.id}`}
+                message={eventItem !== null ? `Check out this event: \n${eventItem?.name}\n${eventItem?.place?.name}` : ``} /> : null}
         </Container>
+
     )
 
 }

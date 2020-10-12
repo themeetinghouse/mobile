@@ -85,15 +85,13 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           <View style={style.categoryContainer}>
             <Text style={style.categoryTitle} >Upcoming Events</Text>
             {events.map((event: any) => (
-              <>
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  handlePress={() =>
-                    navigation.push('EventDetailsScreen', { item: event })
-                  }></EventCard>
+              <EventCard
+                key={event.id}
+                event={event}
+                handlePress={() =>
+                  navigation.push('EventDetailsScreen', { item: event })
+                }></EventCard>
 
-              </>
             ))}
             <AllButton>See All Events</AllButton>
           </View>

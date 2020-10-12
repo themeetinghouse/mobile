@@ -56,6 +56,7 @@ type EventCardInput = {
 
 export default function EventCard({ event, handlePress }: EventCardInput): JSX.Element {
     const dateStr = moment(event?.start_time ?? undefined).format('MMM D');
+    // It might make sense to make this entire view clickable if there are no other buttons
     return (
         <View style={style.container}>
             <Text style={style.dateTitleContainer}>{dateStr}</Text>
@@ -64,7 +65,7 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
                 <Thumbnail style={style.icon} source={Theme.icons.white.arrow}></Thumbnail>
             </TouchableOpacity>
             <Text style={style.descriptionContainer} numberOfLines={5}>{event?.description}</Text>
-            <Text style={style.locationContainer}>{event?.place?.name ? event.place.name : null}, {event?.place?.location?.street ? event.place.location.street : null}</Text>
+            <Text style={style.locationContainer}>{event?.place?.name ? event.place.name + "," : null} {event?.place?.location?.street ? event.place.location.street : null}</Text>
             <Text style={style.dateTimeContainer}>{moment(event?.start_time ?? undefined).format("h:mm a")} - {moment(event?.end_time ?? undefined).format("h:mm a")}</Text>
         </View>
     );
