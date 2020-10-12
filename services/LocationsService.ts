@@ -143,6 +143,8 @@ export default class LocationsService {
             .then((response) => response.json())
             .then((locations) => {
                 return locations;
+            }).catch((error) => {
+                console.log(error)
             })
     }
 }
