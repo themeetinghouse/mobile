@@ -316,6 +316,15 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
             mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini video', videoTime });
     }
 
+    const navigateToNotes = async () => {
+        if (mediaContext.media.playerType === 'audio')
+            minimizeAudio();
+        else if (mediaContext.media.playerType === 'video')
+            await minimizeVideo();
+
+        navigation.push('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })
+    }
+
     navigation.setOptions({
         headerShown: true,
         title: '',
@@ -395,7 +404,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     </View>
                     <Text style={style.title}>{sermon.episodeTitle}</Text>
                     <View style={style.detailsContainer}>
-                        <View style={style.detailsContainerItem}>
+                        <View style={[style.detailsContainerItem, { paddingRight: 8 }]}>
                             <Text style={style.detailsTitle}>Series</Text>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={style.detailsText}>E{sermon.episodeNumber},</Text>
@@ -410,7 +419,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                     <View style={style.detailsDescription}>
                         <Text style={style.body}>{sermon.description}</Text>
                     </View>
-                    {moment(sermon.publishedDate).isAfter('2020-06-01') ? <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => navigation.push('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })} /> : null}
+                    {moment(sermon.publishedDate).isAfter('2020-06-01') ? <IconButton rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={navigateToNotes} /> : null}
                 </View>
 
                 <View style={style.categorySection}>
@@ -472,28 +481,18 @@ const getSeries = `
               thumbnails {
                 default {
                   url
-                  width
-                  height
                 }
                 medium {
                   url
-                  width
-                  height
                 }
                 high {
                   url
-                  width
-                  height
                 }
                 standard {
                   url
-                  width
-                  height
                 }
                 maxres {
                   url
-                  width
-                  height
                 }
               }
               channelTitle
