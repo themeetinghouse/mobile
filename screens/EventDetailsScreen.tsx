@@ -101,7 +101,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     <Text style={style.body}>{moment(eventItem.start_time).format("dddd, MMMM D, YYYY")}</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("h:mm a")}</Text>
                     <IconButton style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
-                    <Text style={style.subtitle}>Location</Text>
+                    {eventItem?.place !== null ? <Text style={style.subtitle}>Location</Text> : null}
                     <Text style={style.body}>{eventItem.place?.name}</Text>
                     <Text style={style.body}>{eventItem.place?.location?.street}</Text>
                     {eventItem?.place !== null && eventItem?.place?.location?.street !== null ?
