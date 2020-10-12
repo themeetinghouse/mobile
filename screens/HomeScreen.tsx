@@ -52,7 +52,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     */
     const loadEvents = async () => {
       const eventsResult = await EventsService.loadEventsList(location?.locationData);
-      setEvents(eventsResult);
+      setEvents(eventsResult?.reverse());
     }
     loadEvents();
   }, [location])
@@ -80,7 +80,29 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
+        {/* Need to implement a spinner for loading events */}
+        {events !== null && events.length !== 0 ?
+          <View style={style.categoryContainer}>
+            <Text style={style.categoryTitle} >Upcoming Events</Text>
+            {events.map((event: any) => (
+              <>
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  handlePress={() =>
+                    navigation.push('EventDetailsScreen', { item: event })
+                  }></EventCard>
 
+              </>
+            ))}
+            <AllButton>See All Events</AllButton>
+          </View>
+          : <>
+            <View style={style.categoryContainer}>
+              <Text style={style.categoryTitle} >No events found</Text>
+            </View>
+          </>}
+        {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? <View style={style.categoryContainer}>
           <Text style={style.categoryTitle}>@{instaUsername}</Text>
           <InstagramFeed images={images} />
@@ -101,27 +123,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             </View>*/}
 
 
-        <View style={style.categoryContainer}>
-          {events === null ? null :
-            <Text style={style.categoryTitle} >Upcoming Events</Text>}
-
-          {events !== null ?
-            events.map((event: any) => (
-              <>
-                <EventCard
-                  key={event.id}
-                  event={event}
-                  handlePress={() =>
-                    navigation.push('EventDetailsScreen', { item: event })
-                  }></EventCard>
-                <AllButton>See All Events</AllButton>
-              </>
-            )) : null}
-
-        </View>
 
       </Content>
-    </Container>
+    </Container >
     // <View style={styles.container}>
     //   <ScrollView
     //     style={styles.container}
