@@ -8,19 +8,16 @@ export type EventQueryResult = NonNullable<GetFbEventsQuery['getFBEvents']>['dat
 export default class EventsService {
 
   static loadEventsList = async (location: Location | null): Promise<EventQueryResult> => {
-    console.log(`logging location ${JSON.stringify(location)}`)
-
     const locations = await LocationService.loadLocations();
     const currentLocation = locations.filter((loc) => {
-      return loc.id === location?.locationId;
+      return loc.id === location?.id;
     })
-    console.log(currentLocation.length)
     let x: any;
-    await fetch(`https://www.themeetinghouse.com/static/content/${currentLocation.length !== 0 ? currentLocation[0]?.id : "oakville"}.json`) //put this in a variable and await its result to return
+    await fetch(`https://www.themeetinghouse.com/static/content/${currentLocation.length !== 0 ? currentLocation[0]?.id : "oakville"}.json`)
       .then((response) => response.json())
       .then((data) => {
-        const item: any = data?.page?.content.filter((item: any) => {
-          return item.class === 'events'
+        const item: any = data?.page?.content.filter((entry: any) => {
+          return entry.class === 'events'
         })
         x = item[0]?.facebookEvents;
         return x;

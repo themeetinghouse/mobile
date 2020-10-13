@@ -13,6 +13,7 @@ import EventsService from '../services/EventsService';
 // import { loadSomeAsync } from '../utils/loading';
 // import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
+import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
@@ -57,7 +58,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     }
     loadInstagramImages();
     const loadEvents = async () => {
-      const eventsResult = await EventsService.loadEventsList(location?.locationData);
+      const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location);
       setEvents(eventsResult?.reverse()); //assuming eventId array is already sorted when they are stored. 
     }
     loadEvents();
