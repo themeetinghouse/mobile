@@ -50,20 +50,17 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     }
     loadAnnouncements();
     */
-    const loadEvents = async () => {
-      const eventsResult = await EventsService.loadEventsList(location?.locationData);
-      setEvents(eventsResult?.reverse());
-    }
-    loadEvents();
-  }, [location])
-
-  useEffect(() => {
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId ?? '')
       setImages(data.images);
       setInstaUsername(data.username);
     }
     loadInstagramImages();
+    const loadEvents = async () => {
+      const eventsResult = await EventsService.loadEventsList(location?.locationData);
+      setEvents(eventsResult?.reverse()); //assuming eventId array is already sorted when they are stored. 
+    }
+    loadEvents();
   }, [location])
 
   const sendQuestion = () => {

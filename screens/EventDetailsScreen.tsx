@@ -70,6 +70,10 @@ interface Props {
 export default function EventDetailsScreen(props: Props): JSX.Element {
     const [share, setShare] = useState(false);
     const eventItem = props.route.params?.item;
+    const AddCalendarItem = () => {
+        console.log("")
+    }
+
     return (
         <Container>
             <Header style={style.header}>
@@ -100,7 +104,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     <Text style={style.subtitle}>Date &amp; Time</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("dddd, MMMM D, YYYY")}</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("h:mm a")}</Text>
-                    <IconButton style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
+                    <IconButton onPress={() => AddCalendarItem()} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
                     {eventItem?.place !== null ? <Text style={style.subtitle}>Location</Text> : null}
                     <Text style={style.body}>{eventItem.place?.name}</Text>
                     <Text style={style.body}>{eventItem.place?.location?.street}</Text>
