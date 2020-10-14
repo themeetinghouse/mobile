@@ -66,7 +66,9 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
             </TouchableOpacity>
             <Text style={style.descriptionContainer} numberOfLines={5}>{event?.description}</Text>
             <Text style={style.locationContainer}>{event?.place?.name ? event.place.name + "," : null} {event?.place?.location?.street ? event.place.location.street : null}</Text>
-            <Text style={style.dateTimeContainer}>{moment(event?.start_time ?? undefined).format("h:mm a")} - {moment(event?.end_time ?? undefined).format("h:mm a")}</Text>
+            {event?.start_time ?
+                <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("h:mm a")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+                : null}
         </View>
     );
 }
