@@ -91,7 +91,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
                 }></EventCard>
 
             ))}
-            <AllButton>See All Events</AllButton>
+            {/*<AllButton>See All Events</AllButton>*/}
           </View>
           : <>
             <View style={style.categoryContainer}>

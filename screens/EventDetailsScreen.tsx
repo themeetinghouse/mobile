@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
@@ -67,13 +67,79 @@ interface Props {
     route: RouteProp<HomeStackParamList, 'EventDetailsScreen'>;
 }
 
+type OpeningMethod = 'gps' | 'name' | 'none';
+
 export default function EventDetailsScreen(props: Props): JSX.Element {
     const [share, setShare] = useState(false);
     const eventItem = props.route.params?.item;
-    const AddCalendarItem = () => {
-        console.log("")
+    const directionsType = () => {
+        if (eventItem.place) {
+            if (eventItem?.place?.location !== null) {
+                console.log("Location is not null!")
+                if (eventItem?.place?.location?.latitude && eventItem?.place?.location.longitude) {
+                    console.log("Latitude and logitude found")
+                    return 'gps'
+                }
+                else {
+                    console.log("There is no longitude or latitude.")
+                    if (eventItem?.place?.name) {
+                        console.log("place.name is found.")
+                        return 'name'
+                    }
+                    else {
+                        console.log("Name not found. NOT RENDERING BUTTON")
+                        return 'none';
+                    }
+                }
+            }
+            else {
+                console.log("Location is null. Reading from eventItem.place.name")
+                if (eventItem?.place?.name) {
+                    console.log("place name is found opening with eventItem.place.name")
+                    return 'name';
+                }
+                else {
+                    console.log("Name not found. NOT RENDERING BUTTON")
+                    return 'none'
+                }
+            }
+        }
+        else {
+            console.log("eventItem.place is null")
+            console.log(eventItem)
+            return 'none'
+        }
     }
+    const [openMethod, setOpenMethod] = useState<OpeningMethod>(directionsType());
 
+    const AddCalendarItem = () => {
+        //
+        /* const eventInfo = {
+                eventName: eventItem.name,
+                eventStartTime: eventItem.start_time,
+                eventEndTime: eventItem.end_time,
+                address: eventItem.place.
+        }
+        */
+        console.log(eventItem)
+    }
+    const OpenMapWithDirections = () => {
+        switch (openMethod) {
+            case 'gps':
+                openMap({ end: `${eventItem?.place.location.latitude}, ${eventItem?.place.location.longitude}` })
+                break;
+            case 'name':
+                openMap({ end: eventItem.place.name })
+                break;
+            case 'none':
+                break;
+            default:
+                break;
+        }
+    }
+    useEffect(() => {
+        console.log(eventItem)
+    }, [])
     return (
         <Container>
             <Header style={style.header}>
@@ -105,19 +171,25 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     <Text style={style.body}>{moment(eventItem.start_time).format("dddd, MMMM D, YYYY")}</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("h:mm a")}</Text>
                     <IconButton onPress={() => AddCalendarItem()} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
-                    {eventItem?.place !== null ? <Text style={style.subtitle}>Location</Text> : null}
-                    <Text style={style.body}>{eventItem.place?.name}</Text>
-                    <Text style={style.body}>{eventItem.place?.location?.street}</Text>
-                    {eventItem?.place !== null && eventItem?.place?.location?.street !== null ?
-                        <IconButton onPress={() => { openMap({ end: eventItem.place?.location?.street }) }} style={style.actionButton} icon={Theme.icons.white.mapLocation} label="Get directions" ></IconButton>
-                        : null}
+                    {eventItem.place ?
+                        <>
+                            <Text style={style.subtitle}>Location</Text>
+                            <Text style={style.body}>{eventItem.place?.name}</Text>
+                            <Text style={style.body}>{eventItem.place?.location?.street}</Text>
+                            {openMethod !== 'none' ?
+                                <IconButton onPress={() => OpenMapWithDirections()} style={style.actionButton} icon={Theme.icons.white.mapLocation} label="Get directions" ></IconButton>
+                                : null}
+                        </> : null}
+
                 </View>
 
             </Content>
-            {share ? <ShareModal closeCallback={() => setShare(false)}
-                link={`https://www.facebook.com/events/${eventItem.id}`}
-                message={eventItem !== null ? `Check out this event: \n${eventItem?.name}\n${eventItem?.place?.name}` : ``} /> : null}
-        </Container>
+            {
+                share ? <ShareModal closeCallback={() => setShare(false)}
+                    link={`https://www.facebook.com/events/${eventItem.id}`}
+                    message={eventItem !== null ? `Check out this event: \n${eventItem?.name}\n${eventItem?.place?.name}` : ``} /> : null
+            }
+        </Container >
 
     )
 
