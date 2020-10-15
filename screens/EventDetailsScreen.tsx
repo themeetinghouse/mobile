@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
@@ -11,6 +11,7 @@ import { RouteProp } from '@react-navigation/native';
 import ShareModal from '../components/modals/Share';
 import openMap from "react-native-open-maps";
 import * as Linking from 'expo-linking';
+import Calendar from "../services/CalendarService";
 
 const style = StyleSheet.create({
     content: {
@@ -113,15 +114,12 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     }
     const [openMethod] = useState<OpeningMethod>(directionsType());
 
-    const AddCalendarItem = () => {
-        //
-        /* const eventInfo = {
-                eventName: eventItem.name,
-                eventStartTime: eventItem.start_time,
-                eventEndTime: eventItem.end_time,
-                address: eventItem.place.
-        }
-        */
+    // EVENT NEEDS TO SHOW CONFIRMATION SCREEN INSTEAD OF ADDING AND SHOWING EDIT SCREEN
+    // INPUT LOCATION MAKE SURE TO VALIDATE
+    // NEEDS TO BE TESTED ON iOS
+
+    const addEventToCalendar = async () => {
+        return await Calendar.createEvent(eventItem)
     }
     const OpenMapWithDirections = () => {
         switch (openMethod) {
@@ -168,7 +166,15 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     <Text style={style.subtitle}>Date &amp; Time</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("dddd, MMMM D, YYYY")}</Text>
                     <Text style={style.body}>{moment(eventItem.start_time).format("h:mm a")}</Text>
-                    <IconButton onPress={() => AddCalendarItem()} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
+                    {/* 
+                        MISSING RENDERING LOGIC FOR THIS
+                        ADD TO CALENDAR BUTTON SHOULD ONLY SHOW IF LOCATION, START DATE AND END DATE CAN BE VALIDATED
+
+                        NEEDS TO ACCOUNT FOR EVENTS WITH SEVERAL TIMES
+                    */}
+                    <IconButton onPress={() => {
+                        addEventToCalendar()
+                    }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
                     {eventItem.place ?
                         <>
                             <Text style={style.subtitle}>Location</Text>
