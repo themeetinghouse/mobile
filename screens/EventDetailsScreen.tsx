@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
+import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
 import { StatusBar, StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
@@ -9,6 +10,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import ShareModal from '../components/modals/Share';
 import openMap from "react-native-open-maps";
+import * as Linking from 'expo-linking';
 
 const style = StyleSheet.create({
     content: {
@@ -106,11 +108,11 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
         }
         else {
             console.log("eventItem.place is null")
-            console.log(eventItem)
+
             return 'none'
         }
     }
-    const [openMethod, setOpenMethod] = useState<OpeningMethod>(directionsType());
+    const [openMethod] = useState<OpeningMethod>(directionsType());
 
     const AddCalendarItem = () => {
         //
@@ -180,7 +182,12 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                                 <IconButton onPress={() => OpenMapWithDirections()} style={style.actionButton} icon={Theme.icons.white.mapLocation} label="Get directions" ></IconButton>
                                 : null}
                         </> : null}
+                    <View>
+                        {eventItem?.event_times && eventItem?.event_times.length > 0 && eventItem?.event_times[0]?.ticket_uri ? <WhiteButton style={{ height: 56, marginBottom: 20, marginTop: 20 }} label="Register" onPress={() => {
+                            Linking.openURL(eventItem.event_times[0].ticket_uri)
+                        }}></WhiteButton> : null}
 
+                    </View>
                 </View>
 
             </Content>

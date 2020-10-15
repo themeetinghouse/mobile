@@ -57,6 +57,12 @@ const getFbEvents = `
         }
         start_time
         id
+        event_times {
+          start_time
+          end_time
+          id
+          ticket_uri
+        }
       }
       paging {
         cursors {
