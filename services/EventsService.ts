@@ -27,7 +27,7 @@ export default class EventsService {
         query: getFbEvents,
         variables: { pageId: x[0] },
       }
-      const queryResult = await runGraphQLQuery(query);
+      const queryResult = await runGraphQLQuery(query); // if no events then fetch with 155800937784104
       return queryResult.getFBEvents.data;
     }
     return [];

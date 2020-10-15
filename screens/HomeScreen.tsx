@@ -11,7 +11,7 @@ import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 import EventsService from '../services/EventsService';
 // import SermonsService from '../services/SermonsService';
 // import { loadSomeAsync } from '../utils/loading';
-// import ActivityIndicator from '../components/ActivityIndicator';
+import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
 import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
@@ -42,6 +42,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     /*
@@ -58,7 +59,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     }
     loadInstagramImages();
     const loadEvents = async () => {
+      setIsLoading(true)
       const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location);
+      setIsLoading(false)
       setEvents(eventsResult?.reverse()); //assuming eventId array is already sorted when they are stored. 
     }
     loadEvents();
@@ -78,26 +81,25 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
-        {/* Need to implement a spinner for loading events */}
-        {events !== null && events.length !== 0 ?
-          <View style={style.categoryContainer}>
-            <Text style={style.categoryTitle} >Upcoming Events</Text>
-            {events.map((event: any) => (
-              <EventCard
-                key={event.id}
-                event={event}
-                handlePress={() =>
-                  navigation.push('EventDetailsScreen', { item: event })
-                }></EventCard>
+        <View style={style.categoryContainer}>
+          {isLoading ? <ActivityIndicator /> : <>
+            {events !== null && events.length !== 0 ?
+              <>
+                <Text style={style.categoryTitle} >Upcoming Events</Text>
+                {events.map((event: any) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    handlePress={() =>
+                      navigation.push('EventDetailsScreen', { item: event })
+                    }></EventCard>
 
-            ))}
-            {/*<AllButton>See All Events</AllButton>*/}
-          </View>
-          : <>
-            <View style={style.categoryContainer}>
-              <Text style={style.categoryTitle} >No events found</Text>
-            </View>
+                ))}
+              </>
+              : <Text style={style.categoryTitle} >No events found</Text>}
           </>}
+        </View>
+
         {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? <View style={style.categoryContainer}>
           <Text style={style.categoryTitle}>@{instaUsername}</Text>

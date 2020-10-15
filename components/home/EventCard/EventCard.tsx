@@ -3,7 +3,8 @@ import { Text, Thumbnail, View } from 'native-base';
 import moment from 'moment';
 import { EventQueryResult } from '../../../services/EventsService';
 import { Style, Theme } from '../../../Theme.style';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const style = StyleSheet.create({
@@ -56,23 +57,26 @@ type EventCardInput = {
 
 export default function EventCard({ event, handlePress }: EventCardInput): JSX.Element {
     const dateStr = moment(event?.start_time ?? undefined).format('MMM D');
-    // It might make sense to make this entire view clickable if there are no other buttons
     return (
-        <View style={style.container}>
-            <Text style={style.dateTitleContainer}>{dateStr}</Text>
-            <TouchableOpacity style={style.titleButtonContainer} onPress={handlePress}>
-                <Text uppercase={false} style={style.title}>{event?.name}</Text>
-                <Thumbnail style={style.icon} source={Theme.icons.white.arrow}></Thumbnail>
-            </TouchableOpacity>
-            <Text style={style.descriptionContainer} numberOfLines={5}>{event?.description}</Text>
-            {event?.place?.name || event?.place?.location?.street ?
-                <Text style={style.locationContainer}>{event?.place?.name ? event.place.name + "," : null} {event?.place?.location?.street ? event.place.location.street : null}</Text>
-                : null}
-            {event?.event_times ? event?.event_times.reverse().map((item: any) => {
-                return <Text key={item?.id} style={style.dateTimeContainer}>{moment(item?.start_time).format("MMM Do YYYY, h:mm a")}  {item?.end_time ? "- " + moment(item?.end_time).format("h:mm a") : ""}</Text>
-            }) : event?.start_time ?
-                    <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("MMMM Do YYYY, h:mm:ss a")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+
+        <TouchableHighlight underlayColor={Theme.colors.grey5} onPress={handlePress}>
+            <View style={style.container} >
+                <Text style={style.dateTitleContainer}>{dateStr}</Text>
+                <View style={style.titleButtonContainer}>
+                    <Text uppercase={false} style={style.title}>{event?.name}</Text>
+                    <Thumbnail style={style.icon} source={Theme.icons.white.arrow}></Thumbnail>
+                </View>
+                <Text style={style.descriptionContainer} numberOfLines={5}>{event?.description}</Text>
+                {event?.place?.name || event?.place?.location?.street ?
+                    <Text style={style.locationContainer}>{event?.place?.name ? event.place.name + "," : null} {event?.place?.location?.street ? event.place.location.street : null}</Text>
                     : null}
-        </View>
+                {event?.event_times ? event?.event_times.reverse().map((item: any) => {
+                    return <Text key={item?.id} style={style.dateTimeContainer}>{moment(item?.start_time).format("MMM Do YYYY, h:mm a")}  {item?.end_time ? "- " + moment(item?.end_time).format("h:mm a") : ""}</Text>
+                }) : event?.start_time ?
+                        <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("MMMM Do YYYY, h:mm:ss a")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+                        : null}
+            </View>
+        </TouchableHighlight>
+
     );
 }

@@ -77,38 +77,37 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     const directionsType = () => {
         if (eventItem.place) {
             if (eventItem?.place?.location !== null) {
-                console.log("Location is not null!")
+                //console.log("Location is not null!")
                 if (eventItem?.place?.location?.latitude && eventItem?.place?.location.longitude) {
-                    console.log("Latitude and logitude found")
+                    //console.log("Latitude and logitude found")
                     return 'gps'
                 }
                 else {
-                    console.log("There is no longitude or latitude.")
+                    //console.log("There is no longitude or latitude.")
                     if (eventItem?.place?.name) {
-                        console.log("place.name is found.")
+                        //console.log("place.name is found.")
                         return 'name'
                     }
                     else {
-                        console.log("Name not found. NOT RENDERING BUTTON")
+                        //console.log("Name not found. NOT RENDERING BUTTON")
                         return 'none';
                     }
                 }
             }
             else {
-                console.log("Location is null. Reading from eventItem.place.name")
+                //console.log("Location is null. Reading from eventItem.place.name")
                 if (eventItem?.place?.name) {
-                    console.log("place name is found opening with eventItem.place.name")
+                    //console.log("place name is found opening with eventItem.place.name")
                     return 'name';
                 }
                 else {
-                    console.log("Name not found. NOT RENDERING BUTTON")
+                    //console.log("Name not found. NOT RENDERING BUTTON")
                     return 'none'
                 }
             }
         }
         else {
-            console.log("eventItem.place is null")
-
+            //console.log("eventItem.place is null")
             return 'none'
         }
     }
@@ -123,7 +122,6 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 address: eventItem.place.
         }
         */
-        console.log(eventItem)
     }
     const OpenMapWithDirections = () => {
         switch (openMethod) {
@@ -139,9 +137,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 break;
         }
     }
-    useEffect(() => {
-        console.log(eventItem)
-    }, [])
+
     return (
         <Container>
             <Header style={style.header}>
