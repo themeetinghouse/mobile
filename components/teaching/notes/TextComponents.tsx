@@ -339,6 +339,11 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
                     if (item.attrs?.style === 'v') {
                         return <Text key={index + 'v'} style={styles.text}>{replaceVerseNumbers(item.attrs?.number)}</Text>
                     } else if (item.text) {
+                        if (data.items[index - 1] && data.items[index - 1]?.attrs?.style === 'v') {
+                            return <Text key={item.text + index} style={styles.text}>{item.text + (index === length - 1 ? '' : '\n')}</Text>
+                        } else if (index === 0 && data.items.length >= 2 && data.items[1].text) {
+                            return <Text key={item.text + index} style={styles.text}>{(data.attrs.style === 'q2' ? '   ' : '') + item.text}</Text>
+                        }
                         return <Text key={item.text + index} style={styles.text}>{(data.attrs.style === 'q2' ? '   ' : '') + item.text + (index === length - 1 ? '' : '\n')}</Text>
                     } else if (item.items) {
                         return <Text key={index} style={styles.text}>{item.items.map((item2: any) => {
@@ -350,6 +355,9 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
                 })}
             </Text>
         } else {
+            if (!data.items.length) {
+                return null
+            }
             return <Text key={index} style={styles.text} >{index === 0 ? '' : '   '}
                 {data.items.map((item: any, index: number) => {
                     if (item.attrs?.style === 'v') {
@@ -364,7 +372,7 @@ export function HyperLink({ block, links, styles, openVerseCallback, verses, typ
                         return null
                     }
                 })}
-                {(index === length - 1 || index === 0) ? '' : data.items[data.items.length - 1]?.text?.includes(':') ? '\n' : '\n \n'}</Text>
+                {(index === length - 1 || index === 0 && length <= 2) ? '' : data.items[data.items.length - 1]?.text?.includes(':') ? '\n' : '\n \n'}</Text>
         }
     }
 
