@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, ImageStyle, ImageBackground } from 'react-native';
+import { Image, ImageStyle, ImageBackground, Animated } from 'react-native';
 
 interface Props {
     uri: string;
@@ -11,7 +11,7 @@ interface State {
     source: string;
 }
 
-export default class Img extends React.Component<Props, State> {
+export default class FallbackImage extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -21,6 +21,23 @@ export default class Img extends React.Component<Props, State> {
 
     render(): JSX.Element {
         return <Image source={{ uri: this.state.source }} style={this.props.style} onError={() => this.setState({ source: this.props.catchUri })} />
+    }
+}
+
+interface AnimatedProps extends Pick<Props, "uri" | "catchUri"> {
+    style: Animated.WithAnimatedObject<ImageStyle>
+}
+
+export class AnimatedFallbackImage extends React.Component<AnimatedProps, State> {
+    constructor(props: AnimatedProps) {
+        super(props);
+        this.state = {
+            source: props.uri
+        }
+    }
+
+    render(): JSX.Element {
+        return <Animated.Image source={{ uri: this.state.source }} style={this.props.style} onError={() => this.setState({ source: this.props.catchUri })} />
     }
 }
 

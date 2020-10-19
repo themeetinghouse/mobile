@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
+import { Container, Text, Button, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { ScrollView, StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
 import AllButton from '../components/buttons/AllButton';
 import TeachingListItem from '../components/teaching/TeachingListItem';
@@ -20,7 +20,7 @@ import { MainStackParamList } from 'navigation/AppNavigator';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
-import FallbackImage from '../components/FallbackImage';
+import { AnimatedFallbackImage } from '../components/FallbackImage';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -167,8 +167,6 @@ interface SeriesData extends LoadSeriesListData {
 
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
-    const AnimatedFallbackImage = Animated.createAnimatedComponent(FallbackImage)
-
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
@@ -250,9 +248,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         return (
             <TouchableOpacity key={item.id} onPress={() => navigation.push('SeriesLandingScreen', { item: item })} style={style.seriesThumbnailContainer}>
                 <AnimatedFallbackImage
-                    style={[
-                        style.seriesThumbnail,
-                        {
+                    style={{
+                        ...style.seriesThumbnail,
+                        ...{
                             transform: [
                                 {
                                     scale: animatedValue.interpolate({
@@ -263,8 +261,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                                 }
                             ],
                         },
-                    ]}
-
+                    }}
                     uri={item.image640px}
                     catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg'
                 />
@@ -298,9 +295,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </Button>
                 </Right>
             </Header>
-
-            <Content style={style.content} bounces={bounce} onScroll={(e) => handleScroll(e)} >
-
+            <ScrollView style={style.content} bounces={bounce} onScroll={e => handleScroll(e)} scrollEventThrottle={6}>
                 <View style={style.categorySection} >
                     <SideSwipe
                         contentContainerStyle={style.horizontalListContentContainer}
@@ -397,7 +392,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     ></FlatList>
                     <AllButton>All teachers</AllButton>
                 </View>*/}
-            </Content >
+            </ScrollView >
         </Container >
     )
 }

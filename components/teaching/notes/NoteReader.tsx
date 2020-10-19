@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
 import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText, HeaderImage } from './TextComponents';

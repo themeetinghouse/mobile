@@ -46,7 +46,7 @@ interface Params {
 export default function TeachingButton({ wrapperStyle, label, onPress, active, iconActive, iconInactive }: Params): JSX.Element {
     return (
         <View style={wrapperStyle}>
-            <Button style={active ? style.button : style.buttonInactive} block onPress={!active ? onPress : () => null}>
+            <Button style={active ? style.button : style.buttonInactive} block onPress={onPress}>
                 <Thumbnail square source={active ? iconActive : iconInactive} style={style.icon}></Thumbnail>
                 <Text style={active ? style.label : style.labelInactive} uppercase={false} >{label}</Text>
             </Button>

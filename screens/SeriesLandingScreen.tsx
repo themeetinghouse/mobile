@@ -274,28 +274,18 @@ const getSeries = `
               thumbnails {
                 default {
                   url
-                  width
-                  height
                 }
                 medium {
                   url
-                  width
-                  height
                 }
                 high {
                   url
-                  width
-                  height
                 }
                 standard {
                   url
-                  width
-                  height
                 }
                 maxres {
                   url
-                  width
-                  height
                 }
               }
               channelTitle

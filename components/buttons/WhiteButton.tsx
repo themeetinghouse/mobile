@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Button, Text } from 'native-base';
 import Theme from '../../Theme.style';
 import { ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
-import { isLoaded } from 'expo-font';
 
 const styles = StyleSheet.create({
     button: {
