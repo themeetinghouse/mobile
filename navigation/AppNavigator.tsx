@@ -1,8 +1,12 @@
 import React from 'react';
-import MainTabNavigator from './MainTabNavigator';
+import MainTabNavigator, {
+  TabNavigatorParamList,
+  HomeStackParamList,
+  TeachingStackParamList,
+  MoreStackParamList
+} from './MainTabNavigator';
 import AuthNavigator from './AuthNavigator';
 import { createStackNavigator } from '@react-navigation/stack';
-import { TabNavigatorParamList, HomeStackParamList } from './MainTabNavigator';
 import { AuthStackParamList } from './AuthNavigator';
 import NotesScreen from '../screens/NotesScreen';
 import CommentScreen from '../screens/CommentScreen';
@@ -16,7 +20,15 @@ import SermonLandingScreen from '../screens/SermonLandingScreen';
 import { CommentDataType } from '../services/API';
 
 export type MainStackParamList = {
-  Main: undefined | { screen: keyof TabNavigatorParamList, params: { screen: keyof HomeStackParamList } };
+  Main: undefined | {
+    screen: keyof TabNavigatorParamList, params: {
+      screen:
+      keyof HomeStackParamList |
+      keyof TeachingStackParamList |
+      keyof MoreStackParamList,
+      params: any
+    }
+  };
   Auth: undefined | { screen: keyof AuthStackParamList };
   NotesScreen: { date: string };
   ProfileScreen: undefined;
@@ -26,7 +38,22 @@ export type MainStackParamList = {
   HighlightScreen: { highlights: any[], nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
-  CommentScreen: { key: string, noteId: string, commentType: CommentDataType, noteType: 'notes' | 'questions', textSnippet?: string, imageUri?: string } | { commentId: string, comment: string, tags: Array<string | null>, textSnippet?: string, imageUri?: string, commentType: CommentDataType, noteId: string };
+  CommentScreen: {
+    key: string,
+    noteId: string,
+    commentType: CommentDataType,
+    noteType: 'notes' | 'questions', t
+    extSnippet?: string,
+    imageUri?: string
+  } | {
+    commentId: string,
+    comment: string,
+    tags: Array<string | null>,
+    textSnippet?: string,
+    imageUri?: string,
+    commentType: CommentDataType,
+    noteId: string
+  };
 }
 
 const Main = createStackNavigator<MainStackParamList>();
