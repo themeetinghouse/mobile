@@ -59,10 +59,17 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     }
     loadInstagramImages();
     const loadEvents = async () => {
-      setIsLoading(true)
-      const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location);
-      setIsLoading(false)
-      setEvents(eventsResult?.reverse()); //assuming eventId array is already sorted when they are stored. 
+      try {
+        setIsLoading(true)
+        const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location)
+        setEvents(await eventsResult);
+        setIsLoading(false)
+      }
+      catch (error) {
+        setEvents([])
+        setIsLoading(false)
+        console.log(error)
+      }
     }
     if (location?.locationData?.locationId !== "unknown" || location?.locationData?.locationName !== "unknown")
       loadEvents();

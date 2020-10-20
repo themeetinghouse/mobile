@@ -30,31 +30,15 @@ export default class EventsService {
     const currentLocation = locations.filter((loc) => {
       return loc.id === location?.id;
     })
-    let x: any;
-    await fetch(`https://www.themeetinghouse.com/static/content/${currentLocation.length !== 0 ? currentLocation[0]?.id : "oakville"}.json`)
-      .then((response) => response.json())
-      .then((data) => {
-        const item: any = data?.page?.content.filter((entry: any) => {
-          return entry.class === 'events'
-        })
-        x = item[0]?.facebookEvents;
-        return x;
-      })
-
-    const query = {
-      query: getFbEvents,
-      variables: { pageId: x[0] },
-    }
-    const queryResult = await runGraphQLQuery(query);
-    //console.log("length of data array is : " + queryResult.getFBEvents.data.length)
-    /*if (queryResult.getFBEvents.data.length === 0) {
-      const a: any = await runGraphQLQuery({ query: getFbEvents, variables: { pageId: "192337637474940" } })
-      return a.getFBEvents.data;
-    }*/
-    return queryResult.getFBEvents.data;
+    const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/content/${currentLocation.length !== 0 ? currentLocation[0]?.id : "oakville"}.json`)
+    const pageContent = await getSiteData.json()
+    const selectedLocation: any = await pageContent?.page?.content.filter((entry: any) => {
+      return entry.class === 'events'
+    })
+    const queryResult = await runGraphQLQuery({ query: getFbEvents, variables: { pageId: selectedLocation[0].facebookEvents[0] } });
+    return queryResult.getFBEvents.data.reverse();
   }
 }
-
 
 const getFbEvents = `
   query GetFbEvents($pageId: String) {
