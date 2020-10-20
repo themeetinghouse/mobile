@@ -1,7 +1,11 @@
 
 import * as Calendar from "expo-calendar";
-import { EventEmitter, Platform } from "react-native";
+import { Alert, Linking, Platform } from "react-native";
 import moment from "moment";
+type Event = {
+
+}
+
 export default class CalendarService {
     static requestPermissions = async (): Promise<boolean> => {
         //console.log("requestPermissions() called. Requesting Permission")
@@ -13,7 +17,7 @@ export default class CalendarService {
                 return true;
             }
             else {
-                //MUST SOMEHOW ACCOUNT FOR ACCIDENTALLY DENIED PERMISSION
+                //TODO: SOMEHOW ACCOUNT FOR ACCIDENTALLY DENIED PERMISSION
                 //console.log(status)
                 //console.log("permission not granted in requestPermissions()")
                 return false
@@ -45,16 +49,20 @@ export default class CalendarService {
     }
     static getDefaultCalendar = async (): Promise<string> => {
         //console.log("Getting default calendar")
-        if (Platform.OS === "ios") {
-            const defaultCalendar = await Calendar.getDefaultCalendarAsync()
-            return defaultCalendar.id;
-        }
-        else {
-            // CALENDAR TO ADD TO MUST BE DETERMINED FOR ANDROID. 
-            // CREATING A CALENDAR createCalendarAsync() AND CREATING EVENTS IN IT ALLOWS EVENTS TO SHOW IN CALENDAR APP
+        try {
+            if (Platform.OS === "ios") {
+                const defaultCalendar = await Calendar.getDefaultCalendarAsync()
+                return defaultCalendar.id;
+            }
+            else {
+                // TODO: CALENDAR TO ADD TO MUST BE DETERMINED FOR ANDROID. 
+                // TODO: CREATING A CALENDAR createCalendarAsync() AND CREATING EVENTS IN IT ALLOWS EVENTS TO SHOW IN CALENDAR APP
 
-            // const defaultCalendar = await Calendar.getCalendarsAsync();
-            return "1";
+                // const defaultCalendar = await Calendar.getCalendarsAsync();
+                return "1";
+            }
+        } catch (error) {
+            return error
         }
     }
     static validateEventFields = (event: any): boolean | any => {
@@ -74,18 +82,31 @@ export default class CalendarService {
     }
 
     static createEvent = async (eventItem: Event): Promise<any> => {
-        // IMPLEMENT WAY TO CHECK IF EVENT ALREADY EXISTS BEFORE ADDING IT.
+        // TODO: IMPLEMENT WAY TO CHECK IF EVENT ALREADY EXISTS BEFORE ADDING IT.
         // console.log("Creating event.")
         const validated: boolean | any = CalendarService.validateEventFields(eventItem)
-        if (validated !== false)
-            if (CalendarService.checkPermissions()) {
-                const defaultCalendar: string = await CalendarService.getDefaultCalendar();
-                const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
-                if (Platform.OS === "android")
-                    Calendar.openEventInCalendar(eventIdInCalendar);
+        if (validated !== false) {
+            try {
+                if (CalendarService.checkPermissions()) {
+                    const defaultCalendar: string = await CalendarService.getDefaultCalendar();
+                    const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
+                    if (Platform.OS === "android") {
+                        Calendar.openEventInCalendar(eventIdInCalendar);
+                        Alert.alert('event created')
+                    }
+                    else {
+                        //Linking.openURL('calshow:')
+                    }
+                }
+                else {
+                    console.log("Permissions not allowed.")
+                }
+            } catch (error) {
+
             }
-            else {
-                console.log("Permissions not allowed.")
-            }
+        } else {
+            console.log("Failed to validate event data")
+        }
     }
+
 }

@@ -11,7 +11,7 @@ import { RouteProp } from '@react-navigation/native';
 import ShareModal from '../components/modals/Share';
 import openMap from "react-native-open-maps";
 import * as Linking from 'expo-linking';
-import Calendar from "../services/CalendarService";
+//import Calendar from "../services/CalendarService";
 
 const style = StyleSheet.create({
     content: {
@@ -55,7 +55,7 @@ const style = StyleSheet.create({
         color: Theme.colors.black,
         fontSize: Theme.fonts.huge,
         fontFamily: Theme.fonts.fontFamilyBold,
-        marginTop: -10
+        marginTop: -5
     },
     actionButton: {
         marginTop: 10
@@ -118,9 +118,9 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     // INPUT LOCATION MAKE SURE TO VALIDATE
     // NEEDS TO BE TESTED ON iOS
 
-    const addEventToCalendar = async () => {
-        return await Calendar.createEvent(eventItem)
-    }
+    // const addEventToCalendar = async () => {
+    //     return await Calendar.createEvent(eventItem)
+    // }
     const OpenMapWithDirections = () => {
         switch (openMethod) {
             case 'gps':
@@ -172,9 +172,9 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
 
                         NEEDS TO ACCOUNT FOR EVENTS WITH SEVERAL TIMES
                     */}
-                    <IconButton onPress={() => {
+                    {/* <IconButton onPress={() => {
                         addEventToCalendar()
-                    }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
+                    }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton> */}
                     {eventItem.place ?
                         <>
                             <Text style={style.subtitle}>Location</Text>

@@ -64,7 +64,8 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       setIsLoading(false)
       setEvents(eventsResult?.reverse()); //assuming eventId array is already sorted when they are stored. 
     }
-    loadEvents();
+    if (location?.locationData?.locationId !== "unknown" || location?.locationData?.locationName !== "unknown")
+      loadEvents();
   }, [location])
 
   const sendQuestion = () => {
@@ -81,24 +82,25 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <WhiteButton outlined label="Send In A Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
-        <View style={style.categoryContainer}>
-          {isLoading ? <ActivityIndicator /> : <>
-            {events !== null && events.length !== 0 ?
-              <>
-                <Text style={style.categoryTitle} >Upcoming Events</Text>
-                {events.map((event: any) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    handlePress={() =>
-                      navigation.push('EventDetailsScreen', { item: event })
-                    }></EventCard>
+        {location?.locationData?.locationId !== "unknown" || location?.locationData.locationName !== "unknown" ?
+          <View style={style.categoryContainer}>
+            {isLoading ? <ActivityIndicator /> : <>
+              {events !== null && events.length !== 0 ?
+                <>
+                  <Text style={style.categoryTitle} >Upcoming Events</Text>
+                  {events.map((event: any) => (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      handlePress={() =>
+                        navigation.push('EventDetailsScreen', { item: event })
+                      }></EventCard>
 
-                ))}
-              </>
-              : <Text style={style.categoryTitle} >No events found</Text>}
-          </>}
-        </View>
+                  ))}
+                </>
+                : <Text style={style.categoryTitle} >No events found</Text>}
+            </>}
+          </View> : null}
 
         {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? <View style={style.categoryContainer}>
