@@ -149,7 +149,8 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                             }
                             ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
                                 if (buttonIndex === 0) console.log("Date must be selected")
-                                else Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
+                                else
+                                    Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
                             })
                         }
                     } else {

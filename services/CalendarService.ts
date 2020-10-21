@@ -52,57 +52,71 @@ export default class CalendarService {
             return error
         }
     }
+    static createTMHCalendar = async (): Promise<any> => {
+        //TODO: 
+    }
+
+    static findTMHCalendar = async (): Promise<any> => {
+        //TODO:
+    }
+
     static validateEventFields = (event: any, options: any): boolean | any => {
         const start_date = moment(options.start_time)
         const end_date = moment(options.end_time)
-        if (start_date.isValid() && end_date.isValid()) {
-            const eventObject: any = {
-                title: event.name,
-                startDate: new Date(options.start_time),
-                endDate: new Date(options.end_time),
-            }
-            if (event.place?.location?.street) eventObject.location = event.place.location.street
-            else if (event.place?.name) eventObject.location = event.place.name
-            return eventObject;
-        } return false
+        console.log(`start_date ${start_date}`)
+        console.log(`end_date ${end_date}`)
+        const eventObject: any = {
+            title: event.name,
+            startDate: new Date(start_date.toDate()),
+            endDate: new Date(end_date.toDate())
+        }
+        if (event.place?.location?.street) eventObject.location = event.place.location.street
+        else if (event.place?.name) eventObject.location = event.place.name
+        return eventObject;
 
     }
 
     static createEvent = async (eventItem: any, options: any): Promise<any> => {
         // TODO: IMPLEMENT WAY TO CHECK IF EVENT ALREADY EXISTS BEFORE ADDING IT.
-        // console.log("Creating event.")
+        console.log("Creating event.")
+        console.log(options)
         const validated: boolean | any = CalendarService.validateEventFields(eventItem, options)
         if (validated !== false) {
             try {
-                if (CalendarService.checkPermissions()) {
-                    const defaultCalendar: string = await CalendarService.getDefaultCalendar();
-                    const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
-                    if (Platform.OS === "android") {
-                        Alert.alert(
-                            'Added to Calendar',
-                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
-                            [
-                                { text: 'Dismiss' }
-                            ],
-                            { cancelable: false })
-                        Calendar.openEventInCalendar(eventIdInCalendar);
-                    }
-                    else {
-                        console.log("Created an IOS event")
-                        Alert.alert(
-                            'Added to Calendar',
-                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
-                            [
-                                { text: 'Dismiss' },
-                            ],
-                            { cancelable: false })
-                    }
+                await CalendarService.checkPermissions()
+                const defaultCalendar: string = await CalendarService.getDefaultCalendar();
+                const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
+                if (Platform.OS === "android") {
+                    Alert.alert(
+                        'Added to Calendar',
+                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                        [
+                            { text: 'Dismiss' }
+                        ],
+                        { cancelable: false })
+                    Calendar.openEventInCalendar(eventIdInCalendar);
                 }
                 else {
-                    console.log("Permissions not allowed.")
+                    console.log("Created an IOS event")
+                    Alert.alert(
+                        'Added to Calendar',
+                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                        [
+                            { text: 'Dismiss' },
+                        ],
+                        { cancelable: false })
                 }
+
             } catch (error) {
-                console.warn(error)
+                if (error.message.includes("permission")) {
+                    Alert.alert(
+                        'Permission Error',
+                        'Please enable Calendar permissions in settings',
+                        [
+                            { text: 'Dismiss' }
+                        ],
+                        { cancelable: false })
+                }
             }
         } else {
             console.log("Failed to validate event data")
