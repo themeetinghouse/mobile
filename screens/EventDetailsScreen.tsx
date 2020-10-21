@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Theme, Style } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View } from 'native-base';
+import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
@@ -11,7 +11,8 @@ import { RouteProp } from '@react-navigation/native';
 import ShareModal from '../components/modals/Share';
 import openMap from "react-native-open-maps";
 import * as Linking from 'expo-linking';
-//import Calendar from "../services/CalendarService";
+import Calendar from "../services/CalendarService";
+import { Picker } from '@react-native-community/picker';
 
 const style = StyleSheet.create({
     content: {
@@ -73,6 +74,7 @@ interface Props {
 type OpeningMethod = 'gps' | 'name' | 'none';
 
 export default function EventDetailsScreen(props: Props): JSX.Element {
+    const [options, setOptions] = useState("");
     const [share, setShare] = useState(false);
     const eventItem = props.route.params?.item;
     const directionsType = () => {
@@ -118,9 +120,13 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     // INPUT LOCATION MAKE SURE TO VALIDATE
     // NEEDS TO BE TESTED ON iOS
 
-    // const addEventToCalendar = async () => {
-    //     return await Calendar.createEvent(eventItem)
-    // }
+    const addEventToCalendar = async () => {
+        if (options)
+            return await Calendar.createEvent(eventItem, options)
+        else {
+            console.log("Date not selected")
+        }
+    }
     const OpenMapWithDirections = () => {
         switch (openMethod) {
             case 'gps':
@@ -138,6 +144,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
 
     return (
         <Container>
+
             <Header style={style.header}>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left>
@@ -172,9 +179,25 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
 
                         NEEDS TO ACCOUNT FOR EVENTS WITH SEVERAL TIMES
                     */}
-                    {/* <IconButton onPress={() => {
+
+                    <IconButton onPress={() => {
                         addEventToCalendar()
-                    }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton> */}
+                    }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton>
+                    <Picker
+                        mode="dropdown"
+                        prompt="Event Dates"
+                        style={{ width: 500, height: 50, color: "white" }}
+                        selectedValue={options}
+                        onValueChange={(itemValue, itemIndex) => {
+                            setOptions(itemValue as string)
+                        }
+
+                        }>
+                        <Picker.Item label="Select a Date" value=""></Picker.Item>
+                        {eventItem.event_times?.map((value: any, key: any) => {
+                            return <Picker.Item key={key} label={`${moment(value.start_time).format("MMM Do YYYY, h:mm a")} - ${moment(value.end_time).format("h:mm a")}`} value={value}></Picker.Item>
+                        })}
+                    </Picker>
                     {eventItem.place ?
                         <>
                             <Text style={style.subtitle}>Location</Text>
