@@ -53,7 +53,6 @@ export default class CalendarService {
         }
     }
     static validateEventFields = (event: any, options: any): boolean | any => {
-
         const start_date = moment(options.start_time)
         const end_date = moment(options.end_time)
         if (start_date.isValid() && end_date.isValid()) {
@@ -86,9 +85,10 @@ export default class CalendarService {
                                 { text: 'Dismiss' }
                             ],
                             { cancelable: false })
-                        //Calendar.openEventInCalendar(eventIdInCalendar);
+                        Calendar.openEventInCalendar(eventIdInCalendar);
                     }
                     else {
+                        console.log("Created an IOS event")
                         Alert.alert(
                             'Added to Calendar',
                             moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
@@ -102,7 +102,7 @@ export default class CalendarService {
                     console.log("Permissions not allowed.")
                 }
             } catch (error) {
-
+                console.warn(error)
             }
         } else {
             console.log("Failed to validate event data")
