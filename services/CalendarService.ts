@@ -52,15 +52,23 @@ export default class CalendarService {
             return error
         }
     }
+    static createTMHCalendar = async (): Promise<any> => {
+        //TODO: 
+    }
+
+    static findTMHCalendar = async (): Promise<any> => {
+        //TODO:
+    }
+
     static validateEventFields = (event: any, options: any): boolean | any => {
-        const start_date = options.start_time
-        const end_date = options.end_time
+        const start_date = moment(options.start_time)
+        const end_date = moment(options.end_time)
         console.log(`start_date ${start_date}`)
         console.log(`end_date ${end_date}`)
         const eventObject: any = {
             title: event.name,
-            startDate: new Date(start_date),
-            endDate: new Date(end_date)
+            startDate: new Date(start_date.toDate()),
+            endDate: new Date(end_date.toDate())
         }
         if (event.place?.location?.street) eventObject.location = event.place.location.street
         else if (event.place?.name) eventObject.location = event.place.name
@@ -100,7 +108,15 @@ export default class CalendarService {
                 }
 
             } catch (error) {
-                console.warn(error)
+                if (error.message.includes("permission")) {
+                    Alert.alert(
+                        'Permission Error',
+                        'Please enable Calendar permissions in settings',
+                        [
+                            { text: 'Dismiss' }
+                        ],
+                        { cancelable: false })
+                }
             }
         } else {
             console.log("Failed to validate event data")
