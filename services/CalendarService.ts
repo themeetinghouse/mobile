@@ -126,7 +126,6 @@ export default class CalendarService {
             return true
         }
         else {
-            console.log(notExists)
             for (let x = 0; x < notExists.length; x++) {
                 if (notExists[x].title === eventItem.name) return false
             }
