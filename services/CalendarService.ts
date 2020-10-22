@@ -44,20 +44,57 @@ export default class CalendarService {
             else {
                 // TODO: CALENDAR TO ADD TO MUST BE DETERMINED FOR ANDROID. 
                 // TODO: CREATING A CALENDAR createCalendarAsync() AND CREATING EVENTS IN IT ALLOWS EVENTS TO SHOW IN CALENDAR APP
+                return await CalendarService.findTMHCalendar() || "1"; // if unable to create tmh-calendar defaults to id 1.
 
-                // const defaultCalendar = await Calendar.getCalendarsAsync();
-                return "1";
             }
         } catch (error) {
             return error
         }
     }
     static createTMHCalendar = async (): Promise<any> => {
-        //TODO: 
+        if (await CalendarService.checkPermissions()) {
+            try {
+                const TMHCalendarid = await Calendar.createCalendarAsync({
+                    name: "TMH",
+                    title: "TMH-Events",
+                    color: "blue",
+                    accessLevel: "owner",
+                    entityType: Calendar.EntityTypes.EVENT,
+                    ownerAccount: "personal",
+                    source: {
+                        isLocalAccount: true,
+                        name: "TMH-Events",
+                        type: "LOCAL"
+                    },
+                    isVisible: true,
+                    isSynced: true,
+                })
+                console.log("TMHCalendarid is found " + TMHCalendarid)
+                return TMHCalendarid;
+            }
+            catch (error) {
+                console.warn(error)
+            }
+        }
+        else {
+            //console.log("permission not granted")
+            return false;
+        }
     }
 
     static findTMHCalendar = async (): Promise<any> => {
-        //TODO:
+        try {
+            console.log("Looking for TMHCalendar")
+            const calendars = await Calendar.getCalendarsAsync();
+            if (calendars.filter((calendar) => {
+                return calendar.source.name === "TMH-Events"
+            })[0]?.id === undefined) {
+                return await CalendarService.createTMHCalendar()
+            }
+        }
+        catch (error) {
+            console.warn(error)
+        }
     }
 
     static validateEventFields = (event: any, options: any): boolean | any => {
