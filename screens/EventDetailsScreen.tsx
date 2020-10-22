@@ -227,7 +227,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                         </>
                         : <>
                             <Text style={style.subtitle}>Date &amp; Time</Text>
-                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm a")}</Text>
+                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? -moment(eventItem.end_time).format("h:mm a") : null}</Text>
                         </>}
                     {eventItem.event_times || eventItem.start_time && eventItem.end_time ?
                         <IconButton onPress={() => {
