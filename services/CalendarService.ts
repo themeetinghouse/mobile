@@ -69,7 +69,6 @@ export default class CalendarService {
                     isVisible: true,
                     isSynced: true,
                 })
-                console.log("TMHCalendarid is found " + TMHCalendarid)
                 return TMHCalendarid;
             }
             catch (error) {
@@ -86,10 +85,17 @@ export default class CalendarService {
         try {
             console.log("Looking for TMHCalendar")
             const calendars = await Calendar.getCalendarsAsync();
-            if (calendars.filter((calendar) => {
+            const tmhCalendarId = calendars.filter((calendar) => {
                 return calendar.source.name === "TMH-Events"
-            })[0]?.id === undefined) {
+            })[0]?.id
+
+            if (tmhCalendarId === undefined) {
+                console.log("Calendar does not exist")
                 return await CalendarService.createTMHCalendar()
+            }
+            else {
+                console.log("Calendar is found with id " + tmhCalendarId)
+                return tmhCalendarId;
             }
         }
         catch (error) {
@@ -112,16 +118,21 @@ export default class CalendarService {
         return eventObject;
 
     }
+    static eventExists = async (calendarId: string, eventItem: any): Promise<any> => {
+        // TODO: PREVENT MULTIPLE SAME EVENT INSTANCE CREATIONS IN CALENDAR
+
+        return Calendar.getEventsAsync([calendarId], eventItem.start_time, eventItem.end_time)
+    }
 
     static createEvent = async (eventItem: any, options: any): Promise<any> => {
-        // TODO: IMPLEMENT WAY TO CHECK IF EVENT ALREADY EXISTS BEFORE ADDING IT.
-        console.log("Creating event.")
-        console.log(options)
+
         const validated: boolean | any = CalendarService.validateEventFields(eventItem, options)
         if (validated !== false) {
             try {
                 await CalendarService.checkPermissions()
                 const defaultCalendar: string = await CalendarService.getDefaultCalendar();
+                console.log(await CalendarService.eventExists(defaultCalendar, eventItem))
+                /*
                 const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
                 if (Platform.OS === "android") {
                     Alert.alert(
@@ -142,7 +153,7 @@ export default class CalendarService {
                             { text: 'Dismiss' },
                         ],
                         { cancelable: false })
-                }
+                }*/
 
             } catch (error) {
                 if (error.message.includes("permission")) {
