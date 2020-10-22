@@ -4,22 +4,19 @@ import { Image, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-n
 import { Theme, Style } from '../../../Theme.style';
 import IconButton from '../../buttons/IconButton';
 import moment from 'moment';
-import { useNavigation, CompositeNavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { GetVideoByVideoTypeQuery, GetVideoByVideoTypeQueryVariables, ModelSortDirection, GetNotesQuery } from '../../../services/API';
 import { MainStackParamList } from '../../../navigation/AppNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import ActivityIndicator from '../../../components/ActivityIndicator';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import NotesService from '../../../services/NotesService';
-import { TeachingStackParamList } from '../../../navigation/MainTabNavigator';
 
 const screenWidth = Dimensions.get('window').width;
 
 const style = StyleSheet.create({
     container: {
         alignItems: "center",
-        marginLeft: 16,
-        marginRight: 16,
         backgroundColor: Theme.colors.black,
     },
     teachingImage: {
@@ -69,7 +66,7 @@ type VideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVid
 
 export default function RecentTeaching(): JSX.Element {
 
-    const navigation = useNavigation<CompositeNavigationProp<StackNavigationProp<MainStackParamList>, StackNavigationProp<TeachingStackParamList>>>();
+    const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
     const [teaching, setTeaching] = useState<VideoData>(null);
     const [note, setNote] = useState<GetNotesQuery['getNotes']>();
     const [fullDescription, setFullDescription] = useState(false);
@@ -134,15 +131,15 @@ export default function RecentTeaching(): JSX.Element {
                         <TouchableWithoutFeedback onPress={() => navigation.navigate('SermonLandingScreen', { item: teaching })} >
                             <Image style={style.teachingImage} source={{ uri: teachingImage.url }} />
                         </TouchableWithoutFeedback>
-                        <TouchableWithoutFeedback onPress={() => navigation.navigate('SeriesLandingScreen', { seriesId: teaching.series?.id })}>
-                            <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }} />
-                        </TouchableWithoutFeedback>
+                        <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }} />
                     </View>
                     : <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
                 }
-                <Text style={style.title}>{teaching.episodeTitle}</Text>
-                <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")}</Text>
-                <Text style={style.description} numberOfLines={fullDescription ? undefined : 2} ellipsizeMode='tail' onPress={() => setFullDescription(!fullDescription)}>{teaching.description}</Text>
+                <View style={{ marginHorizontal: 16, alignItems: 'center' }} >
+                    <Text style={style.title}>{teaching.episodeTitle}</Text>
+                    <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")}</Text>
+                    <Text style={style.description} numberOfLines={fullDescription ? undefined : 2} ellipsizeMode='tail' onPress={() => setFullDescription(!fullDescription)}>{teaching.description}</Text>
+                </View>
                 <View>
                     <IconButton icon={Theme.icons.white.notes} label="Notes" onPress={openNotes}></IconButton>
                 </View>
