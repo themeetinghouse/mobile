@@ -118,42 +118,60 @@ export default class CalendarService {
         return eventObject;
 
     }
-    static eventExists = async (calendarId: string, eventItem: any): Promise<any> => {
-        // TODO: PREVENT MULTIPLE SAME EVENT INSTANCE CREATIONS IN CALENDAR
-
-        return Calendar.getEventsAsync([calendarId], eventItem.start_time, eventItem.end_time)
+    static eventNotExists = async (calendarId: string, options: any, eventItem: any): Promise<boolean> => {
+        const notExists = await Calendar.getEventsAsync([calendarId], new Date(moment(options.start_time).toDate()), new Date(moment(options.end_time).toDate()))
+        if (notExists.length === 0) {
+            console.log(notExists)
+            console.log("Event doesn't exist")
+            return true
+        }
+        else {
+            console.log(notExists)
+            for (let x = 0; x < notExists.length; x++) {
+                if (notExists[x].title === eventItem.name) return false
+            }
+            return true;
+        }
     }
 
     static createEvent = async (eventItem: any, options: any): Promise<any> => {
-
         const validated: boolean | any = CalendarService.validateEventFields(eventItem, options)
         if (validated !== false) {
             try {
                 await CalendarService.checkPermissions()
                 const defaultCalendar: string = await CalendarService.getDefaultCalendar();
-                console.log(await CalendarService.eventExists(defaultCalendar, eventItem))
-                /*
-                const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
-                if (Platform.OS === "android") {
+                const shouldCreateEvent = await CalendarService.eventNotExists(defaultCalendar, options, eventItem)
+                if (shouldCreateEvent) {
+                    const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
+                    if (Platform.OS === "android") {
+                        Alert.alert(
+                            'Added to Calendar',
+                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                            [
+                                { text: 'Dismiss' }
+                            ],
+                            { cancelable: false })
+                        Calendar.openEventInCalendar(eventIdInCalendar);
+                    }
+                    else {
+                        console.log("Created an IOS event")
+                        Alert.alert(
+                            'Added to Calendar',
+                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                            [
+                                { text: 'Dismiss' },
+                            ],
+                            { cancelable: false })
+                    }
+                } else {
                     Alert.alert(
-                        'Added to Calendar',
-                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                        'Event Exists',
+                        'Event has already been added.',
                         [
                             { text: 'Dismiss' }
                         ],
                         { cancelable: false })
-                    Calendar.openEventInCalendar(eventIdInCalendar);
                 }
-                else {
-                    console.log("Created an IOS event")
-                    Alert.alert(
-                        'Added to Calendar',
-                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
-                        [
-                            { text: 'Dismiss' },
-                        ],
-                        { cancelable: false })
-                }*/
 
             } catch (error) {
                 if (error.message.includes("permission")) {
