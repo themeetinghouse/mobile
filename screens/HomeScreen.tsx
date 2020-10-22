@@ -3,16 +3,17 @@ import { Container, Content, View, Text } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
 import { Theme, Style } from '../Theme.style';
-//import EventCard from '../components/home/EventCard/EventCard';
+import EventCard from '../components/home/EventCard/EventCard';
 import RecentTeaching from '../components/home/RecentTeaching/RecentTeaching';
 //import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
 // import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
-//import EventsService from '../services/EventsService';
+import EventsService from '../services/EventsService';
 // import SermonsService from '../services/SermonsService';
 // import { loadSomeAsync } from '../utils/loading';
-// import ActivityIndicator from '../components/ActivityIndicator';
+import ActivityIndicator from '../components/ActivityIndicator';
 import LocationContext from '../contexts/LocationContext'
+import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StyleSheet } from 'react-native';
@@ -38,31 +39,40 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
   //const [announcements, setAnnouncements] = useState<any>([]);
-  //const [events, setEvents] = useState<any>([]);
+  const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  /*useEffect(() => {
+  useEffect(() => {
+    /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
     }
     loadAnnouncements();
-
-    const loadEvents = async () => {
-      //const eventsResult = await EventsService.loadEventsList(location?.locationData);
-      //setEvents(eventsResult);
-    }
-    loadEvents();
-  }, [])*/
-
-  useEffect(() => {
+    */
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(location?.locationData?.locationId ?? '')
       setImages(data.images);
       setInstaUsername(data.username);
     }
     loadInstagramImages();
+    const loadEvents = async () => {
+      try {
+        setIsLoading(true)
+        const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location)
+        setEvents(await eventsResult);
+        setIsLoading(false)
+      }
+      catch (error) {
+        setEvents([])
+        setIsLoading(false)
+        console.log(error)
+      }
+    }
+    if (location?.locationData?.locationId !== "unknown" || location?.locationData?.locationName !== "unknown")
+      loadEvents();
   }, [location])
 
   const sendQuestion = () => {
@@ -79,7 +89,27 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <WhiteButton outlined label="Send Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
+        {location?.locationData?.locationId !== "unknown" || location?.locationData.locationName !== "unknown" ?
+          <View style={style.categoryContainer}>
+            {isLoading ? <ActivityIndicator /> : <>
+              {events !== null && events.length !== 0 ?
+                <>
+                  <Text style={style.categoryTitle} >Upcoming Events</Text>
+                  {events.map((event: any) => (
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      handlePress={() =>
+                        navigation.push('EventDetailsScreen', { item: event })
+                      }></EventCard>
 
+                  ))}
+                </>
+                : <Text style={style.categoryTitle} >No events found</Text>}
+            </>}
+          </View> : null}
+
+        {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? <View style={style.categoryContainer}>
           <Text style={style.categoryTitle}>@{instaUsername}</Text>
           <InstagramFeed images={images} />
@@ -97,24 +127,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               } />
           ))}
           <AllButton>See all announcements</AllButton>
-        </View>
-
-
-        <View style={style.categoryContainer}>
-          <Text style={style.categoryTitle}>Upcoming Events</Text>
-          {events.map((event: any) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              handlePress={() =>
-                navigation.push('EventDetailsScreen', { item: event })
-              }></EventCard>
-          ))}
-          <AllButton>See All Events</AllButton>
             </View>*/}
 
+
+
       </Content>
-    </Container>
+    </Container >
     // <View style={styles.container}>
     //   <ScrollView
     //     style={styles.container}
