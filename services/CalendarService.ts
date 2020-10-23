@@ -44,20 +44,63 @@ export default class CalendarService {
             else {
                 // TODO: CALENDAR TO ADD TO MUST BE DETERMINED FOR ANDROID. 
                 // TODO: CREATING A CALENDAR createCalendarAsync() AND CREATING EVENTS IN IT ALLOWS EVENTS TO SHOW IN CALENDAR APP
+                return await CalendarService.findTMHCalendar() || "1"; // if unable to create tmh-calendar defaults to id 1.
 
-                // const defaultCalendar = await Calendar.getCalendarsAsync();
-                return "1";
             }
         } catch (error) {
             return error
         }
     }
     static createTMHCalendar = async (): Promise<any> => {
-        //TODO: 
+        if (await CalendarService.checkPermissions()) {
+            try {
+                const TMHCalendarid = await Calendar.createCalendarAsync({
+                    name: "TMH",
+                    title: "TMH-Events",
+                    color: "blue",
+                    accessLevel: "owner",
+                    entityType: Calendar.EntityTypes.EVENT,
+                    ownerAccount: "personal",
+                    source: {
+                        isLocalAccount: true,
+                        name: "TMH-Events",
+                        type: "LOCAL"
+                    },
+                    isVisible: true,
+                    isSynced: true,
+                })
+                return TMHCalendarid;
+            }
+            catch (error) {
+                console.warn(error)
+            }
+        }
+        else {
+            //console.log("permission not granted")
+            return false;
+        }
     }
 
     static findTMHCalendar = async (): Promise<any> => {
-        //TODO:
+        try {
+            console.log("Looking for TMHCalendar")
+            const calendars = await Calendar.getCalendarsAsync();
+            const tmhCalendarId = calendars.filter((calendar) => {
+                return calendar.source.name === "TMH-Events"
+            })[0]?.id
+
+            if (tmhCalendarId === undefined) {
+                console.log("Calendar does not exist")
+                return await CalendarService.createTMHCalendar()
+            }
+            else {
+                console.log("Calendar is found with id " + tmhCalendarId)
+                return tmhCalendarId;
+            }
+        }
+        catch (error) {
+            console.warn(error)
+        }
     }
 
     static validateEventFields = (event: any, options: any): boolean | any => {
@@ -75,34 +118,56 @@ export default class CalendarService {
         return eventObject;
 
     }
+    static eventNotExists = async (calendarId: string, options: any, eventItem: any): Promise<boolean> => {
+        const notExists = await Calendar.getEventsAsync([calendarId], new Date(moment(options.start_time).toDate()), new Date(moment(options.end_time).toDate()))
+        if (notExists.length === 0) {
+            console.log(notExists)
+            console.log("Event doesn't exist")
+            return true
+        }
+        else {
+            for (let x = 0; x < notExists.length; x++) {
+                if (notExists[x].title === eventItem.name) return false
+            }
+            return true;
+        }
+    }
 
     static createEvent = async (eventItem: any, options: any): Promise<any> => {
-        // TODO: IMPLEMENT WAY TO CHECK IF EVENT ALREADY EXISTS BEFORE ADDING IT.
-        console.log("Creating event.")
-        console.log(options)
         const validated: boolean | any = CalendarService.validateEventFields(eventItem, options)
         if (validated !== false) {
             try {
                 await CalendarService.checkPermissions()
                 const defaultCalendar: string = await CalendarService.getDefaultCalendar();
-                const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
-                if (Platform.OS === "android") {
+                const shouldCreateEvent = await CalendarService.eventNotExists(defaultCalendar, options, eventItem)
+                if (shouldCreateEvent) {
+                    const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
+                    if (Platform.OS === "android") {
+                        Alert.alert(
+                            'Added to Calendar',
+                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                            [
+                                { text: 'Dismiss' }
+                            ],
+                            { cancelable: false })
+                        Calendar.openEventInCalendar(eventIdInCalendar);
+                    }
+                    else {
+                        console.log("Created an IOS event")
+                        Alert.alert(
+                            'Added to Calendar',
+                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                            [
+                                { text: 'Dismiss' },
+                            ],
+                            { cancelable: false })
+                    }
+                } else {
                     Alert.alert(
-                        'Added to Calendar',
-                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
+                        'Event Exists',
+                        'Event has already been added.',
                         [
                             { text: 'Dismiss' }
-                        ],
-                        { cancelable: false })
-                    Calendar.openEventInCalendar(eventIdInCalendar);
-                }
-                else {
-                    console.log("Created an IOS event")
-                    Alert.alert(
-                        'Added to Calendar',
-                        moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
-                        [
-                            { text: 'Dismiss' },
                         ],
                         { cancelable: false })
                 }
