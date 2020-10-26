@@ -209,7 +209,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
                 <PasswordRequirement meetsRequirement={pass.length >= 8} requirement='8 characters' />
                 <PasswordRequirement meetsRequirement={/(?=.*[A-Z])/.test(pass)} requirement='upper &amp; lowercase letters' />
                 <PasswordRequirement meetsRequirement={/(?=.*[0-9])/.test(pass)} requirement='1 number' />
-                <PasswordRequirement meetsRequirement={/(?=.*[\^$*.\[\]{}\(\)?\-“!@#%&/,><\’:;|_~`])/.test(pass)} requirement='1 special character (e.g. @ ! $ ^ ?)' />
+                <PasswordRequirement meetsRequirement={/(?=.*[\=\+\$\*\.\,\?\"\!\@\#\%\&\'\:\;\[\]\{\}\(\)\/\\\>\<\|\_\~\`\^\-])/.test(pass)} requirement='1 special character (e.g. @ ! $ ^ ?)' />
             </View>
             <Text style={style.title}>Choose Your Location</Text>
             <TouchableOpacity style={style.locationSelector} onPress={() => navigation.push('LocationSelectionScreen')} >
