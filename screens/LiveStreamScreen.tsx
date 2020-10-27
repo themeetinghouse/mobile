@@ -13,6 +13,7 @@ import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { useRef } from 'react';
 import { runGraphQLQuery } from "../services/ApiService"
 import NotesScreen from './NotesScreen';
+import { MainStackParamList } from 'navigation/AppNavigator';
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
@@ -60,11 +61,9 @@ interface Props {
     route: RouteProp<HomeStackParamList, 'LiveStreamScreen'>;
 }
 
-
 export default function LiveStreamScreen(props: Props): JSX.Element {
     const [currentEvent, setcurrentEvent]: any = useState(null);
     const [showTime, setshowTime]: any = useState(null);
-    const [currentTime, setcurrentTime] = useState(moment().format("HH:mm"))
     const mediaContext = useContext(MediaContext);
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
@@ -108,8 +107,6 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             else {
                 setshowTime(false)
             }
-
-
         }, 1000);
         return () => clearInterval(interval);
     }, [currentEvent]);
@@ -124,7 +121,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                     </Button>
                 </Left>
                 <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>{showTime === null ? "" : showTime === true ? "Livestream" : "Livestream Pre-roll"}</Text>
+                    <Text style={style.headerTitle}>{showTime === true ? "Livestream" : "Livestream Pre-roll"}</Text>
                 </Body>
                 <Right style={style.headerRight}>
                     {/*Share modal here */}

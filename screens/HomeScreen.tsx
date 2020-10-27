@@ -41,7 +41,8 @@ interface Params {
 export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
-  const [live, setLive] = useState(false)
+  const [preLive, setpreLive] = useState(false)
+  const [live, setLive] = useState(false);
   //const [announcements, setAnnouncements] = useState<any>([]);
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
@@ -49,16 +50,17 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const today = moment().format('YYYY:MM:DD') // this needs to be the current date and must account for timezone!
+    const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
     const loadLiveStreams = async () => {
       try {
         const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
         liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = moment().format('HH:mm') // needs timezone
+          const rightNow = "15:50"//moment().format('HH:mm') // needs timezone
           const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+          console.log(event.endTime)
           if (showTime) {
-            setLive(true)
-            console.log("setting live to true")
+            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) setLive(true)
+            setpreLive(true)
           }
         })
       }
@@ -104,7 +106,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      {true ? <AnnouncementBar message={"We are live! Come check out our livestream."} ></AnnouncementBar> : null}
+      {live || preLive ? <AnnouncementBar message={preLive ? !live ? "We will be going live soon!" : "We are live now!" : ""}></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
 
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
