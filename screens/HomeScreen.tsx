@@ -49,12 +49,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
+    const today = moment().format('YYYY:MM:DD') // this needs to be the current date and must account for timezone!
     const loadLiveStreams = async () => {
       try {
         const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
         liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = "06:00"//moment().format('HH:mm') // needs timezone
+          const rightNow = moment().format('HH:mm') // needs timezone
           const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
           if (showTime) {
             setLive(true)
@@ -104,7 +104,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      {live ? <AnnouncementBar message={"We are live! Come check out our livestream."} ></AnnouncementBar> : null}
+      {true ? <AnnouncementBar message={"We are live! Come check out our livestream."} ></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
 
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>

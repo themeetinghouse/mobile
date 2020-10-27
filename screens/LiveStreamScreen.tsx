@@ -22,7 +22,6 @@ const style = StyleSheet.create({
     },
     player: {
         height: Math.round(Dimensions.get('window').width * (9 / 16)),
-        marginBottom: 8
     },
     header: Style.header,
     headerLeft: {
@@ -64,7 +63,8 @@ interface Props {
 
 export default function LiveStreamScreen(props: Props): JSX.Element {
     const [currentEvent, setcurrentEvent]: any = useState(null);
-    const [showTime, setshowTime] = useState(false);
+    const [showTime, setshowTime]: any = useState(null);
+    const [currentTime, setcurrentTime] = useState(moment().format("HH:mm"))
     const mediaContext = useContext(MediaContext);
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
@@ -72,14 +72,13 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     const handleVideoReady = () => {
         playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
     }
+
     useEffect(() => {
-        console.log("App has loaded")
         const loadLiveStreams = async () => {
             try {
                 const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
                 liveStreamsResult.listLivestreams.items.map((event: any) => {
-                    const rightNow = "09:49"//moment().format('HH:mm') // needs timezone
-                    console.log(event)
+                    const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
                     const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
                     if (showTime) {
                         setcurrentEvent(event)
@@ -92,23 +91,29 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         }
         loadLiveStreams();
     }, [])
+
     useEffect(() => {
-        console.log("Checking if its showtime")
-        const start = currentEvent?.videoStartTime
-        const end = currentEvent?.endTime
-        const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
-        console.log(`VideoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
-        if (start && end) {
-            const showTime = rightNow >= start && rightNow <= end
-            if (showTime) {
-                console.log("ShowLive")
-                setshowTime(true)
+        const interval = setInterval(() => {
+            const start = currentEvent?.videoStartTime
+            const end = currentEvent?.endTime
+            const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
+            console.log(`VideoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
+            if (start && end) {
+                const showTime = rightNow >= start && rightNow <= end
+                if (showTime) {
+                    console.log("ShowLive")
+                    setshowTime(true)
+                }
             }
-        }
-        else {
-            setshowTime(false)
-        }
-    }, [currentEvent])
+            else {
+                setshowTime(false)
+            }
+
+
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [currentEvent]);
+
     return (
         <Container>
             <Header style={style.header}>
@@ -119,14 +124,14 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                     </Button>
                 </Left>
                 <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}></Text>
+                    <Text style={style.headerTitle}>{showTime === null ? "" : showTime === true ? "Livestream" : "Livestream Pre-roll"}</Text>
                 </Body>
                 <Right style={style.headerRight}>
                     {/*Share modal here */}
                 </Right>
             </Header>
             <Content style={style.content}>
-                <Text style={style.title}>{showTime ? "Livestream" : "Livestream Pre-roll"}</Text>
+
                 <View style={style.player}>
                     {showTime ?
                         <>
@@ -150,9 +155,10 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                                 videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
                                 play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
                                 initialPlayerParams={{ modestbranding: true }}
-                            /></>}
+                            />
+                        </>}
                 </View >
-                <IconButton style={{ padding: 16 }} rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => props.navigation.push('NotesScreen', { date: moment().format('2020-10-25') })} />
+                <IconButton style={{ marginTop: 20, padding: 16 }} rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => props.navigation.push('NotesScreen', { date: moment().format('YYYY-MM-DD') })} />
             </Content>
         </Container>
     )
