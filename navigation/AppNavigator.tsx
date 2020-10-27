@@ -18,6 +18,7 @@ import HighlightScreen from '../screens/HighlightScreen';
 import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/SermonLandingScreen';
 import { CommentDataType } from '../services/API';
+import LiveStreamScreen from "../screens/LiveStreamScreen";
 
 export type MainStackParamList = {
   Main: undefined | {
@@ -38,11 +39,12 @@ export type MainStackParamList = {
   HighlightScreen: { highlights: any[], nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
+  LiveStreamScreen: undefined;
   CommentScreen: {
     key: string,
     noteId: string,
     commentType: CommentDataType,
-    noteType: 'notes' | 'questions', t
+    noteType: 'notes' | 'questions',
     extSnippet?: string,
     imageUri?: string
   } | {
@@ -72,6 +74,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} />
       <Main.Screen name="SermonLandingScreen" component={SermonLandingScreen} />
       <Main.Screen name="CommentScreen" component={CommentScreen} />
+      <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
     </Main.Navigator>
   )
 }

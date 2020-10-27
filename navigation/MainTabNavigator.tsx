@@ -24,11 +24,14 @@ import { Theme } from '../Theme.style';
 import { StyleSheet } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
+import LiveStreamScreen from '../screens/LiveStreamScreen';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
   EventDetailsScreen: { item: any };
   AnnouncementDetailsScreen: { item: any };
+  NotesScreen: { date: string }
+  LiveStreamScreen: undefined;
 }
 
 const Home = createStackNavigator<HomeStackParamList>();
@@ -39,6 +42,7 @@ function HomeStack() {
       <Home.Screen name="HomeScreen" component={HomeScreen} />
       <Home.Screen name="EventDetailsScreen" component={EventDetailsScreen} />
       <Home.Screen name="AnnouncementDetailsScreen" component={AnnouncementDetailsScreen} />
+      <Home.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
     </Home.Navigator>
   )
 }

@@ -16,13 +16,16 @@ import LocationContext from '../contexts/LocationContext'
 import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import moment from "moment";
 import { StyleSheet } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
 import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
-
+import { NavigationHelpersContext } from '@react-navigation/native';
+import AnnouncementBar from "../screens/AnnouncementBar"
+import { runGraphQLQuery } from "../services/ApiService"
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -38,6 +41,7 @@ interface Params {
 export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
+  const [live, setLive] = useState(false)
   //const [announcements, setAnnouncements] = useState<any>([]);
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
@@ -45,6 +49,24 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
+    const loadLiveStreams = async () => {
+      try {
+        const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
+        liveStreamsResult.listLivestreams.items.map((event: any) => {
+          const rightNow = "06:00"//moment().format('HH:mm') // needs timezone
+          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+          if (showTime) {
+            setLive(true)
+            console.log("setting live to true")
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    loadLiveStreams();
     /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
@@ -82,12 +104,17 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
+      {live ? <AnnouncementBar message={"We are live! Come check out our livestream."} ></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
+
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]} >
             <WhiteButton outlined label="Send Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
+        </View>
+        <View>
+
         </View>
         {location?.locationData?.locationId !== "unknown" || location?.locationData.locationName !== "unknown" ?
           <View style={style.categoryContainer}>
@@ -169,3 +196,39 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     // </View>
   );
 }
+
+const listLivestreams = /* GraphQL */ `
+  query ListLivestreams(
+    $filter: ModelLivestreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listLivestreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        date
+        startTime
+        videoStartTime
+        endTime
+        prerollYoutubeId
+        liveYoutubeId
+        showChat
+        showKids
+        menu {
+          title
+          link
+          linkType
+        }
+        zoom {
+          title
+          link
+        }
+        titles
+        homepageLink
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
