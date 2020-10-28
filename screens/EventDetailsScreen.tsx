@@ -270,7 +270,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
 
             </Content>
             {
-                share ? <ShareModal closeCallback={() => setShare(false)}
+                share ? <ShareModal noBottomPadding closeCallback={() => setShare(false)}
                     link={`https://www.facebook.com/events/${eventItem.id}`}
                     message={eventItem !== null ? `Check out this event: \n${eventItem?.name}\n${eventItem?.place?.name}` : ``} /> : null
             }
