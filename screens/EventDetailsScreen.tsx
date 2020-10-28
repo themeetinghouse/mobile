@@ -88,7 +88,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 //console.log("Location is not null!")
                 if (eventItem?.place?.location?.latitude && eventItem?.place?.location.longitude) {
                     //console.log("Latitude and logitude found")
-                    console.log("returning gps")
+                    //console.log("returning gps")
                     return 'gps'
                 }
                 else {
@@ -134,43 +134,59 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     }
     const [openMethod] = useState<OpeningMethod>(directionsType());
     const addEventToCalendar = async () => {
-        if (options) {
-            const success = await Calendar.createEvent(eventItem, options)
-            if (success.start_time) setAlerts({ message: success.start_time })
-        }
-        else {
-            if (eventItem.event_times) { // more than one event instance
-                if (eventItem.event_times.length === 1) {
-                    const success = await Calendar.createEvent(eventItem, eventItem.event_times[0])
-                    if (success.options) setAlerts({ message: success.options.start_time })
-                }
-                else {
-                    if (Platform.OS === "ios") {
-                        if (eventItem.event_times?.length > 1) { // always true at this point?
-                            const arr: string[] = ["Cancel"];
-                            for (let x = 0; x < eventItem.event_times.length; x++) {
-                                arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
+        try {
+            if (options) {
+                const success = await Calendar.createEvent(eventItem, options)
+                if (success?.start_time && Platform.OS === "android") setAlerts({ message: success?.start_time })
+            }
+            else {
+                if (eventItem.event_times) { // more than one event instance
+                    if (eventItem.event_times.length === 1) {
+                        const success = await Calendar.createEvent(eventItem, eventItem?.event_times[0])
+                        if (success?.options) setAlerts({ message: success?.options?.start_time })
+                    }
+                    else {
+                        if (Platform.OS === "ios") {
+                            if (eventItem.event_times?.length > 1) { // always true at this point?
+                                const arr: string[] = ["Cancel"];
+                                for (let x = 0; x < eventItem.event_times.length; x++) {
+                                    arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
+                                }
+                                ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
+                                    if (buttonIndex === 0) console.log("Date must be selected")
+                                    else
+                                        Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
+                                })
                             }
-                            ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
-                                if (buttonIndex === 0) console.log("Date must be selected")
-                                else
-                                    Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
-                            })
+                        } else {
+                            Alert.alert(
+                                'Error',
+                                'Date must be selected',
+                                [
+                                    { text: 'Dismiss' }
+                                ],
+                                { cancelable: false })
                         }
-                    } else {
-                        Alert.alert(
-                            'Error',
-                            'Date must be selected',
-                            [
-                                { text: 'Dismiss' }
-                            ],
-                            { cancelable: false })
+                    }
+                }
+                else { // only one event instance
+                    if (eventItem.start_time && eventItem.end_time) {
+                        try {
+                            const success = await Calendar.createEvent(eventItem, { start_time: eventItem?.start_time, end_time: eventItem?.end_time })
+                            if (Platform.OS === "android" && success?.start_time) {
+                                console.log("loggin success")
+                                console.log(success)
+                                setAlerts({ message: success?.start_time })
+                            }
+                        } catch (error) {
+                            console.log("caught here")
+                            console.log(error)
+                        }
                     }
                 }
             }
-            else { // only one event instance
-                if (eventItem.start_time && eventItem.end_time) return await Calendar.createEvent(eventItem, { start_time: eventItem.start_time, end_time: eventItem.end_time })
-            }
+        } catch (error) {
+            console.log(error)
         }
     }
 

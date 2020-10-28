@@ -119,17 +119,21 @@ export default class CalendarService {
 
     }
     static eventNotExists = async (calendarId: string, options: any, eventItem: any): Promise<boolean> => {
-        const notExists = await Calendar.getEventsAsync([calendarId], new Date(moment(options.start_time).toDate()), new Date(moment(options.end_time).toDate()))
-        if (notExists.length === 0) {
-            console.log(notExists)
-            console.log("Event doesn't exist")
-            return true
-        }
-        else {
-            for (let x = 0; x < notExists.length; x++) {
-                if (notExists[x].title === eventItem.name) return false
+        try {
+            const notExists = await Calendar.getEventsAsync([calendarId], new Date(moment(options.start_time).toDate()), new Date(moment(options.end_time).toDate()))
+            if (notExists.length === 0) {
+                console.log(notExists)
+                console.log("Event doesn't exist")
+                return true
             }
-            return true;
+            else {
+                for (let x = 0; x < notExists.length; x++) {
+                    if (notExists[x].title === eventItem.name) return false
+                }
+                return true;
+            }
+        } catch (error) {
+
         }
     }
 
@@ -141,6 +145,7 @@ export default class CalendarService {
                 const defaultCalendar: string = await CalendarService.getDefaultCalendar();
                 const shouldCreateEvent = await CalendarService.eventNotExists(defaultCalendar, options, eventItem)
                 if (shouldCreateEvent) {
+                    console.log("Here")
                     const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
                     if (Platform.OS === "android") {
                         Calendar.openEventInCalendar(eventIdInCalendar);
