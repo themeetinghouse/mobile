@@ -143,14 +143,8 @@ export default class CalendarService {
                 if (shouldCreateEvent) {
                     const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
                     if (Platform.OS === "android") {
-                        Alert.alert(
-                            'Added to Calendar',
-                            moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
-                            [
-                                { text: 'Dismiss' }
-                            ],
-                            { cancelable: false })
                         Calendar.openEventInCalendar(eventIdInCalendar);
+                        return options;
                     }
                     else {
                         console.log("Created an IOS event")

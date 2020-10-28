@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
-import { Alert, StatusBar, StyleSheet, ActionSheetIOS, Platform } from 'react-native';
+import { Alert, StatusBar, StyleSheet, ActionSheetIOS, Platform, AppState } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -77,6 +77,11 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     const [options, setOptions] = useState("");
     const [share, setShare] = useState(false);
     const [eventItem] = useState(props.route.params?.item);
+    // Needed to check if app is in the background or foreground.
+    const appState = useRef(AppState.currentState);
+    const [appStateVisible, setAppStateVisible] = useState(appState.current);
+    const [alerts, setAlerts]: any = useState({ message: "" });
+
     const directionsType = () => {
         if (eventItem.place) {
             if (eventItem?.place?.location !== null) {
@@ -128,17 +133,16 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
         }
     }
     const [openMethod] = useState<OpeningMethod>(directionsType());
-
-    // EVENT NEEDS TO SHOW CONFIRMATION SCREEN INSTEAD OF ADDING AND SHOWING EDIT SCREEN
-    // INPUT LOCATION MAKE SURE TO VALIDATE
-    // NEEDS TO BE TESTED ON iO
     const addEventToCalendar = async () => {
-        if (options)
-            return await Calendar.createEvent(eventItem, options)
+        if (options) {
+            const success = await Calendar.createEvent(eventItem, options)
+            if (success.start_time) setAlerts({ message: success.start_time })
+        }
         else {
             if (eventItem.event_times) { // more than one event instance
                 if (eventItem.event_times.length === 1) {
-                    return await Calendar.createEvent(eventItem, eventItem.event_times[0])
+                    const success = await Calendar.createEvent(eventItem, eventItem.event_times[0])
+                    if (success.options) setAlerts({ message: success.options.start_time })
                 }
                 else {
                     if (Platform.OS === "ios") {
@@ -184,6 +188,34 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 break;
         }
     }
+
+    const _handleAppStateChange = (nextAppState: any) => {
+        appState.current = nextAppState;
+        setAppStateVisible(appState.current);
+    };
+    /* This handles checking if app is in background or active*/
+    useEffect(() => {
+        AppState.addEventListener("change", _handleAppStateChange);
+
+        return () => {
+            AppState.removeEventListener("change", _handleAppStateChange);
+        };
+    }, []);
+    /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
+    useEffect(() => {
+        if (appState.current === "active") {
+            if (alerts.message !== "") {
+                Alert.alert(
+                    'Added to Calendar',
+                    moment(alerts.message).format("dddd, MMMM Do YYYY, h:mm a"),
+                    [
+                        { text: 'Dismiss' }
+                    ],
+                    { cancelable: false })
+                setAlerts({ name: "", message: "" })
+            }
+        }
+    }, [appState.current])
     return (
         <Container>
 
