@@ -83,18 +83,18 @@ export default class CalendarService {
 
     static findTMHCalendar = async (): Promise<any> => {
         try {
-            console.log("Looking for TMHCalendar")
+            //console.log("Looking for TMHCalendar")
             const calendars = await Calendar.getCalendarsAsync();
             const tmhCalendarId = calendars.filter((calendar) => {
                 return calendar.source.name === "TMH-Events"
             })[0]?.id
 
             if (tmhCalendarId === undefined) {
-                console.log("Calendar does not exist")
+                //console.log("Calendar does not exist")
                 return await CalendarService.createTMHCalendar()
             }
             else {
-                console.log("Calendar is found with id " + tmhCalendarId)
+                //console.log("Calendar is found with id " + tmhCalendarId)
                 return tmhCalendarId;
             }
         }
@@ -106,8 +106,8 @@ export default class CalendarService {
     static validateEventFields = (event: any, options: any): boolean | any => {
         const start_date = moment(options.start_time)
         const end_date = moment(options.end_time)
-        console.log(`start_date ${start_date}`)
-        console.log(`end_date ${end_date}`)
+        //console.log(`start_date ${start_date}`)
+        //console.log(`end_date ${end_date}`)
         const eventObject: any = {
             title: event.name,
             startDate: new Date(start_date.toDate()),
@@ -118,12 +118,12 @@ export default class CalendarService {
         return eventObject;
 
     }
-    static eventNotExists = async (calendarId: string, options: any, eventItem: any): Promise<boolean> => {
+    static eventNotExists = async (calendarId: string, options: any, eventItem: any): Promise<boolean | undefined> => {
         try {
             const notExists = await Calendar.getEventsAsync([calendarId], new Date(moment(options.start_time).toDate()), new Date(moment(options.end_time).toDate()))
             if (notExists.length === 0) {
-                console.log(notExists)
-                console.log("Event doesn't exist")
+                //console.log(notExists)
+                //console.log("Event doesn't exist")
                 return true
             }
             else {
@@ -133,7 +133,7 @@ export default class CalendarService {
                 return true;
             }
         } catch (error) {
-
+            console.log(error)
         }
     }
 
@@ -145,14 +145,13 @@ export default class CalendarService {
                 const defaultCalendar: string = await CalendarService.getDefaultCalendar();
                 const shouldCreateEvent = await CalendarService.eventNotExists(defaultCalendar, options, eventItem)
                 if (shouldCreateEvent) {
-                    console.log("Here")
                     const eventIdInCalendar: string = await Calendar.createEventAsync(defaultCalendar, validated)
                     if (Platform.OS === "android") {
                         Calendar.openEventInCalendar(eventIdInCalendar);
                         return options;
                     }
                     else {
-                        console.log("Created an IOS event")
+                        //console.log("Created an IOS event")
                         Alert.alert(
                             'Added to Calendar',
                             moment(options?.start_time).format("dddd, MMMM Do YYYY, h:mm a"),
