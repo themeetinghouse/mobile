@@ -184,10 +184,9 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 break;
         }
     }
-    /*useEffect(() => {
-        const rightNow = moment().format('YYYY-MM-DD-HH:mm')
-        rightNow < moment(item.start_time).format('YYYY-MM-DD-HH:mm')
-    }, [])*/
+    useEffect(() => {
+        console.log(eventItem)
+    }, [])
     return (
         <Container>
 
@@ -221,13 +220,13 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                         <>
                             <Text style={style.subtitle}>Event Times</Text>
                             {eventItem.event_times.map((event: any, key: any) => {
-                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm a")}</Text>
+                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
                             })}
 
                         </>
                         : <>
                             <Text style={style.subtitle}>Date &amp; Time</Text>
-                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? -moment(eventItem.end_time).format("h:mm a") : null}</Text>
+                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? "- " + moment(eventItem.end_time).format("h:mm a") : null}</Text>
                         </>}
                     {eventItem.event_times || eventItem.start_time && eventItem.end_time ?
                         <IconButton onPress={() => {

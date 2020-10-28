@@ -81,7 +81,7 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
                             : null}
                     </>
                     : event?.start_time ?
-                        <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("MMMM Do YYYY, h:mm:ss a")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+                        <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("MMMM Do YYYY, h:mm a")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
                         : null}
 
             </View>
