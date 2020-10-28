@@ -184,9 +184,6 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 break;
         }
     }
-    useEffect(() => {
-        console.log(eventItem)
-    }, [])
     return (
         <Container>
 
