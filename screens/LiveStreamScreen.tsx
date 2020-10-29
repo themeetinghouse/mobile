@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, Body, View } from 'native-base';
-import IconButton from '../components/buttons/IconButton';
+//import IconButton from '../components/buttons/IconButton';
 import moment from 'moment';
 import MediaContext from '../contexts/MediaContext';
-import { StatusBar, StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -14,11 +14,12 @@ import { useRef } from 'react';
 import { runGraphQLQuery } from "../services/ApiService"
 import NotesScreen from './NotesScreen';
 import { MainStackParamList } from 'navigation/AppNavigator';
+
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
             backgroundColor: Theme.colors.black,
-            padding: 0,
+            padding: 0
         },
     },
     player: {
@@ -51,14 +52,13 @@ const style = StyleSheet.create({
     },
     body: {
         ...Style.body, ...{
-            marginBottom: 5,
-        }
+        },
     },
 })
 
 interface Props {
-    navigation: StackNavigationProp<HomeStackParamList>;
-    route: RouteProp<HomeStackParamList, 'LiveStreamScreen'>;
+    navigation: StackNavigationProp<HomeStackParamList | MainStackParamList, "NotesScreen">;
+    route: RouteProp<HomeStackParamList, 'NotesScreen'>;
 }
 
 export default function LiveStreamScreen(props: Props): JSX.Element {
@@ -113,22 +113,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
 
     return (
         <Container>
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => props.navigation.goBack()}>
-                        <Icon name='close' />
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>{showTime === true ? "Livestream" : "Livestream Pre-roll"}</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    {/*Share modal here */}
-                </Right>
-            </Header>
             <Content style={style.content}>
-
                 <View style={style.player}>
                     {showTime ?
                         <>
@@ -155,8 +140,12 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                             />
                         </>}
                 </View >
-                <IconButton style={{ marginTop: 20, padding: 16 }} rightArrow icon={Theme.icons.white.notes} label="Notes" onPress={() => props.navigation.push('NotesScreen', { date: moment().format('YYYY-MM-DD') })} />
+
             </Content>
+            <Content style={{ zIndex: 100, marginTop: -60 }}>
+                <NotesScreen today={moment().format('2020-10-25')} navigation={props.navigation} route={props.route}></NotesScreen>
+            </Content>
+
         </Container>
     )
 }

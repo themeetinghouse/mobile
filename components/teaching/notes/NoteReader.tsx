@@ -3,6 +3,9 @@ import { View, StyleSheet, TextStyle } from 'react-native';
 import { Theme } from '../../../Theme.style';
 import { HyperLink, CustomHeading, CustomImage, CustomListItem, CustomText, HeaderImage } from './TextComponents';
 import { GetNotesQuery } from '../../../services/API';
+import { MainStackParamList } from 'navigation/AppNavigator';
+import { HomeStackParamList } from 'navigation/MainTabNavigator';
+import { RouteProp } from '@react-navigation/native';
 
 type ContentType =
     "unstyled" |
@@ -53,9 +56,10 @@ interface NoteReaderParams {
     verses: VerseType;
     date: string;
     noteId: string;
+    route: RouteProp<MainStackParamList | HomeStackParamList, 'NotesScreen' | 'LiveStreamScreen'>
 }
 
-export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date, noteId }: NoteReaderParams): JSX.Element {
+export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date, noteId, route }: NoteReaderParams): JSX.Element {
 
     const color = mode === 'dark' ? 'white' : 'black'
     const styles = StyleSheet.create({
@@ -138,11 +142,14 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        if (numberOfImages === 0)
-                            markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
-                        else
-                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
-                        numberOfImages++
+                        if (route.name !== "LiveStreamScreen") {
+                            if (numberOfImages === 0)
+                                markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                            else
+                                markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+
+                            numberOfImages++
+                        }
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
@@ -198,7 +205,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
         }
     }
 
-    return <View style={{ width: '100%', marginBottom: 48, marginTop: 12 }} >
+    return <View style={route.name !== "LiveStreamScreen" ? { width: '100%', marginBottom: 48, marginTop: 12 } : { width: '100%', marginBottom: 48, marginTop: 0, flex: 1 }} >
         {markupArray.map(item => { return item })}
     </View>
 

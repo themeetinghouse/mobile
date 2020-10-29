@@ -55,7 +55,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       try {
         const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
         liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = "15:50"//moment().format('HH:mm') // needs timezone
+          const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
           const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
           console.log(event.endTime)
           if (showTime) {
