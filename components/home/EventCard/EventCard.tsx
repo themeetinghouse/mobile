@@ -65,7 +65,6 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
     }
 
     const dateStr = moment(event?.start_time ?? undefined).format('MMM D');
-    console.log(event)
     return (
 
         <TouchableHighlight underlayColor={Theme.colors.grey5} onPress={handlePress}>
