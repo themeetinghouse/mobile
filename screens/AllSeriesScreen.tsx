@@ -11,6 +11,7 @@ import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import FallbackImage from '../components/FallbackImage';
+import AllButton from '../components//buttons/AllButton';
 
 const width = Dimensions.get('screen').width;
 
@@ -97,7 +98,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [selectedYear, setSelectedYear] = useState("All");
     const [seriesYears, setSeriesYears] = useState(["All"])
-
+    const [showCount, setShowCount] = useState(20);
     const [allSeries, setAllSeries] = useState({ loading: true, items: [], nextToken: null });
 
     const loadAllSeriesAsync = async () => {
@@ -119,12 +120,11 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
         generateYears();
         loadAllSeriesAsync();
     }, [])
-
-    const series = allSeries.items.filter((s: any) => searchText ? s.title.toLowerCase().includes(searchText.toLowerCase()) : true);
-
     const getSeriesDate = (series: any) => {
         return moment(series.startDate || moment()).format("YYYY");
     }
+    const series = allSeries.items.filter((s: any) => searchText ? s.title.toLowerCase().includes(searchText.toLowerCase()) : true).filter((a) => { return selectedYear === "All" || getSeriesDate(a) === selectedYear }).filter((a) => { return selectedYear === "All" || getSeriesDate(a) === selectedYear });;
+
 
     navigation.setOptions({
         headerShown: true,
@@ -169,14 +169,24 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                             <ActivityIndicator />
                         </View>
                     }
-                    {series.map((s: any) => (
-                        (selectedYear === "All" || getSeriesDate(s) === selectedYear) &&
-                        <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
-                            <FallbackImage style={style.seriesThumbnail} uri={s.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
-                            <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>
-                        </TouchableOpacity>
-                    ))}
+                    {series.map((s: any, key: any) => {
+                        if (key < showCount) {
+                            return (
+                                <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
+                                    <FallbackImage style={style.seriesThumbnail} uri={s.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
+                                    <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>
+                                </TouchableOpacity>)
+                        } else {
+                            return null
+                        }
+                    })}
+
                 </View>
+                {series?.length > 20 && showCount < series.length ?
+                    <View style={{ marginBottom: 20 }}>
+                        <AllButton handlePress={() => setShowCount(showCount + 20)}>Load More</AllButton>
+                    </View>
+                    : null}
             </Content>
         </Container>
     )

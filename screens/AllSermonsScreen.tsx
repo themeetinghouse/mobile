@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform, Button } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import ActivityIndicator from '../components/ActivityIndicator';
@@ -12,6 +12,7 @@ import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQuery, GetVideoByVideoTypeQueryVariables, ModelSortDirection } from '../services/API';
+import AllButton from '../components/buttons/AllButton'
 
 const style = StyleSheet.create({
     content: {
@@ -76,6 +77,7 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
     const dateEnd = route.params?.endDate ? moment(route.params?.endDate)?.endOf('month') : null;
     const [searchText, setSearchText] = useState("");
     const [sermons, setSermons] = useState<VideoData>([]);
+    const [showCount, setShowCount] = useState(20);
     const [blurred, setBlurred] = useState(false);
 
     useEffect(() => {
@@ -148,15 +150,29 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
                 </View>
                 <View>
                     {sermons && sermons.length > 0 ?
-                        filteredSermons.map((sermon: any) => (
-                            <TeachingListItem
-                                key={sermon.id}
-                                teaching={sermon}
-                                handlePress={() =>
-                                    navigation.push('SermonLandingScreen', { item: sermon })
-                                } />))
+                        filteredSermons.map((sermon: any, key: any) => {
+                            if (key < showCount)
+                                return (<TeachingListItem
+                                    key={sermon.id}
+                                    teaching={sermon}
+                                    handlePress={() =>
+                                        navigation.push('SermonLandingScreen', { item: sermon })
+                                    } />)
+                            else {
+                                return null
+                            }
+                        }
+                        )
                         : <ActivityIndicator />}
+                    {filteredSermons?.length > 20 && showCount < filteredSermons.length ?
+
+                        <View style={{ marginBottom: 20 }}>
+                            <AllButton handlePress={() => setShowCount(showCount + 20)}>Load More</AllButton>
+                        </View>
+                        : null}
+
                 </View>
+
             </Content>
         </Container>
     )
