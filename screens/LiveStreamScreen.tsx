@@ -110,7 +110,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         }, 1000);
         return () => clearInterval(interval);
     }, [currentEvent]);
-
+    // this page needs to be unmounted when navigating to teaching
     return (
         <Container>
             <Content style={style.content}>
