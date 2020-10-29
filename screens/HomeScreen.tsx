@@ -105,7 +105,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
                   ))}
                 </>
-                : <Text style={style.categoryTitle} >No events found</Text>}
+                : <Text style={style.categoryTitle} >No Upcoming Events</Text>}
             </>}
           </View> : null}
 

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Theme, Style } from '../Theme.style';
 import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
-import { Alert, StatusBar, StyleSheet, ActionSheetIOS, Platform } from 'react-native';
+import { Alert, StatusBar, StyleSheet, ActionSheetIOS, Platform, AppState } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -77,13 +77,18 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     const [options, setOptions] = useState("");
     const [share, setShare] = useState(false);
     const [eventItem] = useState(props.route.params?.item);
+    // Needed to check if app is in the background or foreground.
+    const appState = useRef(AppState.currentState);
+    const [appStateVisible, setAppStateVisible] = useState(appState.current);
+    const [alerts, setAlerts]: any = useState({ message: "" });
+
     const directionsType = () => {
         if (eventItem.place) {
             if (eventItem?.place?.location !== null) {
                 //console.log("Location is not null!")
                 if (eventItem?.place?.location?.latitude && eventItem?.place?.location.longitude) {
                     //console.log("Latitude and logitude found")
-                    console.log("returning gps")
+                    //console.log("returning gps")
                     return 'gps'
                 }
                 else {
@@ -128,45 +133,60 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
         }
     }
     const [openMethod] = useState<OpeningMethod>(directionsType());
-
-    // EVENT NEEDS TO SHOW CONFIRMATION SCREEN INSTEAD OF ADDING AND SHOWING EDIT SCREEN
-    // INPUT LOCATION MAKE SURE TO VALIDATE
-    // NEEDS TO BE TESTED ON iO
     const addEventToCalendar = async () => {
-        if (options)
-            return await Calendar.createEvent(eventItem, options)
-        else {
-            if (eventItem.event_times) { // more than one event instance
-                if (eventItem.event_times.length === 1) {
-                    return await Calendar.createEvent(eventItem, eventItem.event_times[0])
-                }
-                else {
-                    if (Platform.OS === "ios") {
-                        if (eventItem.event_times?.length > 1) { // always true at this point?
-                            const arr: string[] = ["Cancel"];
-                            for (let x = 0; x < eventItem.event_times.length; x++) {
-                                arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
+        try {
+            if (options) {
+                const success = await Calendar.createEvent(eventItem, options)
+                if (success?.start_time && Platform.OS === "android") setAlerts({ message: success?.start_time })
+            }
+            else {
+                if (eventItem.event_times) { // more than one event instance
+                    if (eventItem.event_times.length === 1) {
+                        const success = await Calendar.createEvent(eventItem, eventItem?.event_times[0])
+                        if (success?.options) setAlerts({ message: success?.options?.start_time })
+                    }
+                    else {
+                        if (Platform.OS === "ios") {
+                            if (eventItem.event_times?.length > 1) { // always true at this point?
+                                const arr: string[] = ["Cancel"];
+                                for (let x = 0; x < eventItem.event_times.length; x++) {
+                                    arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
+                                }
+                                ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
+                                    if (buttonIndex === 0) console.log("Date must be selected")
+                                    else
+                                        Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
+                                })
                             }
-                            ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
-                                if (buttonIndex === 0) console.log("Date must be selected")
-                                else
-                                    Calendar.createEvent(eventItem, eventItem.event_times[buttonIndex - 1]) //-1 to ignore cancel button
-                            })
+                        } else {
+                            Alert.alert(
+                                'Error',
+                                'Date must be selected',
+                                [
+                                    { text: 'Dismiss' }
+                                ],
+                                { cancelable: false })
                         }
-                    } else {
-                        Alert.alert(
-                            'Error',
-                            'Date must be selected',
-                            [
-                                { text: 'Dismiss' }
-                            ],
-                            { cancelable: false })
+                    }
+                }
+                else { // only one event instance
+                    if (eventItem.start_time && eventItem.end_time) {
+                        try {
+                            const success = await Calendar.createEvent(eventItem, { start_time: eventItem?.start_time, end_time: eventItem?.end_time })
+                            if (Platform.OS === "android" && success?.start_time) {
+                                console.log("loggin success")
+                                console.log(success)
+                                setAlerts({ message: success?.start_time })
+                            }
+                        } catch (error) {
+                            console.log("caught here")
+                            console.log(error)
+                        }
                     }
                 }
             }
-            else { // only one event instance
-                if (eventItem.start_time && eventItem.end_time) return await Calendar.createEvent(eventItem, { start_time: eventItem.start_time, end_time: eventItem.end_time })
-            }
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -184,10 +204,34 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                 break;
         }
     }
-    /*useEffect(() => {
-        const rightNow = moment().format('YYYY-MM-DD-HH:mm')
-        rightNow < moment(item.start_time).format('YYYY-MM-DD-HH:mm')
-    }, [])*/
+
+    const _handleAppStateChange = (nextAppState: any) => {
+        appState.current = nextAppState;
+        setAppStateVisible(appState.current);
+    };
+    /* This handles checking if app is in background or active*/
+    useEffect(() => {
+        AppState.addEventListener("change", _handleAppStateChange);
+
+        return () => {
+            AppState.removeEventListener("change", _handleAppStateChange);
+        };
+    }, []);
+    /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
+    useEffect(() => {
+        if (appState.current === "active") {
+            if (alerts.message !== "") {
+                Alert.alert(
+                    'Added to Calendar',
+                    moment(alerts.message).format("dddd, MMMM Do YYYY, h:mm a"),
+                    [
+                        { text: 'Dismiss' }
+                    ],
+                    { cancelable: false })
+                setAlerts({ name: "", message: "" })
+            }
+        }
+    }, [appState.current])
     return (
         <Container>
 
@@ -221,13 +265,13 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                         <>
                             <Text style={style.subtitle}>Event Times</Text>
                             {eventItem.event_times.map((event: any, key: any) => {
-                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm a")}</Text>
+                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
                             })}
 
                         </>
                         : <>
                             <Text style={style.subtitle}>Date &amp; Time</Text>
-                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? -moment(eventItem.end_time).format("h:mm a") : null}</Text>
+                            <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? "- " + moment(eventItem.end_time).format("h:mm a") : null}</Text>
                         </>}
                     {eventItem.event_times || eventItem.start_time && eventItem.end_time ?
                         <IconButton onPress={() => {
