@@ -140,7 +140,10 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
                     placeholderLabel="Search by name..."></SearchBar>
                 <View style={style.dateSelectBar}>
 
-                    <TouchableHighlight style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} onPress={() => { navigation.push('DateRangeSelectScreen') }} underlayColor={Theme.colors.grey3}  >
+                    <TouchableHighlight style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} onPress={() => {
+                        setShowCount(20);
+                        navigation.push('DateRangeSelectScreen')
+                    }} underlayColor={Theme.colors.grey3}  >
                         {(dateStart && dateEnd)
                             ? isSame
                                 ? <Text style={style.dateRangeItemText}>{dateEndStr}</Text>
