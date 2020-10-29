@@ -57,7 +57,6 @@ type EventCardInput = {
 
 export default function EventCard({ event, handlePress }: EventCardInput): JSX.Element {
     const addressFilter = (address: string) => {
-        console.log("returning :" + address.split(',')[0])
         return address.split(',')[0]
     }
     const descriptionFilter = (description: string) => { //removes newlines
