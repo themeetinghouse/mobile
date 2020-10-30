@@ -14,12 +14,13 @@ import { useRef } from 'react';
 import { runGraphQLQuery } from "../services/ApiService"
 import NotesScreen from './NotesScreen';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import ActivityIndicator from '../components/ActivityIndicator';
 
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
             backgroundColor: Theme.colors.black,
-            padding: 0
+            padding: 0,
         },
     },
     player: {
@@ -67,12 +68,14 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     const mediaContext = useContext(MediaContext);
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
+    const [isLoading, setisLoading] = useState(true);
     const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
     const handleVideoReady = () => {
         playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
     }
 
     useEffect(() => {
+        console.log(Dimensions.get('window').height)
         const loadLiveStreams = async () => {
             try {
                 const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
@@ -89,6 +92,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             }
         }
         loadLiveStreams();
+        setisLoading(false)
     }, [])
 
     useEffect(() => {
@@ -112,7 +116,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     }, [currentEvent]);
     // this page needs to be unmounted when navigating to teaching
     return (
-        <Container>
+        <Container style={{ backgroundColor: "black" }}>
             <Content style={style.content}>
                 <View style={style.player}>
                     {showTime ?
@@ -140,11 +144,9 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                             />
                         </>}
                 </View >
+            </Content>
 
-            </Content>
-            <Content style={{ zIndex: 100, marginTop: -60 }}>
-                <NotesScreen today={moment().format('2020-10-25')} navigation={props.navigation} route={props.route}></NotesScreen>
-            </Content>
+            <NotesScreen today={moment().format('2020-10-25')} navigation={props.navigation} route={props.route}></NotesScreen>
 
         </Container>
     )

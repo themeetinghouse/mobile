@@ -336,7 +336,7 @@ export default function NotesScreen({ route, navigation, today }: Params): JSX.E
         }
     }
 
-    return <View style={{ height: 2500, marginTop: -58 }}>
+    return <View style={{ flex: 1 }}>
         {notes.blocks.length > 0 ?
             <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} key='notes'>

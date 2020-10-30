@@ -142,14 +142,12 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        if (route.name !== "LiveStreamScreen") {
-                            if (numberOfImages === 0)
-                                markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
-                            else
-                                markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                        if (numberOfImages === 0)
+                            markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                        else
+                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                        numberOfImages++
 
-                            numberOfImages++
-                        }
                         break;
                     case "LINK":
                         links.push({ text: block.text.slice(entity.offset, entity.offset + entity.length), offset: entity.offset, length: entity.length, uri: data.data.url });
