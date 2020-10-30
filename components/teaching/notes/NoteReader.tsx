@@ -203,7 +203,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
         }
     }
 
-    return <View style={route.name !== "LiveStreamScreen" ? { width: '100%', marginBottom: 48, marginTop: 12 } : { width: '100%', marginBottom: 48, marginTop: 0, flex: 1 }} >
+    return <View style={route.name !== "LiveStreamScreen" ? { width: '100%', marginBottom: 48, marginTop: 12 } : { width: '100%', marginBottom: 48, marginTop: -12 }} >
         {markupArray.map(item => { return item })}
     </View>
 

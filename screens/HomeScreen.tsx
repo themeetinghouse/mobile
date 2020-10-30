@@ -50,12 +50,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
+    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const loadLiveStreams = async () => {
       try {
         const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
         liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
+          const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
           const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
           console.log(event.endTime)
           if (showTime) {

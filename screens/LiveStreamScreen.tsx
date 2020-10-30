@@ -69,18 +69,17 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
     const [isLoading, setisLoading] = useState(true);
-    const today = moment().format('2020-10-25') // this needs to be the current date and must account for timezone!
+    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const handleVideoReady = () => {
         playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
     }
 
     useEffect(() => {
-        console.log(Dimensions.get('window').height)
         const loadLiveStreams = async () => {
             try {
                 const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
                 liveStreamsResult.listLivestreams.items.map((event: any) => {
-                    const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
+                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
                     const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
                     if (showTime) {
                         setcurrentEvent(event)
@@ -99,12 +98,12 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         const interval = setInterval(() => {
             const start = currentEvent?.videoStartTime
             const end = currentEvent?.endTime
-            const rightNow = "09:50"//moment().format('HH:mm') // needs timezone
-            console.log(`VideoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
+            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+            //console.log(`VideoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
             if (start && end) {
                 const showTime = rightNow >= start && rightNow <= end
                 if (showTime) {
-                    console.log("ShowLive")
+                    //console.log("ShowLive")
                     setshowTime(true)
                 }
             }
@@ -117,37 +116,36 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     // this page needs to be unmounted when navigating to teaching
     return (
         <Container style={{ backgroundColor: "black" }}>
-            <Content style={style.content}>
-                <View style={style.player}>
-                    {showTime ?
-                        <>
-                            <YoutubePlayer
-                                ref={playerRef}
-                                onReady={handleVideoReady}
-                                forceAndroidAutoplay
-                                height={Math.round(deviceWidth * (9 / 16))}
-                                width={Math.round(deviceWidth)}
-                                videoId={currentEvent ? currentEvent.liveYoutubeId as string : ""}
-                                play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
-                                initialPlayerParams={{ modestbranding: true }}
-                            />
-                        </> : <>
-                            <YoutubePlayer
-                                ref={playerRef}
-                                onReady={handleVideoReady}
-                                forceAndroidAutoplay
-                                height={Math.round(deviceWidth * (9 / 16))}
-                                width={Math.round(deviceWidth)}
-                                videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
-                                play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
-                                initialPlayerParams={{ modestbranding: true }}
-                            />
-                        </>}
-                </View >
-            </Content>
 
-            <NotesScreen today={moment().format('2020-10-25')} navigation={props.navigation} route={props.route}></NotesScreen>
-
+            <View style={style.player}>
+                {showTime ?
+                    <>
+                        <YoutubePlayer
+                            volume={100}
+                            ref={playerRef}
+                            onReady={handleVideoReady}
+                            forceAndroidAutoplay
+                            height={Math.round(deviceWidth * (9 / 16))}
+                            width={Math.round(deviceWidth)}
+                            videoId={currentEvent ? currentEvent.liveYoutubeId as string : ""}
+                            play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
+                            initialPlayerParams={{ modestbranding: true }}
+                        />
+                    </> : <>
+                        <YoutubePlayer
+                            volume={100}
+                            ref={playerRef}
+                            onReady={handleVideoReady}
+                            forceAndroidAutoplay
+                            height={Math.round(deviceWidth * (9 / 16))}
+                            width={Math.round(deviceWidth)}
+                            videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
+                            play={mediaContext.media.playing && Boolean(mediaContext.media.video)}
+                            initialPlayerParams={{ modestbranding: true }}
+                        />
+                    </>}
+            </View >
+            <NotesScreen today={today} navigation={props.navigation} route={props.route}></NotesScreen>
         </Container>
     )
 }
