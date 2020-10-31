@@ -23,7 +23,6 @@ import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
-import { NavigationHelpersContext } from '@react-navigation/native';
 import AnnouncementBar from "../screens/AnnouncementBar"
 import { runGraphQLQuery } from "../services/ApiService"
 const style = StyleSheet.create({
@@ -57,7 +56,6 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         liveStreamsResult.listLivestreams.items.map((event: any) => {
           const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
           const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
-          console.log(event.endTime)
           if (showTime) {
             if (rightNow >= event.videoStartTime && rightNow <= event.endTime) setLive(true)
             setpreLive(true)

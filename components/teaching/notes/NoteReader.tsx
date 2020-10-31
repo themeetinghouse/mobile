@@ -142,10 +142,13 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        if (numberOfImages === 0)
-                            markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                        if (numberOfImages === 0){
+                            if(route.name!=="LiveStreamScreen") {//this removes the first header image when coming from livestreamscreen. 
+                                markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                            }
+                        }
                         else
-                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)                       
                         numberOfImages++
 
                         break;
@@ -203,7 +206,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
         }
     }
 
-    return <View style={route.name !== "LiveStreamScreen" ? { width: '100%', marginBottom: 48, marginTop: 12 } : { width: '100%', marginBottom: 48, marginTop: -12 }} >
+    return <View style={route.name === "LiveStreamScreen" &&  type === "notes" ? { width: '100%', marginBottom: 48, marginTop: -18 } : { width: '100%', marginBottom: 48, marginTop: 12 }} >
         {markupArray.map(item => { return item })}
     </View>
 
