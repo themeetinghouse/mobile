@@ -212,21 +212,6 @@ const listLivestreams = /* GraphQL */ `
         endTime
         prerollYoutubeId
         liveYoutubeId
-        showChat
-        showKids
-        menu {
-          title
-          link
-          linkType
-        }
-        zoom {
-          title
-          link
-        }
-        titles
-        homepageLink
-        createdAt
-        updatedAt
       }
       nextToken
     }
