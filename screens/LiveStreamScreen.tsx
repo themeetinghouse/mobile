@@ -3,7 +3,6 @@ import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, View } from 'native-base';
 import moment from 'moment';
 import { StyleSheet, Dimensions } from 'react-native';
-import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 //import { useContext } from 'react';
@@ -147,7 +146,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                             initialPlayerParams={{ modestbranding: true }}
                         />}
             </View >
-            <NotesScreen today={today} navigation={props.navigation} route={props.route}></NotesScreen>
+            <NotesScreen fromLiveStream={true} today={today} navigation={props.navigation} route={props.route}></NotesScreen>
         </Container>
     )
 }
