@@ -130,8 +130,8 @@ const style = StyleSheet.create({
 type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface Params {
-    navigation: StackNavigationProp<MainStackParamList | HomeStackParamList, 'NotesScreen'>
-    route: RouteProp<MainStackParamList | HomeStackParamList, 'NotesScreen' | 'LiveStreamScreen'>
+    navigation: StackNavigationProp<MainStackParamList , 'NotesScreen'>
+    route: RouteProp<MainStackParamList , 'NotesScreen'>
     today: string;
 }
 

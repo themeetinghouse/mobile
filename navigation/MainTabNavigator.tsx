@@ -30,7 +30,6 @@ export type HomeStackParamList = {
   HomeScreen: undefined;
   EventDetailsScreen: { item: any };
   AnnouncementDetailsScreen: { item: any };
-  NotesScreen: { date: string }
   LiveStreamScreen: undefined;
 }
 
