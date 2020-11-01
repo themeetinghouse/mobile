@@ -129,13 +129,14 @@ const style = StyleSheet.create({
 type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface Params {
-    navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
-    route: RouteProp<MainStackParamList, 'NotesScreen'>
+    navigation: StackNavigationProp<MainStackParamList , 'NotesScreen'>
+    route: RouteProp<MainStackParamList , 'NotesScreen'>
+    today: string;
+    fromLiveStream: boolean | undefined
 }
 
-export default function NotesScreen({ route, navigation }: Params): JSX.Element {
-    const date = route.params?.date;
-
+export default function NotesScreen({ route, navigation, today, fromLiveStream }: Params): JSX.Element {
+    const date = route?.params?.date || today;
     const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
     const [questions, setQuestions] = useState({ blocks: [], entityMap: {} });
     const [notesMode, setNotesMode] = useState("notes");
@@ -339,10 +340,10 @@ export default function NotesScreen({ route, navigation }: Params): JSX.Element 
         {notes.blocks.length > 0 ?
             <Swiper ref={ref} loop={false} showsPagination={false} showsButtons={false} onIndexChanged={(index) => setNotesMode(index === 0 ? 'notes' : 'questions')} >
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} key='notes'>
-                    <NoteReader noteId={noteId} blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
+                    <NoteReader fromLiveStream={fromLiveStream} noteId={noteId} blocks={notes.blocks} date={date} verses={verses} entityMap={notes.entityMap} mode={mode} fontScale={fontScale} type='notes' openVerseCallback={handleOpenVerse} />
                 </Content>
                 <Content style={[style.content, { backgroundColor: mode === 'dark' ? 'black' : Theme.colors.grey6 }]} key='questions' >
-                    <NoteReader noteId={noteId} blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
+                    <NoteReader fromLiveStream={fromLiveStream} noteId={noteId} blocks={questions.blocks} date={date} verses={verses} entityMap={questions.entityMap} mode={mode} fontScale={fontScale} type='questions' openVerseCallback={handleOpenVerse} />
                 </Content>
             </Swiper> : <ActivityIndicator />
         }

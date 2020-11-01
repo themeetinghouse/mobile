@@ -16,13 +16,15 @@ import LocationContext from '../contexts/LocationContext'
 import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import moment from "moment";
 import { StyleSheet } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
 import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
-
+import AnnouncementBar from "../screens/AnnouncementBar"
+import { runGraphQLQuery } from "../services/ApiService"
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -38,6 +40,8 @@ interface Params {
 export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   const location = useContext(LocationContext);
+  const [preLive, setpreLive] = useState(false)
+  const [live, setLive] = useState(false);
   //const [announcements, setAnnouncements] = useState<any>([]);
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
@@ -45,6 +49,24 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
+    const loadLiveStreams = async () => {
+      try {
+        const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
+        liveStreamsResult.listLivestreams.items.map((event: any) => {
+          const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+          if (showTime) {
+            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) setLive(true)
+            setpreLive(true)
+          }
+        })
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    loadLiveStreams();
     /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
@@ -82,7 +104,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
+      {live || preLive ? <AnnouncementBar message={preLive ? !live ? "We will be going live soon!" : "We are live now!" : ""}></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
+
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]} >
@@ -169,3 +193,24 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     // </View>
   );
 }
+
+const listLivestreams = /* GraphQL */ `
+  query ListLivestreams(
+    $filter: ModelLivestreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listLivestreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        date
+        startTime
+        videoStartTime
+        endTime
+        prerollYoutubeId
+        liveYoutubeId
+      }
+      nextToken
+    }
+  }
+`;

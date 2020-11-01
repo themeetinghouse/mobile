@@ -53,9 +53,10 @@ interface NoteReaderParams {
     verses: VerseType;
     date: string;
     noteId: string;
+    fromLiveStream: boolean | undefined;
 }
 
-export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date, noteId }: NoteReaderParams): JSX.Element {
+export default function NoteReader({ blocks, entityMap, mode, fontScale, type, openVerseCallback, verses, date, noteId, fromLiveStream }: NoteReaderParams): JSX.Element {
 
     const color = mode === 'dark' ? 'white' : 'black'
     const styles = StyleSheet.create({
@@ -138,10 +139,13 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
                 const data = entityMap[entity.key];
                 switch (data.type) {
                     case "IMAGE":
-                        if (numberOfImages === 0)
-                            markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                        if (numberOfImages === 0){
+                            if(!fromLiveStream) { //this removes the first header image when coming from livestreamscreen. 
+                                markupArray.push(<HeaderImage data={data.data} key={'header image 0'} />)
+                            }
+                        }
                         else
-                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)
+                            markupArray.push(<CustomImage styles={styles} noteId={noteId} block={block} mode={mode} data={data.data} key={block.key + type} type={type} />)                       
                         numberOfImages++
                         break;
                     case "LINK":
@@ -198,7 +202,7 @@ export default function NoteReader({ blocks, entityMap, mode, fontScale, type, o
         }
     }
 
-    return <View style={{ width: '100%', marginBottom: 48, marginTop: 12 }} >
+    return <View style={fromLiveStream && type === "notes" ? { width: '100%', marginBottom: 48, marginTop: -18 } : { width: '100%', marginBottom: 48, marginTop: 12 }} >
         {markupArray.map(item => { return item })}
     </View>
 
