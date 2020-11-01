@@ -113,9 +113,6 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             <WhiteButton outlined label="Send Question" style={{ height: 56 }} onPress={sendQuestion}></WhiteButton>
           </View>
         </View>
-        <View>
-
-        </View>
         {location?.locationData?.locationId !== "unknown" || location?.locationData.locationName !== "unknown" ?
           <View style={style.categoryContainer}>
             {isLoading ? <ActivityIndicator /> : <>

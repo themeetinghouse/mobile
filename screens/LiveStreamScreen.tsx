@@ -124,7 +124,6 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         <Container style={{ backgroundColor: "black" }}>
             <View style={style.player}>
                 {showTime ?
-                    <>
                         <YoutubePlayer
                             volume={100}
                             ref={playerRef}
@@ -135,8 +134,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                             videoId={currentEvent ? currentEvent.liveYoutubeId as string : ""}
                             play={true}
                             initialPlayerParams={{ modestbranding: true }}
-                        />
-                    </> : <>
+                        /> : 
                         <YoutubePlayer
                             volume={100}
                             ref={playerRef}
@@ -147,8 +145,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
                             videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
                             play={true}
                             initialPlayerParams={{ modestbranding: true }}
-                        />
-                    </>}
+                        />}
             </View >
             <NotesScreen today={today} navigation={props.navigation} route={props.route}></NotesScreen>
         </Container>
