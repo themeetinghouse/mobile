@@ -266,7 +266,9 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                         <>
                             <Text style={style.subtitle}>Event Times</Text>
                             {eventItem.event_times.map((event: any, key: any) => {
-                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
+                                if (event.start_time > moment().format())
+                                    return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
+                                else return null
                             })}
 
                         </>
