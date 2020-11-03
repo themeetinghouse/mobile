@@ -51,7 +51,7 @@ const style = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         flexWrap: "wrap",
-        justifyContent: "flex-start",
+        justifyContent: "center",
     },
     monthItem: {
         fontFamily: Theme.fonts.fontFamilyBold,
