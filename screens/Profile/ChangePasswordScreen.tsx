@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import { Container, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StatusBar, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions, StyleSheet } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
@@ -10,6 +10,7 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CommonActions, CompositeNavigationProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../components/Header';
 
 const style = StyleSheet.create({
     content: {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Theme, Style } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Thumbnail } from 'native-base';
+import { Container, Text, Button, Icon, Content, Left, Right, View } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
@@ -13,6 +13,7 @@ import openMap from "react-native-open-maps";
 import * as Linking from 'expo-linking';
 import Calendar from "../services/CalendarService";
 import { Picker } from '@react-native-community/picker';
+import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {

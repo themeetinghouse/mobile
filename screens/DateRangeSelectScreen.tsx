@@ -1,12 +1,13 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
+import { Container, Text, Button, Content, Left, Right, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import WhiteButton from '../components/buttons/WhiteButton';
 import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
+import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {
