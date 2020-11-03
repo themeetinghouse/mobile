@@ -9,10 +9,9 @@ import { RouteProp } from '@react-navigation/native';
 //import MediaContext from '../contexts/MediaContext';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { useRef } from 'react';
-import { runGraphQLQuery } from "../services/ApiService"
 import NotesScreen from './NotesScreen';
 import { MainStackParamList } from 'navigation/AppNavigator';
-
+import LiveEventService from "../services/LiveEventService"
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
@@ -75,17 +74,17 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     //const mediaContext = useContext(MediaContext);
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
-    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
+    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('2020-11-01')
     const handleVideoReady = () => {
-        playerRef?.current?.seekTo(0,true);
+        playerRef?.current?.seekTo(0, true);
     }
 
     useEffect(() => {
         const loadLiveStreams = async () => {
             try {
-                const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
-                liveStreamsResult.listLivestreams.items.map((event: LiveEvent) => {
-                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+                const liveStreamsResult = await LiveEventService.startLiveEventService()
+                liveStreamsResult.liveEvents.map((event: LiveEvent) => {
+                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
                     const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
                     if (showTime) {
                         setcurrentEvent(event)
@@ -103,7 +102,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         const interval = setInterval(() => {
             const start = currentEvent?.videoStartTime
             const end = currentEvent?.endTime
-            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
             //console.log(videoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
             if (start && end) {
                 const showTime = rightNow >= start && rightNow <= end
@@ -123,51 +122,30 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
         <Container style={{ backgroundColor: "black" }}>
             <View style={style.player}>
                 {showTime ?
-                        <YoutubePlayer
-                            volume={100}
-                            ref={playerRef}
-                            onReady={handleVideoReady}
-                            forceAndroidAutoplay
-                            height={Math.round(deviceWidth * (9 / 16))}
-                            width={Math.round(deviceWidth)}
-                            videoId={currentEvent ? currentEvent.liveYoutubeId as string : ""}
-                            play={true}
-                            initialPlayerParams={{ modestbranding: true }}
-                        /> : 
-                        <YoutubePlayer
-                            volume={100}
-                            ref={playerRef}
-                            onReady={handleVideoReady}
-                            forceAndroidAutoplay
-                            height={Math.round(deviceWidth * (9 / 16))}
-                            width={Math.round(deviceWidth)}
-                            videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
-                            play={true}
-                            initialPlayerParams={{ modestbranding: true }}
-                        />}
+                    <YoutubePlayer
+                        volume={100}
+                        ref={playerRef}
+                        onReady={handleVideoReady}
+                        forceAndroidAutoplay
+                        height={Math.round(deviceWidth * (9 / 16))}
+                        width={Math.round(deviceWidth)}
+                        videoId={currentEvent ? currentEvent.liveYoutubeId as string : ""}
+                        play={true}
+                        initialPlayerParams={{ modestbranding: true }}
+                    /> :
+                    <YoutubePlayer
+                        volume={100}
+                        ref={playerRef}
+                        onReady={handleVideoReady}
+                        forceAndroidAutoplay
+                        height={Math.round(deviceWidth * (9 / 16))}
+                        width={Math.round(deviceWidth)}
+                        videoId={currentEvent ? currentEvent.prerollYoutubeId as string : ""}
+                        play={true}
+                        initialPlayerParams={{ modestbranding: true }}
+                    />}
             </View >
             <NotesScreen fromLiveStream={true} today={today} navigation={props.navigation} route={props.route}></NotesScreen>
         </Container>
     )
 }
-
-const listLivestreams = /* GraphQL */ `
-  query ListLivestreams(
-    $filter: ModelLivestreamFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listLivestreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        date
-        startTime
-        videoStartTime
-        endTime
-        prerollYoutubeId
-        liveYoutubeId
-      }
-      nextToken
-    }
-  }
-`;

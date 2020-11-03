@@ -24,7 +24,7 @@ import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
-import { runGraphQLQuery } from "../services/ApiService"
+import LiveEventService from "../services/LiveEventService"
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -47,20 +47,15 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [currentLiveEvent, setCurrentLiveEvent] = useState<any>(null);
+  const [liveEvents, setLiveEvents] = useState<any>(null);
 
   useEffect(() => {
-    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const loadLiveStreams = async () => {
       try {
-        const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
-        liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
-          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
-          if (showTime) {
-            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) setLive(true)
-            setpreLive(true)
-          }
-        })
+        const liveStreamsResult = await LiveEventService.startLiveEventService()
+        if (liveStreamsResult?.liveEvents)
+          setLiveEvents(liveStreamsResult?.liveEvents)
       }
       catch (error) {
         console.log(error)
@@ -100,7 +95,43 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
   }
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const rightNow = moment().subtract(10, 'hours').subtract(1, 'minutes').format("HH:mm")//moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('06:00')
+      console.log(liveEvents)
+      if (liveEvents)
+        liveEvents.map((event: any) => {
 
+          console.log(rightNow)
+          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+          if (showTime) {
+            setCurrentLiveEvent(event)
+            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) {
+              setLive(true)
+            }
+            setpreLive(true)
+          }
+        })
+      if (currentLiveEvent) {
+        console.log(currentLiveEvent)
+        const start = currentLiveEvent?.videoStartTime
+        const end = currentLiveEvent?.endTime
+
+        console.log(`videoStartTime is ${currentLiveEvent?.videoStartTime} endTime is ${currentLiveEvent?.endTime} and current time is ${rightNow}`)
+        if (start && end) {
+          const showTime = rightNow >= start && rightNow <= end
+          if (showTime) {
+            //console.log("ShowLive")
+            setLive(true)
+          }
+        }
+        else {
+          setLive(false)
+        }
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
@@ -193,24 +224,3 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     // </View>
   );
 }
-
-const listLivestreams = /* GraphQL */ `
-  query ListLivestreams(
-    $filter: ModelLivestreamFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listLivestreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        date
-        startTime
-        videoStartTime
-        endTime
-        prerollYoutubeId
-        liveYoutubeId
-      }
-      nextToken
-    }
-  }
-`;
