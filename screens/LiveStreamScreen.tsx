@@ -84,7 +84,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             try {
                 const liveStreamsResult = await LiveEventService.startLiveEventService()
                 liveStreamsResult.liveEvents.map((event: LiveEvent) => {
-                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
+                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:49')
                     const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
                     if (showTime) {
                         setcurrentEvent(event)
@@ -100,9 +100,10 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
 
     useEffect(() => {
         const interval = setInterval(() => {
+            console.log("Ticking in livestream page")
             const start = currentEvent?.videoStartTime
             const end = currentEvent?.endTime
-            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
+            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:49')
             //console.log(videoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
             if (start && end) {
                 const showTime = rightNow >= start && rightNow <= end

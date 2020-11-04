@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Container, Content, View, Text } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
@@ -17,7 +17,7 @@ import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from "moment";
-import { StyleSheet } from 'react-native';
+import { StyleSheet, AppState } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
 import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
@@ -43,11 +43,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [preLive, setpreLive] = useState(false)
   const [live, setLive] = useState(false);
   //const [announcements, setAnnouncements] = useState<any>([]);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [currentLiveEvent, setCurrentLiveEvent] = useState<any>(null);
   const [liveEvents, setLiveEvents] = useState<any>(null);
 
   useEffect(() => {
@@ -95,47 +96,85 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
   }
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const rightNow = moment().subtract(10, 'hours').subtract(1, 'minutes').format("HH:mm")//moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('06:00')
-      console.log(liveEvents)
-      if (liveEvents)
-        liveEvents.map((event: any) => {
+  const latestEventTime = (liveEvents: any) => {
+    const endTimes = liveEvents.map((event: any, index: number) => {
+      return event.endTime
+    })
+    const arr = endTimes.sort((a: any, b: any) => {
+      if (a.endTime > b.endTime) {
+        console.log(a.endTime + "is greater than " + b.endTime)
+        return 1;
+      }
+      if (a.endTime < b.endTime) {
+        console.log(a.endTime + "is less than  " + b.endTime)
+        return -1;
+      }
+      return 0
+    })
+    console.log("sorted " + arr)
+  }
 
-          console.log(rightNow)
-          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
-          if (showTime) {
-            setCurrentLiveEvent(event)
-            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) {
-              setLive(true)
-            }
+  useEffect(() => {
+    console.log(liveEvents)
+    if (liveEvents) {
+      latestEventTime(liveEvents)
+      const interval = setInterval(() => {
+        const rightNow = moment().format("HH:mm")//moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('06:00')
+        console.log("Tick: " + rightNow + ":" + moment().format("ss"))
+        const current = liveEvents.filter((event: any) => {
+          return event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+        })[0]
+        if (current && rightNow <= current.endTime) {
+          console.log("\n====================================================")
+          console.log("Prelive: " + preLive)
+          console.log("live: " + live)
+          console.log(`videoStartTime is ${current?.videoStartTime} endTime is ${current?.endTime} and current time is ${rightNow}`)
+          console.log(current)
+          if (rightNow >= current.startTime && rightNow < current.videoStartTime) {
             setpreLive(true)
           }
-        })
-      if (currentLiveEvent) {
-        console.log(currentLiveEvent)
-        const start = currentLiveEvent?.videoStartTime
-        const end = currentLiveEvent?.endTime
-
-        console.log(`videoStartTime is ${currentLiveEvent?.videoStartTime} endTime is ${currentLiveEvent?.endTime} and current time is ${rightNow}`)
-        if (start && end) {
+          else {
+            setpreLive(false)
+          }
+          const start = current?.videoStartTime
+          const end = current?.endTime
           const showTime = rightNow >= start && rightNow <= end
           if (showTime) {
-            //console.log("ShowLive")
+            if (preLive) setpreLive(false)
             setLive(true)
           }
-        }
-        else {
+          console.log("====================================================\n")
+        } else {
+          console.log("Events ended.")
           setLive(false)
+          setpreLive(false)
+          if (rightNow > liveEvents[1].endTime) //this is assuming there are only 2 events in a liveEvent result and one of them is afterparty.
+            clearInterval(interval)
         }
-      }
-    }, 5000);
-    return () => clearInterval(interval);
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [liveEvents, appStateVisible]);
+
+  const _handleAppStateChange = (nextAppState: any) => {
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+  };
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
   }, []);
+  useEffect(() => {
+    console.log(appStateVisible)
+  }, [appStateVisible])
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      {live || preLive ? <AnnouncementBar message={preLive ? !live ? "We will be going live soon!" : "We are live now!" : ""}></AnnouncementBar> : null}
+      {preLive === true ? <AnnouncementBar message={"We will be going live soon!"}></AnnouncementBar> :
+        live === true ? <AnnouncementBar message={"We are live now!"}></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
 
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
