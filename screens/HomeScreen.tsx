@@ -25,7 +25,6 @@ import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
 import LiveEventService from "../services/LiveEventService"
-import { NavigationRouteContext } from '@react-navigation/native';
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -50,7 +49,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [liveEvents, setLiveEvents] = useState<any>(null);
+  const [liveEvents, setLiveEvents] = useState<any>([]);
 
   useEffect(() => {
     const loadLiveStreams = async () => {
@@ -64,6 +63,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       }
     }
     loadLiveStreams();
+
     /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
@@ -97,45 +97,36 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
   }
-  const latestEventTime = (liveEvents: any) => {
-    const endTimes = liveEvents.map((event: any, index: number) => {
-      return event.endTime
-    })
-    const arr = endTimes.sort((a: any, b: any) => {
-      if (a.endTime > b.endTime) {
-        console.log(a.endTime + "is greater than " + b.endTime)
-        return 1;
-      }
-      if (a.endTime < b.endTime) {
-        console.log(a.endTime + "is less than  " + b.endTime)
-        return -1;
-      }
-      return 0
-    })
-    console.log("sorted " + arr)
-  }
 
   useEffect(() => {
-    console.log("Events for today:")
-    console.log(liveEvents)
-    if (liveEvents) {
-      latestEventTime(liveEvents)
+    if (appStateVisible === "active" && liveEvents && liveEvents.length > 0) {
       const interval = setInterval(() => {
         if (!navigation.isFocused()) {
           clearInterval(interval) // clears interval on navigate away
           return;
         }
-        const rightNow = moment().format("HH:mm")//moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('06:00')
-        console.log("Tick: " + rightNow + ":" + moment().format("ss"))
+        const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+
         const current = liveEvents.filter((event: any) => {
           return event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
         })[0]
+        if (current?.id.includes('After Party')) { /* More logic is required to include After Party message in banner */
+          //console.log("Event is After Party. Live has ended. Exiting interval")
+          clearInterval(interval)
+          setLive(false)
+          setpreLive(false)
+          return;
+        }
         if (current && rightNow <= current.endTime) {
+          /*        
+          console.log("Tick: " + rightNow + ":" + moment().format("ss"))
           console.log("\n====================================================")
           console.log("Prelive: " + preLive)
           console.log("live: " + live)
           console.log(`videoStartTime is ${current?.videoStartTime} endTime is ${current?.endTime} and current time is ${rightNow}`)
-          console.log(current)
+          console.log(current) 
+          console.log("====================================================\n")
+          */
           if (rightNow >= current.startTime && rightNow < current.videoStartTime) {
             setpreLive(true)
           }
@@ -149,25 +140,24 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             if (preLive) setpreLive(false)
             setLive(true)
           }
-          console.log("====================================================\n")
         } else {
-
           setLive(false)
           setpreLive(false)
-          if (rightNow > liveEvents[1].endTime) { //this is assuming there are only 2 events in a liveEvent result and one of them is afterparty.
+          if (rightNow > liveEvents[liveEvents.length - 1]?.endTime) { // Ends for the day
             clearInterval(interval)
-            console.log("Events ended.")
+            //console.log("Events ended.")
           }
         }
       }, 2000);
       return () => clearInterval(interval);
     }
-  }, [liveEvents, appStateVisible]);
+  }, [appStateVisible, liveEvents]);
 
   const _handleAppStateChange = (nextAppState: any) => {
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
   };
+
   useEffect(() => {
     AppState.addEventListener("change", _handleAppStateChange);
 
@@ -175,9 +165,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       AppState.removeEventListener("change", _handleAppStateChange);
     };
   }, []);
-  useEffect(() => {
-    console.log(appStateVisible)
-  }, [appStateVisible])
+
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>

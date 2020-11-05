@@ -74,7 +74,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     //const mediaContext = useContext(MediaContext);
     const playerRef = useRef<YoutubeIframeRef>(null);
     const deviceWidth = Dimensions.get('window').width
-    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('2020-11-01')
+    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const handleVideoReady = () => {
         playerRef?.current?.seekTo(0, true);
     }
@@ -84,7 +84,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             try {
                 const liveStreamsResult = await LiveEventService.startLiveEventService()
                 liveStreamsResult.liveEvents.map((event: LiveEvent) => {
-                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
+                    const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
                     const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
                     if (showTime) {
                         setcurrentEvent(event)
@@ -103,7 +103,8 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             console.log("Ticking in livestream page")
             const start = currentEvent?.videoStartTime
             const end = currentEvent?.endTime
-            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('09:50')
+            const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+
             //console.log(videoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
             if (start && end) {
                 const showTime = rightNow >= start && rightNow <= end
@@ -114,6 +115,10 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             }
             else {
                 setshowTime(false)
+            }
+            if (currentEvent?.videoStartTime && rightNow >= currentEvent.videoStartTime) {
+                clearInterval(interval)
+                return;
             }
         }, 1000);
         return () => clearInterval(interval);

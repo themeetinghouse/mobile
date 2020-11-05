@@ -9,7 +9,6 @@ export default class LiveEventService {
       if (currentEventData) {
         console.log("Event data is set.")
         const needToUpdate = await LiveEventService.shouldUpdate(currentEventData)
-        console.log("checking if needs to update. " + needToUpdate)
         if (needToUpdate) {
           await LiveEventService.fetchLiveEventData()
           return await LiveEventService.getLiveEventData()
@@ -30,27 +29,20 @@ export default class LiveEventService {
   }
 
   static fetchLiveEventData = async (): Promise<any> => {
-    console.log("Fetching event data.")
-    const today = moment().format('2020-11-01')
+    //console.log("Fetching event data.")
+    const today = moment().format('YYYY-MM-DD')
     try {
       const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
-      if (liveStreamsResult) {
-        await LiveEventService.setLiveEventData(liveStreamsResult.listLivestreams.items)
-      }
-      else {
-        console.log("No live events for today.")
-      }
+      await LiveEventService.storeLiveEventData(liveStreamsResult?.listLivestreams?.items)
     }
     catch (error) {
       console.log(error)
     }
   }
 
-  static setLiveEventData = async (liveEvents: any): Promise<any> => {
-    console.log("setting live event")
-    console.log(liveEvents)
+  static storeLiveEventData = async (liveEvents: any): Promise<any> => {
     try {
-      await SecureStore.setItemAsync('liveEventData', JSON.stringify({ liveEvents, dateFetched: moment().format('2020-11-01') }))
+      await SecureStore.setItemAsync('liveEventData', JSON.stringify({ liveEvents, dateFetched: moment().format('YYYY-MM-DD') }))
     }
     catch (error) {
       console.log(error)
@@ -64,19 +56,20 @@ export default class LiveEventService {
 
   static parseStorageItem = (liveEventsData: any): any => {
     const obj = JSON.parse(liveEventsData)
-    return { ...obj, dateFetched: obj.dateFetched }
+    return { ...obj, dateFetched: obj?.dateFetched }
   }
-  /*
-  static setDateBack = async (): Promise<any> => {
-    await SecureStore.setItemAsync('liveEventData', JSON.stringify({ dateFetched: moment().format('2020-10-29') }))
-    console.log("setting date back")
-  }*/
+
+  //This can be used for testing.
+  /*   static setDateBack = async (): Promise<any> => {
+      await SecureStore.setItemAsync('liveEventData', JSON.stringify({ dateFetched: moment().format('2020-11-01') }))
+      console.log("setting date back")
+    } */
 
   static shouldUpdate = async (liveEventsData: any): Promise<boolean> => {
     try {
-      console.log("Last fetched date " + liveEventsData.dateFetched)
-      console.log("Current date " + moment().format('2020-11-01'))
-      if (liveEventsData.dateFetched === undefined || liveEventsData.dateFetched < moment().format('2020-11-01')) {
+      //console.log("Last fetched date " + liveEventsData.dateFetched)
+      //console.log("Current date " + moment().format('YYYY-MM-DD'))
+      if (liveEventsData.dateFetched === undefined || liveEventsData.dateFetched < moment().format('YYYY-MM-DD')) {
         console.log("Data fetched is older than today!")
         return true;
       }
