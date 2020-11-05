@@ -25,6 +25,7 @@ import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
 import LiveEventService from "../services/LiveEventService"
+import { NavigationRouteContext } from '@react-navigation/native';
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -115,10 +116,15 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   }
 
   useEffect(() => {
+    console.log("Events for today:")
     console.log(liveEvents)
     if (liveEvents) {
       latestEventTime(liveEvents)
       const interval = setInterval(() => {
+        if (!navigation.isFocused()) {
+          clearInterval(interval) // clears interval on navigate away
+          return;
+        }
         const rightNow = moment().format("HH:mm")//moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('06:00')
         console.log("Tick: " + rightNow + ":" + moment().format("ss"))
         const current = liveEvents.filter((event: any) => {
@@ -145,11 +151,13 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           }
           console.log("====================================================\n")
         } else {
-          console.log("Events ended.")
+
           setLive(false)
           setpreLive(false)
-          if (rightNow > liveEvents[1].endTime) //this is assuming there are only 2 events in a liveEvent result and one of them is afterparty.
+          if (rightNow > liveEvents[1].endTime) { //this is assuming there are only 2 events in a liveEvent result and one of them is afterparty.
             clearInterval(interval)
+            console.log("Events ended.")
+          }
         }
       }, 2000);
       return () => clearInterval(interval);
