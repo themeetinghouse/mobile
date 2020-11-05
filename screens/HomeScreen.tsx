@@ -49,6 +49,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    console.log(location?.locationData?.locationName)
     const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const loadLiveStreams = async () => {
       try {
@@ -84,7 +85,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       try {
         setIsLoading(true)
         const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location)
-        setEvents(await eventsResult);
+        setEvents(eventsResult);
         setIsLoading(false)
       }
       catch (error) {
