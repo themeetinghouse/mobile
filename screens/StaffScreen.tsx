@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Header, View, Thumbnail, } from 'native-base';
-import { SafeAreaView, StatusBar, StyleSheet, VirtualizedList, } from 'react-native';
+import { Container, Text, Content, View, Thumbnail, } from 'native-base';
+import { StyleSheet, } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import SearchBar from "../components/SearchBar"
-
+import StaffItem from "../screens/staff/StaffItem";
 
 const style = StyleSheet.create({
     content: {
@@ -64,7 +64,7 @@ interface Params {
 }
 
 
-export default function StaffScreen({ navigation, route }: Params): JSX.Element {
+export default function StaffScreen({ navigation }: Params): JSX.Element {
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
@@ -82,9 +82,10 @@ export default function StaffScreen({ navigation, route }: Params): JSX.Element 
         })
     }, [])
 
-    const [staff, setStaff] = useState([]);
+    const [staff] = useState({ name: "Karmyn Bokma", title: "Oakville Lead Pastor" });
     const [searchText, setSearchText] = useState("");
     const [sortByName, setSortByName] = useState(false)
+
     return (
         <Container>
             <Content style={style.content}>
@@ -98,7 +99,21 @@ export default function StaffScreen({ navigation, route }: Params): JSX.Element 
                     <TouchableOpacity onPress={() => setSortByName(false)} style={!sortByName ? style.selectedButton : style.button}><View style={{ justifyContent: "center", flex: 1 }}><Text style={style.buttonText}>By Last Name</Text></View></TouchableOpacity>
                 </View>
                 <View>
-
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
+                    <StaffItem staff={staff}></StaffItem>
                 </View>
             </Content>
         </Container >

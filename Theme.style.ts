@@ -51,6 +51,8 @@ import Delete from './assets/images/white/Delete-1.png';
 import Tags from './assets/images/white/Tags.png';
 import InstagramWhite from './assets/images/white/Instagram.png';
 import CommentSmall from './assets/images/other/Comment-Small.png'
+import Phone from "./assets/images/white/Phone.png";
+import Contact from "./assets/images/white/Contact.png";
 
 export const Theme = {
     colors: {
@@ -129,7 +131,9 @@ export const Theme = {
             addComment: AddComment,
             delete: Delete,
             tags: Tags,
-            instagram: InstagramWhite
+            instagram: InstagramWhite,
+            phone: Phone,
+            contact: Contact
         },
         grey: {
             arrow: ArrowGrey,
