@@ -18,9 +18,11 @@ export default function StaffList({ sortByName }: StaffList): JSX.Element {
     const [staff, setStaff] = useState([]);
     useEffect(() => {
         const loadStaff = async () => {
+            console.log("Fetching data from site")
             setStaff(await StaffDirectoryService.loadStaffList())
         }
-        loadStaff()
+        if (staff.length === 0)
+            loadStaff()
     }, [])
     /* useEffect(() => {
     setStaff(sort())
@@ -35,11 +37,10 @@ export default function StaffList({ sortByName }: StaffList): JSX.Element {
         }
     }*/
     const parseTelephone = (tel: string) => {
-        tel = tel.replace(/\D/g, '');
-        if (tel.length === 10) return tel;
-        if (tel.length)
-            console.log(tel)
-        return tel;
+        const telephone = tel.split(',')[0].replace(/\D/g, '')
+        const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
+        if (telephone && extension) return telephone + "," + extension
+        else return telephone
     }
     const getItem = (data: Staff, index: number) => {
         return {
