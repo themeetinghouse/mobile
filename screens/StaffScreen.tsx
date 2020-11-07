@@ -7,7 +7,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import SearchBar from "../components/SearchBar"
-import StaffItem from "../screens/staff/StaffItem";
+import StaffList from './staff/StaffList';
+import ToggleButton from "./staff/ToggleButton";
 
 const style = StyleSheet.create({
     content: {
@@ -21,41 +22,6 @@ const style = StyleSheet.create({
     searchBar: {
         marginBottom: 16,
     },
-
-    button: {
-        flex: 1,
-        padding: 16,
-        margin: 2,
-        borderRadius: 50,
-        color: "#C8C8C8",
-        backgroundColor: "#1A1A1A",
-    },
-    selectedButton: {
-        padding: 16,
-        flex: 1,
-        margin: 2,
-        borderRadius: 50,
-        color: "#FFF",
-        backgroundColor: "#646469",
-    },
-    buttonText: {
-        color: "white",
-        width: 140,
-        textAlign: "center",
-        fontFamily: Theme.fonts.fontFamilyBold,
-        fontSize: Theme.fonts.small
-
-    },
-    buttonContainer: {
-        height: 38,
-        borderRadius: 50,
-        marginHorizontal: 10,
-        flex: 1,
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        backgroundColor: "#1A1A1A",
-    }
-
 })
 
 interface Params {
@@ -82,9 +48,11 @@ export default function StaffScreen({ navigation }: Params): JSX.Element {
         })
     }, [])
 
-    const [staff] = useState({ name: "Karmyn Bokma", title: "Oakville Lead Pastor" });
     const [searchText, setSearchText] = useState("");
-    const [sortByName, setSortByName] = useState(false)
+    const [sortByName, setSortByName] = useState(false);
+    useEffect(() => {
+        console.log("Changing sorting method")
+    }, [sortByName])
 
     return (
         <Container>
@@ -94,28 +62,12 @@ export default function StaffScreen({ navigation }: Params): JSX.Element {
                     searchText={searchText}
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name or location..."></SearchBar>
-                <View style={style.buttonContainer}>
-                    <TouchableOpacity onPress={() => setSortByName(true)} style={sortByName ? style.selectedButton : style.button}><View style={{ justifyContent: "center", flex: 1 }}><Text style={style.buttonText}>By Location</Text></View></TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSortByName(false)} style={!sortByName ? style.selectedButton : style.button}><View style={{ justifyContent: "center", flex: 1 }}><Text style={style.buttonText}>By Last Name</Text></View></TouchableOpacity>
-                </View>
-                <View>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
-                    <StaffItem staff={staff}></StaffItem>
+                <ToggleButton sortByName={sortByName} setSortByName={setSortByName} btnText_one={"By Location"} btnText_two={"By Last Name"}></ToggleButton>
+                <View style={{ backgroundColor: "black" }}>
+                    <StaffList sortByName={sortByName}></StaffList>
                 </View>
             </Content>
+
         </Container >
     )
 }

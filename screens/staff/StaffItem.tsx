@@ -1,8 +1,10 @@
 import { Thumbnail } from 'native-base';
-import React from 'react';
+import React, { useEffect, memo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Theme, Style } from '../../Theme.style';
-import { TouchableHighlight, TouchableOpacity } from "react-native-gesture-handler"
+import { TouchableOpacity } from "react-native-gesture-handler"
+import * as Linking from 'expo-linking';
+
 const style = StyleSheet.create({
     container: {
         marginTop: 6,
@@ -12,25 +14,34 @@ const style = StyleSheet.create({
         borderBottomLeftRadius: 25,
         borderColor: "gray"
     },
-    picture: {
+    pictureContainer: {
         marginTop: 0,
         backgroundColor: "#54565A",
         borderRadius: 100,
         width: 48,
-        height: 48
+        height: 48,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
     },
-    name: {
+    picture: {
+        justifyContent: 'center',
+        height: 25,
+        width: 25
+    },
+    Name: {
         color: "white",
         fontSize: 16,
         lineHeight: 24,
         fontWeight: "700",
         fontFamily: Theme.fonts.fontFamilyRegular
     },
-    title: {
+    Position: {
         marginTop: 2,
         color: "white",
         fontWeight: "400",
-        fontSize: 12
+        fontSize: 12,
+        flexWrap: "wrap",
     },
     footerText: {
         marginTop: 6,
@@ -46,46 +57,46 @@ const style = StyleSheet.create({
         padding: 16
     },
 })
-interface Staff {
+interface Props {
     staff: {
-        name: string
-        title: string
-        teaching: string
-        phone: string
-        email: string
+        FirstName: string
+        LastName: string
+        Email: string
+        Position: string
+        Phone: string
     }
 }
-export default function StaffItem({ staff }: Staff): JSX.Element {
+function StaffItem(props: Props): JSX.Element {
     return (
         <View style={style.container}>
-            <Thumbnail style={[style.picture]} source={Theme.icons.white.user}></Thumbnail>
+            <View style={style.pictureContainer}><Thumbnail style={style.picture} source={Theme.icons.white.user}></Thumbnail></View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
-                {staff.name ?
-                    <Text style={style.name}>{staff.name}</Text>
+                {props.staff.FirstName && props.staff.LastName ?
+                    <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>
                     : null}
-                {staff.title ?
-                    <Text style={style.title}>{staff.title}</Text>
+                {props.staff.Position ?
+                    <Text style={style.Position}>{props.staff.Position}</Text>
                     : null}
-                {staff.teaching ?
+                {false ?
                     <TouchableOpacity>
                         <Text style={style.footerText}>
                             View Teaching
-                    </Text>
+                        </Text>
                     </TouchableOpacity>
                     : null}
-
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    <TouchableOpacity onPress={() => console.log("press")} style={style.iconContainer}>
+                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${props.staff.Phone}`)} style={style.iconContainer}>
                         <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => console.log("press")} style={style.iconContainer}>
+                    <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.staff.Email}`)} style={style.iconContainer}>
                         <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
                     </TouchableOpacity>
                 </View>
             </View>
-        </View>
+        </View >
 
     )
 }
+export default memo(StaffItem);
