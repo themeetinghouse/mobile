@@ -19,7 +19,7 @@ import DateRangeSelectScreen from '../screens/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/SermonLandingScreen';
 import { CommentDataType } from '../services/API';
 import LiveStreamScreen from "../screens/LiveStreamScreen";
-import StaffScreen from "../screens/StaffScreen";
+import StaffList from "../screens/staff/StaffList";
 
 export type MainStackParamList = {
   Main: undefined | {
@@ -41,7 +41,7 @@ export type MainStackParamList = {
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
   LiveStreamScreen: undefined;
-  StaffScreen: undefined;
+  StaffList: undefined;
   CommentScreen: {
     key: string,
     noteId: string,
@@ -76,7 +76,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="DateRangeSelectScreen" component={DateRangeSelectScreen} />
       <Main.Screen name="SermonLandingScreen" component={SermonLandingScreen} />
       <Main.Screen name="CommentScreen" component={CommentScreen} />
-      <Main.Screen name="StaffScreen" component={StaffScreen} />
+      <Main.Screen name="StaffList" component={StaffList} />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
     </Main.Navigator>
   )

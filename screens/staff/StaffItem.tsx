@@ -67,6 +67,12 @@ interface Props {
     }
 }
 function StaffItem(props: Props): JSX.Element {
+    const parseTelephone = (tel: string) => {
+        const telephone = tel.split(',')[0].replace(/\D/g, '')
+        const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
+        if (telephone && extension) return telephone + "," + extension
+        else return telephone
+    }
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}><Thumbnail style={style.picture} source={Theme.icons.white.user}></Thumbnail></View>
@@ -87,7 +93,7 @@ function StaffItem(props: Props): JSX.Element {
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${props.staff.Phone}`)} style={style.iconContainer}>
+                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(props.staff.Phone)}`)} style={style.iconContainer}>
                         <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.staff.Email}`)} style={style.iconContainer}>
