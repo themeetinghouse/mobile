@@ -150,7 +150,8 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                             if (eventItem.event_times?.length > 1) { // always true at this point?
                                 const arr: string[] = ["Cancel"];
                                 for (let x = 0; x < eventItem.event_times.length; x++) {
-                                    arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
+                                    if (eventItem.event_times[x].start_time > moment().format())
+                                        arr.push(`${moment(eventItem.event_times[x].start_time).format("MMM Do YYYY, h:mm a")} - ${moment(eventItem.event_times[x].end_time).format("h:mm a")}`)
                                 }
                                 ActionSheetIOS.showActionSheetWithOptions({ options: arr, cancelButtonIndex: 0 }, buttonIndex => {
                                     if (buttonIndex === 0) console.log("Date must be selected")
@@ -261,11 +262,13 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                     <Text style={style.title}>{eventItem.name}</Text>
                     <Text style={style.body}>{eventItem.description}</Text>
 
-                    {eventItem.event_times ?
+                    {eventItem.event_times && eventItem.event_times.length !== 0 ?
                         <>
                             <Text style={style.subtitle}>Event Times</Text>
                             {eventItem.event_times.map((event: any, key: any) => {
-                                return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
+                                if (event.start_time > moment().format())
+                                    return <Text key={key} style={style.body}>{moment(event.start_time).format("ddd, MMM D, YYYY")}, {moment(event.start_time).format("h:mm a")} - {moment(eventItem.end_time).format("h:mm")}</Text>
+                                else return null
                             })}
 
                         </>
@@ -273,7 +276,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                             <Text style={style.subtitle}>Date &amp; Time</Text>
                             <Text style={style.body}>{moment(eventItem.start_time).format("ddd, MMM D, YYYY")}, {moment(eventItem.start_time).format("h:mm a")} {eventItem.end_time ? "- " + moment(eventItem.end_time).format("h:mm a") : null}</Text>
                         </>}
-                    {eventItem.event_times || eventItem.start_time && eventItem.end_time ?
+                    {eventItem.event_times && eventItem.event_times.length !== 0 || eventItem.start_time && eventItem.end_time ?
                         <IconButton onPress={() => {
                             addEventToCalendar()
                         }} style={style.actionButton} icon={Theme.icons.white.calendarAdd} label="Add to calendar" ></IconButton> : null}
@@ -291,7 +294,9 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
                             }>
                             <Picker.Item label="Select a Date" value=""></Picker.Item>
                             {eventItem.event_times?.map((value: any, key: any) => {
-                                return <Picker.Item key={key} label={`${moment(value.start_time).format("MMM Do YYYY, h:mm a")} - ${moment(value.end_time).format("h:mm a")}`} value={value}></Picker.Item>
+                                if (value.start_time > moment().format())
+                                    return <Picker.Item key={key} label={`${moment(value.start_time).format("MMM Do YYYY, h:mm a")} - ${moment(value.end_time).format("h:mm a")}`} value={value}></Picker.Item>
+                                else return null
                             })}
                         </Picker>
                         : null}

@@ -81,7 +81,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       try {
         setIsLoading(true)
         const eventsResult = await EventsService.loadEventsList({ id: location?.locationData?.locationId, name: location?.locationData?.locationName } as Location)
-        setEvents(await eventsResult);
+        setEvents(eventsResult);
         setIsLoading(false)
       }
       catch (error) {

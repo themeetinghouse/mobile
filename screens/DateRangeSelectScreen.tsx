@@ -51,7 +51,7 @@ const style = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         flexWrap: "wrap",
-        justifyContent: "flex-start",
+        justifyContent: "center",
     },
     monthItem: {
         fontFamily: Theme.fonts.fontFamilyBold,
@@ -206,7 +206,7 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
             </Content>
             <View style={{ flexGrow: 0, paddingTop: 24, paddingBottom: 52, backgroundColor: '#111111', paddingHorizontal: '5%', zIndex: 10000 }}>
                 <WhiteButton label="Save" onPress={() => saveAndClose()} style={{ height: 56 }} />
-                <WhiteButton outlined label="Clear All" onPress={() => { setFirstDate({}); setSecondDate({}) }} style={{ marginTop: 16, height: 56 }} />
+                <WhiteButton outlined label="Clear All" onPress={() => { setFirstDate({}); setSecondDate({}); navigation.navigate('AllSermonsScreen', { startDate: "", endDate: "" }) }} style={{ marginTop: 16, height: 56 }} />
             </View>
         </Container>
     )

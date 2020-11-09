@@ -19,7 +19,7 @@ const locationsToUsername: { [loc: string]: string } = {
   "oakville": "tmhoakville",
   "ottawa": "tmhottawa",
   "owen-sound": "themeetinghouse",
-  "parry-sound": "themeetinghouse",
+  "parry-sound": "tmhparrysound",
   "richmond-hill": "tmhrichmond",
   "toronto-uptown": "tmhuptowntoronto",
   "waterloo": "tmhwaterloo",
