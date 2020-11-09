@@ -1,10 +1,10 @@
 import { Thumbnail } from 'native-base';
-import React, { useEffect, memo } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import React, { useState, useEffect, memo } from 'react';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
 import * as Linking from 'expo-linking';
-
+import CachedImage from "react-native-expo-cached-image";
 const style = StyleSheet.create({
     container: {
         marginTop: 6,
@@ -16,8 +16,8 @@ const style = StyleSheet.create({
     },
     pictureContainer: {
         marginTop: 0,
-        backgroundColor: "#54565A",
         borderRadius: 100,
+        backgroundColor: "#54565A",
         width: 48,
         height: 48,
         display: "flex",
@@ -25,9 +25,10 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     picture: {
+        borderRadius: 100,
         justifyContent: 'center',
-        height: 25,
-        width: 25
+        width: 48,
+        height: 48
     },
     Name: {
         color: "white",
@@ -38,10 +39,11 @@ const style = StyleSheet.create({
     },
     Position: {
         marginTop: 2,
+        maxWidth: "70%",
+        minWidth: "70%",
         color: "white",
         fontWeight: "400",
         fontSize: 12,
-        flexWrap: "wrap",
     },
     footerText: {
         marginTop: 6,
@@ -75,7 +77,7 @@ function StaffItem(props: Props): JSX.Element {
     }
     return (
         <View style={style.container}>
-            <View style={style.pictureContainer}><Thumbnail style={style.picture} source={Theme.icons.white.user}></Thumbnail></View>
+            <View style={style.pictureContainer}><CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }} /*source={Theme.icons.white.user}*/></CachedImage></View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
                     <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>

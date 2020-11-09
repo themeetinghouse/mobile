@@ -32,6 +32,7 @@ interface Params {
 
 export default function StaffList({ navigation }: Params): JSX.Element {
     const [staff, setStaff] = useState([]);
+    const [filteredStaff, setFilteredStaff] = useState([])
     useEffect(() => {
         navigation.setOptions({
             headerShown: true,
@@ -51,7 +52,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
     useEffect(() => {
         const loadStaff = async () => {
             console.log("Fetching data from site")
-            setStaff(await StaffDirectoryService.loadStaffList())
+            const staffResults = await StaffDirectoryService.loadStaffList()
+            setStaff(staffResults)
+            setFilteredStaff(staffResults)
         }
         if (staff.length === 0)
             loadStaff()
@@ -61,6 +64,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [sortByName, setSortByName] = useState(false);
 
+    useEffect(() => {
+        setFilteredStaff(staff.filter((item: any) => item.FirstName.includes(searchText) || item.LastName.includes(searchText)))
+    }, [searchText])
     return (
         <FlatList
             ListHeaderComponentStyle={style.header}
@@ -74,9 +80,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                     <ToggleButton sortByName={sortByName} setSortByName={setSortByName} btnText_one={"By Location"} btnText_two={"By Last Name"}></ToggleButton>
                 </View>
             }
-            data={staff}
+            data={filteredStaff || staff}
             renderItem={({ item }) => <StaffItem staff={item}></StaffItem>}
-            keyExtractor={(item) => item.FirstName + item.LastName}
+            keyExtractor={(item: any) => item.FirstName + item.LastName}
         />
     )
 }
