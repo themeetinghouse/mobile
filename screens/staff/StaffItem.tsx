@@ -66,6 +66,7 @@ interface Props {
         Email: string
         Position: string
         Phone: string
+        sites: Array<string | null>
     }
 }
 function StaffItem(props: Props): JSX.Element {
@@ -77,7 +78,7 @@ function StaffItem(props: Props): JSX.Element {
     }
     return (
         <View style={style.container}>
-            <View style={style.pictureContainer}><CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }} /*source={Theme.icons.white.user}*/></CachedImage></View>
+            <View style={style.pictureContainer}><CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }} /*source={Theme.icons.white.user}*/></CachedImage></View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
                     <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>
