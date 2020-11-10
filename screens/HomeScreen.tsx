@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import { Container, Content, View, Text } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import LocationSelectHeader from '../components/LocationSelectHeader/LocationSelectHeader';
@@ -17,14 +17,14 @@ import { Location } from "../services/LocationsService";
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from "moment";
-import { StyleSheet } from 'react-native';
+import { StyleSheet, AppState } from 'react-native';
 import WhiteButton from '../components/buttons/WhiteButton';
 import InstagramService, { InstagramData } from '../services/Instagram';
 import InstagramFeed from '../components/home/InstagramFeed';
 import * as Linking from 'expo-linking';
 import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
-import { runGraphQLQuery } from "../services/ApiService"
+import LiveEventService from "../services/LiveEventService"
 const style = StyleSheet.create({
   categoryContainer: {
     backgroundColor: Theme.colors.black,
@@ -43,31 +43,27 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [preLive, setpreLive] = useState(false)
   const [live, setLive] = useState(false);
   //const [announcements, setAnnouncements] = useState<any>([]);
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [liveEvents, setLiveEvents] = useState<any>([]);
 
   useEffect(() => {
-    console.log(location?.locationData?.locationName)
-    const today = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('YYYY-MM-DD')
     const loadLiveStreams = async () => {
       try {
-        const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
-        liveStreamsResult.listLivestreams.items.map((event: any) => {
-          const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
-          const showTime = event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
-          if (showTime) {
-            if (rightNow >= event.videoStartTime && rightNow <= event.endTime) setLive(true)
-            setpreLive(true)
-          }
-        })
+        const liveStreamsResult = await LiveEventService.startLiveEventService()
+        if (liveStreamsResult?.liveEvents)
+          setLiveEvents(liveStreamsResult?.liveEvents)
       }
       catch (error) {
         console.log(error)
       }
     }
     loadLiveStreams();
+
     /*
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
@@ -102,10 +98,79 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     Linking.openURL('mailto:ask@themeetinghouse.com');
   }
 
+  useEffect(() => {
+    if (appStateVisible === "active" && liveEvents && liveEvents.length > 0) {
+      const interval = setInterval(() => {
+        if (!navigation.isFocused()) {
+          clearInterval(interval) // clears interval on navigate away
+          return;
+        }
+        const rightNow = moment().utcOffset(moment().isDST() ? '-0400' : '-0500').format('HH:mm')
+
+        const current = liveEvents.filter((event: any) => {
+          return event?.startTime && event?.endTime && rightNow >= event.startTime && rightNow <= event.endTime
+        })[0]
+        if (current?.id.includes('After Party')) { /* More logic is required to include After Party message in banner */
+          //console.log("Event is After Party. Live has ended. Exiting interval")
+          clearInterval(interval)
+          setLive(false)
+          setpreLive(false)
+          return;
+        }
+        if (current && rightNow <= current.endTime) {
+          /*        
+          console.log("Tick: " + rightNow + ":" + moment().format("ss"))
+          console.log("\n====================================================")
+          console.log("Prelive: " + preLive)
+          console.log("live: " + live)
+          console.log(`videoStartTime is ${current?.videoStartTime} endTime is ${current?.endTime} and current time is ${rightNow}`)
+          console.log(current) 
+          console.log("====================================================\n")
+          */
+          if (rightNow >= current.startTime && rightNow < current.videoStartTime) {
+            setpreLive(true)
+          }
+          else {
+            setpreLive(false)
+          }
+          const start = current?.videoStartTime
+          const end = current?.endTime
+          const showTime = rightNow >= start && rightNow <= end
+          if (showTime) {
+            if (preLive) setpreLive(false)
+            setLive(true)
+          }
+        } else {
+          setLive(false)
+          setpreLive(false)
+          if (rightNow > liveEvents[liveEvents.length - 1]?.endTime) { // Ends for the day
+            clearInterval(interval)
+            //console.log("Events ended.")
+          }
+        }
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [appStateVisible, liveEvents]);
+
+  const _handleAppStateChange = (nextAppState: any) => {
+    appState.current = nextAppState;
+    setAppStateVisible(appState.current);
+  };
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
+
   return (
     <Container>
       <LocationSelectHeader>Home</LocationSelectHeader>
-      {live || preLive ? <AnnouncementBar message={preLive ? !live ? "We will be going live soon!" : "We are live now!" : ""}></AnnouncementBar> : null}
+      {preLive === true ? <AnnouncementBar message={"We will be going live soon!"}></AnnouncementBar> :
+        live === true ? <AnnouncementBar message={"We are live now!"}></AnnouncementBar> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
 
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
@@ -194,24 +259,3 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     // </View>
   );
 }
-
-const listLivestreams = /* GraphQL */ `
-  query ListLivestreams(
-    $filter: ModelLivestreamFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listLivestreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        date
-        startTime
-        videoStartTime
-        endTime
-        prerollYoutubeId
-        liveYoutubeId
-      }
-      nextToken
-    }
-  }
-`;
