@@ -12,7 +12,7 @@ const style = StyleSheet.create({
         flexDirection: "row",
         borderBottomWidth: 1,
         borderBottomLeftRadius: 25,
-        borderColor: "gray"
+        borderColor: "gray",
     },
     pictureContainer: {
         marginTop: 0,
@@ -67,6 +67,7 @@ interface Props {
         Position: string
         Phone: string
         sites: Array<string | null>
+        Location: string | null
     }
 }
 function StaffItem(props: Props): JSX.Element {
@@ -76,6 +77,7 @@ function StaffItem(props: Props): JSX.Element {
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
+    console.log(props.staff)
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}><CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }} /*source={Theme.icons.white.user}*/></CachedImage></View>
