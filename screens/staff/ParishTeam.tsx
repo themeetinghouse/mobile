@@ -10,7 +10,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import LocationContext from '../../contexts/LocationContext'
-import { MainStackParamList } from 'navigation/AppNavigator';
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
@@ -26,7 +25,7 @@ const style = StyleSheet.create({
 })
 
 interface Params {
-    navigation: StackNavigationProp<MoreStackParamList | MainStackParamList>;
+    navigation: StackNavigationProp<MoreStackParamList>;
     route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
 
