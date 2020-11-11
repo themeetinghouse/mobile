@@ -84,7 +84,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                             <Text style={{ left: 16, marginBottom: 4, color: "#646469", fontSize: 14, lineHeight: 18, fontFamily: Theme.fonts.fontFamilyBold }}>Your Home Parish</Text>
                             <View style={{ flexDirection: "row" }}>
                                 <Left>
-                                    <Text style={{ left: 16, color: "white", fontWeight: "700", fontSize: 24, lineHeight: 32, fontFamily: Theme.fonts.fontFamilyRegular }}>{title}</Text>
+                                    <Text style={{ left: 16, color: "white", fontSize: 24, lineHeight: 32, fontFamily: Theme.fonts.fontFamilyBold }}>{title}</Text>
                                 </Left>
                                 <Right>
                                     {/* <TouchableOpacity onPress={() => navigation.navigate("LocationSelectionScreen", { persist: true })} style={{ right: 16 }}>

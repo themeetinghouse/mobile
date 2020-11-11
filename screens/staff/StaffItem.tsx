@@ -1,6 +1,6 @@
 import { Thumbnail } from 'native-base';
 import React, { useState, memo } from 'react';
-import { View, StyleSheet, Text, Image } from 'react-native';
+import { View, StyleSheet, Text, Image, Platform } from 'react-native';
 import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
 import * as Linking from 'expo-linking';
@@ -38,15 +38,14 @@ const style = StyleSheet.create({
         color: "white",
         fontSize: 16,
         lineHeight: 24,
-        fontWeight: "700",
-        fontFamily: Theme.fonts.fontFamilyRegular
+        fontFamily: Theme.fonts.fontFamilyBold
     },
     Position: {
         marginTop: 2,
         maxWidth: "70%",
         minWidth: "70%",
         color: "white",
-        fontWeight: "400",
+        fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: 12,
     },
     footerText: {
@@ -108,14 +107,15 @@ function StaffItem(props: Props): JSX.Element {
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>
-                {uri !== Theme.icons.white.user ?
-                    props.staff.Coordinator ?
-                        <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
+                {Platform.OS === "android" ?
+                    uri !== Theme.icons.white.user ?
+                        props.staff.Coordinator ?
+                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
+                            :
+                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} /*source={Theme.icons.white.user}*/ />
                         :
-                        <CachedImage style={style.picture} onError={() => uriError()} source={uri} /*source={Theme.icons.white.user}*/ />
-                    :
-                    <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
-                }
+                        <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
+                    : <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
             </View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
