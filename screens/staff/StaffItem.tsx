@@ -57,7 +57,7 @@ const style = StyleSheet.create({
         fontSize: 12,
         lineHeight: 18
     },
-    icon: { ...Style.icon, width: 21, height: 21, },
+    icon: { ...Style.icon, width: 23, height: 23, },
     iconContainer: {
         justifyContent: "center",
         padding: 16

@@ -9,6 +9,7 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
     content: {
@@ -32,8 +33,7 @@ interface Params {
 export default function StaffList({ navigation }: Params): JSX.Element {
     const [staff, setStaffByName] = useState([]);
     const [searchText, setSearchText] = useState("");
-    const [isLoading, setisLoading] = useState(true);
-
+    const [isLoading, setisLoading] = useState(false);
 
     useEffect(() => {
         navigation.setOptions({
@@ -51,8 +51,10 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             headerRight: function render() { return <View style={{ flex: 1 }} /> }
         })
         const loadStaff = async () => {
+            setisLoading(true)
             const staffResults = await StaffDirectoryService.loadStaffList()
             setStaffByName(staffResults.sort((a: any, b: any) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0)))
+            setisLoading(false)
         }
         loadStaff()
         return () => {
@@ -60,35 +62,29 @@ export default function StaffList({ navigation }: Params): JSX.Element {
         }
     }, [])
     return (
-        <FlatList
-            ListHeaderComponentStyle={style.header}
-            ListHeaderComponent={
-                <View style={style.content}>
-                    <SearchBar
-                        style={style.searchBar}
-                        searchText={searchText}
-                        handleTextChanged={(newStr) => setSearchText(newStr)}
-                        placeholderLabel="Search by name or location..."></SearchBar>
-                    {/*<ToggleButton sortByName={sortByName} setSortByName={setSortByName} btnText_one={"By Location"} btnText_two={"By Last Name"}></ToggleButton> */}
-                </View>
-            }
-            progressViewOffset={300}
-            data={staff}
-            renderItem={({ item }: any) => {
-                if (item.FirstName.toLowerCase().includes(searchText.toLowerCase()) || item.LastName.toLowerCase().includes(searchText.toLowerCase()) || searchText === "" || item.Location.toLowerCase().includes(searchText.toLowerCase()))
-                    return (
-                        <View><StaffItem staff={item}></StaffItem></View>
-                    )
-                else {
-                    return <></>
+        <>
+            {isLoading ? <View style={{ zIndex: 100, position: "absolute", left: 50, right: 50, bottom: "50%" }}><ActivityIndicator animating={isLoading}></ActivityIndicator></View> : null}
+            <FlatList
+                ListHeaderComponentStyle={style.header}
+                ListHeaderComponent={
+                    <View style={style.content}>
+                        <SearchBar
+                            style={style.searchBar}
+                            searchText={searchText}
+                            handleTextChanged={(newStr) => setSearchText(newStr)}
+                            placeholderLabel="Search by name or location..."></SearchBar>
+                        {/*<ToggleButton sortByName={sortByName} setSortByName={setSortByName} btnText_one={"By Location"} btnText_two={"By Last Name"}></ToggleButton> */}
+
+                    </View>
                 }
-            }}
-            initialNumToRender={10}
-            onRefresh={() => <></>}
-            refreshing={isLoading}
-            onEndReachedThreshold={100}
-            onEndReached={() => setisLoading(false)}
-        />)
+                data={staff.filter((item: any) => item.FirstName.toLowerCase().includes(searchText.toLowerCase()) || item.LastName.toLowerCase().includes(searchText.toLowerCase()) || searchText === "" || item.Location.toLowerCase().includes(searchText.toLowerCase()))}
+                renderItem={({ item }: any) =>
+                    <StaffItem staff={item}></StaffItem>
+                }
+                initialNumToRender={10}
+            />
+        </>
+    )
 
 
 }
