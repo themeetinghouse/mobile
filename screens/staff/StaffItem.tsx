@@ -89,9 +89,11 @@ function StaffItem(props: Props): JSX.Element {
         }
         switch (staffType) {
             case "Coordinator":
-                return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
             case "Staff":
-                return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
             default:
                 return Theme.icons.white.user
         }
@@ -112,10 +114,16 @@ function StaffItem(props: Props): JSX.Element {
                         props.staff.Coordinator ?
                             <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
                             :
-                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} /*source={Theme.icons.white.user}*/ />
+                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
                         :
                         <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
-                    : <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
+                    : uri !== Theme.icons.white.user ?
+                        props.staff.Coordinator ?
+                            <Image style={style.picture} onError={() => uriError()} source={uri} />
+                            :
+                            <Image style={style.picture} onError={() => uriError()} source={uri} />
+                        :
+                        <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
             </View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
