@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
@@ -7,12 +7,14 @@ import UserContext from '../contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import LocationContext from '../contexts/LocationContext'
+
 
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
             backgroundColor: Theme.colors.black,
-        }
+        },
     },
     header: Style.header,
     headerLeft: {
@@ -72,23 +74,33 @@ const style = StyleSheet.create({
             marginLeft: 16,
         }
     },
-    listArrowIcon: Style.icon,
+    listArrowIcon: { ...Style.icon, right: 20 },
     icon: Style.icon,
 })
 
 function MoreScreen(): JSX.Element {
-
+    const location = useContext(LocationContext);
     const user = useContext(UserContext);
     const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-
-    const items = [
-        { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
-        //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-        { id: "connect", text: "Connect", subtext: "Looking to connect with us?", icon: Theme.icons.white.connect, action: () => Linking.openURL('https://www.themeetinghouse.com/connect') },
-        { id: "staff", text: "Staff Directory", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff, action: () => navigation.navigate("StaffList") },
-        { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch, action: () => Linking.openURL('https://www.themeetinghouse.com/find-homechurch') },
-    ]
-
+    let items = [];
+    if (location?.locationData?.locationId === "unknown")
+        items = [
+            { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
+            //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+            { id: "connect", text: "Connect", subtext: "Looking to connect with us?", icon: Theme.icons.white.connect, action: () => Linking.openURL('https://www.themeetinghouse.com/connect') },
+            { id: "staff", text: "Staff Team", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff, action: () => navigation.navigate("StaffList") },
+            { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch, action: () => Linking.openURL('https://www.themeetinghouse.com/find-homechurch') },
+        ]
+    else {
+        items = [
+            { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
+            //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+            { id: "connect", text: "Connect", subtext: "Looking to connect with us?", icon: Theme.icons.white.connect, action: () => Linking.openURL('https://www.themeetinghouse.com/connect') },
+            { id: "staff", text: "Staff Team", subtext: "Contact a staff member directly", icon: Theme.icons.white.staff, action: () => navigation.navigate("StaffList") },
+            { id: "parish", text: "My Parish Team", subtext: "Contact a parish team member", icon: Theme.icons.white.staff, action: () => navigation.navigate("ParishTeam") },
+            { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch, action: () => Linking.openURL('https://www.themeetinghouse.com/find-homechurch') },
+        ]
+    }
     return (
         <Container>
             <Header style={style.header}>
@@ -109,7 +121,7 @@ function MoreScreen(): JSX.Element {
 
                 <View>
                     <List>
-                        {items.slice(0, 3).map(item => {
+                        {items.slice(0, 4).map(item => {
                             return <ListItem
                                 key={item.id} style={style.listItem}
                                 onPress={item.action}>
@@ -128,7 +140,7 @@ function MoreScreen(): JSX.Element {
 
                         <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
 
-                        {items.slice(3).map(item => {
+                        {items.slice(4).map(item => {
                             return <ListItem
                                 key={item.id} style={style.listItem}
                                 onPress={item.action}>

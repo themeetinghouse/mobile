@@ -1,5 +1,5 @@
 import { Thumbnail } from 'native-base';
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
 import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
@@ -29,6 +29,10 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         width: 48,
         height: 48
+    },
+    fallBackPicture: {
+        height: 23,
+        width: 20
     },
     Name: {
         color: "white",
@@ -68,19 +72,51 @@ interface Props {
         Phone: string
         sites: Array<string | null>
         Location: string | null
+        Coordinator: boolean | null
     }
 }
+
 function StaffItem(props: Props): JSX.Element {
+    const uriError = () => {
+        setUri(Theme.icons.white.user)
+    }
+    const determineUri = (ev: any) => {
+        let staffType;
+        if (ev) {
+            staffType = "Coordinator"
+        }
+        else {
+            staffType = "Staff"
+        }
+        switch (staffType) {
+            case "Coordinator":
+                return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+            case "Staff":
+                return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+            default:
+                return Theme.icons.white.user
+        }
+    }
+    const [uri, setUri] = useState(determineUri(props.staff.Coordinator))
+
     const parseTelephone = (tel: string) => {
         const telephone = tel.split(',')[0].replace(/\D/g, '')
         const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
-    console.log(props.staff)
     return (
         <View style={style.container}>
-            <View style={style.pictureContainer}><CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }} /*source={Theme.icons.white.user}*/></CachedImage></View>
+            <View style={style.pictureContainer}>
+                {uri !== Theme.icons.white.user ?
+                    props.staff.Coordinator ?
+                        <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
+                        :
+                        <CachedImage style={style.picture} onError={() => uriError()} source={uri} /*source={Theme.icons.white.user}*/ />
+                    :
+                    <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
+                }
+            </View>
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
                     <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>
@@ -98,12 +134,15 @@ function StaffItem(props: Props): JSX.Element {
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(props.staff.Phone)}`)} style={style.iconContainer}>
-                        <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.staff.Email}`)} style={style.iconContainer}>
-                        <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
-                    </TouchableOpacity>
+                    {props.staff.Phone ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(props.staff.Phone)}`)} style={style.iconContainer}>
+                            <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
+                        </TouchableOpacity> : null}
+                    {props.staff.Email ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.staff.Email}`)} style={style.iconContainer}>
+                            <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
+                        </TouchableOpacity>
+                        : null}
                 </View>
             </View>
         </View >
