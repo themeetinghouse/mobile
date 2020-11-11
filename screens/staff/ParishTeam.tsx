@@ -68,6 +68,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
         <>
             {isLoading ? <View style={{ zIndex: 100, position: "absolute", left: 50, right: 50, bottom: "50%" }}><ActivityIndicator animating={isLoading}></ActivityIndicator></View> : null}
             <SectionList
+                stickySectionHeadersEnabled={false}
                 sections={staffByLocation}
                 ListHeaderComponent={
                     <View style={style.content}>
