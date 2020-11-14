@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import NotesService from '../services/NotesService';
-import { Text, Header, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
+import { Text, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
 import NoteReader from '../components/teaching/notes/NoteReader';
@@ -19,6 +19,7 @@ import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables, GetNotesQuer
 import CommentContext from '../contexts/CommentContext';
 import OpenVerseModal from '../components/modals/OpenVerseModal';
 import UserContext from '../contexts/UserContext';
+import Header from '../components/Header';
 
 interface Style {
     content: any;
@@ -129,8 +130,8 @@ const style = StyleSheet.create({
 type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface Params {
-    navigation: StackNavigationProp<MainStackParamList , 'NotesScreen'>
-    route: RouteProp<MainStackParamList , 'NotesScreen'>
+    navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
+    route: RouteProp<MainStackParamList, 'NotesScreen'>
     today: string;
     fromLiveStream: boolean | undefined
 }

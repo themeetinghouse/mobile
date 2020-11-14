@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Header, Text, Left, Button, Body, Right, View, Thumbnail } from 'native-base';
+import { Container, Text, Left, Button, Body, Right, View, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
@@ -17,6 +17,7 @@ import CommentContext from '../contexts/CommentContext';
 import UserContext from '../contexts/UserContext';
 import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
 import NeedsSignUpModal from '../components/modals/NeedsSignUpModal';
+import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {
@@ -388,7 +389,7 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     }
 
     return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom, }}>
-        <Header style={style.header}>
+        <Header style={style.header} doNotRemoveSafeArea>
             <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
             <Left style={style.headerLeft}>
                 <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
