@@ -141,7 +141,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             Analytics.record({
                 name: 'login'
               }).catch((e) => {
-                console.log(e);
+                console.log({error:e});
               });
             userContext?.setUserData(userSignedIn.attributes);
             location?.setLocationData({
