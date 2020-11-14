@@ -160,7 +160,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         </View>
         <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
             <Text style={style.title}>Email</Text>
-            <TextInput accessibilityLabel="Email Address" keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text)} />
+            <TextInput accessibilityLabel="Email Address" keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" style={style.input} value={user} autoCapitalize="none" onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())} />
             <Text style={style.title}>Password</Text>
             <TextInput accessibilityLabel="Password" keyboardAppearance="dark" autoCompleteType="password" textContentType="password" onKeyPress={(e) => handleEnter(e, signIn)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <TouchableOpacity onPress={() => navigateInAuthStack('ForgotPasswordScreen')} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Forgot Password?</Text></TouchableOpacity>

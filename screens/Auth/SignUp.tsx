@@ -201,7 +201,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         </View>
         <View style={{ flexGrow: 1, backgroundColor: 'black', width: '100%', paddingHorizontal: '5%', paddingBottom: 56 }}>
             <Text style={style.title}>Email</Text>
-            <TextInput accessibilityLabel="Email Address" keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text)} />
+            <TextInput accessibilityLabel="Email Address" keyboardAppearance="dark" autoCompleteType="email" textContentType="emailAddress" keyboardType="email-address" autoCapitalize="none" style={style.input} value={user} onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())} />
             <Text style={style.title}>Password</Text>
             <TextInput accessibilityLabel="Password" textContentType="newPassword" passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;" keyboardAppearance="dark" onKeyPress={(e) => handleEnter(e, signUp)} value={pass} onChange={e => setPass(e.nativeEvent.text)} secureTextEntry={true} style={style.input} />
             <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', marginTop: 12 }}>
