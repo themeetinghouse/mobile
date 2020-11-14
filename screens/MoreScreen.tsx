@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import React, { useContext } from 'react';
+import { Container, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
@@ -9,6 +9,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import LocationContext from '../contexts/LocationContext'
 
+import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {

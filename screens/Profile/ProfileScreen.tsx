@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Container } from 'native-base';
+import { Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
@@ -11,6 +11,7 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import { CompositeNavigationProp, CommonActions } from '@react-navigation/native';
 import LocationContext from '../../contexts/LocationContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../components/Header';
 
 const style = StyleSheet.create({
     content: {
@@ -210,7 +211,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
 
     return (
         <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
-            <Header style={style.header}>
+            <Header style={style.header} doNotRemoveSafeArea>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                 </Left>

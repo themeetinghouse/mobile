@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Button } from 'native-base';
+import { Container, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Button } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import UserContext from '../../contexts/UserContext'
@@ -7,6 +7,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import LocationsService from '../../services/LocationsService';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Header from '../../components/Header';
 
 const style = StyleSheet.create({
     content: {

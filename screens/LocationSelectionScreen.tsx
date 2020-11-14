@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
+import { Container, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StatusBar, StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
@@ -11,6 +11,7 @@ import UserContext from '../contexts/UserContext';
 import * as SecureStore from 'expo-secure-store';
 import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from 'navigation/AppNavigator';
+import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {
@@ -124,7 +125,7 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
 
     return (
         <Container style={{ backgroundColor: 'black' }} >
-            <Header style={style.header}>
+            <Header style={style.header} doNotRemoveSafeArea>
                 <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
                 <Left style={style.headerLeft}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
