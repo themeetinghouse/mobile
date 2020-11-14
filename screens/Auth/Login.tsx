@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput, NativeSyntheticEvent, TextInputKeyPressEventData, TouchableOpacity, Dimensions, StatusBar, Platform } from 'react-native'
 import { Auth } from '@aws-amplify/auth'
+import { Analytics } from '@aws-amplify/analytics'
 import { Theme, Style } from '../../Theme.style';
 import WhiteButton, { WhiteButtonAsync } from '../../components/buttons/WhiteButton'
 import UserContext from '../../contexts/UserContext';
@@ -137,6 +138,11 @@ export default function Login({ navigation }: Params): JSX.Element {
         try {
             await Auth.signIn(user, pass)
             const userSignedIn = await Auth.currentAuthenticatedUser();
+            Analytics.record({
+                name: 'login'
+              }).catch((e) => {
+                console.log(e);
+              });
             userContext?.setUserData(userSignedIn.attributes);
             location?.setLocationData({
                 locationId: userSignedIn.attributes['custom:home_location'],
