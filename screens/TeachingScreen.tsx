@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Left, Right, View, Body, Thumbnail } from 'native-base';
+import { Container, Text, Button, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { ScrollView, StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
@@ -21,7 +21,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 import { AnimatedFallbackImage } from '../components/FallbackImage';
-import Header from '../components/Header';
+
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
 
