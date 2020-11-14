@@ -40,6 +40,8 @@ export type MainStackParamList = {
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: { item: any };
   LiveStreamScreen: undefined;
+  StaffList: undefined;
+  ParishTeam: undefined;
   CommentScreen: {
     key: string,
     noteId: string,

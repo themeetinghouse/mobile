@@ -25,6 +25,8 @@ import { StyleSheet } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
+import StaffList from "../screens/staff/StaffList";
+import ParishTeam from "../screens/staff/ParishTeam";
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -80,7 +82,10 @@ function TeachingStack() {
 }*/
 
 export type MoreStackParamList = {
+  //LocationSelectionScreen: any, //this is wrong (?)
   MoreScreen: undefined;
+  StaffList: undefined;
+  ParishTeam: undefined;
 }
 
 const More = createStackNavigator<MoreStackParamList>();
@@ -89,6 +94,8 @@ function MoreStack() {
   return (
     <More.Navigator screenOptions={{ headerShown: false }}>
       <More.Screen name="MoreScreen" component={MoreScreen} />
+      <More.Screen name="StaffList" component={StaffList} />
+      <More.Screen name="ParishTeam" component={ParishTeam} />
     </More.Navigator>
   )
 }
