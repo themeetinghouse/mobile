@@ -47,6 +47,7 @@
       }
     },
     "android": {
+      "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
       "versionCode": 20042,
       "permissions": [],

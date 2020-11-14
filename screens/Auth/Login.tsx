@@ -15,6 +15,7 @@ import LocationsService from '../../services/LocationsService';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MediaContext from '../../contexts/MediaContext';
+import * as Notifications from 'expo-notifications'
 
 const style = StyleSheet.create({
     title: {
@@ -132,17 +133,39 @@ export default function Login({ navigation }: Params): JSX.Element {
         if (keyEvent.nativeEvent.key === 'Enter')
             cb();
     }
+    const mapObj = (f: any) => (obj: any) =>
+    Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
+    const toArrayOfStrings = (value: any) => [`${value}`];
+    const mapToArrayOfStrings = mapObj(toArrayOfStrings);
 
+    async function trackUserId(user) {
+        try {
+            const attributes=user.attributes
+          const userAttributes = mapToArrayOfStrings(attributes);
+          const token = (await Notifications.getDevicePushTokenAsync()).data
+          Analytics.updateEndpoint({
+            address: token,
+            channelType: Platform.OS === 'ios'?'APNS':'GCM',
+            optOut: 'NONE',
+            userId: attributes.sub,
+            userAttributes,
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
     const signIn = async () => {
         setSending(true);
         try {
             await Auth.signIn(user, pass)
             const userSignedIn = await Auth.currentAuthenticatedUser();
+            await trackUserId(userSignedIn)
             Analytics.record({
                 name: 'login'
               }).catch((e) => {
                 console.log({error:e});
               });
+              
             userContext?.setUserData(userSignedIn.attributes);
             location?.setLocationData({
                 locationId: userSignedIn.attributes['custom:home_location'],
