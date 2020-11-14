@@ -1,6 +1,6 @@
 import React from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Body } from 'native-base';
+import { Container, Text, Button, Icon, Content, Left, Right, Header, Body } from 'native-base';
 //import IconButton from '../components/buttons/IconButton';
 //import moment from 'moment';
 import WhiteButton from '../components/buttons/WhiteButton';
@@ -8,7 +8,6 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import Header from '../components/Header';
 
 const style = StyleSheet.create({
     content: {
