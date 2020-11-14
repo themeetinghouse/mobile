@@ -1,8 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Content, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
+import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StatusBar, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import WhiteButton from '../components/buttons/WhiteButton';
@@ -101,6 +101,19 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     const [secondDate, setSecondDate] = useState<Date>({});
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'Date Range',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <Button transparent onPress={() => navigation.goBack()}>
+                <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
+            </Button>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
+    })
 
     useEffect(() => {
         miniPlayerStyle.setDisplay('none')
@@ -174,19 +187,6 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
 
     return (
         <Container style={{ backgroundColor: 'black' }} >
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
-                        <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Date Range</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                </Right>
-            </Header>
             <Content style={style.content}>
                 {years.map(year => (
                     <View key={year + ""} style={style.yearSection}>

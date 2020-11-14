@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
+import { Container, Content, Text, Left, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import LocationsService from '../../services/LocationsService';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -85,6 +85,30 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
     const [selectedLocation, setSelectedLocation] = useState<LocationData>();
     const [searchText, setSearchText] = useState("");
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'Location',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Text style={style.headerButtonText}>Cancel</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <TouchableOpacity onPress={() => {
+                if (selectedLocation?.locationId)
+                    navigation.navigate('SignUpScreen', { locationId: selectedLocation.locationId, locationName: selectedLocation.locationName });
+                else
+                    navigation.goBack();
+            }}>
+                <Text style={style.headerButtonText}>Done</Text>
+            </TouchableOpacity>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
     useEffect(() => {
         const loadLocations = () => {
             const locationsResult = LocationsService.loadLocationDataForContext();
@@ -95,27 +119,6 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
 
     return (
         <Container style={{ backgroundColor: 'black' }} >
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={style.headerButtonText}>Cancel</Text>
-                    </TouchableOpacity>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Location</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <TouchableOpacity onPress={() => {
-                        if (selectedLocation?.locationId)
-                            navigation.navigate('SignUpScreen', { locationId: selectedLocation.locationId, locationName: selectedLocation.locationName });
-                        else
-                            navigation.goBack();
-                    }}>
-                        <Text style={style.headerButtonText}>Done</Text>
-                    </TouchableOpacity>
-                </Right>
-            </Header>
             <Content style={style.content}>
                 <View>
                     <Item>

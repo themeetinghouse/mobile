@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import NotesService from '../services/NotesService';
-import { Text, Header, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
+import { Text, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StatusBar, TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
+import { TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
 import NoteReader from '../components/teaching/notes/NoteReader';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import TextOptions from '../components/modals/TextOptions'
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import { MainStackParamList } from 'navigation/AppNavigator';
@@ -19,6 +18,7 @@ import { GetCommentsByOwnerQuery, GetCommentsByOwnerQueryVariables, GetNotesQuer
 import CommentContext from '../contexts/CommentContext';
 import OpenVerseModal from '../components/modals/OpenVerseModal';
 import UserContext from '../contexts/UserContext';
+import Header from '../components/Header/Header';
 
 interface Style {
     content: any;
@@ -49,7 +49,8 @@ const style = StyleSheet.create({
     headerLeft: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 50,
+        left: 16,
     },
     headerBody: {
         flexGrow: 3,
@@ -59,7 +60,8 @@ const style = StyleSheet.create({
     headerRight: {
         flexGrow: 0,
         flexShrink: 0,
-        flexBasis: 50
+        flexBasis: 50,
+        right: 16
     },
     headerTitle: {
         ...HeaderStyle.title, ...{
@@ -129,8 +131,8 @@ const style = StyleSheet.create({
 type VerseType = NonNullable<NonNullable<GetNotesQuery['getNotes']>['verses']>['items'];
 
 interface Params {
-    navigation: StackNavigationProp<MainStackParamList , 'NotesScreen'>
-    route: RouteProp<MainStackParamList , 'NotesScreen'>
+    navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>
+    route: RouteProp<MainStackParamList, 'NotesScreen'>
     today: string;
     fromLiveStream: boolean | undefined
 }
@@ -150,7 +152,6 @@ export default function NotesScreen({ route, navigation, today, fromLiveStream }
     const [noteId, setNoteId] = useState('');
     const commentContext = useContext(CommentContext);
 
-    const safeArea = useSafeAreaInsets();
     const ref = React.createRef<Swiper>();
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);
     const userContext = useContext(UserContext);
@@ -161,12 +162,8 @@ export default function NotesScreen({ route, navigation, today, fromLiveStream }
 
     navigation.setOptions({
         headerShown: true,
-        title: '',
-        headerStyle: { backgroundColor: Theme.colors.background },
-        safeAreaInsets: { top: safeArea.top },
         header: function render() {
-            return <Header style={style.header} >
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
+            return <Header>
                 <Left style={style.headerLeft}>
                     <Button transparent onPress={() => navigation.goBack()}>
                         <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>

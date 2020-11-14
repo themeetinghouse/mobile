@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import React, { useContext } from 'react';
+import { Container, Content, Text, Left, Button, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import UserContext from '../contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
@@ -83,6 +83,23 @@ function MoreScreen(): JSX.Element {
     const user = useContext(UserContext);
     const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
     let items = [];
+
+    navigation.setOptions({
+        headerShown: true,
+        title: 'More',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <View style={{ flex: 1 }} />
+        },
+        headerRight: function render() {
+            return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
+            </Button>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
     if (location?.locationData?.locationId === "unknown")
         items = [
             { id: "give", text: "Give", subtext: "Donate to The Meeting House", icon: Theme.icons.white.give, action: () => Linking.openURL('https://www.themeetinghouse.com/give') },
@@ -101,22 +118,9 @@ function MoreScreen(): JSX.Element {
             { id: "homeChurch", text: "Home Church", subtext: "Find a home church near you", icon: Theme.icons.white.homeChurch, action: () => Linking.openURL('https://www.themeetinghouse.com/find-homechurch') },
         ]
     }
+
     return (
         <Container>
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>More</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
-                        <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
-                    </Button>
-                </Right>
-            </Header>
-
             <Content style={style.content}>
 
                 <View>

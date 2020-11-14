@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
 import UserContext from '../../contexts/UserContext';
-import { Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Container } from 'native-base';
+import { Content, Text, Left, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -100,6 +100,23 @@ export default function Profile({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
+
+    navigation.setOptions({
+        headerShown: true,
+        title: 'Profile',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <View style={{ flex: 1 }} />
+        },
+        headerRight: function render() {
+            return <TouchableOpacity onPress={() => navigation.goBack()}>
+                <Text style={style.headerButtonText}>Done</Text>
+            </TouchableOpacity>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
 
     useEffect(() => {
         function checkForUser() {
@@ -210,19 +227,6 @@ export default function Profile({ navigation }: Params): JSX.Element {
 
     return (
         <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Profile</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={style.headerButtonText}>Done</Text>
-                    </TouchableOpacity>
-                </Right>
-            </Header>
             {renderContent()}
         </Container>
     )

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { Container, Header, Content, Text, Left, Button, Body, Right, View, Thumbnail, List, ListItem } from 'native-base';
+import { Container, Content, Text, Button, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions, StyleSheet } from 'react-native';
+import { TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions, StyleSheet } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import { TextInput } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
@@ -104,6 +104,25 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     const [error, setError] = useState('');
     const safeArea = useSafeAreaInsets();
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'Password',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <Button transparent onPress={() => navigation.goBack()}>
+                <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
+            </Button>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <TouchableOpacity disabled={!(currentPass && newPass)} onPress={changePassword}>
+                <Text style={currentPass && newPass ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Save</Text>
+            </TouchableOpacity>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
     function forgotPass(): void {
         setCurrentPass('');
         setNewPass('');
@@ -148,22 +167,6 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
 
     return <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <Container style={{ backgroundColor: Theme.colors.black, paddingBottom: safeArea.bottom }} >
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
-                        <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Change Password</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <TouchableOpacity disabled={!(currentPass && newPass)} onPress={changePassword}>
-                        <Text style={currentPass && newPass ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Save</Text>
-                    </TouchableOpacity>
-                </Right>
-            </Header>
             <Content style={style.content}>
                 <View>
                     <List>
