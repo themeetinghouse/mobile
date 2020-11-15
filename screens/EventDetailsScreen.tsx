@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Theme, Style } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, View, Thumbnail } from 'native-base';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
+import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
-import { Alert, StatusBar, StyleSheet, ActionSheetIOS, Platform, AppState } from 'react-native';
+import { Alert, StyleSheet, ActionSheetIOS, Platform, AppState, TouchableOpacity } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -63,7 +63,8 @@ const style = StyleSheet.create({
     },
     detailsContainer: {
         paddingBottom: 50
-    }
+    },
+    headerTitle: HeaderStyle.title
 })
 
 interface Props {
@@ -81,6 +82,26 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
     const [alerts, setAlerts]: any = useState({ message: "" });
+
+    props.navigation.setOptions({
+        headerShown: true,
+        title: "",
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Home</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <Button transparent onPress={() => setShare(!share)}>
+                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+            </Button>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
 
     const directionsType = () => {
         if (eventItem.place) {
@@ -235,21 +256,6 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     }, [appState.current])
     return (
         <Container>
-
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left>
-                    <Button transparent onPress={() => props.navigation.goBack()}>
-                        <Icon name='arrow-back' />
-                    </Button>
-                </Left>
-                <Right>
-                    <Button transparent onPress={() => setShare(!share)}>
-                        <Icon name='share' />
-                    </Button>
-                </Right>
-            </Header>
-
             <Content style={style.content}>
                 <View style={style.dateBoxContainer}>
                     <View style={style.dateBox}>

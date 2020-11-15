@@ -47,7 +47,7 @@ export type MainStackParamList = {
     noteId: string,
     commentType: CommentDataType,
     noteType: 'notes' | 'questions',
-    extSnippet?: string,
+    textSnippet?: string,
     imageUri?: string
   } | {
     commentId: string,

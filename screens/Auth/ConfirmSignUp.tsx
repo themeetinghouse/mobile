@@ -68,12 +68,12 @@ export default function Login({ navigation }: Params): JSX.Element {
             setUser(route.params.email.toLowerCase())
     }, [route])
 
-    function toLogin(): void {
+    function toLogin(isNewUser: boolean): void {
         setUser('');
         setCode('');
         setError('');
         setNeedsNewCode(false);
-        navigation.navigate('LoginScreen', { newUser: true });
+        navigation.navigate('LoginScreen', { newUser: isNewUser });
     }
 
     function handleEnter(keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>): void {
@@ -101,7 +101,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     const confirm = async () => {
         setSending(true);
         try {
-            await Auth.confirmSignUp(user, code).then(() => toLogin())
+            await Auth.confirmSignUp(user, code).then(() => toLogin(true))
         } catch (e) {
             console.debug(e)
             if (e.code === "UserNotFoundException")
@@ -138,8 +138,8 @@ export default function Login({ navigation }: Params): JSX.Element {
                     <TouchableOpacity onPress={() => { setNeedsNewCode(true); setError(''); setCode(''); }} style={{ alignSelf: 'flex-end' }}><Text style={style.forgotPassText}>Need a new code?</Text></TouchableOpacity>
                 </View>}
             <View style={{ flexGrow: 0, paddingBottom: 52, backgroundColor: Theme.colors.background, paddingHorizontal: '5%' }}>
-                <WhiteButton outlined label="Back to login" onPress={() => toLogin()} style={{ marginTop: 24, height: 56 }} />
+                <WhiteButton outlined label="Back to login" onPress={() => toLogin(false)} style={{ marginTop: 24, height: 56 }} />
             </View>
         </View>
     </TouchableWithoutFeedback>
-} 
+}

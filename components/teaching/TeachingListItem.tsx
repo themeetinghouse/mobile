@@ -8,6 +8,9 @@ import { GetCommentsByOwnerQueryVariables, GetCommentsByOwnerQuery } from 'servi
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 
+
+const imageWidth = 0.42 * Dimensions.get('screen').width;
+
 const style = StyleSheet.create({
     container: {
         display: "flex",
@@ -15,17 +18,17 @@ const style = StyleSheet.create({
         marginBottom: 16,
     },
     thumbnail: {
-        width: 158,
-        height: 88,
+        width: imageWidth,
+        height: (9 / 16) * imageWidth,
         flexShrink: 0,
     },
     title: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.smallMedium,
         color: Theme.colors.white,
-        flexWrap: 'wrap',
         lineHeight: 18,
-        maxWidth: Dimensions.get('screen').width * 0.5
+        flexWrap: 'wrap',
+        maxWidth: imageWidth
     },
     detailsContainer: {
         display: 'flex',
@@ -38,7 +41,9 @@ const style = StyleSheet.create({
         fontFamily: Theme.fonts.fontFamilyRegular,
         fontSize: Theme.fonts.small,
         color: Theme.colors.white,
-        lineHeight: 18
+        lineHeight: 18,
+        flexWrap: 'wrap',
+        maxWidth: imageWidth
     },
     detailText2: {
         fontFamily: Theme.fonts.fontFamilyRegular,
@@ -91,7 +96,6 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
         <TouchableOpacity onPress={handlePress}>
             <View style={style.container}>
                 <Image style={style.thumbnail} source={{ uri: imageUrl }} />
-                {/* <Thumbnail style={style.thumbnail} source={teaching.thumbnail} square ></Thumbnail> */}
                 <View style={style.detailsContainer}>
                     <Text style={style.title}>{teaching?.episodeTitle}</Text>
                     <Text style={style.detailText1}>{teaching?.episodeNumber ? `E${teaching?.episodeNumber},` : ''} {teaching?.seriesTitle}</Text>

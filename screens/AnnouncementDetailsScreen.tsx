@@ -1,10 +1,8 @@
 import React from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, Left, Right, Header, Body } from 'native-base';
-//import IconButton from '../components/buttons/IconButton';
-//import moment from 'moment';
+import { Container, Text, Button, Icon, Content, View } from 'native-base';
 import WhiteButton from '../components/buttons/WhiteButton';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -58,26 +56,26 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
 
     const announcementItem = props.route.params?.item;
 
+    props.navigation.setOptions({
+        headerShown: true,
+        title: 'Announcement',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <Button transparent onPress={() => props.navigation.goBack()}>
+                <Icon name='close' />
+            </Button>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() { return <View style={{ flex: 1 }} /> }
+    })
+
     return (
         <Container>
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => props.navigation.goBack()}>
-                        <Icon name='close' />
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Announcement</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                </Right>
-            </Header>
             <Content style={style.content}>
                 <Text style={style.title}>{announcementItem.title}</Text>
                 <Text style={style.body}>{announcementItem.description}</Text>
                 <WhiteButton label="Call to action"></WhiteButton>
-
             </Content>
         </Container>
     )
