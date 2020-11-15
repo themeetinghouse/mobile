@@ -1,6 +1,6 @@
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import React, { useEffect, useState, createRef } from 'react';
+import React, { useEffect, useState, createRef, useRef } from 'react';
 import { Platform, StatusBar, ViewStyle } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
@@ -17,6 +17,10 @@ import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as Sentry from 'sentry-expo';
 import { version } from './version'
+import * as Notifications from 'expo-notifications'
+import * as Permissions from 'expo-permissions'
+import * as Constants from 'expo-constants'
+import { Subscription } from '@unimodules/core';
 
 Sentry.init({
   dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
@@ -74,9 +78,41 @@ function App(props: Props): JSX.Element {
   const [currentScreen, setCurrentScreen] = useState('HomeScreen');
   const [display, setDisplay] = useState<ViewStyle['display']>('flex');
   const [comments, setComments] = useState<CommentContextType['comments']>([]);
-
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef() as React.MutableRefObject<Subscription>;
+  
   const navRef = createRef<NavigationContainerRef>();
-
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.default.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        console.log('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getDevicePushTokenAsync()).data;
+      console.log(token);
+    } else {
+      console.log('Must use physical device for Push Notifications');
+    }
+  
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+  
+    return token;
+  }
   const setVideoTime = (data: number) => {
     setMedia(prevState => { return { ...prevState, videoTime: data } })
   }
@@ -102,7 +138,17 @@ function App(props: Props): JSX.Element {
     const screen = navRef.current?.getCurrentRoute()?.name;
     setCurrentScreen(screen ?? 'unknown');
   }
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification:any) => {
+      setNotification(notification);
+    });
+    return () => {
+        Notifications.removeNotificationSubscription(notificationListener.current);
+    };
+  }, []);
   useEffect(() => {
     async function checkForUser() {
       try {

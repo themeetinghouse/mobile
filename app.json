@@ -13,7 +13,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.4",
+    "version": "6.0.5",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -28,6 +28,13 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "notification":{
+        "icon":"./assets/icons/icon.png",
+        "color":"#000000",
+        "iosDisplayInForeground":true,
+        "androidMode":"default"
+
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
@@ -49,7 +56,7 @@
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20042,
+      "versionCode": 20052,
       "permissions": [],
       "intentFilters": [
         {
