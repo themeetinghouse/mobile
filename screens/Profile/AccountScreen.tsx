@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { Container, Header, Content, Text, Left, Body, Right, View, Thumbnail, List, ListItem, Button } from 'native-base';
+import { Container, Content, Text, Left, View, Thumbnail, List, ListItem, Button } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StatusBar, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import UserContext from '../../contexts/UserContext'
 import { StackNavigationProp } from '@react-navigation/stack';
 import LocationsService from '../../services/LocationsService';
@@ -116,6 +116,22 @@ function Account({ navigation }: Params): JSX.Element {
     const user = useContext(UserContext);
     const safeArea = useSafeAreaInsets();
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'My Account',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <Button transparent onPress={() => navigation.navigate('ProfileScreen')}>
+                <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
+            </Button>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <View style={{ flex: 1 }} />
+        },
+    })
+
     const items = [
         "Login",
         {
@@ -141,19 +157,6 @@ function Account({ navigation }: Params): JSX.Element {
 
     return (
         <Container style={{ backgroundColor: Theme.colors.black, paddingBottom: safeArea.bottom }} >
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.navigate('ProfileScreen')}>
-                        <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>My Account</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                </Right>
-            </Header>
             <Content style={[style.content, { flex: 1 }]}>
                 <View>
                     <List>

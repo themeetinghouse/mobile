@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Header, Text, Left, Button, Body, Right, View, Thumbnail } from 'native-base';
+import { Container, Text, Button, View, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StatusBar, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
+import { TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
 import { TextInput, FlatList } from 'react-native-gesture-handler';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
@@ -208,6 +208,25 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
 
     const routeParams = route.params;
 
+    navigation.setOptions({
+        headerShown: true,
+        title: mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
+                <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
+                <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
+            </TouchableOpacity>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
     useEffect(() => {
         miniPlayerStyle.setDisplay('none');
 
@@ -388,22 +407,6 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     }
 
     return <Container style={{ backgroundColor: mode === 'comment' ? Theme.colors.background : 'black', paddingBottom: safeArea.bottom, }}>
-        <Header style={style.header}>
-            <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-            <Left style={style.headerLeft}>
-                <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
-                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
-                </TouchableOpacity>
-            </Left>
-            <Body style={style.headerBody}>
-                <Text style={style.headerTitle}>{mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags'}</Text>
-            </Body>
-            <Right style={style.headerRight}>
-                <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
-                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
-                </TouchableOpacity>
-            </Right>
-        </Header>
         <NeedsSignUpModal initState={signUpModal} />
         {mode === 'comment' ?
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={headerHeight} style={{ flex: 1, backgroundColor: 'black' }} >

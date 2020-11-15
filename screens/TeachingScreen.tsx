@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Left, Right, Header, View, Body, Thumbnail } from 'native-base';
+import { Container, Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { ScrollView, StatusBar, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { ScrollView, Image, TouchableOpacity, Dimensions, StyleSheet, Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
 import AllButton from '../components/buttons/AllButton';
 import TeachingListItem from '../components/teaching/TeachingListItem';
@@ -175,6 +175,22 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const [bounce, setBounce] = useState(false);
     const [popular, setPopular] = useState<PopularVideoData>([]);
 
+    navigation.setOptions({
+        headerShown: true,
+        title: 'Teaching',
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <View style={{ flex: 1 }} />
+        },
+        headerRight: function render() {
+            return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
+            </Button>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
+
     const loadRecentSermonsAsync = async () => {
         loadSomeAsync(SermonsService.loadRecentSermonsList, recentTeaching, setRecentTeaching, 6);
     }
@@ -282,19 +298,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     return (
         <Container>
-            <Header style={style.header}>
-                <StatusBar backgroundColor={Theme.colors.black} barStyle="light-content" />
-                <Left style={style.headerLeft}>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text style={style.headerTitle}>Teaching</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
-                        <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
-                    </Button>
-                </Right>
-            </Header>
             <ScrollView style={style.content} bounces={bounce} onScroll={e => handleScroll(e)} scrollEventThrottle={6}>
                 <View style={style.categorySection} >
                     <SideSwipe
