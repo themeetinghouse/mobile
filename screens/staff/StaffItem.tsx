@@ -5,6 +5,7 @@ import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
 import * as Linking from 'expo-linking';
 import CachedImage from "react-native-expo-cached-image";
+import { NavigationContainer } from '@react-navigation/native';
 const style = StyleSheet.create({
     container: {
         marginTop: 6,
@@ -63,6 +64,7 @@ const style = StyleSheet.create({
     },
 })
 interface Props {
+    navigation: any;
     staff: {
         FirstName: string
         LastName: string
@@ -72,6 +74,7 @@ interface Props {
         sites: Array<string | null>
         Location: string | null
         Coordinator: boolean | null
+        Teachings: Array<string | null>
     }
 }
 
@@ -99,7 +102,6 @@ function StaffItem(props: Props): JSX.Element {
         }
     }
     const [uri, setUri] = useState(determineUri(props.staff.Coordinator))
-
     const parseTelephone = (tel: string) => {
         const telephone = tel.split(',')[0].replace(/\D/g, '')
         const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
@@ -132,8 +134,14 @@ function StaffItem(props: Props): JSX.Element {
                 {props.staff.Position ?
                     <Text style={style.Position}>{props.staff.Position}</Text>
                     : null}
-                {false ?
-                    <TouchableOpacity>
+                {props.staff.Teachings ?
+                    <TouchableOpacity onPress={() => {
+                        props.navigation.push('TeacherProfile', {
+                            staff: props.staff,
+                            navigation: props.navigation
+                        })
+                    }
+                    }>
                         <Text style={style.footerText}>
                             View Teaching
                         </Text>

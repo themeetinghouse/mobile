@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from "react-native";
 import { Thumbnail, } from 'native-base';
 import StaffItem from "../staff/StaffItem";
@@ -34,7 +34,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [isLoading, setisLoading] = useState(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
             title: 'Staff Team',
@@ -49,6 +49,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             headerLeftContainerStyle: { left: 16 },
             headerRight: function render() { return <View style={{ flex: 1 }} /> }
         })
+    }, [navigation])
+    useEffect(() => {
+
         const loadStaff = async () => {
             setisLoading(true)
             const staffResults = await StaffDirectoryService.loadStaffList()
@@ -78,7 +81,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                 }
                 data={staff.filter((item: any) => item.FirstName.toLowerCase().includes(searchText.toLowerCase()) || item.LastName.toLowerCase().includes(searchText.toLowerCase()) || searchText === "" || item.Location.toLowerCase().includes(searchText.toLowerCase()))}
                 renderItem={({ item }: any) =>
-                    <StaffItem staff={item}></StaffItem>
+                    <StaffItem navigation={navigation} staff={item}></StaffItem>
                 }
                 initialNumToRender={10}
             />

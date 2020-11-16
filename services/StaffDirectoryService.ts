@@ -1,3 +1,5 @@
+import SpeakersService from "./SpeakersService";
+
 export default class StaffDirectoryService {
     static mapToLocation(code: string): string {
         switch (code) {
@@ -27,6 +29,7 @@ export default class StaffDirectoryService {
     }
     static loadStaffList = async (): Promise<any> => {
         try {
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
             const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/staff.json`)
             const pageContent = await getSiteData.json()
             const staff: any = [];
@@ -43,6 +46,14 @@ export default class StaffDirectoryService {
             })
             for (let i = 0; i < staff.length; i++) {
                 staff[i] = { ...staff[i], id: i.toString() }
+            }
+            let staffName = "";
+            for (let x = 0; x < staff.length; x++) {
+                for (let i = 0; i < listOfSpeakers.items.length; i++) {
+                    staffName = staff[x].FirstName + " " + staff[x].LastName
+                    if (staffName === listOfSpeakers.items[i].name)
+                        staff[x] = { ...staff[x], Teachings: listOfSpeakers.items[i].videos.items }
+                }
             }
             return staff;
         } catch (error) {
@@ -94,6 +105,18 @@ export default class StaffDirectoryService {
                 }
             })
             sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0))
+            console.log("=======================================")
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
+            //let newArr:any =[];
+            let staffName = "";
+            for (let x = 0; x < sectionedList[0].data.length; x++) {
+                for (let i = 0; i < listOfSpeakers.items.length; i++) {
+                    staffName = sectionedList[0].data[x].FirstName + " " + sectionedList[0].data[x].LastName
+                    if (staffName === listOfSpeakers.items[i].name)
+                        sectionedList[0].data[x] = { ...sectionedList[0].data[x], Teachings: listOfSpeakers.items[i].videos.items }
+                }
+            }
+            console.log("=======================================");
             return sectionedList;
         } catch (error) {
             console.log(error)
