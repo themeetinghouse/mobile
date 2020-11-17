@@ -137,7 +137,6 @@ function StaffItem(props: Props): JSX.Element {
                     <TouchableOpacity onPress={() => {
                         props.navigation.push('TeacherProfile', {
                             staff: { ...props.staff, ...uri, Phone: parseTelephone(props.staff.Phone) },
-                            navigation: props.navigation
                         })
                     }
                     }>

@@ -1,5 +1,15 @@
 import SpeakersService from "./SpeakersService";
 
+export type Coordinator = {
+    Coordinator: boolean | undefined;
+    Email: string;
+    FirstName: string;
+    LastName: string;
+    Position: string;
+    sites: Array<string>;
+    Teachings: Array<string>;
+    Location: string;
+}
 export default class StaffDirectoryService {
     static mapToLocation(code: string): string {
         switch (code) {
@@ -94,7 +104,7 @@ export default class StaffDirectoryService {
                     }
                 }
             })
-            coordinators.map((coordinatorItem: any) => {
+            coordinators.map((coordinatorItem: Coordinator) => {
                 for (let x = 0; x < coordinatorItem.sites.length; x++) {
                     for (let i = 0; i < sectionedList.length; i++) {
                         if (coordinatorItem.sites[x] === sectionedList[i].code) {
@@ -104,7 +114,7 @@ export default class StaffDirectoryService {
                     }
                 }
             })
-            sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0))
+            sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
             const listOfSpeakers: any = await SpeakersService.loadSpeakersList()
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {

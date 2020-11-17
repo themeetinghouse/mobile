@@ -1,5 +1,5 @@
 import { Thumbnail } from 'native-base';
-import React, { useState, memo, useEffect, useLayoutEffect } from 'react';
+import React, { useState, memo, useLayoutEffect } from 'react';
 import { View, StyleSheet, Text, Image, Linking, Platform } from 'react-native';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
@@ -7,7 +7,7 @@ import CachedImage from "react-native-expo-cached-image";
 import SearchBar from "../../components/SearchBar"
 import TeachingListItem from "../../components/teaching/TeachingListItem";
 import { StackNavigationProp } from '@react-navigation/stack';
-import { MoreStackParamList } from '../../navigation/MainTabNavigator';
+import { MainStackParamList } from "../../navigation/AppNavigator";
 const style = StyleSheet.create({
     container: {
         flex: 1,
@@ -64,8 +64,8 @@ const style = StyleSheet.create({
     },
 })
 interface Props {
-    navigation: StackNavigationProp<MoreStackParamList> | any;
-    route: any;
+    navigation: StackNavigationProp<MainStackParamList>;
+    route: any; // not any
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {

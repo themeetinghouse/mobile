@@ -1,7 +1,7 @@
 import { runGraphQLQuery } from './ApiService';
 import { ListSpeakersQuery } from './API';
 
-type loadSpeakersListData = {
+export type loadSpeakersListData = {
   items: NonNullable<ListSpeakersQuery['listSpeakers']>['items'];
   nextToken: NonNullable<ListSpeakersQuery['listSpeakers']>['nextToken']
 }
