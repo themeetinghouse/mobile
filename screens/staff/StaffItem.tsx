@@ -107,7 +107,6 @@ function StaffItem(props: Props): JSX.Element {
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
-    //console.log(props.staff)
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>

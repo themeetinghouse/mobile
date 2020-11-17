@@ -1,7 +1,7 @@
 import { AppLoading } from 'expo';
 import * as Font from 'expo-font';
 import React, { useEffect, useState, createRef, useRef } from 'react';
-import { Platform, StatusBar, ViewStyle } from 'react-native';
+import { LogBox, Platform, StatusBar, ViewStyle } from 'react-native';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 import { Auth } from '@aws-amplify/auth';
@@ -30,7 +30,7 @@ Sentry.init({
   release: version.git
 });
 Amplify.configure({
-  
+
   "aws_project_region": "us-east-1",
   "aws_cognito_identity_pool_id": "us-east-1:d3da58ee-46b8-4b00-aa3a-a14c37b64aa7",
   "aws_cognito_region": "us-east-1",
@@ -43,11 +43,11 @@ Amplify.configure({
   "aws_appsync_authenticationType": "API_KEY",
   "aws_appsync_apiKey": "da2-6zfuocqmhvecrfkng7hx2oipni",
   "aws_cloud_logic_custom": [
-      {
-          "name": "image",
-          "endpoint": "https://95i5crqja0.execute-api.us-east-1.amazonaws.com/tmhprod",
-          "region": "us-east-1"
-      }
+    {
+      "name": "image",
+      "endpoint": "https://95i5crqja0.execute-api.us-east-1.amazonaws.com/tmhprod",
+      "region": "us-east-1"
+    }
   ],
   "aws_content_delivery_bucket": "heeetingouse-20190312104205-hostingbucket-tmhprod",
   "aws_content_delivery_bucket_region": "us-east-1",
@@ -81,7 +81,7 @@ function App(props: Props): JSX.Element {
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState(false);
   const notificationListener = useRef() as React.MutableRefObject<Subscription>;
-  
+
   const navRef = createRef<NavigationContainerRef>();
   async function registerForPushNotificationsAsync() {
     let token;
@@ -101,7 +101,7 @@ function App(props: Props): JSX.Element {
     } else {
       console.log('Must use physical device for Push Notifications');
     }
-  
+
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('default', {
         name: 'default',
@@ -110,7 +110,7 @@ function App(props: Props): JSX.Element {
         lightColor: '#FF231F7C',
       });
     }
-  
+
     return token;
   }
   const setVideoTime = (data: number) => {
@@ -142,11 +142,11 @@ function App(props: Props): JSX.Element {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
     // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener((notification:any) => {
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification: any) => {
       setNotification(notification);
     });
     return () => {
-        Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(notificationListener.current);
     };
   }, []);
   useEffect(() => {

@@ -105,7 +105,7 @@ export default class StaffDirectoryService {
                 }
             })
             sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0))
-            const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersList()
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {

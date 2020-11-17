@@ -65,23 +65,8 @@ const style = StyleSheet.create({
     },
 })
 interface Props {
-    navigation: StackNavigationProp<MoreStackParamList>;
-
-    route: {
-        params: {
-            staff: {
-                FirstName: string
-                LastName: string
-                Email: string
-                Position: string
-                Phone: string
-                sites: Array<string | null>
-                Location: string | null
-                Coordinator: boolean | null
-                Teachings: Array<any> //array of teaching objects type
-            }
-        }
-    }
+    navigation: StackNavigationProp<MoreStackParamList> | any;
+    route: any;
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
@@ -101,7 +86,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
             headerLeft: function render() {
                 return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                     <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Staff Team</Text>
+                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}></Text>
                 </TouchableOpacity>
             },
             headerLeftContainerStyle: { left: 16 },
@@ -143,12 +128,15 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                 </View>
                 <View style={style.listContentContainer}>
                     <ScrollView>
-                        {route.params.staff.Teachings ? route.params.staff.Teachings.map((item: any) => {
-                            return <TeachingListItem
-                                key={item.id}
-                                teaching={item.video}
-                                handlePress={() => navigation.push('SermonLandingScreen', { item: item.video })} />
-                        }) : null}
+                        {route.params.staff.Teachings ? route.params.staff.Teachings
+                            .sort((a: any, b: any) => (a.video.publishedDate > b.video.publishedDate) ? -1 : ((b.video.publishedDate > a.video.publishedDate) ? 1 : 0))
+                            .filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase()))
+                            .map((item: any) => {
+                                return <TeachingListItem
+                                    key={item.id}
+                                    teaching={item.video}
+                                    handlePress={() => navigation.push('SermonLandingScreen', { item: item.video })} />
+                            }) : null}
                     </ScrollView>
                 </View>
             </View >

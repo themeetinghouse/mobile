@@ -29,6 +29,17 @@ interface Params {
     navigation: StackNavigationProp<MoreStackParamList>;
     route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
+export type Staff = {
+    FirstName: string
+    LastName: string
+    Email: string
+    Position: string
+    Phone: string
+    sites: Array<string | null>
+    Location: string | null
+    Coordinator: boolean | null
+    Teachings: Array<string | null>
+}
 export default function StaffList({ navigation }: Params): JSX.Element {
     const [staff, setStaffByName] = useState([]);
     const [searchText, setSearchText] = useState("");

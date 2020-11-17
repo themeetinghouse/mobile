@@ -359,7 +359,9 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
         headerLeftContainerStyle: { left: 16 },
         headerRightContainerStyle: { right: 16 }
     })
-
+    useEffect(() => {
+        console.log(sermon)
+    }, [sermon.id, sermon.audioURL, sermon.description])
     return (
         <View style={{ flex: 1 }} >
             <Content>
