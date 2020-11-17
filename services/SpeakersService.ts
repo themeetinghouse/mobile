@@ -45,6 +45,36 @@ export const listSpeakersQuery = `
         videos {
           items {
             id
+            video{
+              publishedDate
+              episodeTitle
+              episodeNumber
+              seriesTitle
+              Youtube{
+                snippet {
+                  thumbnails {
+                    default {
+                      url
+                    }
+                    medium {
+                      url
+                    }
+                    high {
+                      url
+                    }
+                    standard {
+                      url
+                    }
+                    maxres {
+                      url
+                    }
+                  }
+                }
+                contentDetails{
+                  videoId
+                }
+              }
+            }
           }
         }
       }

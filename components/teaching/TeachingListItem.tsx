@@ -55,7 +55,7 @@ const style = StyleSheet.create({
 
 interface Params {
     handlePress: () => any;
-    teaching: NonNullable<LoadSermonResult['items']>[0];
+    teaching: NonNullable<LoadSermonResult['items']>[0] | any;
 }
 
 export default function TeachingListItem({ teaching, handlePress }: Params): JSX.Element {
@@ -70,6 +70,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
 
 
     useEffect(() => {
+        console.log(teaching)
         const getComments = async () => {
             try {
                 const cognitoUser = await Auth.currentAuthenticatedUser();

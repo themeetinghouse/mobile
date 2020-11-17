@@ -1,9 +1,11 @@
 import { Thumbnail } from 'native-base';
 import React, { useState, memo, useEffect } from 'react';
-import { View, StyleSheet, Text, Image, Platform, Linking } from 'react-native';
+import { View, StyleSheet, Text, Image, Platform, Linking, Dimensions } from 'react-native';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
-import { TouchableOpacity } from "react-native-gesture-handler"
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import CachedImage from "react-native-expo-cached-image";
+import SearchBar from "../../components/SearchBar"
+import TeachingListItem from "../../components/teaching/TeachingListItem";
 const style = StyleSheet.create({
     container: {
         flex: 1,
@@ -48,6 +50,14 @@ const style = StyleSheet.create({
     },
     header: Style.header,
     headerTitle: HeaderStyle.title,
+    searchBar: {
+        flex: 1,
+        marginHorizontal: 16
+    },
+    listContentContainer: {
+        paddingLeft: 16,
+        paddingRight: 16,
+    },
 })
 interface Props {
     navigation: any;
@@ -56,6 +66,7 @@ interface Props {
 }
 
 function TeacherProfile(props: Props): JSX.Element {
+    const [searchText, setSearchText] = useState("");
     const parseTelephone = (tel: string) => {
         const telephone = tel.split(',')[0].replace(/\D/g, '')
         const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
@@ -63,6 +74,7 @@ function TeacherProfile(props: Props): JSX.Element {
         else return telephone
     }
     useEffect(() => {
+        //console.log(props.route.params.staff)
         props.navigation.setOptions({
             headerShown: true,
             title: '',
@@ -95,15 +107,35 @@ function TeacherProfile(props: Props): JSX.Element {
         })
     }, [])
     return (
-        <View style={style.container}>
-            <View>
-                <View style={style.pictureContainer}>
-                    <CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/360/static/photos/staff/${props.route.params.staff.FirstName}_${props.route.params.staff.LastName}_app.jpg` }} />
+        <>
+            <View style={style.container}>
+                <View>
+                    <View style={style.pictureContainer}>
+                        <CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/360/static/photos/staff/${props.route.params.staff.FirstName}_${props.route.params.staff.LastName}_app.jpg` }} />
+                    </View>
+                    <Text style={style.Name}>{props.route.params.staff.FirstName} {props.route.params.staff.LastName}</Text>
+                    <Text style={style.Position}>{props.route.params.staff.Position}</Text>
                 </View>
-                <Text style={style.Name}>{props.route.params.staff.FirstName} {props.route.params.staff.LastName}</Text>
-                <Text style={style.Position}>{props.route.params.staff.Position}</Text>
-            </View>
-        </View >
+                <View style={{ flexDirection: "row" }}>
+                    <SearchBar
+                        style={style.searchBar}
+                        searchText={searchText}
+                        handleTextChanged={(newStr) => setSearchText(newStr)}
+                        placeholderLabel="Search by name or location..."></SearchBar>
+                </View>
+                <View style={style.listContentContainer}>
+                    <ScrollView>
+                        {props.route.params.staff.Teachings ? props.route.params.staff.Teachings.map((item: any, index: number) => {
+                            return <TeachingListItem
+                                key={item.id}
+                                teaching={item.video}
+                                handlePress={() => props.navigation.push('SermonLandingScreen', { item: item })} />
+                        }) : null}
+                    </ScrollView>
+                </View>
+            </View >
+
+        </>
 
     )
 }
