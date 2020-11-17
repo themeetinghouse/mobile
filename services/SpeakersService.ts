@@ -23,6 +23,7 @@ export default class SpeakersService {
         return a.name.localeCompare(b.name);
       }
     });
+    console.log(queryResult.listSpeakers.items.length)
     return {
       items: queryResult.listSpeakers.items,
       nextToken: queryResult.listSpeakers.nextToken

@@ -1,11 +1,14 @@
 import { Thumbnail } from 'native-base';
 import React, { useState, memo, useEffect } from 'react';
 import { View, StyleSheet, Text, Image, Platform, Linking, Dimensions } from 'react-native';
+import moment from "moment";
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler"
 import CachedImage from "react-native-expo-cached-image";
 import SearchBar from "../../components/SearchBar"
 import TeachingListItem from "../../components/teaching/TeachingListItem";
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MoreStackParamList } from '../../navigation/MainTabNavigator';
 const style = StyleSheet.create({
     container: {
         flex: 1,
@@ -57,15 +60,31 @@ const style = StyleSheet.create({
     listContentContainer: {
         paddingLeft: 16,
         paddingRight: 16,
+        marginTop: 24,
+        flex: 1
     },
 })
 interface Props {
-    navigation: any;
-    staff: any;
-    route: any
+    navigation: StackNavigationProp<MoreStackParamList>;
+
+    route: {
+        params: {
+            staff: {
+                FirstName: string
+                LastName: string
+                Email: string
+                Position: string
+                Phone: string
+                sites: Array<string | null>
+                Location: string | null
+                Coordinator: boolean | null
+                Teachings: Array<any> //array of teaching objects type
+            }
+        }
+    }
 }
 
-function TeacherProfile(props: Props): JSX.Element {
+function TeacherProfile({ navigation, route }: Props): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const parseTelephone = (tel: string) => {
         const telephone = tel.split(',')[0].replace(/\D/g, '')
@@ -74,14 +93,13 @@ function TeacherProfile(props: Props): JSX.Element {
         else return telephone
     }
     useEffect(() => {
-        //console.log(props.route.params.staff)
-        props.navigation.setOptions({
+        navigation.setOptions({
             headerShown: true,
             title: '',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: "black" },
             headerLeft: function render() {
-                return <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                     <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
                     <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Staff Team</Text>
                 </TouchableOpacity>
@@ -91,12 +109,12 @@ function TeacherProfile(props: Props): JSX.Element {
                 return (
                     <View style={{ flexDirection: "column", flex: 1, }}>
                         <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                            {props.route.params.staff.Phone ?
-                                <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(props.route.params.staff.Phone)}`)} style={style.iconContainer}>
+                            {route.params.staff.Phone ?
+                                <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(route.params.staff.Phone)}`)} style={style.iconContainer}>
                                     <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                                 </TouchableOpacity> : null}
-                            {props.route.params.staff.Email ?
-                                <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.route.params.staff.Email}`)} style={style.iconContainer}>
+                            {route.params.staff.Email ?
+                                <TouchableOpacity onPress={() => Linking.openURL(`mailto:${route.params.staff.Email}`)} style={style.iconContainer}>
                                     <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
                                 </TouchableOpacity>
                                 : null}
@@ -111,25 +129,25 @@ function TeacherProfile(props: Props): JSX.Element {
             <View style={style.container}>
                 <View>
                     <View style={style.pictureContainer}>
-                        <CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/360/static/photos/staff/${props.route.params.staff.FirstName}_${props.route.params.staff.LastName}_app.jpg` }} />
+                        <CachedImage style={style.picture} source={{ uri: `https://themeetinghouse.com/cache/360/static/photos/staff/${route.params.staff.FirstName}_${route.params.staff.LastName}_app.jpg` }} />
                     </View>
-                    <Text style={style.Name}>{props.route.params.staff.FirstName} {props.route.params.staff.LastName}</Text>
-                    <Text style={style.Position}>{props.route.params.staff.Position}</Text>
+                    <Text style={style.Name}>{route.params.staff.FirstName} {route.params.staff.LastName}</Text>
+                    <Text style={style.Position}>{route.params.staff.Position}</Text>
                 </View>
                 <View style={{ flexDirection: "row" }}>
                     <SearchBar
                         style={style.searchBar}
                         searchText={searchText}
                         handleTextChanged={(newStr) => setSearchText(newStr)}
-                        placeholderLabel="Search by name or location..."></SearchBar>
+                        placeholderLabel="Search sermons..."></SearchBar>
                 </View>
                 <View style={style.listContentContainer}>
                     <ScrollView>
-                        {props.route.params.staff.Teachings ? props.route.params.staff.Teachings.map((item: any, index: number) => {
+                        {route.params.staff.Teachings ? route.params.staff.Teachings.map((item: any) => {
                             return <TeachingListItem
                                 key={item.id}
                                 teaching={item.video}
-                                handlePress={() => props.navigation.push('SermonLandingScreen', { item: item })} />
+                                handlePress={() => navigation.push('SermonLandingScreen', { item: item.video })} />
                         }) : null}
                     </ScrollView>
                 </View>

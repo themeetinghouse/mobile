@@ -105,9 +105,7 @@ export default class StaffDirectoryService {
                 }
             })
             sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0))
-            console.log("=======================================")
             const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
-            //let newArr:any =[];
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {
@@ -116,7 +114,6 @@ export default class StaffDirectoryService {
                         sectionedList[0].data[x] = { ...sectionedList[0].data[x], Teachings: listOfSpeakers.items[i].videos.items }
                 }
             }
-            console.log("=======================================");
             return sectionedList;
         } catch (error) {
             console.log(error)

@@ -5,7 +5,6 @@ import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
 import * as Linking from 'expo-linking';
 import CachedImage from "react-native-expo-cached-image";
-import { NavigationContainer } from '@react-navigation/native';
 const style = StyleSheet.create({
     container: {
         marginTop: 6,
@@ -108,6 +107,7 @@ function StaffItem(props: Props): JSX.Element {
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
+    //console.log(props.staff)
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>
