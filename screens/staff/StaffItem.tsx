@@ -91,11 +91,11 @@ function StaffItem(props: Props): JSX.Element {
         }
         switch (staffType) {
             case "Coordinator":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/160/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
             case "Staff":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/160/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
             default:
                 return Theme.icons.white.user
         }
@@ -136,7 +136,7 @@ function StaffItem(props: Props): JSX.Element {
                 {props.staff.Teachings ?
                     <TouchableOpacity onPress={() => {
                         props.navigation.push('TeacherProfile', {
-                            staff: props.staff,
+                            staff: { ...props.staff, ...uri, Phone: parseTelephone(props.staff.Phone) },
                             navigation: props.navigation
                         })
                     }
