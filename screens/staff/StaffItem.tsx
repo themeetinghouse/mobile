@@ -16,6 +16,7 @@ const style = StyleSheet.create({
     },
     pictureContainer: {
         marginTop: 0,
+        marginHorizontal: 16,
         borderRadius: 100,
         backgroundColor: "#54565A",
         width: 48,
@@ -49,7 +50,7 @@ const style = StyleSheet.create({
         fontSize: 12,
     },
     footerText: {
-        marginTop: 6,
+        marginTop: 8,
         color: "white",
         textDecorationLine: "underline",
         fontWeight: "400",
@@ -126,7 +127,7 @@ function StaffItem(props: Props): JSX.Element {
                         :
                         <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
             </View>
-            <View style={{ marginLeft: 15, flexDirection: "column" }}>
+            <View style={{ flexDirection: "column" }}>
                 {props.staff.FirstName && props.staff.LastName ?
                     <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>
                     : null}

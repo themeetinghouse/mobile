@@ -97,24 +97,34 @@ export default class StaffDirectoryService {
                 { locationid: "toronto-uptown", code: "TOUP", title: "Toronto - Uptown", data: [] },
                 { locationid: "waterloo", code: "WAT", title: "Waterloo", data: [] },
             ].filter((a) => { return a.locationid === selectedLocation?.locationData?.locationId })
-            staff.map((staffItem: any) => {
+
+            const staffTeam = staff.map((staffItem: any) => {
                 for (let x = 0; x < staffItem.sites.length; x++) {
                     for (let i = 0; i < sectionedList.length; i++) {
-                        if (staffItem.sites[x] === sectionedList[i].code) sectionedList[i].data.push({ ...staffItem, Location: sectionedList[i].title })
-                    }
-                }
-            })
-            coordinators.map((coordinatorItem: Coordinator) => {
-                for (let x = 0; x < coordinatorItem.sites.length; x++) {
-                    for (let i = 0; i < sectionedList.length; i++) {
-                        if (coordinatorItem.sites[x] === sectionedList[i].code) {
-                            const item = { ...coordinatorItem, Location: sectionedList[i].title };
-                            sectionedList[i].data.push(item)
+                        if (staffItem.sites[x] === sectionedList[i].code) {
+                            return { ...staffItem, Location: sectionedList[i].title }
+                        }
+                        else {
+                            return null
                         }
                     }
                 }
-            })
-            sectionedList[0].data = sectionedList[0].data.sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
+            }).filter((a: any) => a !== null).sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
+
+            const coordinatorTeam = coordinators.map((coordinatorItem: Coordinator) => {
+                for (let x = 0; x < coordinatorItem.sites.length; x++) {
+                    for (let i = 0; i < sectionedList.length; i++) {
+                        if (coordinatorItem.sites[x] === sectionedList[i].code) {
+                            return { ...coordinatorItem, Location: sectionedList[i].title };
+                        }
+                        else {
+                            return null
+                        }
+                    }
+                }
+            }).filter((a: any) => a !== null).sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
+
+            sectionedList[0].data = [...staffTeam, ...coordinatorTeam]
             const listOfSpeakers: any = await SpeakersService.loadSpeakersList()
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {
