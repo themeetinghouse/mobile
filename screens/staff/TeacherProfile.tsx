@@ -69,6 +69,7 @@ interface Props {
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
+    console.log(route)
     const [searchText, setSearchText] = useState("");
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -77,7 +78,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: "black" },
             headerLeft: function render() {
-                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', paddingRight: 12, paddingBottom: 12, paddingTop: 12 }} >
                     <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
                     <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}></Text>
                 </TouchableOpacity>
