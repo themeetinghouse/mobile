@@ -104,25 +104,26 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
     }, [navigation])
     return (
         <View style={style.container}>
-            <View>
-                <View style={style.pictureContainer}>
-                    {Platform.OS === "android" ?
-                        <CachedImage style={style.picture} source={{ uri: route.params.staff.uri }} />
-                        :
-                        <Image style={style.picture} source={{ uri: route.params.staff.uri }} />}
+            <ScrollView>
+                <View>
+                    <View style={style.pictureContainer}>
+                        {Platform.OS === "android" ?
+                            <CachedImage style={style.picture} source={{ uri: route.params.staff.uri }} />
+                            :
+                            <Image style={style.picture} source={{ uri: route.params.staff.uri }} />}
+                    </View>
+                    <Text style={style.Name}>{route.params.staff.FirstName} {route.params.staff.LastName}</Text>
+                    <Text style={style.Position}>{route.params.staff.Position}</Text>
                 </View>
-                <Text style={style.Name}>{route.params.staff.FirstName} {route.params.staff.LastName}</Text>
-                <Text style={style.Position}>{route.params.staff.Position}</Text>
-            </View>
-            <View style={{ flexDirection: "row" }}>
-                <SearchBar
-                    style={style.searchBar}
-                    searchText={searchText}
-                    handleTextChanged={(newStr) => setSearchText(newStr)}
-                    placeholderLabel="Search sermons..."></SearchBar>
-            </View>
-            <View style={style.listContentContainer}>
-                <ScrollView>
+                <View style={{ flexDirection: "row" }}>
+                    <SearchBar
+                        style={style.searchBar}
+                        searchText={searchText}
+                        handleTextChanged={(newStr) => setSearchText(newStr)}
+                        placeholderLabel="Search sermons..."></SearchBar>
+                </View>
+                <View style={style.listContentContainer}>
+
                     {route.params.staff.Teachings ? route.params.staff.Teachings
                         .sort((a: any, b: any) => (a.video.publishedDate > b.video.publishedDate) ? -1 : ((b.video.publishedDate > a.video.publishedDate) ? 1 : 0))
                         .filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase()))
@@ -132,8 +133,8 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                                 teaching={item.video}
                                 handlePress={() => navigation.navigate('SermonLandingScreen', { item: item.video })} />
                         }) : null}
-                </ScrollView>
-            </View>
+                </View>
+            </ScrollView>
         </View >
     )
 }
