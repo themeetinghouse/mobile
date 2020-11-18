@@ -5,6 +5,7 @@ import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from "react-native-gesture-handler"
 import * as Linking from 'expo-linking';
 import CachedImage from "react-native-expo-cached-image";
+import ActivityIndicator from '../../components/ActivityIndicator';
 const style = StyleSheet.create({
     container: {
         marginTop: 6,
@@ -18,7 +19,6 @@ const style = StyleSheet.create({
         marginTop: 0,
         marginHorizontal: 16,
         borderRadius: 100,
-        backgroundColor: "#54565A",
         width: 48,
         height: 48,
         display: "flex",
@@ -26,6 +26,14 @@ const style = StyleSheet.create({
         justifyContent: "center",
     },
     picture: {
+        borderRadius: 100,
+        justifyContent: 'center',
+        width: 48,
+        height: 48
+    },
+    pictureIndicator: {
+        position: "absolute",
+        zIndex: 3000,
         borderRadius: 100,
         justifyContent: 'center',
         width: 48,
@@ -78,7 +86,8 @@ interface Props {
     }
 }
 
-function StaffItem(props: Props): JSX.Element {
+function StaffItem({ navigation, staff }: Props): JSX.Element {
+    const [isLoading, setIsLoading] = useState(true);
     const uriError = () => {
         setUri(Theme.icons.white.user)
     }
@@ -92,16 +101,16 @@ function StaffItem(props: Props): JSX.Element {
         }
         switch (staffType) {
             case "Coordinator":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${props.staff.sites[0]}_${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${staff.sites[0]}_${staff.FirstName}_${staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${staff.sites[0]}_${staff.FirstName}_${staff.LastName}_app.jpg` }
             case "Staff":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${props.staff.FirstName}_${props.staff.LastName}_app.jpg` }
+                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff.FirstName}_${staff.LastName}_app.jpg`, cache: 'default' }
+                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff.FirstName}_${staff.LastName}_app.jpg` }
             default:
                 return Theme.icons.white.user
         }
     }
-    const [uri, setUri] = useState(determineUri(props.staff.Coordinator))
+    const [uri, setUri] = useState(determineUri(staff.Coordinator))
     const parseTelephone = (tel: string) => {
         const telephone = tel.split(',')[0].replace(/\D/g, '')
         const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
@@ -111,33 +120,36 @@ function StaffItem(props: Props): JSX.Element {
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>
-                {Platform.OS === "android" ?
-                    uri !== Theme.icons.white.user ?
-                        props.staff.Coordinator ?
-                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
+                <>
+                    {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
+                    {Platform.OS === "android" ?
+                        uri !== Theme.icons.white.user ?
+                            staff.Coordinator ?
+                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                :
+                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
                             :
-                            <CachedImage style={style.picture} onError={() => uriError()} source={uri} />
-                        :
-                        <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
-                    : uri !== Theme.icons.white.user ?
-                        props.staff.Coordinator ?
-                            <Image style={style.picture} onError={() => uriError()} source={uri} />
+                            <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
+                        : uri !== Theme.icons.white.user ?
+                            staff.Coordinator ?
+                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                :
+                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
                             :
-                            <Image style={style.picture} onError={() => uriError()} source={uri} />
-                        :
-                        <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
+                            <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
+                </>
             </View>
             <View style={{ flexDirection: "column" }}>
-                {props.staff.FirstName && props.staff.LastName ?
-                    <Text style={style.Name}>{props.staff.FirstName} {props.staff.LastName}</Text>
+                {staff.FirstName && staff.LastName ?
+                    <Text style={style.Name}>{staff.FirstName} {staff.LastName}</Text>
                     : null}
-                {props.staff.Position ?
-                    <Text style={style.Position}>{props.staff.Position}</Text>
+                {staff.Position ?
+                    <Text style={style.Position}>{staff.Position}</Text>
                     : null}
-                {props.staff.Teachings ?
+                {staff.Teachings ?
                     <TouchableOpacity onPress={() => {
-                        props.navigation.push('TeacherProfile', {
-                            staff: { ...props.staff, ...uri, Phone: parseTelephone(props.staff.Phone) },
+                        navigation.push('TeacherProfile', {
+                            staff: { ...staff, ...uri, Phone: parseTelephone(staff.Phone) },
                         })
                     }
                     }>
@@ -149,12 +161,12 @@ function StaffItem(props: Props): JSX.Element {
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    {props.staff.Phone ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(props.staff.Phone)}`)} style={style.iconContainer}>
+                    {staff.Phone ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(staff.Phone)}`)} style={style.iconContainer}>
                             <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                         </TouchableOpacity> : null}
-                    {props.staff.Email ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${props.staff.Email}`)} style={style.iconContainer}>
+                    {staff.Email ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${staff.Email}`)} style={style.iconContainer}>
                             <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
                         </TouchableOpacity>
                         : null}
