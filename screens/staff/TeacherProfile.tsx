@@ -69,7 +69,6 @@ interface Props {
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
-    console.log(route)
     const [searchText, setSearchText] = useState("");
     useLayoutEffect(() => {
         navigation.setOptions({
