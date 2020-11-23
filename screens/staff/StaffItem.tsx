@@ -125,16 +125,30 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                     {Platform.OS === "android" ?
                         uri !== Theme.icons.white.user ?
                             staff.Coordinator ?
-                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                                    setIsLoading(false)
+                                    uriError()
+                                }} source={uri} />
                                 :
-                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                                    setIsLoading(false)
+                                    uriError()
+                                }} source={uri} />
                             :
                             <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
                         : uri !== Theme.icons.white.user ?
                             staff.Coordinator ?
-                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                                    setIsLoading(false)
+                                    uriError()
+                                }
+                                } source={uri} />
                                 :
-                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => uriError()} source={uri} />
+                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                                    setIsLoading(false)
+                                    uriError()
+                                }
+                                } source={uri} />
                             :
                             <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
                 </>
