@@ -1,13 +1,13 @@
 import SpeakersService from "./SpeakersService";
 
 export type Coordinator = {
-    Coordinator: boolean | undefined;
+    Coordinator: boolean | undefined | null;
     Email: string;
     FirstName: string;
     LastName: string;
     Position: string;
     sites: Array<string>;
-    Teachings: Array<string>;
+    Teacher: boolean | null;
     Location: string;
 }
 export default class StaffDirectoryService {
@@ -62,7 +62,7 @@ export default class StaffDirectoryService {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {
                     staffName = staff[x].FirstName + " " + staff[x].LastName
                     if (staffName === listOfSpeakers.items[i].name)
-                        staff[x] = { ...staff[x], Teachings: listOfSpeakers.items[i].videos.items }
+                        staff[x] = { ...staff[x], Teacher: true }
                 }
             }
             return staff;
@@ -131,7 +131,7 @@ export default class StaffDirectoryService {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {
                     staffName = sectionedList[0].data[x].FirstName + " " + sectionedList[0].data[x].LastName
                     if (staffName === listOfSpeakers.items[i].name)
-                        sectionedList[0].data[x] = { ...sectionedList[0].data[x], Teachings: listOfSpeakers.items[i].videos.items }
+                        sectionedList[0].data[x] = { ...sectionedList[0].data[x], Teacher: true }
                 }
             }
             return sectionedList;

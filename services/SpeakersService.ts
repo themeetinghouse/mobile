@@ -80,6 +80,7 @@ export const listSpeakersQuery = `
               }
             }
           }
+          nextToken
         }
       }
       nextToken

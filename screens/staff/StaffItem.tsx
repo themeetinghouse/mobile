@@ -82,7 +82,7 @@ interface Props {
         sites: Array<string | null>
         Location: string | null
         Coordinator: boolean | null
-        Teachings: Array<string | null>
+        Teacher: boolean | null
     }
 }
 
@@ -160,7 +160,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 {staff.Position ?
                     <Text style={style.Position}>{staff.Position}</Text>
                     : null}
-                {staff.Teachings ?
+                {staff.Teacher ?
                     <TouchableOpacity onPress={() => {
                         navigation.push('TeacherProfile', {
                             staff: { ...staff, ...uri, Phone: parseTelephone(staff.Phone) },

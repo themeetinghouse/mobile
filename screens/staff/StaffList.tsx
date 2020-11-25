@@ -38,7 +38,7 @@ export type Staff = {
     sites: Array<string | null>
     Location: string | null
     Coordinator: boolean | null
-    Teachings: Array<string | null>
+    Teacher: boolean | null
 }
 export default function StaffList({ navigation }: Params): JSX.Element {
     const [staff, setStaffByName] = useState([]);
