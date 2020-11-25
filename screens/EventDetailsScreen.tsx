@@ -21,10 +21,10 @@ const style = StyleSheet.create({
             backgroundColor: Theme.colors.black,
         }
     },
-    header: Style.header,
+
     title: {
         ...Style.title, ...{
-            marginTop: 32,
+            marginTop: 16,
             marginBottom: 16,
         }
     },
@@ -71,31 +71,26 @@ const style = StyleSheet.create({
         paddingBottom: 10,
         padding: 16
     },
-    headerTitle: HeaderStyle.title,
-    imageWrapper: {
-        padding: 0,
-        top: 0, bottom: 0, left: 0, right: 0,
-    },
     eventImage: {
+        resizeMode: "cover",
         position: "absolute",
-        zIndex: -300,
+        zIndex: -1,
         width: Dimensions.get('window').width,
-        height: 300,
+        height: 230,
     },
     fixedTop: {
         zIndex: 1,
         top: 0,
         width: Dimensions.get('window').width,
-        height: 300,
+        height: 250,
     },
     toplinearGradient: {
-        top: -35,
         width: Dimensions.get('window').width,
-        height: 90,
+        height: 0,
     },
     bottomlinearGradient: {
         width: Dimensions.get('window').width,
-        height: 85,
+        height: 110,
     },
 })
 
@@ -132,7 +127,6 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                         </Button>
                     </Right>
                 </Header>
-
             }
         })
     }, [navigation])
@@ -292,7 +286,6 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
     }, [appState.current])
     return (
         <Container>
-
             <Content style={style.content}>
                 {eventItem?.cover?.source ?
                     (<>
@@ -321,7 +314,7 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                     </>)
                     : null}
                 <View style={eventItem?.cover?.source ? style.dateBoxContainerWithPicture : style.dateBoxContainer}>
-                    <View style={style.dateBox}>
+                    <View style={eventItem?.cover?.source ? [style.dateBox, { marginTop: 60 }] : style.dateBox}>
                         <Text style={style.dateBoxText}>{moment(eventItem.start_time).format("MMM")}</Text>
                         <Text style={style.dateBoxNumber}>{moment(eventItem.start_time).format("D")}</Text>
                     </View>
