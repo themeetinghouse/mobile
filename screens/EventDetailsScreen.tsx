@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
+import { Container, Text, Button, Content, View, Thumbnail, Left, Right } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
@@ -14,7 +14,7 @@ import * as Linking from 'expo-linking';
 import Calendar from "../services/CalendarService";
 import { Picker } from '@react-native-community/picker';
 import { LinearGradient } from "expo-linear-gradient";
-
+import Header from '../components/Header/Header';
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
@@ -68,7 +68,7 @@ const style = StyleSheet.create({
         marginTop: 10
     },
     detailsContainer: {
-        paddingBottom: 50,
+        paddingBottom: 10,
         padding: 16
     },
     headerTitle: HeaderStyle.title,
@@ -84,17 +84,18 @@ const style = StyleSheet.create({
     },
     fixedTop: {
         zIndex: 1,
-        top: 10,
+        top: 0,
         width: Dimensions.get('window').width,
         height: 300,
     },
     toplinearGradient: {
+        top: -35,
         width: Dimensions.get('window').width,
-        height: 70,
+        height: 90,
     },
     bottomlinearGradient: {
         width: Dimensions.get('window').width,
-        height: 120,
+        height: 85,
     },
 })
 
@@ -113,6 +114,28 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
     const [alerts, setAlerts]: any = useState({ message: "" });
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            header: function render() {
+                return <Header>
+                    <Left style={{ flexGrow: 1, padding: 16 }} >
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                            <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                            <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Home</Text>
+                        </TouchableOpacity>
+                    </Left>
+
+                    <Right style={{ flexGrow: 1, paddingRight: 16 }}>
+                        <Button transparent onPress={() => setShare(!share)}>
+                            <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+                        </Button>
+                    </Right>
+                </Header>
+
+            }
+        })
+    }, [navigation])
 
 
 
@@ -254,7 +277,6 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
     }, []);
     /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
     useEffect(() => {
-        console.log(eventItem)
         if (appState.current === "active") {
             if (alerts.message !== "") {
                 Alert.alert(
@@ -305,7 +327,7 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                     </View>
                 </View>
 
-                <View style={eventItem?.cover?.source ? [style.detailsContainer, { top: -90, zIndex: 2 }] : style.detailsContainer}>
+                <View style={eventItem?.cover?.source ? [style.detailsContainer, { top: -40, zIndex: 2 }] : style.detailsContainer}>
                     <Text style={style.title}>{eventItem.name}</Text>
                     <Text style={style.body}>{eventItem.description}</Text>
 

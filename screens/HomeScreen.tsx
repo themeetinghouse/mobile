@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useLayoutEffect } from 'react';
 import { Container, Content, View, Text, Button, Thumbnail, Left, Right } from 'native-base';
 //import AllButton from '../components/buttons/AllButton';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
@@ -25,7 +25,7 @@ import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
 import LiveEventService from "../services/LiveEventService"
 import UserContext from '../contexts/UserContext';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, useRoute } from '@react-navigation/native';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import Header from '../components/Header/Header';
 
@@ -77,30 +77,33 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [liveEvents, setLiveEvents] = useState<any>([]);
   const user = useContext(UserContext);
-
-  navigation.setOptions({
-    headerShown: true,
-    header: function render() {
-      return <Header>
-        <Left style={{ flexGrow: 1 }} >
-        </Left>
-        <Button style={[style.headerButton, { flexGrow: 0 }]} onPress={() => navigation.navigate('LocationSelectionScreen', { persist: !Boolean(user?.userData?.email_verified) })}>
-          <View style={style.buttonContentsContainer}>
-            <Text style={style.title}>Home</Text>
-            <View style={style.locationContainer}>
-              <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName === 'unknown' ? 'Select Location' : location?.locationData?.locationName}</Text>
-              <Thumbnail square source={Theme.icons.white.caretDown} style={{ width: 12, height: 24 }}></Thumbnail>
+  const route = useRoute()
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: route.name === "EventDetailsScreen" ? false : true,
+      header: function render() {
+        return <Header>
+          <Left style={{ flexGrow: 1 }} >
+          </Left>
+          <Button style={[style.headerButton, { flexGrow: 0 }]} onPress={() => navigation.navigate('LocationSelectionScreen', { persist: !Boolean(user?.userData?.email_verified) })}>
+            <View style={style.buttonContentsContainer}>
+              <Text style={style.title}>Home</Text>
+              <View style={style.locationContainer}>
+                <Text style={[style.subtitle, style.locationName]}>{location?.locationData?.locationName === 'unknown' ? 'Select Location' : location?.locationData?.locationName}</Text>
+                <Thumbnail square source={Theme.icons.white.caretDown} style={{ width: 12, height: 24 }}></Thumbnail>
+              </View>
             </View>
-          </View>
-        </Button>
-        <Right style={{ flexGrow: 1, right: 16 }}>
-          <Button icon transparent onPress={() => navigation.navigate('ProfileScreen')}>
-            <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
           </Button>
-        </Right>
-      </Header>
-    }
-  })
+          <Right style={{ flexGrow: 1, right: 16 }}>
+            <Button icon transparent onPress={() => navigation.navigate('ProfileScreen')}>
+              <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
+            </Button>
+          </Right>
+        </Header>
+      }
+    })
+  }, [route.name, navigation, location])
+
 
   useEffect(() => {
     const loadLiveStreams = async () => {
@@ -240,7 +243,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
                       key={event.id}
                       event={event}
                       handlePress={() =>
-                        navigation.push('EventDetailsScreen', { item: event })
+                        navigation.navigate('EventDetailsScreen', { item: event })
                       }></EventCard>
 
                   ))}
