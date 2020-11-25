@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
 import WhiteButton from '../components/buttons/WhiteButton';
 import moment from 'moment';
-import { Alert, StyleSheet, ActionSheetIOS, Platform, AppState, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, ActionSheetIOS, Platform, AppState, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -13,12 +13,12 @@ import openMap from "react-native-open-maps";
 import * as Linking from 'expo-linking';
 import Calendar from "../services/CalendarService";
 import { Picker } from '@react-native-community/picker';
+import { LinearGradient } from "expo-linear-gradient";
 
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
             backgroundColor: Theme.colors.black,
-            padding: 16,
         }
     },
     header: Style.header,
@@ -33,7 +33,12 @@ const style = StyleSheet.create({
             marginTop: 32,
         }
     },
-    body: Style.body,
+    body: { ...Style.body, marginTop: 6 },
+    dateBoxContainerWithPicture: {
+        zIndex: 1,
+        position: "absolute",
+        alignSelf: "center"
+    },
     dateBoxContainer: {
         display: "flex",
         alignItems: "center",
@@ -44,6 +49,7 @@ const style = StyleSheet.create({
         backgroundColor: Theme.colors.white,
         alignItems: "center",
         justifyContent: "center",
+        marginTop: 88,
         width: 96,
         height: 96,
     },
@@ -62,9 +68,34 @@ const style = StyleSheet.create({
         marginTop: 10
     },
     detailsContainer: {
-        paddingBottom: 50
+        paddingBottom: 50,
+        padding: 16
     },
-    headerTitle: HeaderStyle.title
+    headerTitle: HeaderStyle.title,
+    imageWrapper: {
+        padding: 0,
+        top: 0, bottom: 0, left: 0, right: 0,
+    },
+    eventImage: {
+        position: "absolute",
+        zIndex: -300,
+        width: Dimensions.get('window').width,
+        height: 300,
+    },
+    fixedTop: {
+        zIndex: 1,
+        top: 10,
+        width: Dimensions.get('window').width,
+        height: 300,
+    },
+    toplinearGradient: {
+        width: Dimensions.get('window').width,
+        height: 70,
+    },
+    bottomlinearGradient: {
+        width: Dimensions.get('window').width,
+        height: 120,
+    },
 })
 
 interface Props {
@@ -74,34 +105,16 @@ interface Props {
 
 type OpeningMethod = 'gps' | 'name' | 'none';
 
-export default function EventDetailsScreen(props: Props): JSX.Element {
+export default function EventDetailsScreen({ route, navigation }: Props): JSX.Element {
     const [options, setOptions] = useState("");
     const [share, setShare] = useState(false);
-    const [eventItem] = useState(props.route.params?.item);
+    const [eventItem] = useState(route.params?.item);
     // Needed to check if app is in the background or foreground.
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
     const [alerts, setAlerts]: any = useState({ message: "" });
 
-    props.navigation.setOptions({
-        headerShown: true,
-        title: "",
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Home</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <Button transparent onPress={() => setShare(!share)}>
-                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-            </Button>
-        },
-        headerRightContainerStyle: { right: 16 },
-    })
+
 
     const directionsType = () => {
         if (eventItem.place) {
@@ -241,6 +254,7 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     }, []);
     /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
     useEffect(() => {
+        console.log(eventItem)
         if (appState.current === "active") {
             if (alerts.message !== "") {
                 Alert.alert(
@@ -256,15 +270,42 @@ export default function EventDetailsScreen(props: Props): JSX.Element {
     }, [appState.current])
     return (
         <Container>
+
             <Content style={style.content}>
-                <View style={style.dateBoxContainer}>
+                {eventItem?.cover?.source ?
+                    (<>
+                        <View style={style.fixedTop} >
+                            <LinearGradient
+                                colors={[
+                                    '#000',
+                                    'transparent',
+                                ]}
+                                style={style.toplinearGradient}
+                            >
+                            </LinearGradient>
+                            <Image style={style.eventImage} source={{ uri: eventItem.cover.source }}></Image>
+                            <View style={{ top: 125 }}>
+                                <LinearGradient
+                                    colors={[
+                                        'transparent',
+                                        '#000',
+                                    ]}
+                                    style={style.bottomlinearGradient}
+                                >
+                                </LinearGradient>
+                            </View>
+                        </View>
+
+                    </>)
+                    : null}
+                <View style={eventItem?.cover?.source ? style.dateBoxContainerWithPicture : style.dateBoxContainer}>
                     <View style={style.dateBox}>
                         <Text style={style.dateBoxText}>{moment(eventItem.start_time).format("MMM")}</Text>
                         <Text style={style.dateBoxNumber}>{moment(eventItem.start_time).format("D")}</Text>
                     </View>
                 </View>
 
-                <View style={style.detailsContainer}>
+                <View style={eventItem?.cover?.source ? [style.detailsContainer, { top: -90, zIndex: 2 }] : style.detailsContainer}>
                     <Text style={style.title}>{eventItem.name}</Text>
                     <Text style={style.body}>{eventItem.description}</Text>
 
