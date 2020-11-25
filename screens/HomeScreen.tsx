@@ -25,7 +25,7 @@ import AllButton from '../components/buttons/AllButton';
 import AnnouncementBar from "../screens/AnnouncementBar"
 import LiveEventService from "../services/LiveEventService"
 import UserContext from '../contexts/UserContext';
-import { CompositeNavigationProp, useRoute } from '@react-navigation/native';
+import { CompositeNavigationProp } from '@react-navigation/native';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import Header from '../components/Header/Header';
 
@@ -77,10 +77,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [liveEvents, setLiveEvents] = useState<any>([]);
   const user = useContext(UserContext);
-  const route = useRoute()
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerShown: route.name === "EventDetailsScreen" ? false : true,
+      headerShown: true,
       header: function render() {
         return <Header>
           <Left style={{ flexGrow: 1 }} >
@@ -102,7 +101,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         </Header>
       }
     })
-  }, [route.name, navigation, location])
+  }, [navigation, location, user?.userData])
 
 
   useEffect(() => {
