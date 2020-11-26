@@ -256,7 +256,13 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                 break;
         }
     }
-
+    const parseDescription = (): string => {
+        let linkAddress = "";
+        if (eventItem?.description.includes("https://")) {
+            linkAddress = eventItem?.description.match(/(https?:\/\/[^ ]*)/)[1]
+        }
+        return linkAddress
+    }
     const _handleAppStateChange = (nextAppState: any) => {
         appState.current = nextAppState;
         setAppStateVisible(appState.current);
@@ -351,9 +357,7 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                             selectedValue={options}
                             onValueChange={(itemValue, itemIndex) => {
                                 setOptions(itemValue as string)
-                            }
-
-                            }>
+                            }}>
                             <Picker.Item label="Select a Date" value=""></Picker.Item>
                             {eventItem.event_times?.map((value: any, key: any) => {
                                 if (value.start_time > moment().format())
@@ -374,6 +378,10 @@ export default function EventDetailsScreen({ route, navigation }: Props): JSX.El
                     <View>
                         {eventItem?.event_times && eventItem?.event_times.length > 0 && eventItem?.event_times[0]?.ticket_uri ? <WhiteButton style={{ height: 56, marginBottom: 20, marginTop: 20 }} label="Register" onPress={() => {
                             Linking.openURL(eventItem.event_times[0].ticket_uri)
+                        }}></WhiteButton> : null}
+
+                        {parseDescription() !== "" ? <WhiteButton style={{ height: 56, marginBottom: 20, marginTop: 20 }} label="Attend" onPress={() => {
+                            Linking.openURL(parseDescription())
                         }}></WhiteButton> : null}
 
                     </View>
