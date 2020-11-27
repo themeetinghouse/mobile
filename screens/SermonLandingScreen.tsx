@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect, Fragment } from 'react';
+import React, { useState, useContext, useRef, useEffect, Fragment, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -336,29 +336,31 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
         navigation.push('NotesScreen', { date: moment(sermon.publishedDate).format("YYYY-MM-DD") })
     }
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: '',
+            headerStyle: { backgroundColor: Theme.colors.background },
+            safeAreaInsets: { top: safeArea.top },
+            headerLeft: function render() {
+                return <Button transparent onPress={
+                    mediaContext.media.playerType === 'audio' ? minimizeAudio
+                        : mediaContext.media.playerType === 'video' ? minimizeVideo
+                            : () => navigation.goBack()
+                }>
+                    <Thumbnail square source={mediaContext.media.playerType === 'audio' || mediaContext.media.playerType === 'video' ? Theme.icons.white.mini : Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
+                </Button>
+            },
+            headerRight: function render() {
+                return <Button transparent onPress={() => setShare(!share)} >
+                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+                </Button>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRightContainerStyle: { right: 16 }
+        })
+    }, [navigation])
 
-    navigation.setOptions({
-        headerShown: true,
-        title: '',
-        headerStyle: { backgroundColor: Theme.colors.background },
-        safeAreaInsets: { top: safeArea.top },
-        headerLeft: function render() {
-            return <Button transparent onPress={
-                mediaContext.media.playerType === 'audio' ? minimizeAudio
-                    : mediaContext.media.playerType === 'video' ? minimizeVideo
-                        : () => navigation.goBack()
-            }>
-                <Thumbnail square source={mediaContext.media.playerType === 'audio' || mediaContext.media.playerType === 'video' ? Theme.icons.white.mini : Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
-            </Button>
-        },
-        headerRight: function render() {
-            return <Button transparent onPress={() => setShare(!share)} >
-                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRightContainerStyle: { right: 16 }
-    })
 
     return (
         <View style={{ flex: 1 }} >

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { Content, Text, Left, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
@@ -95,38 +95,27 @@ interface Params {
 
 export default function Profile({ navigation }: Params): JSX.Element {
 
-    const [loggedIn, setLoggedIn] = useState('unknown');
     const safeArea = useSafeAreaInsets();
 
     const user = useContext(UserContext);
     const location = useContext(LocationContext);
-
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Profile',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <View style={{ flex: 1 }} />
-        },
-        headerRight: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={style.headerButtonText}>Done</Text>
-            </TouchableOpacity>
-        },
-        headerRightContainerStyle: { right: 16 },
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Profile',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <View style={{ flex: 1 }} />
+            },
+            headerRight: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={style.headerButtonText}>Done</Text>
+                </TouchableOpacity>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
     })
-
-
-    useEffect(() => {
-        function checkForUser() {
-            if (user?.userData?.email_verified)
-                setLoggedIn('user')
-            else
-                setLoggedIn('no user')
-        }
-        checkForUser();
-    }, [])
 
     const items = [
         { id: "mycomments", text: "My Comments", subtext: "This feature is coming soon", icon: Theme.icons.white.comments, action: () => null },
@@ -153,82 +142,65 @@ export default function Profile({ navigation }: Params): JSX.Element {
         });
     }
 
-    function renderContent() {
-        switch (loggedIn) {
-            case 'user':
-                return (
-                    <Content style={style.content}>
-                        <View>
-                            <List>
-                                {items.map(item => (
-                                    <ListItem
-                                        key={item.id} style={style.listItem}
-                                        onPress={item.action}>
-                                        <Left>
-                                            <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
-                                            <View>
-                                                <Text style={style.listText}>{item.text}</Text>
-                                                <Text style={style.listSubtext}>{item.subtext}</Text>
-                                            </View>
-                                        </Left>
-                                        <View>
-                                            <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
-                                        </View>
-                                    </ListItem>
-                                ))}
-                                <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
-                                <ListItem
-                                    style={style.listItem}
-                                    onPress={signOut}>
-                                    <Left>
-                                        <Thumbnail style={style.listIcon} source={Theme.icons.white.signOut} square></Thumbnail>
-                                        <View>
-                                            <Text style={style.listText}>Sign Out</Text>
-                                        </View>
-                                    </Left>
-                                </ListItem>
-                            </List>
-                        </View>
-                    </Content>
-                )
-            case 'no user':
-                return (
-                    <Content style={style.content}>
-                        <View>
-                            <List>
-                                {items2.map(item => (
-                                    <ListItem
-                                        key={item.id} style={style.listItem}
-                                        onPress={item.action}>
-                                        <Left>
-                                            <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
-                                            <View>
-                                                <Text style={style.listText}>{item.text}</Text>
-                                                <Text style={style.listSubtext}>{item.subtext}</Text>
-                                            </View>
-                                        </Left>
-                                        <View>
-                                            <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
-                                        </View>
-                                    </ListItem>
-                                ))}
-                            </List>
-                        </View>
-                    </Content>
-                )
-            default:
-                return (
-                    <Content style={style.content}>
-                        <ActivityIndicator />
-                    </Content>
-                )
-        }
-    }
-
     return (
         <Container style={{ backgroundColor: Theme.colors.background, paddingBottom: safeArea.bottom }} >
-            {renderContent()}
+            {user?.userData?.email_verified ?
+                <Content style={style.content}>
+                    <View>
+                        <List>
+                            {items.map(item => (
+                                <ListItem
+                                    key={item.id} style={style.listItem}
+                                    onPress={item.action}>
+                                    <Left>
+                                        <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
+                                        <View>
+                                            <Text style={style.listText}>{item.text}</Text>
+                                            <Text style={style.listSubtext}>{item.subtext}</Text>
+                                        </View>
+                                    </Left>
+                                    <View>
+                                        <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
+                                    </View>
+                                </ListItem>
+                            ))}
+                            <View style={{ height: 15, backgroundColor: Theme.colors.background, padding: 0 }} />
+                            <ListItem
+                                style={style.listItem}
+                                onPress={signOut}>
+                                <Left>
+                                    <Thumbnail style={style.listIcon} source={Theme.icons.white.signOut} square></Thumbnail>
+                                    <View>
+                                        <Text style={style.listText}>Sign Out</Text>
+                                    </View>
+                                </Left>
+                            </ListItem>
+                        </List>
+                    </View>
+                </Content>
+                : <Content style={style.content}>
+                    <View>
+                        <List>
+                            {items2.map(item => (
+                                <ListItem
+                                    key={item.id} style={style.listItem}
+                                    onPress={item.action}>
+                                    <Left>
+                                        <Thumbnail style={style.listIcon} source={item.icon} square></Thumbnail>
+                                        <View>
+                                            <Text style={style.listText}>{item.text}</Text>
+                                            <Text style={style.listSubtext}>{item.subtext}</Text>
+                                        </View>
+                                    </Left>
+                                    <View>
+                                        <Thumbnail style={style.listArrowIcon} source={Theme.icons.white.arrow} square></Thumbnail>
+                                    </View>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </View>
+                </Content>
+            }
         </Container>
     )
 }
-

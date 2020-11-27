@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import NotesService from '../services/NotesService';
 import { Text, Left, Body, Right, Button, Content, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
@@ -159,28 +159,30 @@ export default function NotesScreen({ route, navigation, today, fromLiveStream }
     useEffect(() => {
         setUserPreference(userContext?.userData?.["custom:preference_openBible"])
     }, [])
-
-    navigation.setOptions({
-        headerShown: true,
-        header: function render() {
-            return <Header>
-                <Left style={style.headerLeft}>
-                    <Button transparent onPress={() => navigation.goBack()}>
-                        <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
-                    </Button>
-                </Left>
-                <Body style={style.headerBody}>
-                    <Text onPress={() => { setNotesMode('notes'); ref.current?.scrollTo(0) }} style={[style.headerTitle, notesMode === 'notes' ? style.headerTitleSelected : {}]}>Notes</Text>
-                    <Text onPress={() => { setNotesMode('questions'); ref.current?.scrollTo(1) }} style={[style.headerTitle, notesMode === 'questions' ? style.headerTitleSelected : {}]}>Questions</Text>
-                </Body>
-                <Right style={style.headerRight}>
-                    <Button transparent onPress={handleOpenTextOptions}>
-                        <Thumbnail style={Style.icon} source={Theme.icons.white.textOptions} square></Thumbnail>
-                    </Button>
-                </Right>
-            </Header>
-        }
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            header: function render() {
+                return <Header>
+                    <Left style={style.headerLeft}>
+                        <Button transparent onPress={() => navigation.goBack()}>
+                            <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
+                        </Button>
+                    </Left>
+                    <Body style={style.headerBody}>
+                        <Text onPress={() => { setNotesMode('notes'); ref.current?.scrollTo(0) }} style={[style.headerTitle, notesMode === 'notes' ? style.headerTitleSelected : {}]}>Notes</Text>
+                        <Text onPress={() => { setNotesMode('questions'); ref.current?.scrollTo(1) }} style={[style.headerTitle, notesMode === 'questions' ? style.headerTitleSelected : {}]}>Questions</Text>
+                    </Body>
+                    <Right style={style.headerRight}>
+                        <Button transparent onPress={handleOpenTextOptions}>
+                            <Thumbnail style={Style.icon} source={Theme.icons.white.textOptions} square></Thumbnail>
+                        </Button>
+                    </Right>
+                </Header>
+            }
+        })
     })
+
 
     async function handleFontScale(data: number) {
         try {

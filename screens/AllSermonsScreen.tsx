@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -114,21 +114,23 @@ export default function AllSermonsScreen({ navigation, route }: Params): JSX.Ele
         dateEndStr = dateEnd.format("MMM, YYYY");
         filteredSermons = filteredSermons.filter((s: any) => dateStart && dateEnd && moment(s.publishedDate).isBetween(dateStart, dateEnd));
     }
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'All Teaching',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                    <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
+                </TouchableOpacity>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() { return <View style={{ flex: 1 }} /> }
+        })
+    }, [])
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'All Teaching',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() { return <View style={{ flex: 1 }} /> }
-    })
 
     return (
         <Container>
