@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import IconButton from '../components/buttons/IconButton';
@@ -74,36 +74,34 @@ interface Props {
 
 type OpeningMethod = 'gps' | 'name' | 'none';
 
-export default function EventDetailsScreen({ navigation, route }: Props): JSX.Element {
+export default function EventDetailsScreen(props: Props): JSX.Element {
     const [options, setOptions] = useState("");
     const [share, setShare] = useState(false);
-    const [eventItem] = useState(route.params?.item);
+    const [eventItem] = useState(props.route.params?.item);
     // Needed to check if app is in the background or foreground.
     const appState = useRef(AppState.currentState);
     const [appStateVisible, setAppStateVisible] = useState(appState.current);
     const [alerts, setAlerts]: any = useState({ message: "" });
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerShown: true,
-            title: "",
-            headerTitleStyle: style.headerTitle,
-            headerStyle: { backgroundColor: Theme.colors.background },
-            headerLeft: function render() {
-                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                    <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Home</Text>
-                </TouchableOpacity>
-            },
-            headerLeftContainerStyle: { left: 16 },
-            headerRight: function render() {
-                return <Button transparent onPress={() => setShare(!share)}>
-                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-                </Button>
-            },
-            headerRightContainerStyle: { right: 16 },
-        })
-    }, [])
 
+    props.navigation.setOptions({
+        headerShown: true,
+        title: "",
+        headerTitleStyle: style.headerTitle,
+        headerStyle: { backgroundColor: Theme.colors.background },
+        headerLeft: function render() {
+            return <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Home</Text>
+            </TouchableOpacity>
+        },
+        headerLeftContainerStyle: { left: 16 },
+        headerRight: function render() {
+            return <Button transparent onPress={() => setShare(!share)}>
+                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+            </Button>
+        },
+        headerRightContainerStyle: { right: 16 },
+    })
 
     const directionsType = () => {
         if (eventItem.place) {
