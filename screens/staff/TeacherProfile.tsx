@@ -151,7 +151,6 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
 
 
           {teachings.items.length > 0 ? teachings.items
-            .sort((a: any, b: any) => (a.video.publishedDate > b.video.publishedDate) ? -1 : ((b.video.publishedDate > a.video.publishedDate) ? 1 : 0))
             .filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase()))
             .map((item: any, index: number) => {
               if (index < showCount) {
