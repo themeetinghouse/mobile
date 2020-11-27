@@ -359,7 +359,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
             headerLeftContainerStyle: { left: 16 },
             headerRightContainerStyle: { right: 16 }
         })
-    }, [navigation])
+    })
 
 
     return (
