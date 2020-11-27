@@ -9,7 +9,6 @@ import TeachingListItem from "../../components/teaching/TeachingListItem";
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from "../../navigation/AppNavigator";
 import { runGraphQLQuery } from "../../services/ApiService";
-import { listSpeakersQuery } from "../../services/SpeakersService";
 import ActivityIndicator from "../../components/ActivityIndicator";
 import AllButton from '../../components/buttons/AllButton'
 
@@ -75,7 +74,9 @@ interface Props {
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
   const [searchText, setSearchText] = useState("");
   const [teachings, setTeachings] = useState({ items: [], nextToken: null } as any);
+  const [isLoading, setIsLoading] = useState(false);
   const [showCount, setShowCount] = useState(20);
+  const [nextToken, setNextToken] = useState(null);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -108,23 +109,28 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
       }
     })
   }, [navigation])
-
-  useEffect(() => {
-    const loadSpeakerVideos = async (limit = 9999) => {
-      try {
-        const queryResult = await runGraphQLQuery({
-          query: listSpeakersQuery,
-          variables: { limit, filter: { id: { eq: (route.params.staff.FirstName + " " + route.params.staff.LastName) } } },
-        })
-        setTeachings({ items: queryResult.listSpeakers.items[0].videos.items })
-      } catch (error) {
-        console.error(error)
-      }
+  const loadSpeakerVideos = async () => {
+    setIsLoading(true)
+    try {
+      const queryResult = await runGraphQLQuery({
+        query: listSpeakersQuery,
+        variables: { nextToken: nextToken, filter: { id: { eq: (route.params.staff.FirstName + " " + route.params.staff.LastName) } } }
+      })
+      setTeachings({ items: teachings.items.concat(queryResult.listSpeakers.items[0].videos.items) })
+      setNextToken(queryResult.listSpeakers.items[0].videos.nextToken)
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error)
     }
-    loadSpeakerVideos()
+  }
+  useEffect(() => {
+    loadSpeakerVideos();
   }, [])
   return (
     <View style={style.container}>
+      <View style={{ position: "absolute", zIndex: 5, alignSelf: "center", top: "45%" }}>
+        <ActivityIndicator animating={isLoading}></ActivityIndicator>
+      </View>
       <ScrollView>
         <View>
           <View style={style.pictureContainer}>
@@ -142,6 +148,8 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
           handleTextChanged={(newStr) => setSearchText(newStr)}
           placeholderLabel="Search sermons..."></SearchBar>
         <View style={style.listContentContainer}>
+
+
           {teachings.items.length > 0 ? teachings.items
             .sort((a: any, b: any) => (a.video.publishedDate > b.video.publishedDate) ? -1 : ((b.video.publishedDate > a.video.publishedDate) ? 1 : 0))
             .filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase()))
@@ -152,16 +160,77 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                   teaching={item.video}
                   handlePress={() => navigation.navigate('SermonLandingScreen', { item: item.video })} />
               }
-            }) : <ActivityIndicator />}
-          {teachings.items?.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length > 20 && showCount < teachings.items.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length ?
+            }) : null}
 
-            <View style={{ marginBottom: 20 }}>
-              <AllButton handlePress={() => setShowCount(showCount + 20)}>Load More</AllButton>
-            </View>
-            : null}
+
         </View>
+        {teachings.items?.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length > 20 && showCount < teachings.items.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length ?
+
+          <View style={{ marginBottom: 10 }}>
+            <AllButton handlePress={() => setShowCount(showCount + 20)}>Load More</AllButton>
+          </View>
+          : null}
+
       </ScrollView>
+
     </View >
   )
 }
 export default memo(TeacherProfile);
+
+export const listSpeakersQuery = `
+  query ListSpeakers(
+    $filter: ModelSpeakerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSpeakers(filter: $filter, limit: $limit) {
+      items {
+        id
+        name
+        image
+        videos (limit: 9999, sortDirection:DESC, nextToken: $nextToken) {
+          items {
+            id
+            video{
+              publishedDate
+              description
+              audioURL
+              YoutubeIdent
+              id
+              episodeTitle
+              episodeNumber
+              seriesTitle
+              Youtube{
+                snippet {
+                  thumbnails {
+                    default {
+                      url
+                    }
+                    medium {
+                      url
+                    }
+                    high {
+                      url
+                    }
+                    standard {
+                      url
+                    }
+                    maxres {
+                      url
+                    }
+                  }
+                }
+                contentDetails{
+                  videoId
+                }
+              }
+            }
+          }
+          nextToken
+        }
+      }
+      nextToken
+    }
+  }
+  `;
