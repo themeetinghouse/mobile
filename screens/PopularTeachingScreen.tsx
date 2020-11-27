@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import { TouchableOpacity, StyleSheet } from 'react-native';
@@ -48,21 +48,23 @@ interface Params {
 export default function AllSermonsScreen({ navigation, route }: Params): JSX.Element {
 
     const teaching = route.params.popularTeaching;
-
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Popular',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() { return <View style={{ flex: 1 }} /> }
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Popular',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                    <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
+                </TouchableOpacity>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() { return <View style={{ flex: 1 }} /> }
+        })
     })
+
 
     return (
         <Container>

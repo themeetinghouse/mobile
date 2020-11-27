@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Container, Content, Text, Left, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet } from 'react-native';
@@ -85,29 +85,32 @@ export default function LocationSelectionScreen({ navigation }: LocationSelectio
     const [selectedLocation, setSelectedLocation] = useState<LocationData>();
     const [searchText, setSearchText] = useState("");
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Location',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={style.headerButtonText}>Cancel</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <TouchableOpacity onPress={() => {
-                if (selectedLocation?.locationId)
-                    navigation.navigate('SignUpScreen', { locationId: selectedLocation.locationId, locationName: selectedLocation.locationName });
-                else
-                    navigation.goBack();
-            }}>
-                <Text style={style.headerButtonText}>Done</Text>
-            </TouchableOpacity>
-        },
-        headerRightContainerStyle: { right: 16 },
-    })
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Location',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={style.headerButtonText}>Cancel</Text>
+                </TouchableOpacity>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() {
+                return <TouchableOpacity onPress={() => {
+                    if (selectedLocation?.locationId)
+                        navigation.navigate('SignUpScreen', { locationId: selectedLocation.locationId, locationName: selectedLocation.locationName });
+                    else
+                        navigation.goBack();
+                }}>
+                    <Text style={style.headerButtonText}>Done</Text>
+                </TouchableOpacity>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
+    }, [])
+
 
     useEffect(() => {
         const loadLocations = () => {

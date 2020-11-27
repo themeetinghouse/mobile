@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import UserContext from '../../contexts/UserContext';
 import { Content, Text, Left, View, Thumbnail, List, ListItem, Container } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth'
-import ActivityIndicator from '../../components/ActivityIndicator';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -115,9 +115,6 @@ export default function Profile({ navigation }: Params): JSX.Element {
             headerRightContainerStyle: { right: 16 },
         })
     })
-
-
-
 
     const signOut = async () => {
         await Auth.signOut().then(() => {
