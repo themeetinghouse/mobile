@@ -7,7 +7,7 @@ export default class LiveEventService {
     try {
       const currentEventData = await LiveEventService.getLiveEventData()
       if (currentEventData) {
-        console.log("Event data is set.")
+        //console.log("Event data is set.")
         const needToUpdate = await LiveEventService.shouldUpdate(currentEventData)
         if (needToUpdate) {
           await LiveEventService.fetchLiveEventData()
@@ -70,11 +70,11 @@ export default class LiveEventService {
       //console.log("Last fetched date " + liveEventsData.dateFetched)
       //console.log("Current date " + moment().format('YYYY-MM-DD'))
       if (liveEventsData.dateFetched === undefined || liveEventsData.dateFetched < moment().format('YYYY-MM-DD')) {
-        console.log("Data fetched is older than today!")
+        //console.log("Data fetched is older than today!")
         return true;
       }
       else {
-        console.log("Date fetched is not older. No need to update")
+        //console.log("Date fetched is not older. No need to update")
         return false
       }
     } catch (error) {
