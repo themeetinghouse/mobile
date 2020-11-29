@@ -13,7 +13,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.5",
+    "version": "6.0.6",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -38,7 +38,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "2",
+      "buildNumber": "1",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -56,7 +56,7 @@
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20052,
+      "versionCode": 20061,
       "permissions": [],
       "intentFilters": [
         {
