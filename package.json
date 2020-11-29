@@ -28,7 +28,7 @@
     "expo-av": "~8.6.0",
     "expo-calendar": "~8.5.0",
     "expo-font": "~8.3.0",
-    "expo-linear-gradient": "^8.3.1",
+    "expo-linear-gradient": "~8.3.0",
     "expo-random": "~9.0.0",
     "expo-secure-store": "~9.2.0",
     "moment": "^2.24.0",

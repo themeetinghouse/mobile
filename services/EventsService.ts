@@ -47,6 +47,15 @@ const getFbEvents = `
         description
         end_time
         name
+        is_online
+        cover{
+          id
+          offset_x
+          offset_y
+          source
+        }
+        online_event_format
+        online_event_third_party_url
         place {
           name
           location {
