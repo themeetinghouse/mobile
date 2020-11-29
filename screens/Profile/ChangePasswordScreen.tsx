@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useLayoutEffect } from 'react';
 import { Container, Content, Text, Button, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { TouchableOpacity, TouchableWithoutFeedback, Keyboard, Dimensions, StyleSheet } from 'react-native';
@@ -103,25 +103,27 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     const [newPass, setNewPass] = useState('');
     const [error, setError] = useState('');
     const safeArea = useSafeAreaInsets();
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Password',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <Button transparent onPress={() => navigation.goBack()}>
+                    <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
+                </Button>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() {
+                return <TouchableOpacity disabled={!(currentPass && newPass)} onPress={changePassword}>
+                    <Text style={currentPass && newPass ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Save</Text>
+                </TouchableOpacity>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
+    }, [])
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Password',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <Button transparent onPress={() => navigation.goBack()}>
-                <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <TouchableOpacity disabled={!(currentPass && newPass)} onPress={changePassword}>
-                <Text style={currentPass && newPass ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Save</Text>
-            </TouchableOpacity>
-        },
-        headerRightContainerStyle: { right: 16 },
-    })
 
     function forgotPass(): void {
         setCurrentPass('');

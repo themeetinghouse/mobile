@@ -60,15 +60,6 @@ interface Params {
 
 export default function TeachingListItem({ teaching, handlePress }: Params): JSX.Element {
     const [hasComments, setHasComments] = useState(false);
-
-    let imageUrl = "";
-    if (teaching?.Youtube?.snippet?.thumbnails?.standard) {
-        imageUrl = teaching.Youtube.snippet.thumbnails.standard.url ?? "";
-    } else if (teaching?.Youtube?.snippet?.thumbnails?.high) {
-        imageUrl = teaching.Youtube.snippet.thumbnails.high.url ?? "";
-    }
-
-
     useEffect(() => {
         const getComments = async () => {
             try {
@@ -95,7 +86,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
     return (
         <TouchableOpacity onPress={handlePress}>
             <View style={style.container}>
-                <Image style={style.thumbnail} source={{ uri: imageUrl }} />
+                <Image style={style.thumbnail} source={{ uri: teaching?.Youtube?.snippet?.thumbnails?.standard?.url ?? teaching?.Youtube?.snippet?.thumbnails?.high?.url ?? "" }} />
                 <View style={style.detailsContainer}>
                     <Text style={style.title}>{teaching?.episodeTitle}</Text>
                     <Text style={style.detailText1}>{teaching?.episodeNumber ? `E${teaching?.episodeNumber},` : ''} {teaching?.seriesTitle}</Text>

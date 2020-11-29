@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -125,37 +125,39 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
         outputRange: [0, 1],
         extrapolate: "clamp",
     });
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerTransparent: true,
+            headerBackground: function render() {
+                return <Animated.View
+                    style={{
+                        backgroundColor: Theme.colors.background,
+                        ...StyleSheet.absoluteFillObject,
+                        opacity: contentFills ? headerOpacity : 0,
+                        borderBottomColor: colors.border,
+                        borderBottomWidth: StyleSheet.hairlineWidth
+                    }}
+                />
+            },
+            title: '',
+            safeAreaInsets: { top: safeArea.top },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                    <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
+                    <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
+                </TouchableOpacity>
+            },
+            headerRight: function render() {
+                return <Button transparent onPress={() => setShare(!share)}>
+                    <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
+                </Button>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRightContainerStyle: { right: 16 }
+        })
+    }, [])
 
-    navigation.setOptions({
-        headerShown: true,
-        headerTransparent: true,
-        headerBackground: function render() {
-            return <Animated.View
-                style={{
-                    backgroundColor: Theme.colors.background,
-                    ...StyleSheet.absoluteFillObject,
-                    opacity: contentFills ? headerOpacity : 0,
-                    borderBottomColor: colors.border,
-                    borderBottomWidth: StyleSheet.hairlineWidth
-                }}
-            />
-        },
-        title: '',
-        safeAreaInsets: { top: safeArea.top },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
-                <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>Teaching</Text>
-            </TouchableOpacity>
-        },
-        headerRight: function render() {
-            return <Button transparent onPress={() => setShare(!share)}>
-                <Thumbnail square source={Theme.icons.white.share} style={{ width: 24, height: 24 }} />
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRightContainerStyle: { right: 16 }
-    })
 
     useEffect(() => {
         const loadSermonsInSeriesAsync = async () => {

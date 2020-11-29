@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import { Container, Content, Text, Left, View, Thumbnail, List, ListItem, Button } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet } from 'react-native';
@@ -115,23 +115,23 @@ function Account({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
     const safeArea = useSafeAreaInsets();
-
-    navigation.setOptions({
-        headerShown: true,
-        title: 'My Account',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <Button transparent onPress={() => navigation.navigate('ProfileScreen')}>
-                <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <View style={{ flex: 1 }} />
-        },
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'My Account',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <Button transparent onPress={() => navigation.navigate('ProfileScreen')}>
+                    <Thumbnail style={Style.icon} source={Theme.icons.white.arrowLeft} square></Thumbnail>
+                </Button>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() {
+                return <View style={{ flex: 1 }} />
+            },
+        })
     })
-
     const items = [
         "Login",
         {

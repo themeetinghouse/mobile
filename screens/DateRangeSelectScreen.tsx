@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -100,19 +100,20 @@ export default function DateRangeSelectScreen({ navigation }: Params): JSX.Eleme
     const [firstDate, setFirstDate] = useState<Date>({});
     const [secondDate, setSecondDate] = useState<Date>({});
     const miniPlayerStyle = useContext(MiniPlayerStyleContext);
-
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Date Range',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <Button transparent onPress={() => navigation.goBack()}>
-                <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() { return <View style={{ flex: 1 }} /> }
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Date Range',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <Button transparent onPress={() => navigation.goBack()}>
+                    <Thumbnail square source={Theme.icons.white.closeCancel} style={{ width: 24, height: 24 }} />
+                </Button>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() { return <View style={{ flex: 1 }} /> }
+        })
     })
 
     useEffect(() => {

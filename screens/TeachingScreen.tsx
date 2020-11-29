@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
@@ -175,20 +175,22 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const [bounce, setBounce] = useState(false);
     const [popular, setPopular] = useState<PopularVideoData>([]);
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Teaching',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <View style={{ flex: 1 }} />
-        },
-        headerRight: function render() {
-            return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
-                <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
-            </Button>
-        },
-        headerRightContainerStyle: { right: 16 },
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Teaching',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <View style={{ flex: 1 }} />
+            },
+            headerRight: function render() {
+                return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                    <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
+                </Button>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
     })
 
     const loadRecentSermonsAsync = async () => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { Container, Text, Button, View, Thumbnail } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, Image, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
@@ -207,25 +207,27 @@ export default function CommentScreen({ navigation, route }: Params): JSX.Elemen
     const [showHint, setShowHint] = useState(false);
 
     const routeParams = route.params;
-
-    navigation.setOptions({
-        headerShown: true,
-        title: mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
-                <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
-                <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
-            </TouchableOpacity>
-        },
-        headerRightContainerStyle: { right: 16 },
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={mode === 'comment' ? () => navigation.goBack() : () => setMode('comment')}>
+                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>Cancel</Text>
+                </TouchableOpacity>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() {
+                return <TouchableOpacity onPress={mode === 'comment' ? postComment : () => setMode('comment')}>
+                    <Text style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}>{mode === 'comment' ? 'Save' : 'Done'}</Text>
+                </TouchableOpacity>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
     })
+
 
     useEffect(() => {
         miniPlayerStyle.setDisplay('none');

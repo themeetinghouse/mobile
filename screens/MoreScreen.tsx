@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import { Container, Content, Text, Left, Button, View, Thumbnail, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StyleSheet } from 'react-native';
@@ -84,21 +84,24 @@ function MoreScreen(): JSX.Element {
     const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
     let items = [];
 
-    navigation.setOptions({
-        headerShown: true,
-        title: 'More',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <View style={{ flex: 1 }} />
-        },
-        headerRight: function render() {
-            return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
-                <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
-            </Button>
-        },
-        headerRightContainerStyle: { right: 16 },
-    })
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'More',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <View style={{ flex: 1 }} />
+            },
+            headerRight: function render() {
+                return <Button icon transparent style={{}} onPress={() => navigation.navigate('ProfileScreen')}>
+                    <Thumbnail square source={user?.userData?.email_verified ? Theme.icons.white.userLoggedIn : Theme.icons.white.user} style={style.icon}></Thumbnail>
+                </Button>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
+    }, [user?.userData])
+
 
     if (location?.locationData?.locationId === "unknown")
         items = [

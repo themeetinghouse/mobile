@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { Container, Content, Text, Left, Right, View, Thumbnail, Item, Input, List, ListItem } from 'native-base';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { StyleSheet } from 'react-native';
@@ -91,29 +91,30 @@ export default function LocationSelectionScreen({ navigation, route }: LocationS
     const [locations, setLocations] = useState<LocationData[]>([]);
     const [selectedLocation, setSelectedLocation] = useState(location?.locationData);
     const [searchText, setSearchText] = useState("");
-
-    navigation.setOptions({
-        headerShown: true,
-        title: 'Location',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={style.headerButtonText}>Cancel</Text>
-            </TouchableOpacity>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() {
-            return <TouchableOpacity onPress={() => {
-                location?.setLocationData(selectedLocation);
-                if (route.params.persist)
-                    updateUser(selectedLocation?.locationId);
-                navigation.goBack();
-            }}>
-                <Text style={style.headerButtonText}>Done</Text>
-            </TouchableOpacity>
-        },
-        headerRightContainerStyle: { right: 16 },
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            title: 'Location',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={style.headerButtonText}>Cancel</Text>
+                </TouchableOpacity>
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() {
+                return <TouchableOpacity onPress={() => {
+                    location?.setLocationData(selectedLocation);
+                    if (route.params.persist)
+                        updateUser(selectedLocation?.locationId);
+                    navigation.goBack();
+                }}>
+                    <Text style={style.headerButtonText}>Done</Text>
+                </TouchableOpacity>
+            },
+            headerRightContainerStyle: { right: 16 },
+        })
     })
 
     useEffect(() => {
