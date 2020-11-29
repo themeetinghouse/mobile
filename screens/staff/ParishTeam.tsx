@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, SectionList } from "react-native";
 import { Thumbnail, Left, Right } from 'native-base';
 import StaffItem from "./StaffItem";
@@ -36,14 +36,14 @@ export default function StaffList({ navigation }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [isLoading, setisLoading] = useState(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
             title: 'My Parish Team',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: Theme.colors.background },
             headerLeft: function render() {
-                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', paddingRight: 12, paddingBottom: 12, paddingTop: 12 }} >
                     <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
                     <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>More</Text>
                 </TouchableOpacity>
@@ -51,6 +51,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             headerLeftContainerStyle: { left: 16 },
             headerRight: function render() { return <View style={{ flex: 1 }} /> }
         })
+    }, [navigation])
+
+    useEffect(() => {
         const loadStaff = async () => {
             setisLoading(true)
             const staffByLocationResults = await StaffDirectoryService.loadStaffListByLocation(location as any);
@@ -87,11 +90,6 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                                 <Left>
                                     <Text style={{ left: 16, color: "white", fontSize: 24, lineHeight: 32, fontFamily: Theme.fonts.fontFamilyBold }}>{title}</Text>
                                 </Left>
-                                <Right>
-                                    {/* <TouchableOpacity onPress={() => navigation.navigate("LocationSelectionScreen", { persist: true })} style={{ right: 16 }}>
-                                <Text style={{ textDecorationLine: "underline", color: "white", fontWeight: "400", fontSize: 12, lineHeight: 18, fontFamily: Theme.fonts.fontFamilyRegular }}>Change</Text>
-                            </TouchableOpacity> */}
-                                </Right>
                             </View>
                         </>
                     } else return null; // no results message here
@@ -103,7 +101,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                 renderItem={({ item }) => {
                     if (item.FirstName.toLowerCase().includes(searchText.toLowerCase()) || item.LastName.toLowerCase().includes(searchText.toLowerCase()))
                         return (
-                            <View><StaffItem staff={item}></StaffItem></View>
+                            <StaffItem navigation={navigation} staff={item}></StaffItem>
                         )
                     else {
                         return <></>

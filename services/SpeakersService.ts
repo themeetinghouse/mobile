@@ -1,7 +1,7 @@
 import { runGraphQLQuery } from './ApiService';
 import { ListSpeakersQuery } from './API';
 
-type loadSpeakersListData = {
+export type loadSpeakersListData = {
   items: NonNullable<ListSpeakersQuery['listSpeakers']>['items'];
   nextToken: NonNullable<ListSpeakersQuery['listSpeakers']>['nextToken']
 }
@@ -45,7 +45,42 @@ export const listSpeakersQuery = `
         videos {
           items {
             id
+            video{
+              publishedDate
+              description
+              audioURL
+              YoutubeIdent
+              id
+              episodeTitle
+              episodeNumber
+              seriesTitle
+              Youtube{
+                snippet {
+                  thumbnails {
+                    default {
+                      url
+                    }
+                    medium {
+                      url
+                    }
+                    high {
+                      url
+                    }
+                    standard {
+                      url
+                    }
+                    maxres {
+                      url
+                    }
+                  }
+                }
+                contentDetails{
+                  videoId
+                }
+              }
+            }
           }
+          nextToken
         }
       }
       nextToken

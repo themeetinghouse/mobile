@@ -74,7 +74,7 @@ const style = StyleSheet.create({
             marginLeft: 16,
         }
     },
-    listArrowIcon: { ...Style.icon, right: 20 },
+    listArrowIcon: { ...Style.icon, right: 10 },
     icon: Style.icon,
 })
 

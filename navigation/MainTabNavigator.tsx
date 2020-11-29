@@ -27,6 +27,7 @@ import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import StaffList from "../screens/staff/StaffList";
 import ParishTeam from "../screens/staff/ParishTeam";
+import TeacherProfile from "../screens/staff/TeacherProfile";
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -86,6 +87,7 @@ export type MoreStackParamList = {
   MoreScreen: undefined;
   StaffList: undefined;
   ParishTeam: undefined;
+  TeacherProfile: undefined;
 }
 
 const More = createStackNavigator<MoreStackParamList>();
@@ -95,6 +97,7 @@ function MoreStack() {
     <More.Navigator screenOptions={{ headerShown: false }}>
       <More.Screen name="MoreScreen" component={MoreScreen} />
       <More.Screen name="StaffList" component={StaffList} />
+      <More.Screen name="TeacherProfile" component={TeacherProfile} />
       <More.Screen name="ParishTeam" component={ParishTeam} />
     </More.Navigator>
   )

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from "react-native";
 import { Thumbnail, } from 'native-base';
 import StaffItem from "../staff/StaffItem";
@@ -29,19 +29,30 @@ interface Params {
     navigation: StackNavigationProp<MoreStackParamList>;
     route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
+export type Staff = {
+    FirstName: string
+    LastName: string
+    Email: string
+    Position: string
+    Phone: string
+    sites: Array<string | null>
+    Location: string | null
+    Coordinator: boolean | null
+    Teacher: boolean | null
+}
 export default function StaffList({ navigation }: Params): JSX.Element {
     const [staff, setStaffByName] = useState([]);
     const [searchText, setSearchText] = useState("");
     const [isLoading, setisLoading] = useState(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
             title: 'Staff Team',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: Theme.colors.background },
             headerLeft: function render() {
-                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                return <TouchableOpacity onPress={() => navigation.goBack()} style={{ display: 'flex', flexDirection: 'row', paddingRight: 12, paddingBottom: 12, paddingTop: 12 }} >
                     <Thumbnail square source={Theme.icons.white.back} style={{ width: 24, height: 24 }} />
                     <Text style={{ color: 'white', fontSize: 16, transform: [{ translateX: -4 }] }}>More</Text>
                 </TouchableOpacity>
@@ -49,6 +60,9 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             headerLeftContainerStyle: { left: 16 },
             headerRight: function render() { return <View style={{ flex: 1 }} /> }
         })
+    }, [navigation])
+    useEffect(() => {
+
         const loadStaff = async () => {
             setisLoading(true)
             const staffResults = await StaffDirectoryService.loadStaffList()
@@ -78,7 +92,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                 }
                 data={staff.filter((item: any) => item.FirstName.toLowerCase().includes(searchText.toLowerCase()) || item.LastName.toLowerCase().includes(searchText.toLowerCase()) || searchText === "" || item.Location.toLowerCase().includes(searchText.toLowerCase()))}
                 renderItem={({ item }: any) =>
-                    <StaffItem staff={item}></StaffItem>
+                    <StaffItem navigation={navigation} staff={item}></StaffItem>
                 }
                 initialNumToRender={10}
             />
