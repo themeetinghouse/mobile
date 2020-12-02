@@ -21,6 +21,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 import { AnimatedFallbackImage } from '../components/FallbackImage';
+import StaffDirectoryService from "../services/StaffDirectoryService";
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -153,6 +154,13 @@ const style = StyleSheet.create({
         marginTop: 3,
     },
     icon: Style.icon,
+    speakerCarouselText: {
+        alignSelf: "center",
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+        color: Theme.colors.white
+    }
 })
 
 type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
@@ -205,7 +213,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const loadRecentSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
-
+    const loadTeachers = async () => {
+        const staff: any = await StaffDirectoryService.loadStaffList();
+        setSpeakers({ ...speakers, items: staff.filter((a: any) => a.Teacher) })
+    }
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
@@ -225,13 +236,13 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     }
 
     useEffect(() => {
+        loadTeachers();
         loadRecentSeriesAsync();
         loadRecentSermonsAsync();
         loadHighlightsAsync();
         loadSpeakersAsync();
         getPopularTeaching();
     }, [])
-
     const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
 
     const getSeriesDate = (series: any) => {
@@ -375,6 +386,25 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
 
+                <View style={style.categorySection}>
+                    <Text style={style.categoryTitle}>Teachers</Text>
+                    <FlatList
+                        contentContainerStyle={[style.horizontalListContentContainer]}
+                        horizontal={true}
+                        data={speakers.items}
+                        renderItem={({ item, index }: any) => (
+                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: item } } })} style={index === 0 ? { paddingLeft: 16, paddingRight: 8 } : { paddingHorizontal: 8 }}>
+                                <Image
+                                    onLoad={() => { return <ActivityIndicator></ActivityIndicator> }}
+                                    style={{ width: 96, height: 96, borderRadius: 100 }}
+                                    source={{ uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${item.FirstName}_${item.LastName}_app.jpg` }}
+                                />
+                                <Text style={style.speakerCarouselText}>{item.FirstName} {item.LastName}</Text>
+                            </TouchableOpacity>
+                        )}
+                    ></FlatList>
+                    <AllButton handlePress={() => console.log("test")}>All Teachers</AllButton>
+                </View>
                 {/*<View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Teachers</Text>
                     <FlatList

@@ -37,6 +37,13 @@ export default class StaffDirectoryService {
             default: return "unknown"
         }
     }
+    static parseTelephone = (tel: string): string | undefined => {
+        const telephone = tel.split(',')[0].replace(/\D/g, '')
+        const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
+        if (telephone && extension) return telephone + "," + extension
+        else return telephone
+    }
+
     static loadStaffList = async (): Promise<any> => {
         try {
             const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
@@ -55,7 +62,7 @@ export default class StaffDirectoryService {
                 }
             })
             for (let i = 0; i < staff.length; i++) {
-                staff[i] = { ...staff[i], id: i.toString() }
+                staff[i] = { ...staff[i], id: i.toString(), Phone: StaffDirectoryService.parseTelephone(staff[i].Phone), uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff[i].FirstName}_${staff[i].LastName}_app.jpg` }
             }
             let staffName = "";
             for (let x = 0; x < staff.length; x++) {
@@ -143,7 +150,6 @@ export default class StaffDirectoryService {
         try {
             const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/coordinators.json`)
             const pageContent = await getSiteData.json()
-
             const transformed = pageContent.map((coordinator: any) => {
                 return { ...coordinator, Coordinator: true }
             })

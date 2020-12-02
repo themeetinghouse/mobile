@@ -39,9 +39,16 @@ const style = StyleSheet.create({
         width: 48,
         height: 48
     },
+    fallbackPictureContainer: {
+        backgroundColor: "#54565A",
+        borderRadius: 100,
+        width: 48,
+        height: 48,
+
+    },
     fallBackPicture: {
         height: 23,
-        width: 20
+        width: 23
     },
     Name: {
         color: "white",
@@ -83,6 +90,7 @@ interface Props {
         Location: string | null
         Coordinator: boolean | null
         Teacher: boolean | null
+        uri: string
     }
 }
 
@@ -91,67 +99,22 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
     const uriError = () => {
         setUri(Theme.icons.white.user)
     }
-    const determineUri = (ev: any) => {
-        let staffType;
-        if (ev) {
-            staffType = "Coordinator"
-        }
-        else {
-            staffType = "Staff"
-        }
-        switch (staffType) {
-            case "Coordinator":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${staff.sites[0]}_${staff.FirstName}_${staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${staff.sites[0]}_${staff.FirstName}_${staff.LastName}_app.jpg` }
-            case "Staff":
-                if (Platform.OS === "ios") return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff.FirstName}_${staff.LastName}_app.jpg`, cache: 'default' }
-                else return { uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff.FirstName}_${staff.LastName}_app.jpg` }
-            default:
-                return Theme.icons.white.user
-        }
-    }
-    const [uri, setUri] = useState(determineUri(staff.Coordinator))
-    const parseTelephone = (tel: string) => {
-        const telephone = tel.split(',')[0].replace(/\D/g, '')
-        const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
-        if (telephone && extension) return telephone + "," + extension
-        else return telephone
-    }
+    const [uri, setUri] = useState(staff.uri)
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>
-                <>
-                    {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
-                    {Platform.OS === "android" ?
-                        uri !== Theme.icons.white.user ?
-                            staff.Coordinator ?
-                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                                    setIsLoading(false)
-                                    uriError()
-                                }} source={uri} />
-                                :
-                                <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                                    setIsLoading(false)
-                                    uriError()
-                                }} source={uri} />
-                            :
-                            <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>
-                        : uri !== Theme.icons.white.user ?
-                            staff.Coordinator ?
-                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                                    setIsLoading(false)
-                                    uriError()
-                                }
-                                } source={uri} />
-                                :
-                                <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                                    setIsLoading(false)
-                                    uriError()
-                                }
-                                } source={uri} />
-                            :
-                            <Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image>}
-                </>
+                {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
+                {Platform.OS === "android" ?
+                    uri ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                        setIsLoading(false)
+                        uriError()
+                    }} source={{ uri }} />
+                        : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
+                    <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                        setIsLoading(false)
+                        uriError()
+                    }} source={{ uri: uri, cache: "default" }} />
+                }
             </View>
             <View style={{ flexDirection: "column" }}>
                 {staff.FirstName && staff.LastName ?
@@ -163,7 +126,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 {staff.Teacher ?
                     <TouchableOpacity onPress={() => {
                         navigation.push('TeacherProfile', {
-                            staff: { ...staff, ...uri, Phone: parseTelephone(staff.Phone) },
+                            staff: { ...staff, uri: uri, Phone: staff.Phone },
                         })
                     }
                     }>
@@ -176,7 +139,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
                     {staff.Phone ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${parseTelephone(staff.Phone)}`)} style={style.iconContainer}>
+                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${staff.Phone}`)} style={style.iconContainer}>
                             <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                         </TouchableOpacity> : null}
                     {staff.Email ?

@@ -233,7 +233,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         </View>
         {location?.locationData?.locationId !== "unknown" || location?.locationData.locationName !== "unknown" ?
           <View style={style.categoryContainer}>
-            {isLoading ? <ActivityIndicator /> : <>
+            {isLoading ? <View style={{ height: 500 }}><ActivityIndicator /></View> : <>
               {events !== null && events.length !== 0 ?
                 <>
                   <Text style={style.categoryTitle} >Upcoming Events</Text>
