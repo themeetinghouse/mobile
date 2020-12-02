@@ -156,7 +156,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             headerLeftContainerStyle: { left: 16 },
             headerRightContainerStyle: { right: 16 }
         })
-    }, [])
+    })
 
 
     useEffect(() => {
