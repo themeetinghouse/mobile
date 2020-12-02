@@ -213,10 +213,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const loadRecentSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
-    const loadTeachers = async () => {
-        const staff: any = await StaffDirectoryService.loadStaffList();
-        setSpeakers({ ...speakers, items: staff.filter((a: any) => a.Teacher) })
-    }
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
@@ -236,7 +232,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     }
 
     useEffect(() => {
-        loadTeachers();
         loadRecentSeriesAsync();
         loadRecentSermonsAsync();
         loadHighlightsAsync();
@@ -269,7 +264,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     /*const getSpeakerImage = (speaker: any) => {
         return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
     }*/
-
     const renderSeriesSwipeItem = (item: any, index: number, animatedValue: Animated.Value) => {
         if (item?.loading) {
             return <ActivityIndicator />
@@ -385,48 +379,28 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
-
                 <View style={style.categorySection}>
-                    <Text style={style.categoryTitle}>Teachers</Text>
-                    <FlatList
-                        contentContainerStyle={[style.horizontalListContentContainer]}
-                        horizontal={true}
-                        data={speakers.items}
-                        renderItem={({ item, index }: any) => (
-                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: item } } })} style={index === 0 ? { paddingLeft: 16, paddingRight: 8 } : { paddingHorizontal: 8 }}>
-                                <Image
-                                    onLoad={() => { return <ActivityIndicator></ActivityIndicator> }}
-                                    style={{ width: 96, height: 96, borderRadius: 100 }}
-                                    source={{ uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${item.FirstName}_${item.LastName}_app.jpg` }}
-                                />
-                                <Text style={style.speakerCarouselText}>{item.FirstName} {item.LastName}</Text>
-                            </TouchableOpacity>
-                        )}
-                    ></FlatList>
-                    <AllButton handlePress={() => console.log("test")}>All Teachers</AllButton>
-                </View>
-                {/*<View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Teachers</Text>
                     <FlatList
                         contentContainerStyle={style.horizontalListContentContainer}
                         horizontal={true}
-                        data={speakers.items}
+                        data={speakers.items.filter((a: any) => a.videos.items.length > 0)}
                         renderItem={({ item, index, separators }: any) => (
-                            <View style={style.teacherContainer}>
-                                <View style={style.teacherThumbnailContainer}>
-                                    <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: getSpeakerImage(item) }}></Image>
+                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, FirstName: item.name.split(' ')[0], LastName: item.name.split(' ')[1] } } } })}>
+                                <View style={style.teacherContainer}>
+                                    <View style={style.teacherThumbnailContainer}>
+                                        <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.uri }}></Image>
+                                    </View>
+                                    <Text style={style.teacherDetail1}>{item.name}</Text>
                                 </View>
-                                <Text style={style.teacherDetail1}>{item.name}</Text>
-                            </View>
+                            </TouchableOpacity>
                         )}
-                        onEndReached={loadSpeakersAsync}
-                        onEndReachedThreshold={0.1}
                         ListFooterComponent={() => (
                             speakers.loading ? <ActivityIndicator /> : null
                         )}
                     ></FlatList>
-                    <AllButton>All teachers</AllButton>
-                </View>*/}
+                    <AllButton handlePress={() => navigation.push('TeacherList')}>All teachers</AllButton>
+                </View>
             </ScrollView >
         </Container >
     )
