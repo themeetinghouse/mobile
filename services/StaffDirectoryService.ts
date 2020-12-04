@@ -122,7 +122,7 @@ export default class StaffDirectoryService {
                 for (let x = 0; x < coordinatorItem.sites.length; x++) {
                     for (let i = 0; i < sectionedList.length; i++) {
                         if (coordinatorItem.sites[x] === sectionedList[i].code) {
-                            return { ...coordinatorItem, Location: sectionedList[i].title };
+                            return { ...coordinatorItem, Location: sectionedList[i].title, uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${coordinatorItem.sites[x]}_${coordinatorItem.FirstName}_${coordinatorItem.LastName}_app.jpg` };
                         }
                         else {
                             return null

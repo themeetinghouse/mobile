@@ -13,7 +13,7 @@ export default class SpeakersService {
       query: listSpeakersQuery,
       variables: { limit: limit, nextToken: nextToken },
     })
-    console.log(queryResult.listSpeakers.items[1])
+
     queryResult.listSpeakers.items.sort((a: any, b: any) => {
       if (a.videos.items.length > b.videos.items.length) {
         return -1;
@@ -24,7 +24,7 @@ export default class SpeakersService {
       }
     });
     return {
-      items: queryResult.listSpeakers.items,
+      items: queryResult.listSpeakers.items.filter((a: any) => a.videos.items.length !== 0),
       nextToken: queryResult.listSpeakers.nextToken
     };
   }
@@ -40,8 +40,9 @@ export const listSpeakersQuery = `
       items {
         id
         name
+        hidden
         image
-        videos {
+        videos (limit:1000){
           items {
             id
             video{

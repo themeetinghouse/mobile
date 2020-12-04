@@ -21,7 +21,6 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 import { AnimatedFallbackImage } from '../components/FallbackImage';
-import StaffDirectoryService from "../services/StaffDirectoryService";
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -302,7 +301,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             return -1
         return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10)
     }
-
     return (
         <Container>
             <ScrollView style={style.content} bounces={bounce} onScroll={e => handleScroll(e)} scrollEventThrottle={6}>
@@ -384,17 +382,17 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <FlatList
                         contentContainerStyle={style.horizontalListContentContainer}
                         horizontal={true}
-                        data={speakers.items.filter((a: any) => a.videos.items.length > 0)}
-                        renderItem={({ item, index, separators }: any) => (
-                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, FirstName: item.name.split(' ')[0], LastName: item.name.split(' ')[1] } } } })}>
+                        data={speakers.items}
+                        renderItem={({ item, index, separators }: any) => !item.hidden ? (
+                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
                                 <View style={style.teacherContainer}>
                                     <View style={style.teacherThumbnailContainer}>
-                                        <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.uri }}></Image>
+                                        <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.image }}></Image>
                                     </View>
                                     <Text style={style.teacherDetail1}>{item.name}</Text>
                                 </View>
                             </TouchableOpacity>
-                        )}
+                        ) : null}
                         ListFooterComponent={() => (
                             speakers.loading ? <ActivityIndicator /> : null
                         )}

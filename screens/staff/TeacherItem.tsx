@@ -42,8 +42,7 @@ const style = StyleSheet.create({
     fallbackPictureContainer: {
         backgroundColor: "#54565A",
         borderRadius: 100,
-        width: 48,
-        height: 48,
+        padding: 12
 
     },
     fallBackPicture: {
@@ -94,15 +93,15 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
             <View style={style.pictureContainer}>
                 {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
                 {Platform.OS === "android" ?
-                    uri ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                    uri && uri !== Theme.icons.white.user ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
                         setIsLoading(false)
                         uriError()
                     }} source={{ uri }} />
                         : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
-                    <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                    uri && uri !== Theme.icons.white.user ? <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
                         setIsLoading(false)
                         uriError()
-                    }} source={{ uri: uri, cache: "default" }} />
+                    }} source={{ uri: uri, cache: "default" }} /> : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View>
                 }
             </View>
             <View style={{ flexDirection: "column" }}>
