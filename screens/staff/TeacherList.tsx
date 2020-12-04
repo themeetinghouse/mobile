@@ -75,7 +75,7 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
                             placeholderLabel="Search by name..."></SearchBar>
                     </View>
                 }
-                data={speakers}
+                data={speakers.filter((item: any) => item.name.toLowerCase().includes(searchText.toLowerCase()) || searchText === "")}
                 renderItem={({ item }: any) =>
                     <TeacherItem navigation={navigation} teacher={item}></TeacherItem>
                 }

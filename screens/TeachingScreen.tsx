@@ -63,6 +63,11 @@ const style = StyleSheet.create({
         paddingTop: 16,
         marginBottom: 16,
     },
+    categorySectionLast: {
+        backgroundColor: Theme.colors.black,
+        paddingTop: 16,
+        marginBottom: 48,
+    },
     listContentContainer: {
         paddingLeft: 16,
         paddingRight: 16,
@@ -127,6 +132,7 @@ const style = StyleSheet.create({
     teacherContainer: {
         alignItems: "center",
         marginLeft: 16,
+        minHeight: 130,
         maxWidth: 96,
     },
     teacherThumbnailContainer: {
@@ -134,7 +140,9 @@ const style = StyleSheet.create({
         width: 96,
         borderRadius: 96,
         borderColor: Theme.colors.gray3,
+        backgroundColor: Theme.colors.gray3,
         borderWidth: 1,
+
     },
     teacherThumbnail: {
         position: 'absolute',
@@ -377,7 +385,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
-                <View style={style.categorySection}>
+                <View style={style.categorySectionLast}>
                     <Text style={style.categoryTitle}>Teachers</Text>
                     <FlatList
                         contentContainerStyle={style.horizontalListContentContainer}
@@ -386,7 +394,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                         renderItem={({ item, index, separators }: any) => !item.hidden ? (
                             <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
                                 <View style={style.teacherContainer}>
-                                    <View style={style.teacherThumbnailContainer}>
+                                    <View style={[style.teacherThumbnailContainer, {
+                                        justifyContent: 'center',
+                                        alignItems: 'center'
+                                    }]}>
+                                        <Image style={{ width: 30, height: 30 }} source={Theme.icons.white.user}></Image>
                                         <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.image }}></Image>
                                     </View>
                                     <Text style={style.teacherDetail1}>{item.name}</Text>
@@ -403,7 +415,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         </Container >
     )
 }
-
 export const getVideoByVideoType = `query GetVideoByVideoType(
     $videoTypes: String
     $publishedDate: ModelStringKeyConditionInput

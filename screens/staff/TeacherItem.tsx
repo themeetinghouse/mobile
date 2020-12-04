@@ -108,9 +108,14 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
                 {teacher.name ?
                     <Text style={style.Name}>{teacher.name}</Text>
                     : null}
-                <Text style={style.footerText}>
-                    View Teaching
+                <TouchableOpacity onPress={() => {
+                    navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...teacher, uri: teacher.image, idFromTeaching: teacher.id } } } })
+                }
+                }>
+                    <Text style={style.footerText}>
+                        View Teaching
                 </Text>
+                </TouchableOpacity>
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
