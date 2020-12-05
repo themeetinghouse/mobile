@@ -50,13 +50,13 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
         })
     }, [navigation])
     useEffect(() => {
-        const loadStaff = async () => {
+        const loadTeachers = async () => {
             setisLoading(true)
-            const speakers = await SpeakersService.loadSpeakersList()
+            const speakers = await SpeakersService.loadSpeakersListOnly()
             setSpeakers(speakers.items)
             setisLoading(false)
         }
-        loadStaff()
+        loadTeachers()
         return () => {
             console.log("Cleanup") // cancel async stuff here
         }

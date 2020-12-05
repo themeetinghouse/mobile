@@ -98,7 +98,6 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
     const uriError = () => {
         setUri(Theme.icons.white.user)
     }
-    console.log(staff.uri)
     const [uri, setUri] = useState(staff.uri)
     return (
         <View style={style.container}>

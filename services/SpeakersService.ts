@@ -28,7 +28,35 @@ export default class SpeakersService {
       nextToken: queryResult.listSpeakers.nextToken
     };
   }
+  static loadSpeakersListOnly = async (limit = 9999, nextToken = null): Promise<loadSpeakersListData> => {
+    const queryResult = await runGraphQLQuery({
+      query: listSpeakersNoVideos,
+      variables: { limit: limit, nextToken: nextToken },
+    })
+    return {
+      items: queryResult.listSpeakers.items.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      nextToken: queryResult.listSpeakers.nextToken
+    };
+  }
 }
+
+export const listSpeakersNoVideos = `
+  query ListSpeakers(
+    $filter: ModelSpeakerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSpeakers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        hidden
+        image
+      }
+      nextToken
+    }
+  }
+  `;
 
 export const listSpeakersQuery = `
   query ListSpeakers(

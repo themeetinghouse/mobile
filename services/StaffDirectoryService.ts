@@ -43,10 +43,9 @@ export default class StaffDirectoryService {
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
-
     static loadStaffList = async (): Promise<any> => {
         try {
-            const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly();
             const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/staff.json`)
             const pageContent = await getSiteData.json()
             const staff: any = [];
@@ -132,7 +131,7 @@ export default class StaffDirectoryService {
             }).filter((a: any) => a !== null).sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
 
             sectionedList[0].data = [...staffTeam, ...coordinatorTeam]
-            const listOfSpeakers: any = await SpeakersService.loadSpeakersList()
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly()
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {
