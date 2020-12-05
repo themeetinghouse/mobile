@@ -387,29 +387,33 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 </View>
                 <View style={style.categorySectionLast}>
                     <Text style={style.categoryTitle}>Teachers</Text>
-                    <FlatList
-                        contentContainerStyle={style.horizontalListContentContainer}
-                        horizontal={true}
-                        data={speakers.items}
-                        renderItem={({ item, index, separators }: any) => !item.hidden ? (
-                            <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
-                                <View style={style.teacherContainer}>
-                                    <View style={[style.teacherThumbnailContainer, {
-                                        justifyContent: 'center',
-                                        alignItems: 'center'
-                                    }]}>
-                                        <Image style={{ width: 30, height: 30 }} source={Theme.icons.white.user}></Image>
-                                        <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.image }}></Image>
-                                    </View>
-                                    <Text style={style.teacherDetail1}>{item.name}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        ) : null}
-                        ListFooterComponent={() => (
-                            speakers.loading ? <ActivityIndicator /> : null
-                        )}
-                    ></FlatList>
-                    <AllButton handlePress={() => navigation.push('TeacherList')}>All teachers</AllButton>
+                    {!speakers.loading ?
+                        <>
+                            <FlatList
+                                contentContainerStyle={style.horizontalListContentContainer}
+                                horizontal={true}
+                                data={speakers.items}
+                                renderItem={({ item, index, separators }: any) => !item.hidden ? (
+                                    <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
+                                        <View style={style.teacherContainer}>
+                                            <View style={[style.teacherThumbnailContainer, {
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                            }]}>
+                                                <Image style={{ width: 30, height: 30 }} source={Theme.icons.white.user}></Image>
+                                                <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.image }}></Image>
+                                            </View>
+                                            <Text style={style.teacherDetail1}>{item.name}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ) : null}
+                                ListFooterComponent={() => (
+                                    speakers.loading ? <ActivityIndicator /> : null
+                                )}
+                            ></FlatList>
+                            <AllButton handlePress={() => navigation.push('TeacherList')}>All teachers</AllButton>
+                        </>
+                        : <ActivityIndicator />}
                 </View>
             </ScrollView >
         </Container >
