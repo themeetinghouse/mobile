@@ -43,13 +43,23 @@ export default class StaffDirectoryService {
         if (telephone && extension) return telephone + "," + extension
         else return telephone
     }
+
+    static loadStaffJson = async (): Promise<any> => {
+        try {
+            const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/staff.json`)
+            const pageContent = await getSiteData.json()
+            return pageContent.map((staff: any) => { return { ...staff, Phone: StaffDirectoryService.parseTelephone(staff.Phone) } });
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     static loadStaffList = async (): Promise<any> => {
         try {
             const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly();
-            const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/staff.json`)
-            const pageContent = await getSiteData.json()
+            const staffJson: any = await StaffDirectoryService.loadStaffJson();
             const staff: any = [];
-            pageContent.map((staffItem: any) => {
+            staffJson.map((staffItem: any) => {
                 for (let x = 0; x < staffItem.sites.length; x++) {
                     if (StaffDirectoryService.mapToLocation(staffItem.sites[x]) !== "unknown") {
                         staff.push({ ...staffItem, Location: StaffDirectoryService.mapToLocation(staffItem.sites[x]) })
@@ -61,7 +71,7 @@ export default class StaffDirectoryService {
                 }
             })
             for (let i = 0; i < staff.length; i++) {
-                staff[i] = { ...staff[i], id: i.toString(), Phone: StaffDirectoryService.parseTelephone(staff[i].Phone), uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff[i].FirstName}_${staff[i].LastName}_app.jpg` }
+                staff[i] = { ...staff[i], id: i.toString(), uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff[i].FirstName}_${staff[i].LastName}_app.jpg` }
             }
             let staffName = "";
             for (let x = 0; x < staff.length; x++) {

@@ -52,7 +52,7 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
     useEffect(() => {
         const loadTeachers = async () => {
             setisLoading(true)
-            const speakers = await SpeakersService.loadSpeakersListOnly()
+            const speakers: any = await SpeakersService.loadSpeakersListOnly();
             setSpeakers(speakers.items)
             setisLoading(false)
         }
