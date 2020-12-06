@@ -79,26 +79,15 @@ const style = StyleSheet.create({
 })
 interface Props {
     navigation: any;
-    staff: {
-        FirstName: string
-        LastName: string
-        Email: string
-        Position: string
-        Phone: string
-        sites: Array<string | null>
-        Location: string | null
-        Coordinator: boolean | null
-        Teacher: boolean | null
-        uri: string
-    }
+    teacher: any;
 }
 
-function StaffItem({ navigation, staff }: Props): JSX.Element {
+function TeacherItem({ navigation, teacher }: Props): JSX.Element {
     const [isLoading, setIsLoading] = useState(true);
     const uriError = () => {
         setUri(Theme.icons.white.user)
     }
-    const [uri, setUri] = useState(staff.uri)
+    const [uri, setUri] = useState(teacher.image)
     return (
         <View style={style.container}>
             <View style={style.pictureContainer}>
@@ -116,33 +105,26 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 }
             </View>
             <View style={{ flexDirection: "column" }}>
-                {staff.FirstName && staff.LastName ?
-                    <Text style={style.Name}>{staff.FirstName} {staff.LastName}</Text>
+                {teacher.name ?
+                    <Text style={style.Name}>{teacher.name}</Text>
                     : null}
-                {staff.Position ?
-                    <Text style={style.Position}>{staff.Position}</Text>
-                    : null}
-                {staff.Teacher ?
-                    <TouchableOpacity onPress={() => {
-                        navigation.push('TeacherProfile', {
-                            staff: { ...staff, uri: uri, Phone: staff.Phone },
-                        })
-                    }
-                    }>
-                        <Text style={style.footerText}>
-                            View Teaching
-                        </Text>
-                    </TouchableOpacity>
-                    : null}
+                <TouchableOpacity onPress={() => {
+                    navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...teacher, uri: teacher.image, idFromTeaching: teacher.id } } } })
+                }
+                }>
+                    <Text style={style.footerText}>
+                        View Teaching
+                </Text>
+                </TouchableOpacity>
             </View>
             <View style={{ flexDirection: "column", flex: 1, }}>
                 <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    {staff.Phone ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${staff.Phone}`)} style={style.iconContainer}>
+                    {teacher.Phone ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${teacher.Phone}`)} style={style.iconContainer}>
                             <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                         </TouchableOpacity> : null}
-                    {staff.Email ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${staff.Email}`)} style={style.iconContainer}>
+                    {teacher.Email ?
+                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${teacher.Email}`)} style={style.iconContainer}>
                             <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
                         </TouchableOpacity>
                         : null}
@@ -152,4 +134,4 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
 
     )
 }
-export default memo(StaffItem);
+export default memo(TeacherItem);

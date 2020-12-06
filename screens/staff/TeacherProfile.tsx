@@ -19,11 +19,21 @@ const style = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center"
   },
+  fallbackPictureContainer: {
+    backgroundColor: "#54565A",
+    borderRadius: 100,
+    width: 120,
+    height: 120,
+    padding: 45
+  },
+  fallBackPicture: {
+    height: 30,
+    width: 30
+  },
   pictureContainer: {
     marginTop: 30,
     flexDirection: "row",
     borderRadius: 100,
-    backgroundColor: "#54565A",
     alignSelf: "center",
     width: 120,
     height: 120,
@@ -68,7 +78,7 @@ const style = StyleSheet.create({
 })
 interface Props {
   navigation: StackNavigationProp<MainStackParamList>;
-  route: any; // not any
+  route: any;
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
@@ -110,11 +120,15 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
     })
   }, [navigation])
   const loadSpeakerVideos = async () => {
+    const nameOrId = () => {
+      if (route.params.staff.idFromTeaching) return route.params.staff.idFromTeaching.toString();
+      else return (route.params.staff.FirstName + " " + route.params.staff.LastName).toString()
+    }
     setIsLoading(true)
     try {
       const queryResult = await runGraphQLQuery({
         query: listSpeakersQuery,
-        variables: { nextToken: nextToken, filter: { id: { eq: (route.params.staff.FirstName + " " + route.params.staff.LastName) } } }
+        variables: { nextToken: nextToken, filter: { id: { eq: nameOrId() } } }
       })
       setTeachings({ items: teachings.items.concat(queryResult.listSpeakers.items[0].videos.items) })
       setNextToken(queryResult.listSpeakers.items[0].videos.nextToken)
@@ -123,8 +137,13 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
       console.error(error)
     }
   }
+  const uriError = () => {
+    setUri(Theme.icons.white.user)
+  }
+  const [uri, setUri] = useState(route.params.staff.uri)
   useEffect(() => {
     loadSpeakerVideos();
+    console.log(route.params.staff.uri)
   }, [])
   return (
     <View style={style.container}>
@@ -135,11 +154,16 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
         <View>
           <View style={style.pictureContainer}>
             {Platform.OS === "android" ?
-              <CachedImage style={style.picture} source={{ uri: route.params.staff.uri }} />
-              :
-              <Image style={style.picture} source={{ uri: route.params.staff.uri }} />}
+              uri && uri !== Theme.icons.white.user ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                uriError()
+              }} source={{ uri }} />
+                : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
+              <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                uriError()
+              }} source={{ uri: uri, cache: "default" }} />
+            }
           </View>
-          <Text style={style.Name}>{route.params.staff.FirstName} {route.params.staff.LastName}</Text>
+          <Text style={style.Name}>{route.params.staff.idFromTeaching ? route.params.staff.idFromTeaching : route.params.staff.FirstName} {route.params.staff.LastName}</Text>
           <Text style={style.Position}>{route.params.staff.Position}</Text>
         </View>
         <SearchBar

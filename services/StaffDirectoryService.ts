@@ -37,13 +37,29 @@ export default class StaffDirectoryService {
             default: return "unknown"
         }
     }
-    static loadStaffList = async (): Promise<any> => {
+    static parseTelephone = (tel: string): string | undefined => {
+        const telephone = tel.split(',')[0].replace(/\D/g, '')
+        const extension = tel.split(',')[1] ? tel.split(',')[1].replace(/\D/g, '') : ""
+        if (telephone && extension) return telephone + "," + extension
+        else return telephone
+    }
+
+    static loadStaffJson = async (): Promise<any> => {
         try {
-            const listOfSpeakers: any = await SpeakersService.loadSpeakersList();
             const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/staff.json`)
             const pageContent = await getSiteData.json()
+            return pageContent.map((staff: any) => { return { ...staff, Phone: StaffDirectoryService.parseTelephone(staff.Phone) } });
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    static loadStaffList = async (): Promise<any> => {
+        try {
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly();
+            const staffJson: any = await StaffDirectoryService.loadStaffJson();
             const staff: any = [];
-            pageContent.map((staffItem: any) => {
+            staffJson.map((staffItem: any) => {
                 for (let x = 0; x < staffItem.sites.length; x++) {
                     if (StaffDirectoryService.mapToLocation(staffItem.sites[x]) !== "unknown") {
                         staff.push({ ...staffItem, Location: StaffDirectoryService.mapToLocation(staffItem.sites[x]) })
@@ -55,7 +71,7 @@ export default class StaffDirectoryService {
                 }
             })
             for (let i = 0; i < staff.length; i++) {
-                staff[i] = { ...staff[i], id: i.toString() }
+                staff[i] = { ...staff[i], id: i.toString(), uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff[i].FirstName}_${staff[i].LastName}_app.jpg` }
             }
             let staffName = "";
             for (let x = 0; x < staff.length; x++) {
@@ -115,7 +131,7 @@ export default class StaffDirectoryService {
                 for (let x = 0; x < coordinatorItem.sites.length; x++) {
                     for (let i = 0; i < sectionedList.length; i++) {
                         if (coordinatorItem.sites[x] === sectionedList[i].code) {
-                            return { ...coordinatorItem, Location: sectionedList[i].title };
+                            return { ...coordinatorItem, Location: sectionedList[i].title, uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${coordinatorItem.sites[x]}_${coordinatorItem.FirstName}_${coordinatorItem.LastName}_app.jpg` };
                         }
                         else {
                             return null
@@ -125,7 +141,7 @@ export default class StaffDirectoryService {
             }).filter((a: any) => a !== null).sort((a: any, b: any) => a.LastName.localeCompare(b.LastName))
 
             sectionedList[0].data = [...staffTeam, ...coordinatorTeam]
-            const listOfSpeakers: any = await SpeakersService.loadSpeakersList()
+            const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly()
             let staffName = "";
             for (let x = 0; x < sectionedList[0].data.length; x++) {
                 for (let i = 0; i < listOfSpeakers.items.length; i++) {
@@ -143,7 +159,6 @@ export default class StaffDirectoryService {
         try {
             const getSiteData: any = await fetch(`https://www.themeetinghouse.com/static/data/coordinators.json`)
             const pageContent = await getSiteData.json()
-
             const transformed = pageContent.map((coordinator: any) => {
                 return { ...coordinator, Coordinator: true }
             })

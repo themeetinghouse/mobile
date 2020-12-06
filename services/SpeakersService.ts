@@ -1,6 +1,6 @@
 import { runGraphQLQuery } from './ApiService';
 import { ListSpeakersQuery } from './API';
-
+import StaffDirectoryService from "./StaffDirectoryService";
 export type loadSpeakersListData = {
   items: NonNullable<ListSpeakersQuery['listSpeakers']>['items'];
   nextToken: NonNullable<ListSpeakersQuery['listSpeakers']>['nextToken']
@@ -23,13 +23,58 @@ export default class SpeakersService {
         return a.name.localeCompare(b.name);
       }
     });
+    const staff: any = await StaffDirectoryService.loadStaffJson()
+    queryResult.listSpeakers.items.map((speaker: any, index: number) => {
+      for (let x = 0; x < staff.length; x++) {
+        if ((staff[x].FirstName + " " + staff[x].LastName) === speaker.name) {
+          queryResult.listSpeakers.items[index].Phone = staff[x].Phone
+          queryResult.listSpeakers.items[index].Email = staff[x].Email
+        }
+      }
+    })
     return {
-      items: queryResult.listSpeakers.items,
+      items: queryResult.listSpeakers.items.filter((a: any) => a.videos.items.length !== 0),
       nextToken: queryResult.listSpeakers.nextToken
     };
   }
-
+  static loadSpeakersListOnly = async (limit = 9999, nextToken = null): Promise<loadSpeakersListData> => {
+    const queryResult: any = await runGraphQLQuery({
+      query: listSpeakersNoVideos,
+      variables: { limit: limit, nextToken: nextToken },
+    })
+    const staff: any = await StaffDirectoryService.loadStaffJson()
+    queryResult.listSpeakers.items.map((speaker: any, index: number) => {
+      for (let x = 0; x < staff.length; x++) {
+        if ((staff[x].FirstName + " " + staff[x].LastName) === speaker.name) {
+          queryResult.listSpeakers.items[index].Phone = staff[x].Phone
+          queryResult.listSpeakers.items[index].Email = staff[x].Email
+        }
+      }
+    })
+    return {
+      items: queryResult.listSpeakers.items.sort((a: any, b: any) => a.name.localeCompare(b.name)),
+      nextToken: queryResult.listSpeakers.nextToken
+    };
+  }
 }
+
+export const listSpeakersNoVideos = `
+  query ListSpeakers(
+    $filter: ModelSpeakerFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listSpeakers(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        hidden
+        image
+      }
+      nextToken
+    }
+  }
+  `;
 
 export const listSpeakersQuery = `
   query ListSpeakers(
@@ -41,8 +86,9 @@ export const listSpeakersQuery = `
       items {
         id
         name
+        hidden
         image
-        videos {
+        videos (limit:1000){
           items {
             id
             video{

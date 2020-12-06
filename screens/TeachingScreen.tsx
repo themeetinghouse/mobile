@@ -63,6 +63,11 @@ const style = StyleSheet.create({
         paddingTop: 16,
         marginBottom: 16,
     },
+    categorySectionLast: {
+        backgroundColor: Theme.colors.black,
+        paddingTop: 16,
+        marginBottom: 48,
+    },
     listContentContainer: {
         paddingLeft: 16,
         paddingRight: 16,
@@ -127,6 +132,7 @@ const style = StyleSheet.create({
     teacherContainer: {
         alignItems: "center",
         marginLeft: 16,
+        minHeight: 130,
         maxWidth: 96,
     },
     teacherThumbnailContainer: {
@@ -134,7 +140,9 @@ const style = StyleSheet.create({
         width: 96,
         borderRadius: 96,
         borderColor: Theme.colors.gray3,
+        backgroundColor: Theme.colors.gray3,
         borderWidth: 1,
+
     },
     teacherThumbnail: {
         position: 'absolute',
@@ -153,6 +161,13 @@ const style = StyleSheet.create({
         marginTop: 3,
     },
     icon: Style.icon,
+    speakerCarouselText: {
+        alignSelf: "center",
+        fontFamily: Theme.fonts.fontFamilyRegular,
+        fontSize: 12,
+        lineHeight: 18,
+        color: Theme.colors.white
+    }
 })
 
 type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']>
@@ -205,7 +220,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const loadRecentSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
-
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
@@ -231,7 +245,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSpeakersAsync();
         getPopularTeaching();
     }, [])
-
     const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
 
     const getSeriesDate = (series: any) => {
@@ -258,7 +271,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     /*const getSpeakerImage = (speaker: any) => {
         return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
     }*/
-
     const renderSeriesSwipeItem = (item: any, index: number, animatedValue: Animated.Value) => {
         if (item?.loading) {
             return <ActivityIndicator />
@@ -297,7 +309,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             return -1
         return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10)
     }
-
     return (
         <Container>
             <ScrollView style={style.content} bounces={bounce} onScroll={e => handleScroll(e)} scrollEventThrottle={6}>
@@ -374,34 +385,40 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
-
-                {/*<View style={style.categorySection}>
+                <View style={style.categorySectionLast}>
                     <Text style={style.categoryTitle}>Teachers</Text>
-                    <FlatList
-                        contentContainerStyle={style.horizontalListContentContainer}
-                        horizontal={true}
-                        data={speakers.items}
-                        renderItem={({ item, index, separators }: any) => (
-                            <View style={style.teacherContainer}>
-                                <View style={style.teacherThumbnailContainer}>
-                                    <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: getSpeakerImage(item) }}></Image>
-                                </View>
-                                <Text style={style.teacherDetail1}>{item.name}</Text>
-                            </View>
-                        )}
-                        onEndReached={loadSpeakersAsync}
-                        onEndReachedThreshold={0.1}
-                        ListFooterComponent={() => (
-                            speakers.loading ? <ActivityIndicator /> : null
-                        )}
-                    ></FlatList>
-                    <AllButton>All teachers</AllButton>
-                </View>*/}
+                    {!speakers.loading ?
+                        <>
+                            <FlatList
+                                contentContainerStyle={style.horizontalListContentContainer}
+                                horizontal={true}
+                                data={speakers.items}
+                                renderItem={({ item, index, separators }: any) => !item.hidden ? (
+                                    <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
+                                        <View style={style.teacherContainer}>
+                                            <View style={[style.teacherThumbnailContainer, {
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                            }]}>
+                                                <Image style={{ width: 30, height: 30 }} source={Theme.icons.white.user}></Image>
+                                                <Image style={[style.teacherThumbnail, index === (speakers.items.length - 1) ? style.lastHorizontalListItem : {}]} source={{ uri: item.image }}></Image>
+                                            </View>
+                                            <Text style={style.teacherDetail1}>{item.name}</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                ) : null}
+                                ListFooterComponent={() => (
+                                    speakers.loading ? <ActivityIndicator /> : null
+                                )}
+                            ></FlatList>
+                            <AllButton handlePress={() => navigation.push('TeacherList')}>All teachers</AllButton>
+                        </>
+                        : <ActivityIndicator />}
+                </View>
             </ScrollView >
         </Container >
     )
 }
-
 export const getVideoByVideoType = `query GetVideoByVideoType(
     $videoTypes: String
     $publishedDate: ModelStringKeyConditionInput
