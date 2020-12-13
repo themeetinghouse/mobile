@@ -33,13 +33,21 @@ export default class LiveEventService {
     const today = moment().format('YYYY-MM-DD')
     try {
       const liveStreamsResult = await runGraphQLQuery({ query: listLivestreams, variables: { filter: { date: { eq: today } } } })
-      await LiveEventService.storeLiveEventData(liveStreamsResult?.listLivestreams?.items)
+      const filteredLiveEvents = liveStreamsResult?.listLivestreams?.items.filter((a: any) => a.liveYoutubeId || !a.id.includes('CustomEvent'))
+      await LiveEventService.storeLiveEventData(filteredLiveEvents)
     }
     catch (error) {
       console.log(error)
     }
   }
-
+  /* static deleteLiveData = async (): Promise<any> => {
+    try {
+      await SecureStore.deleteItemAsync('liveEventData')
+    }
+    catch (error) {
+      console.log(error)
+    }
+  } */
   static storeLiveEventData = async (liveEvents: any): Promise<any> => {
     try {
       await SecureStore.setItemAsync('liveEventData', JSON.stringify({ liveEvents, dateFetched: moment().format('YYYY-MM-DD') }))
@@ -58,12 +66,6 @@ export default class LiveEventService {
     const obj = JSON.parse(liveEventsData)
     return { ...obj, dateFetched: obj?.dateFetched }
   }
-
-  //This can be used for testing.
-  /*   static setDateBack = async (): Promise<any> => {
-      await SecureStore.setItemAsync('liveEventData', JSON.stringify({ dateFetched: moment().format('2020-11-01') }))
-      console.log("setting date back")
-    } */
 
   static shouldUpdate = async (liveEventsData: any): Promise<boolean> => {
     try {
