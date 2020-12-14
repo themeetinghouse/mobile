@@ -125,7 +125,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 {staff.Teacher ?
                     <TouchableOpacity onPress={() => {
                         navigation.push('TeacherProfile', {
-                            staff: { ...staff, uri: uri, Phone: staff.Phone },
+                            staff: { ...staff },
                         })
                     }
                     }>

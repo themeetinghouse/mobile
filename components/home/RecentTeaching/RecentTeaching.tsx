@@ -138,10 +138,13 @@ export default function RecentTeaching(): JSX.Element {
                 }
                 <View style={{ marginHorizontal: 16, alignItems: 'center' }} >
                     <Text style={style.title}>{teaching.episodeTitle}</Text>
-                    <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")} {teaching?.speakers?.items?.[0] ? 'by' : ""}
+                    <View style={{ flexDirection: "row" }}>
+                        <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")} {teaching?.speakers?.items?.[0] ? 'by ' : ""}</Text>
                         <TouchableHighlight style={style.subtitle} onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teaching?.speakers?.items?.[0]?.speaker?.id } } } })}>
                             <Text style={[style.subtitle, { textDecorationLine: "underline" }]}>{teaching?.speakers?.items?.[0] ? `${teaching?.speakers?.items?.[0]?.speaker?.id}` : ""}</Text>
-                        </TouchableHighlight></Text>
+                        </TouchableHighlight>
+                    </View>
+
                     <Text style={style.description} numberOfLines={fullDescription ? undefined : 2} ellipsizeMode='tail' onPress={() => setFullDescription(!fullDescription)}>{teaching.description}</Text>
                 </View>
                 <View>
