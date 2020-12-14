@@ -10,9 +10,8 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import FallbackImage from '../components/FallbackImage';
 import AllButton from '../components//buttons/AllButton';
-
+import SeriesItem from "./SeriesItem";
 const width = Dimensions.get('screen').width;
 
 const style = StyleSheet.create({
@@ -72,21 +71,6 @@ const style = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
     },
-    seriesItem: {
-        marginBottom: 20,
-        marginTop: 0,
-    },
-    seriesThumbnail: {
-        width: width * 0.44,
-        height: width * 0.44 * (1248 / 1056),
-    },
-    seriesDetail: {
-        fontFamily: Theme.fonts.fontFamilyRegular,
-        fontSize: Theme.fonts.smallMedium,
-        color: Theme.colors.gray5,
-        textAlign: 'center',
-        marginTop: 8,
-    }
 });
 
 interface Params {
@@ -174,10 +158,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                     {series.map((s: any, key: any) => {
                         if (key < showCount) {
                             return (
-                                <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
-                                    <FallbackImage style={style.seriesThumbnail} uri={s.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
-                                    <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>
-                                </TouchableOpacity>)
+                                <SeriesItem key={s.id} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>)
                         } else {
                             return null
                         }
