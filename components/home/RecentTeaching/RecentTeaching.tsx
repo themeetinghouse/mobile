@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import ActivityIndicator from '../../../components/ActivityIndicator';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import NotesService from '../../../services/NotesService';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -137,7 +138,10 @@ export default function RecentTeaching(): JSX.Element {
                 }
                 <View style={{ marginHorizontal: 16, alignItems: 'center' }} >
                     <Text style={style.title}>{teaching.episodeTitle}</Text>
-                    <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")}</Text>
+                    <Text style={style.subtitle}>{moment(teaching.publishedDate as string).format("MMMM D, YYYY")} {teaching?.speakers?.items?.[0] ? 'by' : ""}
+                        <TouchableHighlight style={style.subtitle} onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teaching?.speakers?.items?.[0]?.speaker?.id } } } })}>
+                            <Text style={[style.subtitle, { textDecorationLine: "underline" }]}>{teaching?.speakers?.items?.[0] ? `${teaching?.speakers?.items?.[0]?.speaker?.id}` : ""}</Text>
+                        </TouchableHighlight></Text>
                     <Text style={style.description} numberOfLines={fullDescription ? undefined : 2} ellipsizeMode='tail' onPress={() => setFullDescription(!fullDescription)}>{teaching.description}</Text>
                 </View>
                 <View>
@@ -153,7 +157,6 @@ export default function RecentTeaching(): JSX.Element {
         const openNotes = () => {
             navigation.navigate("NotesScreen", { date: note.id })
         }
-
         return (
             <View style={style.container}>
                 <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
@@ -196,6 +199,13 @@ export const getVideoByVideoType = `query GetVideoByVideoType(
         series {
           id
           title
+        }
+        speakers{
+            items{
+                speaker{
+                    id
+                }
+            }
         }
         publishedDate
         description
