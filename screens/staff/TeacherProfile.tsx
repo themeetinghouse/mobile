@@ -11,6 +11,7 @@ import { MainStackParamList } from "../../navigation/AppNavigator";
 import { runGraphQLQuery } from "../../services/ApiService";
 import ActivityIndicator from "../../components/ActivityIndicator";
 import AllButton from '../../components/buttons/AllButton'
+import StaffDirectoryService from "../../services/StaffDirectoryService"
 
 const style = StyleSheet.create({
   container: {
@@ -87,6 +88,11 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
   const [isLoading, setIsLoading] = useState(false);
   const [showCount, setShowCount] = useState(20);
   const [nextToken, setNextToken] = useState(null);
+  const [uri, setUri] = useState(route.params.staff.uri)
+  const [teacherData, setTeacherData] = useState({
+    Phone: "",
+    Email: ""
+  })
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -104,12 +110,12 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
         return (
           <View style={{ flexDirection: "column", flex: 1, }}>
             <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-              {route.params.staff.Phone ?
-                <TouchableOpacity onPress={() => Linking.openURL(`tel:${route.params.staff.Phone}`)} style={style.iconContainer}>
+              {teacherData.Phone !== "" ?
+                <TouchableOpacity onPress={() => Linking.openURL(`tel:${teacherData.Phone}`)} style={style.iconContainer}>
                   <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
                 </TouchableOpacity> : null}
-              {route.params.staff.Email ?
-                <TouchableOpacity onPress={() => Linking.openURL(`mailto:${route.params.staff.Email}`)} style={style.iconContainer}>
+              {teacherData.Email !== "" ?
+                <TouchableOpacity onPress={() => Linking.openURL(`mailto:${teacherData.Email}`)} style={style.iconContainer}>
                   <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
                 </TouchableOpacity>
                 : null}
@@ -118,12 +124,12 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
         )
       }
     })
-  }, [navigation])
+  }, [navigation, teacherData])
+  const nameOrId = () => {
+    if (route.params.staff.idFromTeaching) return route.params.staff.idFromTeaching.toString();
+    else return (route.params.staff.FirstName + " " + route.params.staff.LastName).toString()
+  }
   const loadSpeakerVideos = async () => {
-    const nameOrId = () => {
-      if (route.params.staff.idFromTeaching) return route.params.staff.idFromTeaching.toString();
-      else return (route.params.staff.FirstName + " " + route.params.staff.LastName).toString()
-    }
     setIsLoading(true)
     try {
       const queryResult = await runGraphQLQuery({
@@ -131,6 +137,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
         variables: { nextToken: nextToken, filter: { id: { eq: nameOrId() } } }
       })
       setTeachings({ items: teachings.items.concat(queryResult.listSpeakers.items[0].videos.items) })
+      setUri(queryResult.listSpeakers.items[0].image)
       setNextToken(queryResult.listSpeakers.items[0].videos.nextToken)
       setIsLoading(false);
     } catch (error) {
@@ -140,10 +147,23 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
   const uriError = () => {
     setUri(Theme.icons.white.user)
   }
-  const [uri, setUri] = useState(route.params.staff.uri)
+  const loadSpeakerData = async () => {
+    try {
+      const staffData = await StaffDirectoryService.loadStaffJson();
+      const teacher = staffData.filter((a: any) => a.FirstName + " " + a.LastName === nameOrId())?.[0]
+      if (teacher)
+        setTeacherData({
+          Email: teacher.Email,
+          Phone: teacher.Phone
+        })
+    }
+    catch (error) {
+      console.error(error)
+    }
+  }
   useEffect(() => {
     loadSpeakerVideos();
-    console.log(route.params.staff.uri)
+    loadSpeakerData();
   }, [])
   return (
     <View style={style.container}>

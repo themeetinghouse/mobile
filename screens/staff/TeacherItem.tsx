@@ -109,7 +109,7 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
                     <Text style={style.Name}>{teacher.name}</Text>
                     : null}
                 <TouchableOpacity onPress={() => {
-                    navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...teacher, uri: teacher.image, idFromTeaching: teacher.id } } } })
+                    navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teacher.id } } } })
                 }
                 }>
                     <Text style={style.footerText}>
