@@ -178,9 +178,10 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                 uriError()
               }} source={{ uri }} />
                 : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
-              <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+              uri && uri !== Theme.icons.white.user ? <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                setIsLoading(false)
                 uriError()
-              }} source={{ uri: uri, cache: "default" }} />
+              }} source={{ uri: uri, cache: "default" }} /> : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View>
             }
           </View>
           <Text style={style.Name}>{route.params.staff.idFromTeaching ? route.params.staff.idFromTeaching : route.params.staff.FirstName} {route.params.staff.LastName}</Text>
