@@ -21,7 +21,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 import { AnimatedFallbackImage } from '../components/FallbackImage';
-
+import SeriesItem from "./SeriesItem";
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
 
@@ -106,6 +106,14 @@ const style = StyleSheet.create({
         alignItems: "center",
         marginTop: 16,
     },
+    seriesListContainer: {
+        marginTop: 14,
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginHorizontal: 16
+    },
     seriesDetail1: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
@@ -142,7 +150,6 @@ const style = StyleSheet.create({
         borderColor: Theme.colors.gray3,
         backgroundColor: Theme.colors.gray3,
         borderWidth: 1,
-
     },
     teacherThumbnail: {
         position: 'absolute',
@@ -385,12 +392,32 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
+                <View style={style.categorySection}>
+                    <Text style={style.categoryTitle}>Curated Sermon Playlists</Text>
+                    <Text style={style.highlightsText}>Some sort of description of what these are.</Text>
+                    {recentSeries.loading &&
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                            <ActivityIndicator />
+                        </View>
+                    }
+                    <View style={style.seriesListContainer}>
+                        {recentSeries?.items?.map((s: any, key: any) => {
+                            if (key < 4) {
+                                return (
+                                    <SeriesItem key={s.id} navigation={navigation as any} seriesData={s} year={getSeriesDate(s)}></SeriesItem>)
+                            } else {
+                                return null
+                            }
+                        })}
+                    </View>
+                    <AllButton handlePress={() => navigation.push('TeacherList')}>More Playlists</AllButton>
+                </View>
                 <View style={style.categorySectionLast}>
-                    <Text style={style.categoryTitle}>Teachers</Text>
+                    <Text style={[style.categoryTitle, { marginBottom: 4 }]}>Teachers</Text>
                     {!speakers.loading ?
                         <>
                             <FlatList
-                                contentContainerStyle={style.horizontalListContentContainer}
+                                contentContainerStyle={[style.horizontalListContentContainer, { marginBottom: 2 }]}
                                 horizontal={true}
                                 data={speakers.items}
                                 renderItem={({ item, index, separators }: any) => !item.hidden ? (
