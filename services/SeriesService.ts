@@ -1,5 +1,5 @@
 import { runGraphQLQuery } from './ApiService';
-import { GetSeriesBySeriesTypeQuery, GetSeriesQuery } from './API';
+import { GetSeriesBySeriesTypeQuery, GetSeriesQuery, ListSeriessQuery } from './API';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 type SeriesByTypeQueryResult = NonNullable<GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']>;
@@ -17,6 +17,23 @@ interface SeriesDataWithHeroImage extends SeriesData {
 }
 
 export default class SeriesService {
+
+  static loadCustomPlaylists = async (limit: number, nextToken?: string): Promise<any> => {
+    const queryResult = await API.graphql(graphqlOperation(listCustomPlaylists, { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken })) as any;
+    const items = queryResult?.data?.listCustomPlaylists?.items;
+    if (items) {
+      for (const item of items) {
+        if (item) {
+          item.image = "https://www.themeetinghouse.com/cache/640/static/photos/playlists/The%20Bible.png";
+          SeriesService.updateSeriesImageFromPlaylist(item as any);
+        }
+      }
+    }
+    return {
+      items: items?.filter((item: any) => item?.videos?.items && item?.videos?.items?.length > 0).filter((item: any, index: number) => index < 4),
+      nextToken: queryResult?.data?.listCustomPlaylists?.nextToken
+    };
+  }
 
   static loadSeriesList = async (limit: number, nextToken?: string): Promise<LoadSeriesListData> => {
     const queryResult = await API.graphql(graphqlOperation(getSeriesBySeriesType, { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken })) as GraphQLResult<GetSeriesBySeriesTypeQuery>
@@ -40,17 +57,27 @@ export default class SeriesService {
       query: getSeries,
       variables: { id: seriesId },
     });
-    //console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
+    console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
     const series = queryResult.getSeries;
-    SeriesService.updateSeriesImage(series);
+    //SeriesService.updateSeriesImage(series);
     return series;
   }
 
   static updateSeriesImage = async (series: SeriesDataWithHeroImage): Promise<void> => {
-    if (series.title) {
+    if (series?.title) {
       series.image = `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
       series.image640px = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${series.title.replace("?", "")}.jpg`;
       series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(/ /g, "%20")}.jpg`;
+    } else {
+      series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
+      series.heroImage = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
+    }
+  }
+  static updateSeriesImageFromPlaylist = async (series: SeriesDataWithHeroImage): Promise<void> => {
+    if (series?.title) {
+      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20");
+      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20");
+      series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(/ /g, "%20")}.png`;
     } else {
       series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
       series.heroImage = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
@@ -132,6 +159,72 @@ export const getSeries = `
         }
         nextToken
       }
+    }
+  }
+`;
+
+export const listCustomPlaylists = /* GraphQL */ `
+  query ListCustomPlaylists(
+    $filter: ModelCustomPlaylistFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCustomPlaylists(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        seriesType
+        title
+        description
+        thumbnailDescription
+        createdAt
+        updatedAt
+        videos {
+          items {
+            id
+            videoID
+            customPlaylistID
+            customPlaylist {
+              id
+              seriesType
+              title
+              thumbnailDescription
+              videos {
+                items {
+                  id
+                  videoID
+                  customPlaylistID
+                }
+                nextToken
+              }
+            }
+            video {
+              id
+              createdBy
+              createdDate
+              episodeTitle
+              originalEpisodeTitle
+              episodeNumber
+              seriesTitle
+              customPlaylistIDs
+              publishedDate
+              recordedDate
+              description
+              viewCount
+              length
+              YoutubeIdent
+              videoTypes
+              notesURL
+              videoURL
+              audioURL
+              thumbnailDescription
+              createdAt
+              updatedAt
+            }
+          }
+          nextToken
+        }
+      }
+      nextToken
     }
   }
 `;

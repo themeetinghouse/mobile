@@ -106,7 +106,6 @@ interface Params {
 }
 
 function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
-
     const seriesParam = route.params?.item;
     const seriesId = route.params?.seriesId;
     const safeArea = useSafeAreaInsets();
@@ -213,7 +212,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                         />
                     </FallbackImageBackground>
                     <View style={style.detailsContainer}>
-                        <Text style={style.detailsTitle}>{series.title}</Text>
+                        <Text style={style.detailsTitle}>{series?.title}</Text>
                         <View>
                             <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>
                         </View>

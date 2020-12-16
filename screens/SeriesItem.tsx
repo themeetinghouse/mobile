@@ -35,12 +35,18 @@ const style = StyleSheet.create({
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
     seriesData: any;
-    year: string;
+    year?: string;
 }
 export default function SeriesItem({ navigation, seriesData, year }: Params): JSX.Element {
     return (
-        <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: seriesData.id })} style={style.seriesItem}>
+        <TouchableOpacity onPress={() => {
+            console.log(seriesData)
+            navigation.push('SeriesLandingScreen', { item: seriesData, seriesId: seriesData.id })
+        }
+        } style={style.seriesItem}>
             <FallbackImage style={style.seriesThumbnail} uri={seriesData.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
-            <Text style={style.seriesDetail}>{year} &bull; {seriesData.videos.items.length} episodes</Text>
+            {year ? <Text style={style.seriesDetail}>{year} &bull; {seriesData.videos.items.length} episodes</Text>
+                :
+                <Text style={style.seriesDetail}>{seriesData.videos.items.length} episodes</Text>}
         </TouchableOpacity>)
 }

@@ -192,6 +192,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
+    const [customPlaylists, setcustomPlaylists] = useState<SeriesData>({ loading: true, items: [], nextToken: null })
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: undefined });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
     const [bounce, setBounce] = useState(false);
@@ -227,6 +228,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const loadRecentSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
+    const loadCustomPlaylists = async () => {
+        loadSomeAsync(SeriesService.loadCustomPlaylists, customPlaylists, setcustomPlaylists, 20)
+    }
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
@@ -250,6 +254,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadRecentSermonsAsync();
         loadHighlightsAsync();
         loadSpeakersAsync();
+        loadCustomPlaylists();
         getPopularTeaching();
     }, [])
     const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
@@ -395,19 +400,14 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 <View style={style.categorySection}>
                     <Text style={style.categoryTitle}>Curated Sermon Playlists</Text>
                     <Text style={style.highlightsText}>Some sort of description of what these are.</Text>
-                    {recentSeries.loading &&
+                    {customPlaylists.loading &&
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
                             <ActivityIndicator />
                         </View>
                     }
                     <View style={style.seriesListContainer}>
-                        {recentSeries?.items?.map((s: any, key: any) => {
-                            if (key < 4) {
-                                return (
-                                    <SeriesItem key={s.id} navigation={navigation as any} seriesData={s} year={getSeriesDate(s)}></SeriesItem>)
-                            } else {
-                                return null
-                            }
+                        {customPlaylists?.items?.map((s: any, key: any) => {
+                            return (<SeriesItem key={s.id} navigation={navigation as any} seriesData={s}></SeriesItem>)
                         })}
                     </View>
                     <AllButton handlePress={() => navigation.push('TeacherList')}>More Playlists</AllButton>
