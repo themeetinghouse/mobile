@@ -150,6 +150,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 const videos = json.data?.getCustomPlaylist?.videos?.items
                 setVideosInPlaylist(videos)
             } else {
+                console.log("Fetching series : " + sermon.seriesTitle)
                 const json = await API.graphql(graphqlOperation(getSeries, { id: sermon.seriesTitle })) as GraphQLResult<GetSeriesQuery>;
                 setSermonsInSeries(json.data?.getSeries?.videos?.items);
             }
@@ -466,7 +467,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                                             return <TeachingListItem
                                                 key={video?.video?.id}
                                                 teaching={video.video}
-                                                handlePress={() => navigation.push('SermonLandingScreen', { customPlaylist: route?.params?.customPlaylist, item: video.video })} />
+                                                handlePress={() => navigation.push('SermonLandingScreen', { customPlaylist: true, seriesId: route?.params?.seriesId, item: video.video })} />
                                         })
                                         : sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum })
                                             .map((seriesSermon: any) => (

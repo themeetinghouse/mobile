@@ -1,5 +1,5 @@
 import { runGraphQLQuery } from './ApiService';
-import { GetSeriesBySeriesTypeQuery, GetSeriesQuery, ListSeriessQuery } from './API';
+import { GetSeriesBySeriesTypeQuery, GetSeriesQuery } from './API';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 type SeriesByTypeQueryResult = NonNullable<GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']>;
@@ -245,32 +245,19 @@ export const getCustomPlaylist = /* GraphQL */ `
       seriesType
       title
       description
-      thumbnailDescription
       videos {
         items {
           id
-          videoID
-          customPlaylistID
-          createdAt
-          updatedAt
           video {
             id
-            createdBy
-            createdDate
             episodeTitle
             originalEpisodeTitle
             episodeNumber
             seriesTitle
-            customPlaylistIDs
             publishedDate
             description
-            viewCount
-            YoutubeIdent
             Youtube {
               snippet {
-                publishedAt
-                title
-                description
                 thumbnails{
                   high{
                     url
@@ -284,13 +271,8 @@ export const getCustomPlaylist = /* GraphQL */ `
                 }
               }
             }
-            videoTypes
-            notesURL
             videoURL
             audioURL
-            thumbnailDescription
-            createdAt
-            updatedAt
           }
         }
         nextToken
