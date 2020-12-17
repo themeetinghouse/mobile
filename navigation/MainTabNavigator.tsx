@@ -55,7 +55,7 @@ export type TeachingStackParamList = {
   Teaching: undefined;
   AllSeriesScreen: undefined;
   AllSermonsScreen: { startDate: string, endDate: string } | undefined;
-  SeriesLandingScreen: { seriesId?: string, item?: any };
+  SeriesLandingScreen: { seriesId?: string, item?: any, custom?: boolean };
   PopularTeachingScreen: { popularTeaching: PopularVideoData }
 }
 

@@ -4,7 +4,7 @@ import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { Dimensions, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SeriesService from '../services/SeriesService';
+import SeriesService, { getCustomPlaylist } from '../services/SeriesService';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ShareModal from '../components/modals/Share';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetSeriesQuery } from 'services/API';
+import { GetCustomPlaylistQuery, GetSeriesQuery } from 'services/API';
 import { FallbackImageBackground } from '../components/FallbackImage';
 
 const isTablet = Dimensions.get('screen').width >= 768;
@@ -112,7 +112,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
     const [series, setSeries] = useState(seriesParam);
     const [contentFills, setContentFills] = useState(false);
-    const [videos, setVideos] = useState<VideoData>();
+    const [videos, setVideos] = useState<VideoData | any>();
 
     const [share, setShare] = useState(false);
 
@@ -165,8 +165,15 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }
-            const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
-            setVideos(json.data?.getSeries?.videos?.items);
+            if (!route?.params?.custom) {
+                const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
+                setVideos(json.data?.getSeries?.videos?.items);
+            }
+            else {
+                const json = await API.graphql(graphqlOperation(getCustomPlaylist, { id: seriesId ?? series.id })) as GraphQLResult<GetCustomPlaylistQuery>
+                setVideos(json.data?.getCustomPlaylist?.videos?.items?.map((item) => item?.video))
+            }
+
         }
         loadSermonsInSeriesAsync();
     }, []);
@@ -221,7 +228,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                         <View style={style.listContentContainer}>
                             {!videos ?
                                 <ActivityIndicator />
-                                : videos.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
+                                : videos.sort((a: any, b: any) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
                                     <TeachingListItem
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}

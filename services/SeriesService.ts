@@ -30,11 +30,20 @@ export default class SeriesService {
       }
     }
     return {
-      items: items?.filter((item: any) => item?.videos?.items && item?.videos?.items?.length > 0).filter((item: any, index: number) => index < 4),
+      items: items?.filter((item: any) => item?.videos?.items && item?.videos?.items?.length > 0),
       nextToken: queryResult?.data?.listCustomPlaylists?.nextToken
     };
   }
-
+  static getCustomPlaylistById = async (customPlaylistId: string): Promise<any> => {
+    const queryResult = await runGraphQLQuery({
+      query: getCustomPlaylist,
+      variables: { id: customPlaylistId },
+    });
+    console.log("SeriesService.getCustomPlaylistById(): queryResult = ", queryResult);
+    const series = queryResult.getCustomPlaylist;
+    await SeriesService.updateSeriesImageFromPlaylist(series);
+    return series;
+  }
   static loadSeriesList = async (limit: number, nextToken?: string): Promise<LoadSeriesListData> => {
     const queryResult = await API.graphql(graphqlOperation(getSeriesBySeriesType, { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken })) as GraphQLResult<GetSeriesBySeriesTypeQuery>
 
@@ -75,8 +84,8 @@ export default class SeriesService {
   }
   static updateSeriesImageFromPlaylist = async (series: SeriesDataWithHeroImage): Promise<void> => {
     if (series?.title) {
-      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20");
-      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20");
+      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20").replace("\'", "");
+      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace("?", "")}.png`.replace(/ /g, "%20").replace("\'", "");
       series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(/ /g, "%20")}.png`;
     } else {
       series.image = "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
@@ -225,6 +234,194 @@ export const listCustomPlaylists = /* GraphQL */ `
         }
       }
       nextToken
+    }
+  }
+`;
+
+export const getCustomPlaylist = /* GraphQL */ `
+  query GetCustomPlaylist($id: ID!) {
+    getCustomPlaylist(id: $id) {
+      id
+      seriesType
+      title
+      description
+      thumbnailDescription
+      createdAt
+      updatedAt
+      videos {
+        items {
+          id
+          videoID
+          customPlaylistID
+          createdAt
+          updatedAt
+          video {
+            id
+            createdBy
+            createdDate
+            episodeTitle
+            originalEpisodeTitle
+            episodeNumber
+            seriesTitle
+            customPlaylistIDs
+            publishedDate
+            recordedDate
+            description
+            viewCount
+            referencedMedia
+            campaigns
+            bibleVerses
+            topics
+            qandeh
+            length
+            YoutubeIdent
+            Youtube {
+              id
+              kind
+              etag
+              snippet {
+                publishedAt
+                channelId
+                title
+                description
+                channelTitle
+                thumbnails{
+                  high{
+                    url
+                  }
+                  standard{
+                    url
+                  }
+                  maxres{
+                    url
+                  }
+                }
+                localized {
+                  title
+                  description
+                }
+              }
+            }
+            videoTypes
+            notesURL
+            videoURL
+            audioURL
+            thumbnailDescription
+            createdAt
+            updatedAt
+            series {
+              id
+              seriesType
+              title
+              description
+              thumbnailDescription
+              image
+              startDate
+              endDate
+              createdAt
+              updatedAt
+              videos {
+                items {
+                  id
+                  createdBy
+                  createdDate
+                  episodeTitle
+                  originalEpisodeTitle
+                  episodeNumber
+                  seriesTitle
+                  customPlaylistIDs
+                  publishedDate
+                  recordedDate
+                  description
+                  viewCount
+                  referencedMedia
+                  campaigns
+                  bibleVerses
+                  topics
+                  qandeh
+                  length
+                  YoutubeIdent
+                  videoTypes
+                  notesURL
+                  videoURL
+                  audioURL
+                  thumbnailDescription
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+              notes {
+                items {
+                  id
+                  title
+                  content
+                  questions
+                  jsonContent
+                  jsonQuestions
+                  episodeDescription
+                  episodeNumber
+                  seriesId
+                  pdf
+                  topics
+                  tags
+                  createdAt
+                  updatedAt
+                }
+                nextToken
+              }
+            }
+            customPlaylists {
+              items {
+                id
+                videoID
+                customPlaylistID
+                createdAt
+                updatedAt
+                customPlaylist {
+                  id
+                  seriesType
+                  title
+                  description
+                  thumbnailDescription
+                  createdAt
+                  updatedAt
+                }
+                video {
+                  id
+                  createdBy
+                  createdDate
+                  episodeTitle
+                  originalEpisodeTitle
+                  episodeNumber
+                  seriesTitle
+                  customPlaylistIDs
+                  publishedDate
+                  recordedDate
+                  description
+                  viewCount
+                  referencedMedia
+                  campaigns
+                  bibleVerses
+                  topics
+                  qandeh
+                  length
+                  YoutubeIdent
+                  videoTypes
+                  notesURL
+                  videoURL
+                  audioURL
+                  thumbnailDescription
+                  createdAt
+                  updatedAt
+                }
+              }
+              nextToken
+            }
+          }
+        }
+        nextToken
+      }
     }
   }
 `;
