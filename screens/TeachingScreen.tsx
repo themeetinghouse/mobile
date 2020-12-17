@@ -229,7 +229,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
     const loadCustomPlaylists = async () => {
-        loadSomeAsync(SeriesService.loadCustomPlaylists, customPlaylists, setcustomPlaylists, 4)
+        loadSomeAsync(SeriesService.loadCustomPlaylists, customPlaylists, setcustomPlaylists, 10)
     }
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
@@ -407,10 +407,13 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     }
                     <View style={style.seriesListContainer}>
                         {customPlaylists?.items?.map((s: any, key: any) => {
-                            return (<SeriesItem key={s.id} custom={true} navigation={navigation as any} seriesData={s}></SeriesItem>)
+                            if (key < 4)
+                                return (<SeriesItem key={s.id} customPlaylist={true} navigation={navigation as any} seriesData={s}></SeriesItem>)
+                            else
+                                return null;
                         })}
                     </View>
-                    <AllButton handlePress={() => navigation.push('TeacherList')}>More Playlists</AllButton>
+                    <AllButton handlePress={() => navigation.push('AllSeriesScreen', { customPlaylists: true })}>More Playlists</AllButton>
                 </View>
                 <View style={style.categorySectionLast}>
                     <Text style={[style.categoryTitle, { marginBottom: 4 }]}>Teachers</Text>

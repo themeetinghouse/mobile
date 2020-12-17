@@ -246,8 +246,6 @@ export const getCustomPlaylist = /* GraphQL */ `
       title
       description
       thumbnailDescription
-      createdAt
-      updatedAt
       videos {
         items {
           id
@@ -265,26 +263,14 @@ export const getCustomPlaylist = /* GraphQL */ `
             seriesTitle
             customPlaylistIDs
             publishedDate
-            recordedDate
             description
             viewCount
-            referencedMedia
-            campaigns
-            bibleVerses
-            topics
-            qandeh
-            length
             YoutubeIdent
             Youtube {
-              id
-              kind
-              etag
               snippet {
                 publishedAt
-                channelId
                 title
                 description
-                channelTitle
                 thumbnails{
                   high{
                     url
@@ -296,10 +282,6 @@ export const getCustomPlaylist = /* GraphQL */ `
                     url
                   }
                 }
-                localized {
-                  title
-                  description
-                }
               }
             }
             videoTypes
@@ -309,115 +291,6 @@ export const getCustomPlaylist = /* GraphQL */ `
             thumbnailDescription
             createdAt
             updatedAt
-            series {
-              id
-              seriesType
-              title
-              description
-              thumbnailDescription
-              image
-              startDate
-              endDate
-              createdAt
-              updatedAt
-              videos {
-                items {
-                  id
-                  createdBy
-                  createdDate
-                  episodeTitle
-                  originalEpisodeTitle
-                  episodeNumber
-                  seriesTitle
-                  customPlaylistIDs
-                  publishedDate
-                  recordedDate
-                  description
-                  viewCount
-                  referencedMedia
-                  campaigns
-                  bibleVerses
-                  topics
-                  qandeh
-                  length
-                  YoutubeIdent
-                  videoTypes
-                  notesURL
-                  videoURL
-                  audioURL
-                  thumbnailDescription
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
-              notes {
-                items {
-                  id
-                  title
-                  content
-                  questions
-                  jsonContent
-                  jsonQuestions
-                  episodeDescription
-                  episodeNumber
-                  seriesId
-                  pdf
-                  topics
-                  tags
-                  createdAt
-                  updatedAt
-                }
-                nextToken
-              }
-            }
-            customPlaylists {
-              items {
-                id
-                videoID
-                customPlaylistID
-                createdAt
-                updatedAt
-                customPlaylist {
-                  id
-                  seriesType
-                  title
-                  description
-                  thumbnailDescription
-                  createdAt
-                  updatedAt
-                }
-                video {
-                  id
-                  createdBy
-                  createdDate
-                  episodeTitle
-                  originalEpisodeTitle
-                  episodeNumber
-                  seriesTitle
-                  customPlaylistIDs
-                  publishedDate
-                  recordedDate
-                  description
-                  viewCount
-                  referencedMedia
-                  campaigns
-                  bibleVerses
-                  topics
-                  qandeh
-                  length
-                  YoutubeIdent
-                  videoTypes
-                  notesURL
-                  videoURL
-                  audioURL
-                  thumbnailDescription
-                  createdAt
-                  updatedAt
-                }
-              }
-              nextToken
-            }
           }
         }
         nextToken

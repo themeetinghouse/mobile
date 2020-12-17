@@ -12,15 +12,15 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../contexts/MediaContext';
+import { getCustomPlaylist } from '../services/SeriesService';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import ShareModal from '../components/modals/Share';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetSeriesQuery } from '../services/API';
+import { GetSeriesQuery, GetCustomPlaylistQuery } from '../services/API';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer, ...{
@@ -131,6 +131,7 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     const sermon = route.params?.item;
     const mediaContext = useContext(MediaContext);
     const [sermonsInSeries, setSermonsInSeries] = useState<VideoData>();
+    const [videosInPlaylist, setVideosInPlaylist] = useState<any>();
     const [time, setTime] = useState({ elapsed: '', remaining: '' });
     const [audioSpeed, setAudioSpeed] = useState(1);
     const [audioPosition, setAudioPosition] = useState(0);
@@ -144,8 +145,15 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
 
     useEffect(() => {
         const loadSermonsInSeriesAsync = async () => {
-            const json = await API.graphql(graphqlOperation(getSeries, { id: sermon.seriesTitle })) as GraphQLResult<GetSeriesQuery>;
-            setSermonsInSeries(json.data?.getSeries?.videos?.items);
+            if (route?.params?.customPlaylist) {
+                const json = await API.graphql(graphqlOperation(getCustomPlaylist, { id: route?.params?.seriesId })) as any;
+                const videos = json.data?.getCustomPlaylist?.videos?.items
+                setVideosInPlaylist(videos)
+            } else {
+                const json = await API.graphql(graphqlOperation(getSeries, { id: sermon.seriesTitle })) as GraphQLResult<GetSeriesQuery>;
+                setSermonsInSeries(json.data?.getSeries?.videos?.items);
+            }
+
         }
         loadSermonsInSeriesAsync();
     }, []);
@@ -447,21 +455,28 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                 </View>
 
                 <View style={style.categorySection}>
-                    {!sermonsInSeries ?
+                    {!sermonsInSeries && !videosInPlaylist ?
                         <ActivityIndicator /> :
-                        sermonsInSeries?.length > 1 ?
+                        videosInPlaylist?.length > 1 || sermonsInSeries && sermonsInSeries?.length > 1 ?
                             <Fragment>
-                                <Text style={style.categoryTitle}>More from this Series</Text>
+                                <Text style={style.categoryTitle}>{route?.params?.customPlaylist ? "More from this playlist" : "More from this Series"}</Text>
                                 <View style={style.listContentContainer}>
-                                    {sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum })
-                                        .map((seriesSermon: any) => (
-                                            seriesSermon?.id !== sermon.id ?
-                                                <TeachingListItem
-                                                    key={seriesSermon?.id}
-                                                    teaching={seriesSermon}
-                                                    handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
-                                                : null
-                                        ))}
+                                    {route?.params?.customPlaylist ?
+                                        videosInPlaylist?.map((video: any) => {
+                                            return <TeachingListItem
+                                                key={video?.video?.id}
+                                                teaching={video.video}
+                                                handlePress={() => navigation.push('SermonLandingScreen', { customPlaylist: route?.params?.customPlaylist, item: video.video })} />
+                                        })
+                                        : sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum })
+                                            .map((seriesSermon: any) => (
+                                                seriesSermon?.id !== sermon.id ?
+                                                    <TeachingListItem
+                                                        key={seriesSermon?.id}
+                                                        teaching={seriesSermon}
+                                                        handlePress={() => navigation.push('SermonLandingScreen', { item: seriesSermon })} />
+                                                    : null
+                                            ))}
                                 </View>
                             </Fragment> : null}
                 </View>

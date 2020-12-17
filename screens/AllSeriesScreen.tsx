@@ -75,10 +75,10 @@ const style = StyleSheet.create({
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
+    route: any;
 }
 
-export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
-
+export default function AllSeriesScreen({ navigation, route }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [selectedYear, setSelectedYear] = useState("All");
     const [seriesYears, setSeriesYears] = useState(["All"])
@@ -87,6 +87,10 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
     const loadAllSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
+    }
+
+    const loadCustomPlaylists = async () => {
+        loadSomeAsync(SeriesService.loadCustomPlaylists, allSeries, setAllSeries, 100)
     }
 
     const generateYears = () => {
@@ -102,7 +106,13 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
     useEffect(() => {
         generateYears();
-        loadAllSeriesAsync();
+        if (route?.params?.customPlaylists) {
+            loadCustomPlaylists()
+        }
+        else {
+            loadAllSeriesAsync();
+        }
+
     }, [])
     const getSeriesDate = (series: any) => {
         return moment(series.startDate || moment()).format("YYYY");
@@ -112,7 +122,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            title: 'All Series',
+            title: route?.params?.customPlaylists ? 'Curated Playlists' : 'All Series',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: Theme.colors.background },
             headerLeft: function render() {
@@ -130,25 +140,30 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     return (
         <Container>
             <Content style={style.content}>
+
                 <SearchBar
                     style={style.searchBar}
                     searchText={searchText}
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name..."></SearchBar>
-                <View style={style.dateSelectBar}>
-                    <FlatList
-                        style={style.horizontalListContentContainer}
-                        horizontal={true}
-                        data={seriesYears}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item}
-                        renderItem={({ item }) => (
-                            <TouchableHighlight underlayColor={Theme.colors.grey3} onPress={() => setSelectedYear(item)} style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} >
-                                <Text style={[style.dateSelectYear, item === selectedYear ? style.dateSelectYearSelected : {}]}>{item}</Text>
-                            </TouchableHighlight>
-                        )}
-                    />
-                </View>
+                {!route?.params?.customPlaylists ?
+                    <>
+                        <View style={style.dateSelectBar}>
+                            <FlatList
+                                style={style.horizontalListContentContainer}
+                                horizontal={true}
+                                data={seriesYears}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item) => item}
+                                renderItem={({ item }) => (
+                                    <TouchableHighlight underlayColor={Theme.colors.grey3} onPress={() => setSelectedYear(item)} style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} >
+                                        <Text style={[style.dateSelectYear, item === selectedYear ? style.dateSelectYearSelected : {}]}>{item}</Text>
+                                    </TouchableHighlight>
+                                )}
+                            />
+                        </View>
+                    </>
+                    : null}
                 <View style={style.seriesListContainer}>
                     {allSeries.loading &&
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
@@ -157,8 +172,11 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                     }
                     {series.map((s: any, key: any) => {
                         if (key < showCount) {
-                            return (
-                                <SeriesItem key={s.id} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>)
+                            if (route?.params?.customPlaylists) {
+                                return <SeriesItem key={s.id} customPlaylist={true} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>
+                            } else {
+                                return <SeriesItem key={s.id} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>
+                            }
                         } else {
                             return null
                         }

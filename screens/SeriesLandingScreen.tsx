@@ -165,13 +165,15 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
                 setSeries(loadedSeries);
             }
-            if (!route?.params?.custom) {
+            if (!route?.params?.customPlaylist) {
                 const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
                 setVideos(json.data?.getSeries?.videos?.items);
             }
             else {
                 const json = await API.graphql(graphqlOperation(getCustomPlaylist, { id: seriesId ?? series.id })) as GraphQLResult<GetCustomPlaylistQuery>
-                setVideos(json.data?.getCustomPlaylist?.videos?.items?.map((item) => item?.video))
+                setVideos(json.data?.getCustomPlaylist?.videos?.items?.map((item) => {
+                    return item?.video
+                }))
             }
 
         }
@@ -221,21 +223,24 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     <View style={style.detailsContainer}>
                         <Text style={style.detailsTitle}>{series?.title}</Text>
                         <View>
-                            <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>
+                            {!route?.params?.customPlaylist ?
+                                <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>
+                                :
+                                <Text style={style.detailsText}>{series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>}
                         </View>
                     </View>
                     <View style={style.seriesContainer}>
                         <View style={style.listContentContainer}>
                             {!videos ?
                                 <ActivityIndicator />
-                                : videos.sort((a: any, b: any) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
-                                    <TeachingListItem
+                                : videos.sort((a: any, b: any) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => {
+                                    return <TeachingListItem
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}
                                         handlePress={() =>
-                                            navigation.push('SermonLandingScreen', { item: seriesSermon })
+                                            navigation.push('SermonLandingScreen', route?.params?.customPlaylist ? { item: seriesSermon, customPlaylist: true, seriesId } : { item: seriesSermon })
                                         } />
-                                ))}
+                                })}
                         </View>
                     </View>
                 </View>

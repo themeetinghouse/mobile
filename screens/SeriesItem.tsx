@@ -36,12 +36,12 @@ interface Params {
     navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
     seriesData: any;
     year?: string;
-    custom?: boolean;
+    customPlaylist?: boolean;
 }
-export default function SeriesItem({ navigation, seriesData, year, custom }: Params): JSX.Element {
+export default function SeriesItem({ navigation, seriesData, year, customPlaylist }: Params): JSX.Element {
     return (
         <TouchableOpacity onPress={() => {
-            navigation.push('SeriesLandingScreen', { item: seriesData, seriesId: seriesData.id, custom: custom })
+            navigation.push('SeriesLandingScreen', { item: seriesData, seriesId: seriesData.id, customPlaylist: customPlaylist })
         }
         } style={style.seriesItem}>
             <FallbackImage style={style.seriesThumbnail} uri={seriesData.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
