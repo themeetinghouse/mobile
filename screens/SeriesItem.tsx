@@ -45,7 +45,7 @@ export default function SeriesItem({ navigation, seriesData, year, customPlaylis
         }
         } style={style.seriesItem}>
             <FallbackImage style={style.seriesThumbnail} uri={seriesData.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
-            {year ? <Text style={style.seriesDetail}>{year} &bull; {seriesData.videos.items.length} episodes</Text>
+            {year && !customPlaylist ? <Text style={style.seriesDetail}>{year} &bull; {seriesData.videos.items.length} episodes</Text>
                 :
                 <Text style={style.seriesDetail}>{seriesData.videos.items.length} episodes</Text>}
         </TouchableOpacity>)

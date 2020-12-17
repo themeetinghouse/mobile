@@ -233,7 +233,12 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                         <View style={style.listContentContainer}>
                             {!videos ?
                                 <ActivityIndicator />
-                                : videos.sort((a: any, b: any) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => {
+                                : videos.sort((a: any, b: any) => {
+                                    if (route?.params?.customPlaylist) return b.publishedDate.localeCompare(a.publishedDate)
+                                    else {
+                                        const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum
+                                    }
+                                }).map((seriesSermon: any) => {
                                     return <TeachingListItem
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}
