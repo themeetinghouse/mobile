@@ -163,7 +163,8 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             let loadedSeries = series;
             if (!loadedSeries && seriesId) {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
-                setSeries(loadedSeries);
+                const uri = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${loadedSeries.id.replace("?", "")}.jpg`;
+                setSeries({ ...loadedSeries, image640px: uri });
             }
             if (!route?.params?.customPlaylist) {
                 const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
@@ -243,7 +244,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}
                                         handlePress={() =>
-                                            navigation.push('SermonLandingScreen', route?.params?.customPlaylist ? { item: seriesSermon, customPlaylist: true, seriesId } : { item: seriesSermon })
+                                            navigation.push('SermonLandingScreen', route?.params?.customPlaylist ? { item: seriesSermon, customPlaylist: route?.params?.customPlaylist, seriesId } : { item: seriesSermon })
                                         } />
                                 })}
                         </View>

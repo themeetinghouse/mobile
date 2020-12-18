@@ -262,7 +262,15 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
     }
 
     const loadAndNavigateToSeries = () => {
-        navigation.navigate('SeriesLandingScreen', { seriesId: sermon.series.id });
+        if (route?.params?.customPlaylist) {
+            console.log("logging sermonTitle from SermonLandingScreen.tsx: " + sermon.seriesTitle)
+            navigation.replace('SeriesLandingScreen', { seriesId: sermon.seriesTitle });
+            navigation.navigate('SeriesLandingScreen', { seriesId: sermon.seriesTitle })
+        }
+        else {
+            navigation.navigate('SeriesLandingScreen', { seriesId: sermon?.series?.id });
+        }
+
     }
 
     const handleVideoReady = () => {

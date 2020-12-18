@@ -39,7 +39,7 @@ export default class SeriesService {
       query: getCustomPlaylist,
       variables: { id: customPlaylistId },
     });
-    console.log("SeriesService.getCustomPlaylistById(): queryResult = ", queryResult);
+    //console.log("SeriesService.getCustomPlaylistById(): queryResult = ", queryResult);
     const series = queryResult.getCustomPlaylist;
     await SeriesService.updateSeriesImageFromPlaylist(series);
     return series;
@@ -66,7 +66,7 @@ export default class SeriesService {
       query: getSeries,
       variables: { id: seriesId },
     });
-    console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
+    //console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
     const series = queryResult.getSeries;
     //SeriesService.updateSeriesImage(series);
     return series;
