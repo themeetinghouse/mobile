@@ -9,7 +9,7 @@ import TeachingListItem from '../components/teaching/TeachingListItem';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { FlatList } from 'react-native-gesture-handler';
 import SermonsService from '../services/SermonsService';
-import SeriesService from '../services/SeriesService';
+import SeriesService, { LoadPlaylistData } from '../services/SeriesService';
 import SpeakersService from '../services/SpeakersService';
 import { loadSomeAsync } from '../utils/loading';
 import { LoadSeriesListData } from '../services/SeriesService';
@@ -187,12 +187,16 @@ interface SeriesData extends LoadSeriesListData {
     loading: boolean;
 }
 
+interface PlaylistData extends LoadPlaylistData {
+    loading: boolean;
+}
+
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
-    const [customPlaylists, setcustomPlaylists] = useState<SeriesData>({ loading: true, items: [], nextToken: null })
+    const [customPlaylists, setcustomPlaylists] = useState<PlaylistData>({ loading: true, items: [], nextToken: null })
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: undefined });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
     const [bounce, setBounce] = useState(false);
@@ -423,7 +427,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                                 contentContainerStyle={[style.horizontalListContentContainer, { marginBottom: 2 }]}
                                 horizontal={true}
                                 data={speakers.items}
-                                renderItem={({ item, index, separators }: any) => !item.hidden ? (
+                                renderItem={({ item, index }: any) => !item.hidden ? (
                                     <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
                                         <View style={style.teacherContainer}>
                                             <View style={[style.teacherThumbnailContainer, {

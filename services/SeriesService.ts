@@ -10,9 +10,10 @@ export interface LoadSeriesListData {
 }
 
 export interface LoadPlaylistData {
-  items: Array<NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']>[0] | undefined;
+  items: Array<NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>['items']>[0] | undefined;
   nextToken: SeriesByTypeQueryResult['nextToken'] | undefined;
 }
+
 type PlaylistData = NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>
