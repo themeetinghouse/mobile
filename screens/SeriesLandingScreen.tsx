@@ -224,10 +224,10 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                     <View style={style.detailsContainer}>
                         <Text style={style.detailsTitle}>{series?.title}</Text>
                         <View>
-                            {!route?.params?.customPlaylist ?
-                                <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>
+                            {!route?.params?.customPlaylist && series ?
+                                <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos?.items?.length} {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}</Text>
                                 :
-                                <Text style={style.detailsText}>{series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>}
+                                <Text style={style.detailsText}>{series.videos?.items?.length} {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}</Text>}
                         </View>
                     </View>
                     <View style={style.seriesContainer}>

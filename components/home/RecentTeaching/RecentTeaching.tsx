@@ -128,7 +128,10 @@ export default function RecentTeaching(): JSX.Element {
             <View style={style.container}>
                 {teachingImage?.url ?
                     <View style={{ width: '100%' }}>
-                        <TouchableWithoutFeedback onPress={() => navigation.navigate('SermonLandingScreen', { item: teaching })} >
+                        <TouchableWithoutFeedback onPress={() => {
+                            navigation.navigate("Main", { screen: "Teaching" });
+                            navigation.navigate("SermonLandingScreen", { item: teaching })
+                        }} >
                             <Image style={style.teachingImage} source={{ uri: teachingImage.url }} />
                         </TouchableWithoutFeedback>
                         <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }} />

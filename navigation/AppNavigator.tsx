@@ -23,7 +23,7 @@ import TeacherList from "../screens/staff/TeacherList";
 
 export type MainStackParamList = {
   Main: undefined | {
-    screen: keyof TabNavigatorParamList, params: {
+    screen: keyof TabNavigatorParamList, params?: {
       screen:
       keyof HomeStackParamList |
       keyof TeachingStackParamList |
