@@ -1,5 +1,5 @@
 import { runGraphQLQuery } from './ApiService';
-import { GetSeriesBySeriesTypeQuery, GetSeriesQuery } from './API';
+import { GetSeriesBySeriesTypeQuery, GetSeriesQuery, ListCustomPlaylistsQuery } from './API';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 
 type SeriesByTypeQueryResult = NonNullable<GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']>;
@@ -8,6 +8,12 @@ export interface LoadSeriesListData {
   items: Array<NonNullable<SeriesByTypeQueryResult['items']>[0] | { loading: boolean }> | undefined;
   nextToken: SeriesByTypeQueryResult['nextToken'] | undefined;
 }
+
+export interface LoadPlaylistData {
+  items: Array<NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']>[0] | undefined;
+  nextToken: SeriesByTypeQueryResult['nextToken'] | undefined;
+}
+type PlaylistData = NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>
 
@@ -18,7 +24,7 @@ interface SeriesDataWithHeroImage extends SeriesData {
 
 export default class SeriesService {
 
-  static loadCustomPlaylists = async (limit: number, nextToken?: string): Promise<any> => {
+  static loadCustomPlaylists = async (limit: number, nextToken?: string): Promise<LoadPlaylistData> => {
     const queryResult = await API.graphql(graphqlOperation(listCustomPlaylists, { sortDirection: "DESC", limit: limit, seriesType: "adult-sunday", nextToken: nextToken })) as any;
     const items = queryResult?.data?.listCustomPlaylists?.items;
     if (items) {
@@ -34,7 +40,7 @@ export default class SeriesService {
       nextToken: queryResult?.data?.listCustomPlaylists?.nextToken
     };
   }
-  static getCustomPlaylistById = async (customPlaylistId: string): Promise<any> => {
+  static getCustomPlaylistById = async (customPlaylistId: string): Promise<PlaylistData> => {
     const queryResult = await runGraphQLQuery({
       query: getCustomPlaylist,
       variables: { id: customPlaylistId },
