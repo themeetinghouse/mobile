@@ -470,10 +470,12 @@ export default function SermonLandingScreen({ navigation, route }: Params): JSX.
                                 <View style={style.listContentContainer}>
                                     {route?.params?.customPlaylist ?
                                         videosInPlaylist?.sort((a: any, b: any) => { return b.video.publishedDate.localeCompare(a.video.publishedDate) }).map((video: any) => {
-                                            return <TeachingListItem
-                                                key={video?.video?.id}
-                                                teaching={video.video}
-                                                handlePress={() => navigation.push('SermonLandingScreen', { customPlaylist: true, seriesId: route?.params?.seriesId, item: video.video })} />
+                                            if (video.video.episodeTitle !== sermon.episodeTitle)
+                                                return <TeachingListItem
+                                                    key={video?.video?.id}
+                                                    teaching={video.video}
+                                                    handlePress={() => navigation.push('SermonLandingScreen', { customPlaylist: true, seriesId: route?.params?.seriesId, item: video.video })} />
+                                            else return null
                                         })
                                         : sermonsInSeries?.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum })
                                             .map((seriesSermon: any) => (
