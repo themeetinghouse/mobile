@@ -13,7 +13,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.6",
+    "version": "6.0.8",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -56,8 +56,7 @@
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20061,
-      "permissions": [],
+      "versionCode": 20081,
       "intentFilters": [
         {
           "action": "VIEW",

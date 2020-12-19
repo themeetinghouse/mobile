@@ -13,7 +13,7 @@ export default class AnnouncementService {
           { 
             id: "announcement1",
             title: "November Weekly Outreach",
-            description: "We'll be meeting weekly on Thurday evenings at the clock downtown Oakville @ 5:30 pm for community outreach"
+            description: "We'll be meeting weekly on Thursday evenings at the clock downtown Oakville @ 5:30 pm for community outreach"
           },
           { 
             id: "announcement2",
