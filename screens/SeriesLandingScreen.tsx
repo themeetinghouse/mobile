@@ -98,7 +98,9 @@ const style = StyleSheet.create({
 
 })
 
-type VideoData = NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items'];
+type VideoData =
+    | NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items']
+    | Array<NonNullable<NonNullable<NonNullable<NonNullable<GetCustomPlaylistQuery['getCustomPlaylist']>['videos']>['items']>[0]>['video']>
 
 interface Params {
     navigation: StackNavigationProp<MainStackParamList>;
@@ -112,7 +114,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
 
     const [series, setSeries] = useState(seriesParam);
     const [contentFills, setContentFills] = useState(false);
-    const [videos, setVideos] = useState<VideoData | any>();
+    const [videos, setVideos] = useState<VideoData>();
 
     const [share, setShare] = useState(false);
 
@@ -173,7 +175,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             else {
                 const json = await API.graphql(graphqlOperation(getCustomPlaylist, { id: seriesId ?? series.id })) as GraphQLResult<GetCustomPlaylistQuery>
                 setVideos(json.data?.getCustomPlaylist?.videos?.items?.map((item) => {
-                    return item?.video
+                    return item?.video ?? null
                 }))
             }
 
