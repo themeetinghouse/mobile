@@ -68,7 +68,7 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
                 {event?.place?.name || event?.place?.location?.street ?
                     <Text style={style.locationContainer}>{event?.place?.name ? event.place.name.split(',')[0] : null}{event?.place?.location?.street ? `, ${event.place.location.street.split(',')[0]}` : null} </Text>
                     : null}
-                <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("h:mm")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+                <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("h:mm")} {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
             </View>
         </TouchableHighlight>
 
