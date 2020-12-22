@@ -19,7 +19,7 @@ import {
 import MiniPlayer from "./components/MiniPlayer";
 import * as SecureStore from "expo-secure-store";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import * as Sentry from "sentry-expo";
+import { init as initSentry } from "sentry-expo";
 import { version } from "./version";
 import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
@@ -27,7 +27,7 @@ import * as Constants from "expo-constants";
 import { Subscription } from "@unimodules/core";
 import { Analytics } from "aws-amplify";
 
-Sentry.init({
+initSentry({
   dsn:
     "https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756",
   enableInExpoDevelopment: true,
