@@ -83,7 +83,6 @@ interface Props {
 }
 
 function TeacherItem({ navigation, teacher }: Props): JSX.Element {
-    console.log(teacher)
     const [isLoading, setIsLoading] = useState(true);
     const uriError = () => {
         setUri(Theme.icons.white.user)
