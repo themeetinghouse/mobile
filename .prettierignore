@@ -1,0 +1,8 @@
+build
+coverage
+dist
+backup
+amplify
+.github
+.vscode
+services/API.ts
