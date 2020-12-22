@@ -25,6 +25,7 @@ import * as Notifications from "expo-notifications";
 import * as Permissions from "expo-permissions";
 import * as Constants from "expo-constants";
 import { Subscription } from "@unimodules/core";
+import { Analytics } from "aws-amplify";
 
 Sentry.init({
   dsn:
@@ -163,7 +164,26 @@ function App(props: Props): JSX.Element {
       return { ...prevState, playerType: "none" };
     });
   };
-
+  const mapObj = (f: any) => (obj: any) =>
+    Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
+  const toArrayOfStrings = (value: any) => [`${value}`];
+  const mapToArrayOfStrings = mapObj(toArrayOfStrings);
+  const trackUserId = async (user) => {
+    try {
+      const attributes = user.attributes;
+      const userAttributes = mapToArrayOfStrings(attributes);
+      const token = (await Notifications.getDevicePushTokenAsync()).data;
+      await Analytics.updateEndpoint({
+        address: token,
+        channelType: Platform.OS === "ios" ? "APNS" : "GCM",
+        optOut: "NONE",
+        userId: attributes.sub,
+        userAttributes,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleRouteChange = () => {
     const screen = navRef.current?.getCurrentRoute()?.name;
     setCurrentScreen(screen ?? "unknown");
@@ -202,6 +222,7 @@ function App(props: Props): JSX.Element {
             locationName: selectedLocation,
           });
         }
+        await trackUserId(user);
       } catch (e) {
         console.debug(e);
         setLocationData({ locationId: "unknown", locationName: "unknown" });
