@@ -6,7 +6,7 @@ import AppNavigator from "./navigation/AppNavigator";
 import LocationsService from "./services/LocationsService";
 import { Auth } from "@aws-amplify/auth";
 import Amplify from "@aws-amplify/core";
-import UserContext, { UserData } from "./contexts/UserContext";
+import UserContext, { UserData, TMHCognitoUser } from "./contexts/UserContext";
 import CommentContext, { CommentContextType } from "./contexts/CommentContext";
 import LocationContext, { LocationData } from "./contexts/LocationContext";
 import MiniPlayerStyleContext from "./contexts/MiniPlayerStyleContext";
@@ -26,7 +26,6 @@ import * as Permissions from "expo-permissions";
 import * as Constants from "expo-constants";
 import { Subscription } from "@unimodules/core";
 import { Analytics } from "aws-amplify";
-
 initSentry({
   dsn:
     "https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756",
@@ -168,7 +167,7 @@ function App(props: Props): JSX.Element {
     Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
   const toArrayOfStrings = (value: any) => [`${value}`];
   const mapToArrayOfStrings = mapObj(toArrayOfStrings);
-  const trackUserId = async (user) => {
+  const trackUserId = async (user: TMHCognitoUser) => {
     try {
       const attributes = user.attributes;
       const userAttributes = mapToArrayOfStrings(attributes);
@@ -177,7 +176,7 @@ function App(props: Props): JSX.Element {
         address: token,
         channelType: Platform.OS === "ios" ? "APNS" : "GCM",
         optOut: "NONE",
-        userId: attributes.sub,
+        userId: attributes?.sub,
         userAttributes,
       });
     } catch (error) {
@@ -208,20 +207,24 @@ function App(props: Props): JSX.Element {
   useEffect(() => {
     async function checkForUser() {
       try {
-        const user = await Auth.currentAuthenticatedUser();
+        const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
         console.debug(user);
-        if (user.attributes.email_verified) {
-          setUserData(user.attributes);
+        if (user.attributes) {
+          if (user.attributes?.email_verified) {
+            setUserData(user.attributes);
+          }
+
+          if (user.attributes["custom:home_location"]) {
+            const selectedLocation = LocationsService.mapLocationIdToName(
+              user.attributes["custom:home_location"]
+            );
+            setLocationData({
+              locationId: user.attributes["custom:home_location"],
+              locationName: selectedLocation,
+            });
+          }
         }
-        if (user.attributes["custom:home_location"]) {
-          const selectedLocation = LocationsService.mapLocationIdToName(
-            user.attributes["custom:home_location"]
-          );
-          setLocationData({
-            locationId: user.attributes["custom:home_location"],
-            locationName: selectedLocation,
-          });
-        }
+
         await trackUserId(user);
       } catch (e) {
         console.debug(e);

@@ -17,7 +17,7 @@ import { Theme, Style } from "../../Theme.style";
 import WhiteButton, {
   WhiteButtonAsync,
 } from "../../components/buttons/WhiteButton";
-import UserContext from "../../contexts/UserContext";
+import UserContext, { TMHCognitoUser } from "../../contexts/UserContext";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { AuthStackParamList } from "../../navigation/AuthNavigator";
 import {
@@ -168,7 +168,7 @@ export default function Login({ navigation }: Params): JSX.Element {
   const toArrayOfStrings = (value: any) => [`${value}`];
   const mapToArrayOfStrings = mapObj(toArrayOfStrings);
 
-  async function trackUserId(user) {
+  async function trackUserId(user: TMHCognitoUser) {
     try {
       const attributes = user.attributes;
       const userAttributes = mapToArrayOfStrings(attributes);
@@ -177,7 +177,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         address: token,
         channelType: Platform.OS === "ios" ? "APNS" : "GCM",
         optOut: "NONE",
-        userId: attributes.sub,
+        userId: attributes?.sub,
         userAttributes,
       });
     } catch (error) {
@@ -188,7 +188,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     setSending(true);
     try {
       await Auth.signIn(user, pass);
-      const userSignedIn = await Auth.currentAuthenticatedUser();
+      const userSignedIn: TMHCognitoUser = await Auth.currentAuthenticatedUser();
       await trackUserId(userSignedIn);
       Analytics.record({
         name: "login",
@@ -197,12 +197,13 @@ export default function Login({ navigation }: Params): JSX.Element {
       });
 
       userContext?.setUserData(userSignedIn.attributes);
-      location?.setLocationData({
-        locationId: userSignedIn.attributes["custom:home_location"],
-        locationName: LocationsService.mapLocationIdToName(
-          userSignedIn.attributes["custom:home_location"]
-        ),
-      });
+      if (userSignedIn.attributes)
+        location?.setLocationData({
+          locationId: userSignedIn.attributes["custom:home_location"] ?? "",
+          locationName: LocationsService.mapLocationIdToName(
+            userSignedIn.attributes["custom:home_location"] ?? ""
+          ),
+        });
       navigateHome();
     } catch (e) {
       console.debug(e);

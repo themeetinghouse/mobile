@@ -381,7 +381,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     //           //props.navigation.navigate('Details2');
     //           //props.navigation.navigate({routeName: 'Links'});
 
-    //           //xxxprops.navigation.navigate({routeName: 'Links2', params: {}, action: NavigationActions.navigate({ routeName: 'Details' })});
+    //           //props.navigation.navigate({routeName: 'Links2', params: {}, action: NavigationActions.navigate({ routeName: 'Details' })});
     //           //props.navigation.navigate('Home', {}, NavigationActions.navigate({ routeName: 'Details' }));
     //           //NavigationActions.navigate({ routeName: 'Details' });
     //           //props.navigation.navigate('HomeStack', {}, NavigationActions.navigate({ routeName: 'Details' }));

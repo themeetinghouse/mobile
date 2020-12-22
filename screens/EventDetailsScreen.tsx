@@ -188,7 +188,7 @@ export default function EventDetailsScreen({
           eventItem?.place?.location?.latitude &&
           eventItem?.place?.location.longitude
         ) {
-          //console.log("Latitude and logitude found")
+          //console.log("Latitude and longitude found")
           //console.log("returning gps")
           return "gps";
         } else {
