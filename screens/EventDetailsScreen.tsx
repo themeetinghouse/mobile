@@ -59,6 +59,7 @@ const style = StyleSheet.create({
     zIndex: 1,
     position: "absolute",
     alignSelf: "center",
+    marginTop: 80
   },
   dateBoxContainer: {
     display: "flex",
@@ -434,57 +435,57 @@ export default function EventDetailsScreen({
               })}
             </>
           ) : (
-            <>
-              <Text style={style.subtitle}>Date &amp; Time</Text>
-              <Text style={style.body}>
-                {moment(eventItem.start_time).format("ddd, MMM D, YYYY")},{" "}
-                {moment(eventItem.start_time).format("h:mm a")}{" "}
-                {eventItem.end_time
-                  ? "- " + moment(eventItem.end_time).format("h:mm a")
-                  : null}
-              </Text>
-            </>
-          )}
+              <>
+                <Text style={style.subtitle}>Date &amp; Time</Text>
+                <Text style={style.body}>
+                  {moment(eventItem.start_time).format("ddd, MMM D, YYYY")},{" "}
+                  {moment(eventItem.start_time).format("h:mm a")}{" "}
+                  {eventItem.end_time
+                    ? "- " + moment(eventItem.end_time).format("h:mm a")
+                    : null}
+                </Text>
+              </>
+            )}
           {(eventItem.event_times && eventItem.event_times.length !== 0) ||
-          (eventItem.start_time && eventItem.end_time) ? (
-            <IconButton
-              onPress={() => {
-                addEventToCalendar();
-              }}
-              style={style.actionButton}
-              icon={Theme.icons.white.calendarAdd}
-              label="Add to calendar"
-            ></IconButton>
-          ) : null}
+            (eventItem.start_time && eventItem.end_time) ? (
+              <IconButton
+                onPress={() => {
+                  addEventToCalendar();
+                }}
+                style={style.actionButton}
+                icon={Theme.icons.white.calendarAdd}
+                label="Add to calendar"
+              ></IconButton>
+            ) : null}
           {eventItem.event_times &&
-          eventItem.event_times?.length > 1 &&
-          Platform.OS === "android" ? (
-            <Picker
-              mode="dropdown"
-              enabled
-              prompt="Event Dates"
-              style={{ width: 500, height: 50, color: "white" }}
-              selectedValue={options}
-              onValueChange={(itemValue, itemIndex) => {
-                setOptions(itemValue as string);
-              }}
-            >
-              <Picker.Item label="Select a Date" value=""></Picker.Item>
-              {eventItem.event_times?.map((value: any, key: any) => {
-                if (value.start_time > moment().format())
-                  return (
-                    <Picker.Item
-                      key={key}
-                      label={`${moment(value.start_time).format(
-                        "MMM Do YYYY, h:mm a"
-                      )} - ${moment(value.end_time).format("h:mm a")}`}
-                      value={value}
-                    ></Picker.Item>
-                  );
-                else return null;
-              })}
-            </Picker>
-          ) : null}
+            eventItem.event_times?.length > 1 &&
+            Platform.OS === "android" ? (
+              <Picker
+                mode="dropdown"
+                enabled
+                prompt="Event Dates"
+                style={{ width: 500, height: 50, color: "white" }}
+                selectedValue={options}
+                onValueChange={(itemValue, itemIndex) => {
+                  setOptions(itemValue as string);
+                }}
+              >
+                <Picker.Item label="Select a Date" value=""></Picker.Item>
+                {eventItem.event_times?.map((value: any, key: any) => {
+                  if (value.start_time > moment().format())
+                    return (
+                      <Picker.Item
+                        key={key}
+                        label={`${moment(value.start_time).format(
+                          "MMM Do YYYY, h:mm a"
+                        )} - ${moment(value.end_time).format("h:mm a")}`}
+                        value={value}
+                      ></Picker.Item>
+                    );
+                  else return null;
+                })}
+              </Picker>
+            ) : null}
           {eventItem.place ? (
             <>
               <Text style={style.subtitle}>Location</Text>
@@ -504,16 +505,16 @@ export default function EventDetailsScreen({
           ) : null}
           <View>
             {eventItem?.event_times &&
-            eventItem?.event_times.length > 0 &&
-            eventItem?.event_times[0]?.ticket_uri ? (
-              <WhiteButton
-                style={{ height: 56, marginBottom: 20, marginTop: 20 }}
-                label="Register"
-                onPress={() => {
-                  Linking.openURL(eventItem.event_times[0].ticket_uri);
-                }}
-              ></WhiteButton>
-            ) : null}
+              eventItem?.event_times.length > 0 &&
+              eventItem?.event_times[0]?.ticket_uri ? (
+                <WhiteButton
+                  style={{ height: 56, marginBottom: 20, marginTop: 20 }}
+                  label="Register"
+                  onPress={() => {
+                    Linking.openURL(eventItem.event_times[0].ticket_uri);
+                  }}
+                ></WhiteButton>
+              ) : null}
 
             {parseDescription() !== "" ? (
               <WhiteButton
