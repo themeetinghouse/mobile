@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableOpacity, FlatList, Dimensions, Platform } from 'react-native';
+import { StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -12,7 +12,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import AllButton from '../components//buttons/AllButton';
 import SeriesItem from "./SeriesItem";
-const width = Dimensions.get('screen').width;
 
 const style = StyleSheet.create({
     content: {

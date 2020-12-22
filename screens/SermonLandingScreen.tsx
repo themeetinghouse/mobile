@@ -19,7 +19,7 @@ import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import ShareModal from '../components/modals/Share';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetSeriesQuery, GetCustomPlaylistQuery } from '../services/API';
+import { GetSeriesQuery } from '../services/API';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 const style = StyleSheet.create({
     content: {
