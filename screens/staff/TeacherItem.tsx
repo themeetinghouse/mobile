@@ -1,8 +1,8 @@
 import { Thumbnail } from 'native-base';
 import React, { useState, memo } from 'react';
-import { View, StyleSheet, Text, Image, Platform } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Text, Image, Platform } from 'react-native';
 import { Theme, Style } from '../../Theme.style';
-import { TouchableOpacity } from "react-native-gesture-handler"
+
 import * as Linking from 'expo-linking';
 import CachedImage from "react-native-expo-cached-image";
 import ActivityIndicator from '../../components/ActivityIndicator';
@@ -89,48 +89,51 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
     }
     const [uri, setUri] = useState(teacher.image)
     return (
-        <View style={style.container}>
-            <View style={style.pictureContainer}>
-                {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
-                {Platform.OS === "android" ?
-                    uri && uri !== Theme.icons.white.user ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                        setIsLoading(false)
-                        uriError()
-                    }} source={{ uri }} />
-                        : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
-                    uri && uri !== Theme.icons.white.user ? <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
-                        setIsLoading(false)
-                        uriError()
-                    }} source={{ uri: uri, cache: "default" }} /> : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View>
-                }
-            </View>
-            <View style={{ flexDirection: "column" }}>
-                {teacher.name ?
-                    <Text style={style.Name}>{teacher.name}</Text>
-                    : null}
-                <TouchableOpacity onPress={() => {
-                    navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teacher.id } } } })
-                }
-                }>
+        <TouchableOpacity onPress={() => {
+            navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teacher.id } } } })
+        }
+        }>
+            <View style={style.container}>
+                <View style={style.pictureContainer}>
+                    {isLoading ? <ActivityIndicator style={style.pictureIndicator} animating={isLoading}></ActivityIndicator> : null}
+                    {Platform.OS === "android" ?
+                        uri && uri !== Theme.icons.white.user ? <CachedImage onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                            setIsLoading(false)
+                            uriError()
+                        }} source={{ uri }} />
+                            : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View> :
+                        uri && uri !== Theme.icons.white.user ? <Image onLoadEnd={() => setIsLoading(false)} style={style.picture} onError={() => {
+                            setIsLoading(false)
+                            uriError()
+                        }} source={{ uri: uri, cache: "default" }} /> : <View style={style.fallbackPictureContainer}><Image style={style.fallBackPicture} source={Theme.icons.white.user}></Image></View>
+                    }
+                </View>
+                <View style={{ flexDirection: "column" }}>
+                    {teacher.name ?
+                        <Text style={style.Name}>{teacher.name}</Text>
+                        : null}
+
+                    <Text style={style.Position}>{teacher.Position ?? "Friend"}</Text>
                     <Text style={style.footerText}>
                         View Teaching
                 </Text>
-                </TouchableOpacity>
-            </View>
-            <View style={{ flexDirection: "column", flex: 1, }}>
-                <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-                    {teacher.Phone ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`tel:${teacher.Phone}`)} style={style.iconContainer}>
-                            <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
-                        </TouchableOpacity> : null}
-                    {teacher.Email ?
-                        <TouchableOpacity onPress={() => Linking.openURL(`mailto:${teacher.Email}`)} style={style.iconContainer}>
-                            <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
-                        </TouchableOpacity>
-                        : null}
                 </View>
-            </View>
-        </View >
+                <View style={{ flexDirection: "column", flex: 1, }}>
+                    <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+                        {teacher.Phone ?
+                            <TouchableOpacity onPress={() => Linking.openURL(`tel:${teacher.Phone}`)} style={style.iconContainer}>
+                                <Thumbnail style={style.icon} source={Theme.icons.white.phone} square></Thumbnail>
+                            </TouchableOpacity> : null}
+                        {teacher.Email ?
+                            <TouchableOpacity onPress={() => Linking.openURL(`mailto:${teacher.Email}`)} style={style.iconContainer}>
+                                <Thumbnail style={style.icon} source={Theme.icons.white.contact} square></Thumbnail>
+                            </TouchableOpacity>
+                            : null}
+                    </View>
+                </View>
+            </View >
+        </TouchableOpacity>
+
 
     )
 }

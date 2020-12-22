@@ -86,7 +86,7 @@ export default function TeachingListItem({ teaching, handlePress }: Params): JSX
     return (
         <TouchableOpacity onPress={handlePress}>
             <View style={style.container}>
-                <Image style={style.thumbnail} source={{ uri: teaching?.Youtube?.snippet?.thumbnails?.standard?.url ?? teaching?.Youtube?.snippet?.thumbnails?.high?.url ?? "" }} />
+                <Image style={style.thumbnail} source={{ uri: teaching?.Youtube?.snippet?.thumbnails?.standard?.url ?? teaching?.Youtube?.snippet?.thumbnails?.high?.url ?? "https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg" }} />
                 <View style={style.detailsContainer}>
                     <Text style={style.title}>{teaching?.episodeTitle}</Text>
                     <Text style={style.detailText1}>{teaching?.episodeNumber ? `E${teaching?.episodeNumber},` : ''} {teaching?.seriesTitle}</Text>
