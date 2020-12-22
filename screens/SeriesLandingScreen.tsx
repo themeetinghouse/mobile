@@ -4,7 +4,7 @@ import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { Dimensions, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import TeachingListItem from '../components/teaching/TeachingListItem';
-import SeriesService from '../services/SeriesService';
+import SeriesService, { getCustomPlaylist } from '../services/SeriesService';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ShareModal from '../components/modals/Share';
 import { MainStackParamList } from 'navigation/AppNavigator';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetSeriesQuery } from 'services/API';
+import { GetCustomPlaylistQuery, GetSeriesQuery } from 'services/API';
 import { FallbackImageBackground } from '../components/FallbackImage';
 
 const isTablet = Dimensions.get('screen').width >= 768;
@@ -106,14 +106,13 @@ interface Params {
 }
 
 function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
-
     const seriesParam = route.params?.item;
     const seriesId = route.params?.seriesId;
     const safeArea = useSafeAreaInsets();
 
     const [series, setSeries] = useState(seriesParam);
     const [contentFills, setContentFills] = useState(false);
-    const [videos, setVideos] = useState<VideoData>();
+    const [videos, setVideos] = useState<VideoData | any>();
 
     const [share, setShare] = useState(false);
 
@@ -164,10 +163,20 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
             let loadedSeries = series;
             if (!loadedSeries && seriesId) {
                 loadedSeries = await SeriesService.loadSeriesById(seriesId);
-                setSeries(loadedSeries);
+                const uri = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${loadedSeries.id.replace("?", "")}.jpg`;
+                setSeries({ ...loadedSeries, image640px: uri });
             }
-            const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
-            setVideos(json.data?.getSeries?.videos?.items);
+            if (!route?.params?.customPlaylist) {
+                const json = await API.graphql(graphqlOperation(getSeries, { id: seriesId ?? series.id })) as GraphQLResult<GetSeriesQuery>;
+                setVideos(json.data?.getSeries?.videos?.items);
+            }
+            else {
+                const json = await API.graphql(graphqlOperation(getCustomPlaylist, { id: seriesId ?? series.id })) as GraphQLResult<GetCustomPlaylistQuery>
+                setVideos(json.data?.getCustomPlaylist?.videos?.items?.map((item) => {
+                    return item?.video
+                }))
+            }
+
         }
         loadSermonsInSeriesAsync();
     }, []);
@@ -213,23 +222,31 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                         />
                     </FallbackImageBackground>
                     <View style={style.detailsContainer}>
-                        <Text style={style.detailsTitle}>{series.title}</Text>
+                        <Text style={style.detailsTitle}>{series?.title}</Text>
                         <View>
-                            <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos.items.length} {series.videos.items.length == 1 ? 'episode' : 'episodes'}</Text>
+                            {!route?.params?.customPlaylist && series ?
+                                <Text style={style.detailsText}>{moment(series.startDate).year()} &bull; {series.videos?.items?.length} {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}</Text>
+                                :
+                                <Text style={style.detailsText}>{series.videos?.items?.length} {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}</Text>}
                         </View>
                     </View>
                     <View style={style.seriesContainer}>
                         <View style={style.listContentContainer}>
                             {!videos ?
                                 <ActivityIndicator />
-                                : videos.sort((a, b) => { const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum }).map((seriesSermon: any) => (
-                                    <TeachingListItem
+                                : videos.sort((a: any, b: any) => {
+                                    if (route?.params?.customPlaylist) return b.publishedDate.localeCompare(a.publishedDate)
+                                    else {
+                                        const aNum = a?.episodeNumber ?? 0; const bNum = b?.episodeNumber ?? 0; return bNum - aNum
+                                    }
+                                }).map((seriesSermon: any) => {
+                                    return <TeachingListItem
                                         key={seriesSermon.id}
                                         teaching={seriesSermon}
                                         handlePress={() =>
-                                            navigation.push('SermonLandingScreen', { item: seriesSermon })
+                                            navigation.push('SermonLandingScreen', route?.params?.customPlaylist ? { item: seriesSermon, customPlaylist: route?.params?.customPlaylist, seriesId } : { item: seriesSermon })
                                         } />
-                                ))}
+                                })}
                         </View>
                     </View>
                 </View>

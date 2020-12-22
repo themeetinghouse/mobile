@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform, Button } from 'react-native';
+import { TouchableOpacity, StyleSheet, TouchableHighlight, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import TeachingListItem from '../components/teaching/TeachingListItem';
 import ActivityIndicator from '../components/ActivityIndicator';

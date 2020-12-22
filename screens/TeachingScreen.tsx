@@ -9,7 +9,7 @@ import TeachingListItem from '../components/teaching/TeachingListItem';
 import ActivityIndicator from '../components/ActivityIndicator';
 import { FlatList } from 'react-native-gesture-handler';
 import SermonsService from '../services/SermonsService';
-import SeriesService from '../services/SeriesService';
+import SeriesService, { LoadPlaylistData } from '../services/SeriesService';
 import SpeakersService from '../services/SpeakersService';
 import { loadSomeAsync } from '../utils/loading';
 import { LoadSeriesListData } from '../services/SeriesService';
@@ -21,7 +21,7 @@ import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import { GetVideoByVideoTypeQueryVariables, GetVideoByVideoTypeQuery } from 'services/API';
 import { AnimatedFallbackImage } from '../components/FallbackImage';
-
+import SeriesItem from "./SeriesItem";
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
 
@@ -106,6 +106,14 @@ const style = StyleSheet.create({
         alignItems: "center",
         marginTop: 16,
     },
+    seriesListContainer: {
+        marginTop: 14,
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        marginHorizontal: 16
+    },
     seriesDetail1: {
         fontFamily: Theme.fonts.fontFamilyBold,
         fontSize: Theme.fonts.medium,
@@ -142,7 +150,6 @@ const style = StyleSheet.create({
         borderColor: Theme.colors.gray3,
         backgroundColor: Theme.colors.gray3,
         borderWidth: 1,
-
     },
     teacherThumbnail: {
         position: 'absolute',
@@ -180,11 +187,16 @@ interface SeriesData extends LoadSeriesListData {
     loading: boolean;
 }
 
+interface PlaylistData extends LoadPlaylistData {
+    loading: boolean;
+}
+
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
     const user = useContext(UserContext);
     const [recentTeaching, setRecentTeaching] = useState({ loading: true, items: [], nextToken: null });
     const [recentSeries, setRecentSeries] = useState<SeriesData>({ loading: true, items: [], nextToken: null });
+    const [customPlaylists, setcustomPlaylists] = useState<PlaylistData>({ loading: true, items: [], nextToken: null })
     const [highlights, setHighlights] = useState({ loading: true, items: [], nextToken: undefined });
     const [speakers, setSpeakers] = useState({ loading: true, items: [], nextToken: null });
     const [bounce, setBounce] = useState(false);
@@ -220,6 +232,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const loadRecentSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, recentSeries, setRecentSeries, 10);
     }
+    const loadCustomPlaylists = async () => {
+        loadSomeAsync(SeriesService.loadCustomPlaylists, customPlaylists, setcustomPlaylists, 10)
+    }
     const getPopularTeaching = async () => {
         const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD')
         const variables: GetVideoByVideoTypeQueryVariables = {
@@ -243,6 +258,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         loadRecentSermonsAsync();
         loadHighlightsAsync();
         loadSpeakersAsync();
+        loadCustomPlaylists();
         getPopularTeaching();
     }, [])
     const contentOffset = (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
@@ -385,15 +401,33 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     </View>
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
+                <View style={style.categorySection}>
+                    <Text style={style.categoryTitle}>Video Playlists</Text>
+                    <Text style={style.highlightsText}>A collection of our favourite and most popular videos</Text>
+                    {customPlaylists.loading &&
+                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
+                            <ActivityIndicator />
+                        </View>
+                    }
+                    <View style={style.seriesListContainer}>
+                        {customPlaylists?.items?.map((s: any, key: any) => {
+                            if (key < 4)
+                                return (<SeriesItem key={s.id} customPlaylist={true} navigation={navigation as any} seriesData={s}></SeriesItem>)
+                            else
+                                return null;
+                        })}
+                    </View>
+                    <AllButton handlePress={() => navigation.push('AllSeriesScreen', { customPlaylists: true })}>More Playlists</AllButton>
+                </View>
                 <View style={style.categorySectionLast}>
-                    <Text style={style.categoryTitle}>Teachers</Text>
+                    <Text style={[style.categoryTitle, { marginBottom: 4 }]}>Teachers</Text>
                     {!speakers.loading ?
                         <>
                             <FlatList
-                                contentContainerStyle={style.horizontalListContentContainer}
+                                contentContainerStyle={[style.horizontalListContentContainer, { marginBottom: 2 }]}
                                 horizontal={true}
                                 data={speakers.items}
-                                renderItem={({ item, index, separators }: any) => !item.hidden ? (
+                                renderItem={({ item, index }: any) => !item.hidden ? (
                                     <TouchableOpacity onPress={() => navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { ...item, uri: item.image, idFromTeaching: item.name } } } })}>
                                         <View style={style.teacherContainer}>
                                             <View style={[style.teacherThumbnailContainer, {

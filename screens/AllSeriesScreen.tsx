@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableOpacity, FlatList, Dimensions, Platform } from 'react-native';
+import { StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import SeriesService from '../services/SeriesService';
 import { loadSomeAsync } from '../utils/loading';
@@ -10,10 +10,8 @@ import ActivityIndicator from '../components/ActivityIndicator';
 import { TeachingStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import FallbackImage from '../components/FallbackImage';
 import AllButton from '../components//buttons/AllButton';
-
-const width = Dimensions.get('screen').width;
+import SeriesItem from "./SeriesItem";
 
 const style = StyleSheet.create({
     content: {
@@ -72,29 +70,14 @@ const style = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
     },
-    seriesItem: {
-        marginBottom: 20,
-        marginTop: 0,
-    },
-    seriesThumbnail: {
-        width: width * 0.44,
-        height: width * 0.44 * (1248 / 1056),
-    },
-    seriesDetail: {
-        fontFamily: Theme.fonts.fontFamilyRegular,
-        fontSize: Theme.fonts.smallMedium,
-        color: Theme.colors.gray5,
-        textAlign: 'center',
-        marginTop: 8,
-    }
 });
 
 interface Params {
     navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
+    route: any;
 }
 
-export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
-
+export default function AllSeriesScreen({ navigation, route }: Params): JSX.Element {
     const [searchText, setSearchText] = useState("");
     const [selectedYear, setSelectedYear] = useState("All");
     const [seriesYears, setSeriesYears] = useState(["All"])
@@ -103,6 +86,10 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
     const loadAllSeriesAsync = async () => {
         loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
+    }
+
+    const loadCustomPlaylists = async () => {
+        loadSomeAsync(SeriesService.loadCustomPlaylists, allSeries, setAllSeries, 100)
     }
 
     const generateYears = () => {
@@ -118,7 +105,13 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
 
     useEffect(() => {
         generateYears();
-        loadAllSeriesAsync();
+        if (route?.params?.customPlaylists) {
+            loadCustomPlaylists()
+        }
+        else {
+            loadAllSeriesAsync();
+        }
+
     }, [])
     const getSeriesDate = (series: any) => {
         return moment(series.startDate || moment()).format("YYYY");
@@ -128,7 +121,7 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            title: 'All Series',
+            title: route?.params?.customPlaylists ? 'Video Playlists' : 'All Series',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: Theme.colors.background },
             headerLeft: function render() {
@@ -146,25 +139,30 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
     return (
         <Container>
             <Content style={style.content}>
+
                 <SearchBar
                     style={style.searchBar}
                     searchText={searchText}
                     handleTextChanged={(newStr) => setSearchText(newStr)}
                     placeholderLabel="Search by name..."></SearchBar>
-                <View style={style.dateSelectBar}>
-                    <FlatList
-                        style={style.horizontalListContentContainer}
-                        horizontal={true}
-                        data={seriesYears}
-                        showsHorizontalScrollIndicator={false}
-                        keyExtractor={(item) => item}
-                        renderItem={({ item }) => (
-                            <TouchableHighlight underlayColor={Theme.colors.grey3} onPress={() => setSelectedYear(item)} style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} >
-                                <Text style={[style.dateSelectYear, item === selectedYear ? style.dateSelectYearSelected : {}]}>{item}</Text>
-                            </TouchableHighlight>
-                        )}
-                    />
-                </View>
+                {!route?.params?.customPlaylists ?
+                    <>
+                        <View style={style.dateSelectBar}>
+                            <FlatList
+                                style={style.horizontalListContentContainer}
+                                horizontal={true}
+                                data={seriesYears}
+                                showsHorizontalScrollIndicator={false}
+                                keyExtractor={(item) => item}
+                                renderItem={({ item }) => (
+                                    <TouchableHighlight underlayColor={Theme.colors.grey3} onPress={() => setSelectedYear(item)} style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }} >
+                                        <Text style={[style.dateSelectYear, item === selectedYear ? style.dateSelectYearSelected : {}]}>{item}</Text>
+                                    </TouchableHighlight>
+                                )}
+                            />
+                        </View>
+                    </>
+                    : null}
                 <View style={style.seriesListContainer}>
                     {allSeries.loading &&
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
@@ -173,11 +171,11 @@ export default function AllSeriesScreen({ navigation }: Params): JSX.Element {
                     }
                     {series.map((s: any, key: any) => {
                         if (key < showCount) {
-                            return (
-                                <TouchableOpacity onPress={() => navigation.push('SeriesLandingScreen', { seriesId: s.id })} style={style.seriesItem} key={s.id}>
-                                    <FallbackImage style={style.seriesThumbnail} uri={s.image} catchUri='https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg' />
-                                    <Text style={style.seriesDetail}>{getSeriesDate(s)} &bull; {s.videos.items.length} episodes</Text>
-                                </TouchableOpacity>)
+                            if (route?.params?.customPlaylists) {
+                                return <SeriesItem key={s.id} customPlaylist={true} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>
+                            } else {
+                                return <SeriesItem key={s.id} navigation={navigation} seriesData={s} year={getSeriesDate(s)}></SeriesItem>
+                            }
                         } else {
                             return null
                         }

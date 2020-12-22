@@ -23,7 +23,7 @@ import TeacherList from "../screens/staff/TeacherList";
 
 export type MainStackParamList = {
   Main: undefined | {
-    screen: keyof TabNavigatorParamList, params: {
+    screen: keyof TabNavigatorParamList, params?: {
       screen:
       keyof HomeStackParamList |
       keyof TeachingStackParamList |
@@ -39,7 +39,7 @@ export type MainStackParamList = {
   LocationSelectionScreen: { persist: boolean };
   HighlightScreen: { highlights: any[], nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
-  SermonLandingScreen: { item: any };
+  SermonLandingScreen: { item: any, customPlaylist?: boolean, seriesId?: string };
   LiveStreamScreen: undefined;
   StaffList: undefined;
   ParishTeam: undefined;

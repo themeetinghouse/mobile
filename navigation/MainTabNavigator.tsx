@@ -53,9 +53,9 @@ type PopularVideoData = NonNullable<NonNullable<GetVideoByVideoTypeQuery['getVid
 
 export type TeachingStackParamList = {
   Teaching: undefined;
-  AllSeriesScreen: undefined;
+  AllSeriesScreen: { customPlaylists: boolean } | undefined;
   AllSermonsScreen: { startDate: string, endDate: string } | undefined;
-  SeriesLandingScreen: { seriesId?: string, item?: any };
+  SeriesLandingScreen: { seriesId?: string, item?: any, customPlaylist?: boolean };
   PopularTeachingScreen: { popularTeaching: PopularVideoData }
 }
 
