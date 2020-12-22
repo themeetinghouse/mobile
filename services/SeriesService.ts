@@ -287,29 +287,3 @@ export const getCustomPlaylist = /* GraphQL */ `
     }
   }
 `;
-
-/*const listSeriess = `query ListSeriess(
-   $filter: ModelSeriesFilterInput
-   $limit: Int
-   $nextToken: String
- ) {
-   listSeriess(filter: $filter, limit: $limit, nextToken: $nextToken) {
-     items {
-       id
-       seriesType
-       title
-       description
-       image
-       startDate
-       endDate
-       videos {
-         items {
-           id
-         }
-         nextToken
-       }
-     }
-     nextToken
-   }
- }
- `;*/

@@ -297,7 +297,7 @@ export default function EventDetailsScreen({
                 end_time: eventItem?.end_time,
               });
               if (Platform.OS === "android" && success?.start_time) {
-                console.log("loggin success");
+                console.log("login success");
                 console.log(success);
                 setAlerts({ message: success?.start_time });
               }
