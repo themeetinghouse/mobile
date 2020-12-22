@@ -83,6 +83,7 @@ interface Props {
 }
 
 function TeacherItem({ navigation, teacher }: Props): JSX.Element {
+    console.log(teacher)
     const [isLoading, setIsLoading] = useState(true);
     const uriError = () => {
         setUri(Theme.icons.white.user)
@@ -112,6 +113,9 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
                     navigation.push("Main", { screen: "More", params: { screen: "TeacherProfile", params: { staff: { idFromTeaching: teacher.id } } } })
                 }
                 }>
+                    {teacher.Position ?
+                        <Text style={style.Position}>{teacher.Position}</Text>
+                        : null}
                     <Text style={style.footerText}>
                         View Teaching
                 </Text>

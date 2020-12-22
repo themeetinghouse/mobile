@@ -29,6 +29,7 @@ export default class SpeakersService {
         if ((staff[x].FirstName + " " + staff[x].LastName) === speaker.name) {
           queryResult.listSpeakers.items[index].Phone = staff[x].Phone
           queryResult.listSpeakers.items[index].Email = staff[x].Email
+          console.log(staff[x].Position)
         }
       }
     })
@@ -48,6 +49,7 @@ export default class SpeakersService {
         if ((staff[x].FirstName + " " + staff[x].LastName) === speaker.name) {
           queryResult.listSpeakers.items[index].Phone = staff[x].Phone
           queryResult.listSpeakers.items[index].Email = staff[x].Email
+          queryResult.listSpeakers.items[index].Position = staff[x].Position ?? "Friend"
         }
       }
     })
