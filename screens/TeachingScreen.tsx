@@ -402,8 +402,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                     <AllButton handlePress={() => navigation.navigate('PopularTeachingScreen', { popularTeaching: popular.sort((a, b) => sortByViews(a, b)) })} >More popular teaching</AllButton>
                 </View>
                 <View style={style.categorySection}>
-                    <Text style={style.categoryTitle}>Curated Sermon Playlists</Text>
-                    <Text style={style.highlightsText}>Some sort of description of what these are.</Text>
+                    <Text style={style.categoryTitle}>Video Playlists</Text>
+                    <Text style={style.highlightsText}>A collection of our favourite and most popular videos</Text>
                     {customPlaylists.loading &&
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} >
                             <ActivityIndicator />

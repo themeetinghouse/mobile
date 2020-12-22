@@ -122,7 +122,7 @@ export default function AllSeriesScreen({ navigation, route }: Params): JSX.Elem
     useLayoutEffect(() => {
         navigation.setOptions({
             headerShown: true,
-            title: route?.params?.customPlaylists ? 'Curated Playlists' : 'All Series',
+            title: route?.params?.customPlaylists ? 'Video Playlists' : 'All Series',
             headerTitleStyle: style.headerTitle,
             headerStyle: { backgroundColor: Theme.colors.background },
             headerLeft: function render() {
