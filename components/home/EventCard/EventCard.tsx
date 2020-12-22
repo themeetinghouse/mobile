@@ -68,9 +68,6 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
             if (moment(event?.end_time).isSame(moment(event.start_time), 'day')) {
                 endTime = moment(event.end_time).format("h:mm a")
             }
-            else {
-                endTime = ""
-            }
         }
         if (endTime !== "")
             return startTime + " - " + endTime;
@@ -88,7 +85,7 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
                 {event?.place?.name || event?.place?.location?.street ?
                     <Text style={style.locationContainer}>{event?.place?.name ? event.place.name.split(',')[0] : null}{event?.place?.location?.street ? `, ${event.place.location.street.split(',')[0]}` : null} </Text>
                     : null}
-                <Text style={style.dateTimeContainer}>{formatDate()}</Text>
+                {event?.start_time || event?.end_time ? <Text style={style.dateTimeContainer}>{formatDate()}</Text> : null}
             </View>
         </TouchableHighlight>
 
