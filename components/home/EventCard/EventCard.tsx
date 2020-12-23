@@ -3,9 +3,7 @@ import { Text, Thumbnail, View } from 'native-base';
 import moment from 'moment';
 import { EventQueryResult } from '../../../services/EventsService';
 import { Style, Theme } from '../../../Theme.style';
-import { StyleSheet } from 'react-native';
-import { TouchableHighlight } from 'react-native-gesture-handler';
-
+import { StyleSheet, TouchableHighlight } from 'react-native';
 
 const style = StyleSheet.create({
     container: {
@@ -23,23 +21,20 @@ const style = StyleSheet.create({
         }
     },
     titleButtonContainer: {
-        display: "flex",
         flexDirection: "row",
         marginBottom: 8,
         paddingLeft: 0,
         marginLeft: 0,
-        width: '100%',
-        justifyContent: "flex-start"
     },
     title: {
         ...Style.cardTitle, ...{
             paddingLeft: 0,
             paddingTop: 5,
-            flexGrow: 1,
+            width: "88%",
             lineHeight: 24,
         }
     },
-    icon: Style.icon,
+    icon: { ...Style.icon, position: "absolute", right: 0 },
     descriptionContainer: {
         ...Style.cardDescription, ...{
             marginBottom: 16,
@@ -56,6 +51,28 @@ type EventCardInput = {
 }
 
 export default function EventCard({ event, handlePress }: EventCardInput): JSX.Element {
+    const formatDate = () => {
+        let startTime = "", endTime = ""
+        if (event?.start_time) {
+            if (event?.end_time)
+                if (moment(event.end_time).isSame(moment(event.start_time), 'day'))
+                    startTime = moment(event.start_time).format("h:mm")
+                else {
+                    startTime = moment(event.start_time).format("h:mm a")
+                }
+            else {
+                startTime = moment(event.start_time).format("h:mm a")
+            }
+        }
+        if (event?.end_time) {
+            if (moment(event?.end_time).isSame(moment(event.start_time), 'day')) {
+                endTime = moment(event.end_time).format("h:mm a")
+            }
+        }
+        if (endTime !== "")
+            return startTime + " - " + endTime;
+        else return startTime
+    }
     return (
         <TouchableHighlight underlayColor={Theme.colors.grey5} onPress={handlePress}>
             <View style={style.container} >
@@ -68,7 +85,7 @@ export default function EventCard({ event, handlePress }: EventCardInput): JSX.E
                 {event?.place?.name || event?.place?.location?.street ?
                     <Text style={style.locationContainer}>{event?.place?.name ? event.place.name.split(',')[0] : null}{event?.place?.location?.street ? `, ${event.place.location.street.split(',')[0]}` : null} </Text>
                     : null}
-                <Text style={style.dateTimeContainer}>{moment(event?.start_time).format("h:mm")}  {event?.end_time ? "- " + moment(event?.end_time).format("h:mm a") : ""}</Text>
+                {event?.start_time || event?.end_time ? <Text style={style.dateTimeContainer}>{formatDate()}</Text> : null}
             </View>
         </TouchableHighlight>
 
