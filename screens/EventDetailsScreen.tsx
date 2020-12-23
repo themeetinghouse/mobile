@@ -59,7 +59,7 @@ const style = StyleSheet.create({
     zIndex: 1,
     position: "absolute",
     alignSelf: "center",
-    marginTop: 80
+    marginTop: 140
   },
   dateBoxContainer: {
     display: "flex",
@@ -390,7 +390,7 @@ export default function EventDetailsScreen({
           style={
             eventItem?.cover?.source
               ? style.dateBoxContainerWithPicture
-              : style.dateBoxContainer
+              : { ...style.dateBoxContainer, marginTop: -40 }
           }
         >
           <View
@@ -412,7 +412,7 @@ export default function EventDetailsScreen({
         <View
           style={
             eventItem?.cover?.source
-              ? [style.detailsContainer, { top: -40, zIndex: 2 }]
+              ? [style.detailsContainer, { top: 30, zIndex: 2 }]
               : style.detailsContainer
           }
         >
