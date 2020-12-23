@@ -412,7 +412,7 @@ export default function EventDetailsScreen({
         <View
           style={
             eventItem?.cover?.source
-              ? [style.detailsContainer, { top: 30, zIndex: 2 }]
+              ? [style.detailsContainer, { marginTop: 40, zIndex: 2 }]
               : style.detailsContainer
           }
         >
