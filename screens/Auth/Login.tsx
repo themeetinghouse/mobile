@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -10,29 +10,29 @@ import {
   Dimensions,
   StatusBar,
   Platform,
-} from "react-native";
-import { Auth } from "@aws-amplify/auth";
-import { Analytics } from "@aws-amplify/analytics";
-import { Theme, Style } from "../../Theme.style";
+} from 'react-native';
+import { Auth } from '@aws-amplify/auth';
+import { Analytics } from '@aws-amplify/analytics';
+import { Theme, Style } from '../../Theme.style';
 import WhiteButton, {
   WhiteButtonAsync,
-} from "../../components/buttons/WhiteButton";
-import UserContext, { TMHCognitoUser } from "../../contexts/UserContext";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { AuthStackParamList } from "../../navigation/AuthNavigator";
+} from '../../components/buttons/WhiteButton';
+import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import {
   CompositeNavigationProp,
   useRoute,
   RouteProp,
-} from "@react-navigation/native";
-import { MainStackParamList } from "../../navigation/AppNavigator";
-import { Thumbnail, Button } from "native-base";
-import LocationContext from "../../contexts/LocationContext";
-import LocationsService from "../../services/LocationsService";
-import { ScrollView } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import MediaContext from "../../contexts/MediaContext";
-import * as Notifications from "expo-notifications";
+} from '@react-navigation/native';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import { Thumbnail, Button } from 'native-base';
+import LocationContext from '../../contexts/LocationContext';
+import LocationsService from '../../services/LocationsService';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MediaContext from '../../contexts/MediaContext';
+import * as Notifications from 'expo-notifications';
 
 const style = StyleSheet.create({
   title: {
@@ -48,16 +48,16 @@ const style = StyleSheet.create({
     borderColor: Theme.colors.grey3,
     borderWidth: 1,
     height: 56,
-    color: "white",
+    color: 'white',
     fontSize: 16,
     paddingHorizontal: 20,
   },
   inputSelected: {
     backgroundColor: Theme.colors.gray1,
-    borderColor: "white",
+    borderColor: 'white',
     borderWidth: 3,
     height: 56,
-    color: "white",
+    color: 'white',
     fontSize: 16,
     paddingHorizontal: 20,
   },
@@ -69,7 +69,7 @@ const style = StyleSheet.create({
     borderRadius: 0,
   },
   headerTextActive: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
     lineHeight: 24,
     fontFamily: Theme.fonts.fontFamilyBold,
@@ -93,24 +93,24 @@ const style = StyleSheet.create({
 
 interface Params {
   navigation: CompositeNavigationProp<
-    StackNavigationProp<AuthStackParamList, "LoginScreen">,
-    StackNavigationProp<MainStackParamList, "Auth">
+    StackNavigationProp<AuthStackParamList, 'LoginScreen'>,
+    StackNavigationProp<MainStackParamList, 'Auth'>
   >;
 }
 
-const accountVerifiedMessage = "Your account is verified. Please log in.";
+const accountVerifiedMessage = 'Your account is verified. Please log in.';
 
 export default function Login({ navigation }: Params): JSX.Element {
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
-  const [error, setError] = useState("");
+  const [user, setUser] = useState('');
+  const [pass, setPass] = useState('');
+  const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
 
   const safeArea = useSafeAreaInsets();
   const media = useContext(MediaContext);
   const userContext = useContext(UserContext);
   const location = useContext(LocationContext);
-  const route = useRoute<RouteProp<AuthStackParamList, "LoginScreen">>();
+  const route = useRoute<RouteProp<AuthStackParamList, 'LoginScreen'>>();
 
   useEffect(() => {
     if (route.params?.newUser) {
@@ -131,29 +131,29 @@ export default function Login({ navigation }: Params): JSX.Element {
         video: null,
         videoTime: 0,
         audio: null,
-        playerType: "none",
+        playerType: 'none',
         playing: false,
-        series: "",
-        episode: "",
+        series: '',
+        episode: '',
       });
     }
     closeMedia();
   }, []);
 
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
-    setUser("");
-    setPass("");
-    setError("");
+    setUser('');
+    setPass('');
+    setError('');
     navigation.push(screen);
   }
 
   function navigateHome(): void {
-    setUser("");
-    setPass("");
-    setError("");
-    navigation.push("Main", {
-      screen: "Home",
-      params: { screen: "HomeScreen" },
+    setUser('');
+    setPass('');
+    setError('');
+    navigation.push('Main', {
+      screen: 'Home',
+      params: { screen: 'HomeScreen' },
     });
   }
 
@@ -161,7 +161,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
     cb: () => any
   ): void {
-    if (keyEvent.nativeEvent.key === "Enter") cb();
+    if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
   const mapObj = (f: any) => (obj: any) =>
     Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
@@ -175,8 +175,8 @@ export default function Login({ navigation }: Params): JSX.Element {
       const token = (await Notifications.getDevicePushTokenAsync()).data;
       await Analytics.updateEndpoint({
         address: token,
-        channelType: Platform.OS === "ios" ? "APNS" : "GCM",
-        optOut: "NONE",
+        channelType: Platform.OS === 'ios' ? 'APNS' : 'GCM',
+        optOut: 'NONE',
         userId: attributes?.sub,
         userAttributes,
       });
@@ -191,7 +191,7 @@ export default function Login({ navigation }: Params): JSX.Element {
       const userSignedIn: TMHCognitoUser = await Auth.currentAuthenticatedUser();
       await trackUserId(userSignedIn);
       Analytics.record({
-        name: "login",
+        name: 'login',
       }).catch((e) => {
         console.log({ error: e });
       });
@@ -199,9 +199,9 @@ export default function Login({ navigation }: Params): JSX.Element {
       userContext?.setUserData(userSignedIn.attributes);
       if (userSignedIn.attributes)
         location?.setLocationData({
-          locationId: userSignedIn.attributes["custom:home_location"] ?? "",
+          locationId: userSignedIn.attributes['custom:home_location'] ?? '',
           locationName: LocationsService.mapLocationIdToName(
-            userSignedIn.attributes["custom:home_location"] ?? ""
+            userSignedIn.attributes['custom:home_location'] ?? ''
           ),
         });
       navigateHome();
@@ -214,38 +214,39 @@ export default function Login({ navigation }: Params): JSX.Element {
 
   return (
     <ScrollView
-      style={{ width: "100%", paddingTop: safeArea.top }}
+      style={{ width: '100%', paddingTop: safeArea.top }}
       contentContainerStyle={{
         minHeight:
-          Platform.OS === "android"
-            ? Dimensions.get("window").height - (StatusBar.currentHeight ?? 24)
-            : Dimensions.get("screen").height - safeArea.top,
+          Platform.OS === 'android'
+            ? Dimensions.get('window').height - (StatusBar.currentHeight ?? 24)
+            : Dimensions.get('screen').height - safeArea.top,
       }}
     >
       <View
         style={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "black",
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'black',
           paddingTop: 20,
         }}
       >
         <Button
           transparent
-          style={{ position: "absolute", left: "5%" }}
+          style={{ position: 'absolute', left: '5%' }}
           onPress={() => navigateHome()}
         >
           <Thumbnail
             square
+            accessibilityLabel="Close Button"
             source={Theme.icons.white.closeCancel}
             style={{ width: 24, height: 24 }}
           ></Thumbnail>
         </Button>
         <Text style={style.headerTextActive}>Login</Text>
         <Text
-          onPress={() => navigateInAuthStack("SignUpScreen")}
+          onPress={() => navigateInAuthStack('SignUpScreen')}
           style={style.headerTextInactive}
         >
           Sign Up
@@ -254,9 +255,9 @@ export default function Login({ navigation }: Params): JSX.Element {
       <View
         style={{
           flexGrow: 1,
-          backgroundColor: "black",
-          width: "100%",
-          paddingHorizontal: "5%",
+          backgroundColor: 'black',
+          width: '100%',
+          paddingHorizontal: '5%',
           paddingBottom: 56,
         }}
       >
@@ -285,8 +286,8 @@ export default function Login({ navigation }: Params): JSX.Element {
           style={style.input}
         />
         <TouchableOpacity
-          onPress={() => navigateInAuthStack("ForgotPasswordScreen")}
-          style={{ alignSelf: "flex-end" }}
+          onPress={() => navigateInAuthStack('ForgotPasswordScreen')}
+          style={{ alignSelf: 'flex-end' }}
         >
           <Text style={style.forgotPassText}>Forgot Password?</Text>
         </TouchableOpacity>
@@ -297,7 +298,7 @@ export default function Login({ navigation }: Params): JSX.Element {
                 error === accountVerifiedMessage
                   ? Theme.colors.green
                   : Theme.colors.red,
-              alignSelf: "center",
+              alignSelf: 'center',
               fontFamily: Theme.fonts.fontFamilyRegular,
               fontSize: 12,
             }}
@@ -307,7 +308,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         </View>
         <WhiteButtonAsync
           isLoading={sending}
-          label={"Log In"}
+          label={'Log In'}
           onPress={signIn}
           style={{ marginTop: 12, height: 56 }}
         />
@@ -318,13 +319,13 @@ export default function Login({ navigation }: Params): JSX.Element {
           paddingVertical: 16,
           paddingBottom: 52,
           backgroundColor: Theme.colors.background,
-          paddingHorizontal: "5%",
+          paddingHorizontal: '5%',
         }}
       >
         <Text
           style={{
             color: Theme.colors.grey5,
-            alignSelf: "center",
+            alignSelf: 'center',
             fontSize: 16,
             fontFamily: Theme.fonts.fontFamilyRegular,
           }}
@@ -334,7 +335,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         <WhiteButton
           outlined
           label="Sign Up"
-          onPress={() => navigateInAuthStack("SignUpScreen")}
+          onPress={() => navigateInAuthStack('SignUpScreen')}
           style={{ marginTop: 12, height: 56 }}
         />
       </View>

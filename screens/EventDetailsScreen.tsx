@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
-import { Theme, Style, HeaderStyle } from "../Theme.style";
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
 import {
   Container,
   Text,
@@ -9,10 +9,10 @@ import {
   Thumbnail,
   Left,
   Right,
-} from "native-base";
-import IconButton from "../components/buttons/IconButton";
-import WhiteButton from "../components/buttons/WhiteButton";
-import moment from "moment";
+} from 'native-base';
+import IconButton from '../components/buttons/IconButton';
+import WhiteButton from '../components/buttons/WhiteButton';
+import moment from 'moment';
 import {
   Alert,
   StyleSheet,
@@ -22,17 +22,17 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
-} from "react-native";
-import { HomeStackParamList } from "../navigation/MainTabNavigator";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { RouteProp } from "@react-navigation/native";
-import ShareModal from "../components/modals/Share";
-import openMap from "react-native-open-maps";
-import * as Linking from "expo-linking";
-import Calendar from "../services/CalendarService";
-import { Picker } from "@react-native-community/picker";
-import { LinearGradient } from "expo-linear-gradient";
-import Header from "../components/Header/Header";
+} from 'react-native';
+import { HomeStackParamList } from '../navigation/MainTabNavigator';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import ShareModal from '../components/modals/Share';
+import openMap from 'react-native-open-maps';
+import * as Linking from 'expo-linking';
+import Calendar from '../services/CalendarService';
+import { Picker } from '@react-native-community/picker';
+import { LinearGradient } from 'expo-linear-gradient';
+import Header from '../components/Header/Header';
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
@@ -57,20 +57,20 @@ const style = StyleSheet.create({
   body: { ...Style.body, marginTop: 6 },
   dateBoxContainerWithPicture: {
     zIndex: 1,
-    position: "absolute",
-    alignSelf: "center",
-    marginTop: 140
+    position: 'absolute',
+    alignSelf: 'center',
+    marginTop: 140,
   },
   dateBoxContainer: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
   },
   dateBox: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     backgroundColor: Theme.colors.white,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 88,
     width: 96,
     height: 96,
@@ -94,46 +94,46 @@ const style = StyleSheet.create({
     padding: 16,
   },
   eventImage: {
-    resizeMode: "cover",
-    position: "absolute",
+    resizeMode: 'cover',
+    position: 'absolute',
     zIndex: -1,
-    width: Dimensions.get("window").width,
+    width: Dimensions.get('window').width,
     height: 230,
   },
   fixedTop: {
     zIndex: 1,
     top: 0,
-    width: Dimensions.get("window").width,
+    width: Dimensions.get('window').width,
     height: 250,
   },
   toplinearGradient: {
-    width: Dimensions.get("window").width,
+    width: Dimensions.get('window').width,
     height: 0,
   },
   bottomlinearGradient: {
-    width: Dimensions.get("window").width,
+    width: Dimensions.get('window').width,
     height: 110,
   },
 });
 
 interface Props {
   navigation: StackNavigationProp<HomeStackParamList>;
-  route: RouteProp<HomeStackParamList, "EventDetailsScreen">;
+  route: RouteProp<HomeStackParamList, 'EventDetailsScreen'>;
 }
 
-type OpeningMethod = "gps" | "name" | "none";
+type OpeningMethod = 'gps' | 'name' | 'none';
 
 export default function EventDetailsScreen({
   route,
   navigation,
 }: Props): JSX.Element {
-  const [options, setOptions] = useState("");
+  const [options, setOptions] = useState('');
   const [share, setShare] = useState(false);
   const [eventItem] = useState(route.params?.item);
   // Needed to check if app is in the background or foreground.
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [alerts, setAlerts]: any = useState({ message: "" });
+  const [alerts, setAlerts]: any = useState({ message: '' });
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -144,9 +144,9 @@ export default function EventDetailsScreen({
               <TouchableOpacity
                 onPress={() => navigation.goBack()}
                 style={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
                 }}
               >
                 <Thumbnail
@@ -156,7 +156,7 @@ export default function EventDetailsScreen({
                 />
                 <Text
                   style={{
-                    color: "white",
+                    color: 'white',
                     fontSize: 16,
                     transform: [{ translateX: -4 }],
                   }}
@@ -170,6 +170,7 @@ export default function EventDetailsScreen({
               <Button transparent onPress={() => setShare(!share)}>
                 <Thumbnail
                   square
+                  accessibilityLabel="Share"
                   source={Theme.icons.white.share}
                   style={{ width: 24, height: 24 }}
                 />
@@ -191,26 +192,26 @@ export default function EventDetailsScreen({
         ) {
           //console.log("Latitude and longitude found")
           //console.log("returning gps")
-          return "gps";
+          return 'gps';
         } else {
           //console.log("There is no longitude or latitude.")
           if (eventItem?.place?.name) {
             //console.log("place.name is found.")
             if (
-              eventItem.place?.name === "online" ||
-              eventItem.place?.name === "Online"
+              eventItem.place?.name === 'online' ||
+              eventItem.place?.name === 'Online'
             )
-              return "none";
+              return 'none';
             else {
-              if (eventItem.place?.name.contains(".com"))
-                console.log("has .com");
-              console.log("returning name");
-              return "name";
+              if (eventItem.place?.name.contains('.com'))
+                console.log('has .com');
+              console.log('returning name');
+              return 'name';
             }
           } else {
             //console.log("Name not found. NOT RENDERING BUTTON")
-            console.log("returning none");
-            return "none";
+            console.log('returning none');
+            return 'none';
           }
         }
       } else {
@@ -218,22 +219,22 @@ export default function EventDetailsScreen({
         if (eventItem?.place?.name) {
           //console.log("place name is found opening with eventItem.place.name")
           if (
-            eventItem.place?.name === "online" ||
-            eventItem.place?.name === "Online"
+            eventItem.place?.name === 'online' ||
+            eventItem.place?.name === 'Online'
           )
-            return "none";
+            return 'none';
           else {
-            if (eventItem.place?.name.includes(".com")) return "none";
-            return "name";
+            if (eventItem.place?.name.includes('.com')) return 'none';
+            return 'name';
           }
         } else {
           //console.log("Name not found. NOT RENDERING BUTTON")
-          return "none";
+          return 'none';
         }
       }
     } else {
       //console.log("eventItem.place is null")
-      return "none";
+      return 'none';
     }
   };
   const [openMethod] = useState<OpeningMethod>(directionsType());
@@ -241,7 +242,7 @@ export default function EventDetailsScreen({
     try {
       if (options) {
         const success = await Calendar.createEvent(eventItem, options);
-        if (success?.start_time && Platform.OS === "android")
+        if (success?.start_time && Platform.OS === 'android')
           setAlerts({ message: success?.start_time });
       } else {
         if (eventItem.event_times) {
@@ -254,24 +255,24 @@ export default function EventDetailsScreen({
             if (success?.options)
               setAlerts({ message: success?.options?.start_time });
           } else {
-            if (Platform.OS === "ios") {
+            if (Platform.OS === 'ios') {
               if (eventItem.event_times?.length > 1) {
                 // always true at this point?
-                const arr: string[] = ["Cancel"];
+                const arr: string[] = ['Cancel'];
                 for (let x = 0; x < eventItem.event_times.length; x++) {
                   if (eventItem.event_times[x].start_time > moment().format())
                     arr.push(
                       `${moment(eventItem.event_times[x].start_time).format(
-                        "MMM Do YYYY, h:mm a"
+                        'MMM Do YYYY, h:mm a'
                       )} - ${moment(eventItem.event_times[x].end_time).format(
-                        "h:mm a"
+                        'h:mm a'
                       )}`
                     );
                 }
                 ActionSheetIOS.showActionSheetWithOptions(
                   { options: arr, cancelButtonIndex: 0 },
                   (buttonIndex) => {
-                    if (buttonIndex === 0) console.log("Date must be selected");
+                    if (buttonIndex === 0) console.log('Date must be selected');
                     else
                       Calendar.createEvent(
                         eventItem,
@@ -282,9 +283,9 @@ export default function EventDetailsScreen({
               }
             } else {
               Alert.alert(
-                "Error",
-                "Date must be selected",
-                [{ text: "Dismiss" }],
+                'Error',
+                'Date must be selected',
+                [{ text: 'Dismiss' }],
                 { cancelable: false }
               );
             }
@@ -297,13 +298,13 @@ export default function EventDetailsScreen({
                 start_time: eventItem?.start_time,
                 end_time: eventItem?.end_time,
               });
-              if (Platform.OS === "android" && success?.start_time) {
-                console.log("login success");
+              if (Platform.OS === 'android' && success?.start_time) {
+                console.log('login success');
                 console.log(success);
                 setAlerts({ message: success?.start_time });
               }
             } catch (error) {
-              console.log("caught here");
+              console.log('caught here');
               console.log(error);
             }
           }
@@ -316,23 +317,23 @@ export default function EventDetailsScreen({
 
   const OpenMapWithDirections = () => {
     switch (openMethod) {
-      case "gps":
+      case 'gps':
         openMap({
           end: `${eventItem?.place.location.latitude}, ${eventItem?.place.location.longitude}`,
         });
         break;
-      case "name":
+      case 'name':
         openMap({ end: eventItem.place.name });
         break;
-      case "none":
+      case 'none':
         break;
       default:
         break;
     }
   };
   const parseDescription = (): string => {
-    let linkAddress = "";
-    if (eventItem?.description.includes("https://")) {
+    let linkAddress = '';
+    if (eventItem?.description.includes('https://')) {
       linkAddress = eventItem?.description.match(/(https?:\/\/[^ ]*)/)[1];
     }
     return linkAddress;
@@ -343,23 +344,23 @@ export default function EventDetailsScreen({
   };
   /* This handles checking if app is in background or active*/
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    AppState.addEventListener('change', _handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      AppState.removeEventListener('change', _handleAppStateChange);
     };
   }, []);
   /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
   useEffect(() => {
-    if (appState.current === "active") {
-      if (alerts.message !== "") {
+    if (appState.current === 'active') {
+      if (alerts.message !== '') {
         Alert.alert(
-          "Added to Calendar",
-          moment(alerts.message).format("dddd, MMMM Do YYYY, h:mm a"),
-          [{ text: "Dismiss" }],
+          'Added to Calendar',
+          moment(alerts.message).format('dddd, MMMM Do YYYY, h:mm a'),
+          [{ text: 'Dismiss' }],
           { cancelable: false }
         );
-        setAlerts({ name: "", message: "" });
+        setAlerts({ name: '', message: '' });
       }
     }
   }, [appState.current]);
@@ -370,7 +371,7 @@ export default function EventDetailsScreen({
           <>
             <View style={style.fixedTop}>
               <LinearGradient
-                colors={["#000", "transparent"]}
+                colors={['#000', 'transparent']}
                 style={style.toplinearGradient}
               ></LinearGradient>
               <Image
@@ -379,7 +380,7 @@ export default function EventDetailsScreen({
               ></Image>
               <View style={{ top: 125 }}>
                 <LinearGradient
-                  colors={["transparent", "#000"]}
+                  colors={['transparent', '#000']}
                   style={style.bottomlinearGradient}
                 ></LinearGradient>
               </View>
@@ -401,10 +402,10 @@ export default function EventDetailsScreen({
             }
           >
             <Text style={style.dateBoxText}>
-              {moment(eventItem.start_time).format("MMM")}
+              {moment(eventItem.start_time).format('MMM')}
             </Text>
             <Text style={style.dateBoxNumber}>
-              {moment(eventItem.start_time).format("D")}
+              {moment(eventItem.start_time).format('D')}
             </Text>
           </View>
         </View>
@@ -426,66 +427,66 @@ export default function EventDetailsScreen({
                 if (event.start_time > moment().format())
                   return (
                     <Text key={key} style={style.body}>
-                      {moment(event.start_time).format("ddd, MMM D, YYYY")},{" "}
-                      {moment(event.start_time).format("h:mm a")} -{" "}
-                      {moment(eventItem.end_time).format("h:mm")}
+                      {moment(event.start_time).format('ddd, MMM D, YYYY')},{' '}
+                      {moment(event.start_time).format('h:mm a')} -{' '}
+                      {moment(eventItem.end_time).format('h:mm')}
                     </Text>
                   );
                 else return null;
               })}
             </>
           ) : (
-              <>
-                <Text style={style.subtitle}>Date &amp; Time</Text>
-                <Text style={style.body}>
-                  {moment(eventItem.start_time).format("ddd, MMM D, YYYY")},{" "}
-                  {moment(eventItem.start_time).format("h:mm a")}{" "}
-                  {eventItem.end_time
-                    ? "- " + moment(eventItem.end_time).format("h:mm a")
-                    : null}
-                </Text>
-              </>
-            )}
+            <>
+              <Text style={style.subtitle}>Date &amp; Time</Text>
+              <Text style={style.body}>
+                {moment(eventItem.start_time).format('ddd, MMM D, YYYY')},{' '}
+                {moment(eventItem.start_time).format('h:mm a')}{' '}
+                {eventItem.end_time
+                  ? '- ' + moment(eventItem.end_time).format('h:mm a')
+                  : null}
+              </Text>
+            </>
+          )}
           {(eventItem.event_times && eventItem.event_times.length !== 0) ||
-            (eventItem.start_time && eventItem.end_time) ? (
-              <IconButton
-                onPress={() => {
-                  addEventToCalendar();
-                }}
-                style={style.actionButton}
-                icon={Theme.icons.white.calendarAdd}
-                label="Add to calendar"
-              ></IconButton>
-            ) : null}
+          (eventItem.start_time && eventItem.end_time) ? (
+            <IconButton
+              onPress={() => {
+                addEventToCalendar();
+              }}
+              style={style.actionButton}
+              icon={Theme.icons.white.calendarAdd}
+              label="Add to calendar"
+            ></IconButton>
+          ) : null}
           {eventItem.event_times &&
-            eventItem.event_times?.length > 1 &&
-            Platform.OS === "android" ? (
-              <Picker
-                mode="dropdown"
-                enabled
-                prompt="Event Dates"
-                style={{ width: 500, height: 50, color: "white" }}
-                selectedValue={options}
-                onValueChange={(itemValue, itemIndex) => {
-                  setOptions(itemValue as string);
-                }}
-              >
-                <Picker.Item label="Select a Date" value=""></Picker.Item>
-                {eventItem.event_times?.map((value: any, key: any) => {
-                  if (value.start_time > moment().format())
-                    return (
-                      <Picker.Item
-                        key={key}
-                        label={`${moment(value.start_time).format(
-                          "MMM Do YYYY, h:mm a"
-                        )} - ${moment(value.end_time).format("h:mm a")}`}
-                        value={value}
-                      ></Picker.Item>
-                    );
-                  else return null;
-                })}
-              </Picker>
-            ) : null}
+          eventItem.event_times?.length > 1 &&
+          Platform.OS === 'android' ? (
+            <Picker
+              mode="dropdown"
+              enabled
+              prompt="Event Dates"
+              style={{ width: 500, height: 50, color: 'white' }}
+              selectedValue={options}
+              onValueChange={(itemValue, itemIndex) => {
+                setOptions(itemValue as string);
+              }}
+            >
+              <Picker.Item label="Select a Date" value=""></Picker.Item>
+              {eventItem.event_times?.map((value: any, key: any) => {
+                if (value.start_time > moment().format())
+                  return (
+                    <Picker.Item
+                      key={key}
+                      label={`${moment(value.start_time).format(
+                        'MMM Do YYYY, h:mm a'
+                      )} - ${moment(value.end_time).format('h:mm a')}`}
+                      value={value}
+                    ></Picker.Item>
+                  );
+                else return null;
+              })}
+            </Picker>
+          ) : null}
           {eventItem.place ? (
             <>
               <Text style={style.subtitle}>Location</Text>
@@ -493,7 +494,7 @@ export default function EventDetailsScreen({
               <Text style={style.body}>
                 {eventItem.place?.location?.street}
               </Text>
-              {openMethod !== "none" ? (
+              {openMethod !== 'none' ? (
                 <IconButton
                   onPress={() => OpenMapWithDirections()}
                   style={style.actionButton}
@@ -505,18 +506,18 @@ export default function EventDetailsScreen({
           ) : null}
           <View>
             {eventItem?.event_times &&
-              eventItem?.event_times.length > 0 &&
-              eventItem?.event_times[0]?.ticket_uri ? (
-                <WhiteButton
-                  style={{ height: 56, marginBottom: 20, marginTop: 20 }}
-                  label="Register"
-                  onPress={() => {
-                    Linking.openURL(eventItem.event_times[0].ticket_uri);
-                  }}
-                ></WhiteButton>
-              ) : null}
+            eventItem?.event_times.length > 0 &&
+            eventItem?.event_times[0]?.ticket_uri ? (
+              <WhiteButton
+                style={{ height: 56, marginBottom: 20, marginTop: 20 }}
+                label="Register"
+                onPress={() => {
+                  Linking.openURL(eventItem.event_times[0].ticket_uri);
+                }}
+              ></WhiteButton>
+            ) : null}
 
-            {parseDescription() !== "" ? (
+            {parseDescription() !== '' ? (
               <WhiteButton
                 style={{ height: 56, marginBottom: 20, marginTop: 20 }}
                 label="Attend"

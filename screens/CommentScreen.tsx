@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
-import { Container, Text, Button, View, Thumbnail } from "native-base";
-import Theme, { Style, HeaderStyle } from "../Theme.style";
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import { Container, Text, Button, View, Thumbnail } from 'native-base';
+import Theme, { Style, HeaderStyle } from '../Theme.style';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -9,13 +9,13 @@ import {
   Image,
   NativeSyntheticEvent,
   TextInputKeyPressEventData,
-} from "react-native";
-import { Auth } from "@aws-amplify/auth";
-import { TextInput, FlatList } from "react-native-gesture-handler";
-import { StackNavigationProp, useHeaderHeight } from "@react-navigation/stack";
-import { MainStackParamList } from "../navigation/AppNavigator";
-import { RouteProp } from "@react-navigation/native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'react-native';
+import { Auth } from '@aws-amplify/auth';
+import { TextInput, FlatList } from 'react-native-gesture-handler';
+import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
+import { MainStackParamList } from '../navigation/AppNavigator';
+import { RouteProp } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   CreateCommentInput,
   NoteDataType,
@@ -26,21 +26,21 @@ import {
   GetCommentsByOwnerQueryVariables,
   UpdateCommentMutation,
   CreateCommentMutation,
-} from "../services/API";
-import moment from "moment";
-import { GRAPHQL_AUTH_MODE, GraphQLResult } from "@aws-amplify/api";
-import { API } from "@aws-amplify/api";
-import { nanoid } from "nanoid/async/index.native";
-import CommentContext from "../contexts/CommentContext";
-import UserContext, { TMHCognitoUser } from "../contexts/UserContext";
-import MiniPlayerStyleContext from "../contexts/MiniPlayerStyleContext";
-import NeedsSignUpModal from "../components/modals/NeedsSignUpModal";
+} from '../services/API';
+import moment from 'moment';
+import { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
+import { API } from '@aws-amplify/api';
+import { nanoid } from 'nanoid/async/index.native';
+import CommentContext from '../contexts/CommentContext';
+import UserContext, { TMHCognitoUser } from '../contexts/UserContext';
+import MiniPlayerStyleContext from '../contexts/MiniPlayerStyleContext';
+import NeedsSignUpModal from '../components/modals/NeedsSignUpModal';
 
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
     ...{
-      backgroundColor: "black",
+      backgroundColor: 'black',
     },
   },
   header: {
@@ -54,7 +54,7 @@ const style = StyleSheet.create({
   },
   headerBody: {
     flexGrow: 3,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   headerRight: {
     flexGrow: 0,
@@ -65,7 +65,7 @@ const style = StyleSheet.create({
   headerTitle: {
     ...HeaderStyle.title,
     ...{
-      width: "100%",
+      width: '100%',
     },
   },
   title: {
@@ -111,19 +111,19 @@ const style = StyleSheet.create({
   headerText: {
     fontSize: 16,
     fontFamily: Theme.fonts.fontFamilyRegular,
-    color: "white",
+    color: 'white',
     lineHeight: 24,
   },
   input: {
     fontFamily: Theme.fonts.fontFamilyRegular,
-    color: "white",
+    color: 'white',
     fontSize: 16,
   },
 });
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
-  route: RouteProp<MainStackParamList, "CommentScreen">;
+  route: RouteProp<MainStackParamList, 'CommentScreen'>;
 }
 
 const getTagsByOwner = /* GraphQL */ `
@@ -218,13 +218,13 @@ export default function CommentScreen({
 }: Params): JSX.Element {
   const headerHeight = useHeaderHeight();
   const safeArea = useSafeAreaInsets();
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [edit, setEdit] = useState(false);
-  const [commentId, setCommentId] = useState("");
+  const [commentId, setCommentId] = useState('');
   const [prevTags, setPrevTags] = useState<string[]>([]);
-  const [mode, setMode] = useState<"comment" | "tags">("comment");
-  const [newTag, setNewTag] = useState("");
+  const [mode, setMode] = useState<'comment' | 'tags'>('comment');
+  const [newTag, setNewTag] = useState('');
   const commentContext = useContext(CommentContext);
   const userContext = useContext(UserContext);
   const miniPlayerStyle = useContext(MiniPlayerStyleContext);
@@ -236,16 +236,16 @@ export default function CommentScreen({
     navigation.setOptions({
       headerShown: true,
       title:
-        mode === "comment" ? (edit ? "Edit" : "Add") + " Comment" : "Add Tags",
+        mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
           <TouchableOpacity
             onPress={
-              mode === "comment"
+              mode === 'comment'
                 ? () => navigation.goBack()
-                : () => setMode("comment")
+                : () => setMode('comment')
             }
           >
             <Text
@@ -261,13 +261,13 @@ export default function CommentScreen({
         return (
           <TouchableOpacity
             onPress={
-              mode === "comment" ? postComment : () => setMode("comment")
+              mode === 'comment' ? postComment : () => setMode('comment')
             }
           >
             <Text
               style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}
             >
-              {mode === "comment" ? "Save" : "Done"}
+              {mode === 'comment' ? 'Save' : 'Done'}
             </Text>
           </TouchableOpacity>
         );
@@ -277,14 +277,14 @@ export default function CommentScreen({
   });
 
   useEffect(() => {
-    miniPlayerStyle.setDisplay("none");
+    miniPlayerStyle.setDisplay('none');
 
     if (!userContext?.userData?.email_verified) setSignUpModal(true);
   }, []);
 
   useEffect(() => {
-    const unsub = navigation.addListener("blur", () => {
-      miniPlayerStyle.setDisplay("flex");
+    const unsub = navigation.addListener('blur', () => {
+      miniPlayerStyle.setDisplay('flex');
     });
     return unsub;
   }, []);
@@ -307,7 +307,7 @@ export default function CommentScreen({
           json.data.getCommentsByOwner.items.forEach((item) => {
             const temp: string[] = [];
             item?.tags?.forEach((tag) => {
-              if (typeof tag === "string" && !prevTags.includes(tag)) {
+              if (typeof tag === 'string' && !prevTags.includes(tag)) {
                 temp.push(tag);
               }
             });
@@ -325,7 +325,7 @@ export default function CommentScreen({
   }, []);
 
   useEffect(() => {
-    if ("comment" in routeParams) {
+    if ('comment' in routeParams) {
       setComment(routeParams.comment);
       setTags(routeParams.tags as string[]);
       setCommentId(routeParams.commentId);
@@ -374,8 +374,8 @@ export default function CommentScreen({
           id: commentId,
           comment: comment,
           tags: tags,
-          date: moment().format("MMMM D, YYYY"),
-          time: moment().format("h:mm A"),
+          date: moment().format('MMMM D, YYYY'),
+          time: moment().format('h:mm A'),
         };
 
         const json = (await API.graphql({
@@ -394,7 +394,7 @@ export default function CommentScreen({
       } catch (e) {
         console.debug(e);
       }
-    } else if ("key" in routeParams && comment) {
+    } else if ('key' in routeParams && comment) {
       try {
         const nanoId = await nanoid();
         const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
@@ -403,7 +403,7 @@ export default function CommentScreen({
           comment: comment,
           tags: tags,
           noteType:
-            routeParams.noteType === "notes"
+            routeParams.noteType === 'notes'
               ? NoteDataType.notes
               : NoteDataType.questions,
           commentType: routeParams.commentType,
@@ -411,8 +411,8 @@ export default function CommentScreen({
           textSnippet: routeParams.textSnippet,
           imageUri: routeParams.imageUri,
           key: routeParams.key,
-          date: moment().format("MMMM D, YYYY"),
-          time: moment().format("h:mm A"),
+          date: moment().format('MMMM D, YYYY'),
+          time: moment().format('h:mm A'),
           owner: cognitoUser.username,
         };
 
@@ -441,10 +441,10 @@ export default function CommentScreen({
   }
 
   function handlePress(e: NativeSyntheticEvent<TextInputKeyPressEventData>) {
-    if (e.nativeEvent.key === ",") {
-      addTag(newTag.replace(",", ""));
+    if (e.nativeEvent.key === ',') {
+      addTag(newTag.replace(',', ''));
       setTimeout(() => {
-        setNewTag("");
+        setNewTag('');
       }, 100);
     }
   }
@@ -459,15 +459,15 @@ export default function CommentScreen({
           paddingBottom: 4,
           paddingHorizontal: 8,
           marginRight: 4,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
           height: 26,
         }}
       >
         <Text
           style={{
-            color: "white",
+            color: 'white',
             fontFamily: Theme.fonts.fontFamilyRegular,
             fontSize: 12,
             lineHeight: 18,
@@ -478,6 +478,7 @@ export default function CommentScreen({
         <TouchableOpacity onPress={() => removeTag(tag)}>
           <Thumbnail
             square
+            accessibilityLabel="Close Comment"
             style={{ width: 12, height: 12, marginLeft: 4 }}
             source={Theme.icons.white.closeCancel}
           />
@@ -491,7 +492,7 @@ export default function CommentScreen({
       <TouchableOpacity
         onPress={() => addTag(tag)}
         style={{
-          backgroundColor: "white",
+          backgroundColor: 'white',
           borderRadius: 2,
           paddingTop: 4,
           paddingBottom: 4,
@@ -502,7 +503,7 @@ export default function CommentScreen({
       >
         <Text
           style={{
-            color: "black",
+            color: 'black',
             fontFamily: Theme.fonts.fontFamilyRegular,
             fontSize: 12,
             lineHeight: 18,
@@ -517,16 +518,16 @@ export default function CommentScreen({
   return (
     <Container
       style={{
-        backgroundColor: mode === "comment" ? Theme.colors.background : "black",
+        backgroundColor: mode === 'comment' ? Theme.colors.background : 'black',
         paddingBottom: safeArea.bottom,
       }}
     >
       <NeedsSignUpModal initState={signUpModal} />
-      {mode === "comment" ? (
+      {mode === 'comment' ? (
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={headerHeight}
-          style={{ flex: 1, backgroundColor: "black" }}
+          style={{ flex: 1, backgroundColor: 'black' }}
         >
           <View style={{ flexGrow: 1, padding: 16 }}>
             {routeParams.commentType === CommentDataType.image ? (
@@ -561,16 +562,16 @@ export default function CommentScreen({
           <View style={{ flexGrow: 0 }}>
             <View
               style={{
-                display: "flex",
-                flexDirection: "row",
-                alignSelf: "flex-end",
+                display: 'flex',
+                flexDirection: 'row',
+                alignSelf: 'flex-end',
                 marginBottom: 12,
                 marginRight: 16,
-                alignItems: "center",
+                alignItems: 'center',
               }}
             >
               {showHint ? (
-                <Text style={{ fontSize: 14, color: "white", marginRight: 16 }}>
+                <Text style={{ fontSize: 14, color: 'white', marginRight: 16 }}>
                   Long press to delete
                 </Text>
               ) : null}
@@ -591,8 +592,8 @@ export default function CommentScreen({
               style={{
                 backgroundColor: Theme.colors.background,
                 minHeight: 64,
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 paddingHorizontal: 24,
               }}
             >
@@ -608,7 +609,7 @@ export default function CommentScreen({
                 horizontal
                 keyExtractor={(_item, index) => index.toString()}
               />
-              <TouchableOpacity onPress={() => setMode("tags")}>
+              <TouchableOpacity onPress={() => setMode('tags')}>
                 <Text
                   style={{
                     color: Theme.colors.grey4,
@@ -625,9 +626,9 @@ export default function CommentScreen({
         </KeyboardAvoidingView>
       ) : (
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={headerHeight}
-          style={{ flex: 1, backgroundColor: "black" }}
+          style={{ flex: 1, backgroundColor: 'black' }}
         >
           <View style={{ flexGrow: 1, padding: 16 }}>
             {prevTags.filter((item) => !tags.includes(item)).length > 0 ? (
@@ -663,10 +664,10 @@ export default function CommentScreen({
           <View style={{ flexGrow: 0 }}>
             <View
               style={{
-                backgroundColor: "black",
+                backgroundColor: 'black',
                 minHeight: 64,
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 paddingHorizontal: 24,
               }}
             >
