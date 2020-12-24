@@ -196,7 +196,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
 
 
           {teachings.items.length > 0 ? teachings.items
-            .filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase()))
+            .filter((a: any) => searchText === "" || a?.video?.episodeTitle?.toLowerCase().includes(searchText.toLowerCase()) || a?.video?.seriesTitle?.toLowerCase().includes(searchText.toLowerCase()))
             .map((item: any, index: number) => {
               if (index < showCount) {
                 return <TeachingListItem
@@ -208,7 +208,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
 
 
         </View>
-        {teachings.items?.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length > 20 && showCount < teachings.items.filter((a: any) => searchText === "" || a.video.episodeTitle.toLowerCase().includes(searchText.toLowerCase()) || a.video.seriesTitle.toLowerCase().includes(searchText.toLowerCase())).length ?
+        {teachings?.items?.filter((a: any) => searchText === "" || a?.video?.episodeTitle?.toLowerCase().includes(searchText.toLowerCase()) || a?.video?.seriesTitle?.toLowerCase().includes(searchText.toLowerCase())).length > 20 && showCount < teachings?.items?.filter((a: any) => searchText === "" || a?.video?.episodeTitle?.toLowerCase().includes(searchText.toLowerCase()) || a?.video.seriesTitle?.toLowerCase().includes(searchText.toLowerCase())).length ?
 
           <View style={{ marginBottom: 10 }}>
             <AllButton handlePress={() => setShowCount(showCount + 20)}>Load More</AllButton>
