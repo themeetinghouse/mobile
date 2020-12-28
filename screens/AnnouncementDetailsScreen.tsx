@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { Theme, Style, HeaderStyle } from '../Theme.style';
-import { Container, Text, Button, Icon, Content, View } from 'native-base';
+import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import WhiteButton from '../components/buttons/WhiteButton';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -56,26 +56,46 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
 
     const announcementItem = props.route.params?.item;
 
-    props.navigation.setOptions({
-        headerShown: true,
-        title: 'Announcement',
-        headerTitleStyle: style.headerTitle,
-        headerStyle: { backgroundColor: Theme.colors.background },
-        headerLeft: function render() {
-            return <Button transparent onPress={() => props.navigation.goBack()}>
-                <Icon name='close' />
-            </Button>
-        },
-        headerLeftContainerStyle: { left: 16 },
-        headerRight: function render() { return <View style={{ flex: 1 }} /> }
-    })
+    useLayoutEffect(() => {
+        props.navigation.setOptions({
+            headerShown: true,
+            title: 'Announcement',
+            headerTitleStyle: style.headerTitle,
+            headerStyle: { backgroundColor: Theme.colors.background },
+            headerLeft: function render() {
+                return (
+                    <TouchableOpacity
+                        onPress={() => props.navigation.goBack()}
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Thumbnail
+                            square
+                            source={Theme.icons.white.closeCancel}
+                            style={{ width: 24, height: 24 }}
+                        />
+                    </TouchableOpacity>
+                );
+            },
+            headerLeftContainerStyle: { left: 16 },
+            headerRight: function render() { return <View style={{ flex: 1 }} /> }
+        })
+    }, [])
+
 
     return (
         <Container>
             <Content style={style.content}>
                 <Text style={style.title}>{announcementItem.title}</Text>
                 <Text style={style.body}>{announcementItem.description}</Text>
-                <WhiteButton label="Call to action"></WhiteButton>
+                <WhiteButton
+                    style={{ height: 56, marginBottom: 20, marginTop: 20 }}
+                    label="Call to Action"
+
+                ></WhiteButton>
             </Content>
         </Container>
     )

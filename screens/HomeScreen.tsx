@@ -19,8 +19,8 @@ import {
 import { Theme, Style, HeaderStyle } from "../Theme.style";
 import EventCard from "../components/home/EventCard/EventCard";
 import RecentTeaching from "../components/home/RecentTeaching/RecentTeaching";
-//import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
-// import AnnouncementService from '../services/AnnouncementService';
+import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
+import AnnouncementService from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 import EventsService from "../services/EventsService";
 // import SermonsService from '../services/SermonsService';
@@ -85,7 +85,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setpreLive] = useState(false);
   const [live, setLive] = useState(false);
-  //const [announcements, setAnnouncements] = useState<any>([]);
+  const [announcements, setAnnouncements] = useState<any>([]);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
@@ -160,13 +160,13 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     loadLiveStreams();
 
-    /*
+
     const loadAnnouncements = async () => {
       const announcementsResult = await AnnouncementService.loadAnnouncements();
       setAnnouncements(announcementsResult);
     }
     loadAnnouncements();
-    */
+
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(
         location?.locationData?.locationId ?? ""
@@ -221,23 +221,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           );
         })[0];
         if (current?.id.includes("After Party")) {
-          /* More logic is required to include After Party message in banner */
-          //console.log("Event is After Party. Live has ended. Exiting interval")
           clearInterval(interval);
           setLive(false);
           setpreLive(false);
           return;
         }
         if (current && rightNow <= current.endTime) {
-          /*        
-          console.log("Tick: " + rightNow + ":" + moment().format("ss"))
-          console.log("\n====================================================")
-          console.log("Prelive: " + preLive)
-          console.log("live: " + live)
-          console.log(`videoStartTime is ${current?.videoStartTime} endTime is ${current?.endTime} and current time is ${rightNow}`)
-          console.log(current) 
-          console.log("====================================================\n")
-          */
           if (
             rightNow >= current.startTime &&
             rightNow < current.videoStartTime
@@ -257,9 +246,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           setLive(false);
           setpreLive(false);
           if (rightNow > liveEvents[liveEvents.length - 1]?.endTime) {
-            // Ends for the day
             clearInterval(interval);
-            //console.log("Events ended.")
           }
         }
       }, 2000);
@@ -300,38 +287,49 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               onPress={sendQuestion}
             ></WhiteButton>
           </View>
+
+        </View>
+        <View style={style.categoryContainer}>
+          {announcements.map((announcement: any) => (
+            <AnnouncementCard
+              key={announcement.id}
+              announcement={announcement}
+              handlePress={() =>
+                navigation.push('AnnouncementDetailsScreen', { item: announcement })
+              } />
+          ))}
         </View>
         {location?.locationData?.locationId !== "unknown" ||
-        location?.locationData.locationName !== "unknown" ? (
-          <View style={style.categoryContainer}>
-            {isLoading ? (
-              <View style={{ height: 500 }}>
-                <ActivityIndicator />
-              </View>
-            ) : (
-              <>
-                {events !== null && events.length !== 0 ? (
+          location?.locationData.locationName !== "unknown" ? (
+            <View style={style.categoryContainer}>
+              {isLoading ? (
+                <View style={{ height: 500 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : (
                   <>
-                    <Text style={style.categoryTitle}>Upcoming Events</Text>
-                    {events.map((event: any) => (
-                      <EventCard
-                        key={event.id}
-                        event={event}
-                        handlePress={() =>
-                          navigation.navigate("EventDetailsScreen", {
-                            item: event,
-                          })
-                        }
-                      ></EventCard>
-                    ))}
+                    {events !== null && events.length !== 0 ? (
+                      <>
+                        <Text style={style.categoryTitle}>Upcoming Events</Text>
+                        {events.map((event: any) => (
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            handlePress={() =>
+                              navigation.navigate("EventDetailsScreen", {
+                                item: event,
+                              })
+                            }
+                          ></EventCard>
+                        ))}
+                      </>
+                    ) : (
+                        <Text style={style.categoryTitle}>No Upcoming Events</Text>
+                      )}
                   </>
-                ) : (
-                  <Text style={style.categoryTitle}>No Upcoming Events</Text>
                 )}
-              </>
-            )}
-          </View>
-        ) : null}
+            </View>
+          ) : null}
 
         {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? (
@@ -349,17 +347,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           </View>
         ) : null}
 
-        {/*<View style={style.categoryContainer}>
-          {announcements.map((announcement: any) => (
-            <AnnouncementCard
-              key={announcement.id}
-              announcement={announcement}
-              handlePress={() =>
-                navigation.push('AnnouncementDetailsScreen', { item: announcement })
-              } />
-          ))}
-          <AllButton>See all announcements</AllButton>
-            </View>*/}
+
       </Content>
     </Container>
     // <View style={styles.container}>
