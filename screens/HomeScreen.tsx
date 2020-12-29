@@ -15,16 +15,10 @@ import {
   Left,
   Right,
 } from "native-base";
-//import AllButton from '../components/buttons/AllButton';
 import { Theme, Style, HeaderStyle } from "../Theme.style";
 import EventCard from "../components/home/EventCard/EventCard";
 import RecentTeaching from "../components/home/RecentTeaching/RecentTeaching";
-//import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
-// import AnnouncementService from '../services/AnnouncementService';
-//import SeriesService from '../services/SeriesService';
 import EventsService from "../services/EventsService";
-// import SermonsService from '../services/SermonsService';
-// import { loadSomeAsync } from '../utils/loading';
 import ActivityIndicator from "../components/ActivityIndicator";
 import LocationContext from "../contexts/LocationContext";
 import { Location } from "../services/LocationsService";
@@ -43,6 +37,10 @@ import UserContext from "../contexts/UserContext";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { MainStackParamList } from "navigation/AppNavigator";
 import Header from "../components/Header/Header";
+import { GetNotesQuery, GetVideoByVideoTypeQueryVariables, ModelSortDirection, GetVideoByVideoTypeQuery } from "../services/API";
+import { VideoData } from '../types';
+import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
+import NotesService from "../services/NotesService";
 
 const style = StyleSheet.create({
   categoryContainer: {
@@ -93,6 +91,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [instaUsername, setInstaUsername] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [liveEvents, setLiveEvents] = useState<any>([]);
+  const [teaching, setTeaching] = useState<VideoData>(null);
+  const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
+
   const user = useContext(UserContext);
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -280,18 +281,43 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
   }, []);
 
+  const getLastSunday = () => {
+    const lastSunday = moment();
+    if (lastSunday.isoWeekday() < 7) {
+      lastSunday.isoWeekday(0);
+    }
+    return lastSunday.format('YYYY-MM-DD');
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      const query: GetVideoByVideoTypeQueryVariables = {
+        videoTypes: 'adult-sunday',
+        limit: 1,
+        sortDirection: ModelSortDirection.DESC,
+      }
+      const json = await API.graphql(graphqlOperation(getVideoByVideoType, query)) as GraphQLResult<GetVideoByVideoTypeQuery>;
+      if (json.data?.getVideoByVideoType?.items?.[0]) {
+        const noteJson = await NotesService.loadNotesNoContent(getLastSunday());
+        setNote(noteJson);
+        setTeaching(json.data.getVideoByVideoType.items[0]);
+      }
+    }
+    load();
+  }, [])
+
   return (
     <Container>
-      {preLive === true ? (
+      {preLive ?
         <AnnouncementBar
-          message={"We will be going live soon!"}
-        ></AnnouncementBar>
-      ) : live === true ? (
-        <AnnouncementBar message={"We are live now!"}></AnnouncementBar>
-      ) : null}
+          message="We will be going live soon!"
+        />
+        : live ?
+          <AnnouncementBar message="We are live now!" />
+          : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
-          <RecentTeaching />
+          <RecentTeaching teaching={teaching} note={note} />
           <View style={[style.categoryContainer, { paddingHorizontal: "5%" }]}>
             <WhiteButton
               outlined
@@ -302,36 +328,36 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           </View>
         </View>
         {location?.locationData?.locationId !== "unknown" ||
-        location?.locationData.locationName !== "unknown" ? (
-          <View style={style.categoryContainer}>
-            {isLoading ? (
-              <View style={{ height: 500 }}>
-                <ActivityIndicator />
-              </View>
-            ) : (
-              <>
-                {events !== null && events.length !== 0 ? (
+          location?.locationData.locationName !== "unknown" ? (
+            <View style={style.categoryContainer}>
+              {isLoading ? (
+                <View style={{ height: 500 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : (
                   <>
-                    <Text style={style.categoryTitle}>Upcoming Events</Text>
-                    {events.map((event: any) => (
-                      <EventCard
-                        key={event.id}
-                        event={event}
-                        handlePress={() =>
-                          navigation.navigate("EventDetailsScreen", {
-                            item: event,
-                          })
-                        }
-                      ></EventCard>
-                    ))}
+                    {events && events.length ? (
+                      <>
+                        <Text style={style.categoryTitle}>Upcoming Events</Text>
+                        {events.map((event: any) => (
+                          <EventCard
+                            key={event.id}
+                            event={event}
+                            handlePress={() =>
+                              navigation.navigate("EventDetailsScreen", {
+                                item: event,
+                              })
+                            }
+                          ></EventCard>
+                        ))}
+                      </>
+                    ) : (
+                        <Text style={style.categoryTitle}>No Upcoming Events</Text>
+                      )}
                   </>
-                ) : (
-                  <Text style={style.categoryTitle}>No Upcoming Events</Text>
                 )}
-              </>
-            )}
-          </View>
-        ) : null}
+            </View>
+          ) : null}
 
         {/*This should fallback to main TMH Site instead*/}
         {images && images.length > 1 ? (
@@ -397,3 +423,71 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     // </View>
   );
 }
+
+const getVideoByVideoType = `query GetVideoByVideoType(
+  $videoTypes: String
+  $publishedDate: ModelStringKeyConditionInput
+  $sortDirection: ModelSortDirection
+  $filter: ModelVideoFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  getVideoByVideoType(
+    videoTypes: $videoTypes
+    publishedDate: $publishedDate
+    sortDirection: $sortDirection
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+  ) {
+    items {
+      id
+      episodeTitle
+      episodeNumber
+      seriesTitle
+      series {
+        id
+        title
+      }
+      speakers{
+          items{
+              speaker{
+                  id
+              }
+          }
+      }
+      publishedDate
+      description
+      length
+      viewCount
+      YoutubeIdent
+      Youtube {
+        snippet {
+          thumbnails {
+            default {
+              url
+            }
+            medium {
+              url
+            }
+            high {
+              url
+            }
+            standard {
+              url
+            }
+            maxres {
+              url
+            }
+          }
+        }
+      }
+      videoTypes
+      notesURL
+      videoURL
+      audioURL
+    }
+    nextToken
+  }
+}
+`;
