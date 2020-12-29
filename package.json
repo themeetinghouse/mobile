@@ -6,7 +6,7 @@
     "ios": "expo start:ios",
     "web": "expo start:web",
     "eject": "expo eject",
-    "test": "jest --watchAll",
+    "test": "jest",
     "buildExpo": "export SENTRY_ORG=the-meeting-house;VERSION=`sentry-cli releases propose-version`;sentry-cli releases new -p the-meeting-house-mobile $VERSION;sentry-cli releases set-commits --auto $VERSION;echo export const version ={git:\\\"$VERSION\\\"}>version.js;expo build:ios -t archive;expo build:android -t apk;sentry-cli releases finalize $VERSION;sentry-cli releases deploys $VERSION new -e prod;"
   },
   "jest": {
