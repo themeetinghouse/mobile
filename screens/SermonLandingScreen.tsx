@@ -28,6 +28,8 @@ import ShareModal from '../components/modals/Share';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetSeriesQuery } from '../services/API';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import NotesService from '../services/NotesService';
+
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
@@ -158,8 +160,20 @@ export default function SermonLandingScreen({
   const [share, setShare] = useState(false);
   const safeArea = useSafeAreaInsets();
   const [justOpened, setJustOpened] = useState(true);
+  const [notesExist, setNotesExist] = useState(false);
 
   const deviceWidth = Dimensions.get('window').width;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const notesExist = await NotesService.checkIfNotesExist(sermon.publishedDate);
+        setNotesExist(notesExist)
+      } catch (e) {
+        console.debug(e)
+      }
+    })();
+  });
 
   useEffect(() => {
     const loadSermonsInSeriesAsync = async () => {
@@ -298,7 +312,7 @@ export default function SermonLandingScreen({
     if (route?.params?.customPlaylist) {
       console.log(
         'logging sermonTitle from SermonLandingScreen.tsx: ' +
-          sermon.seriesTitle
+        sermon.seriesTitle
       );
       navigation.replace('SeriesLandingScreen', {
         seriesId: sermon.seriesTitle,
@@ -419,6 +433,7 @@ export default function SermonLandingScreen({
       date: moment(sermon.publishedDate).format('YYYY-MM-DD'),
     });
   };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -433,8 +448,8 @@ export default function SermonLandingScreen({
               mediaContext.media.playerType === 'audio'
                 ? minimizeAudio
                 : mediaContext.media.playerType === 'video'
-                ? minimizeVideo
-                : () => navigation.goBack()
+                  ? minimizeVideo
+                  : () => navigation.goBack()
             }
           >
             <Thumbnail
@@ -442,7 +457,7 @@ export default function SermonLandingScreen({
               accessibilityLabel="Close Mini-player"
               source={
                 mediaContext.media.playerType === 'audio' ||
-                mediaContext.media.playerType === 'video'
+                  mediaContext.media.playerType === 'video'
                   ? Theme.icons.white.mini
                   : Theme.icons.white.closeCancel
               }
@@ -472,20 +487,20 @@ export default function SermonLandingScreen({
     <View style={{ flex: 1 }}>
       <Content>
         {justOpened &&
-        mediaContext.media.playerType !== 'video' &&
-        mediaContext.media.playerType !== 'audio' ? (
-          <TouchableWithoutFeedback onPress={loadVideo}>
-            <Image
-              source={{
-                uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
-              }}
-              style={{
-                height: Math.round(deviceWidth * (9 / 16)),
-                width: Math.round(deviceWidth),
-              }}
-            />
-          </TouchableWithoutFeedback>
-        ) : null}
+          mediaContext.media.playerType !== 'video' &&
+          mediaContext.media.playerType !== 'audio' ? (
+            <TouchableWithoutFeedback onPress={loadVideo}>
+              <Image
+                source={{
+                  uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
+                }}
+                style={{
+                  height: Math.round(deviceWidth * (9 / 16)),
+                  width: Math.round(deviceWidth),
+                }}
+              />
+            </TouchableWithoutFeedback>
+          ) : null}
 
         {mediaContext.media.playerType === 'video' ? (
           <View
@@ -673,14 +688,13 @@ export default function SermonLandingScreen({
           <View style={style.detailsDescription}>
             <Text style={style.body}>{sermon.description}</Text>
           </View>
-          {moment(sermon.publishedDate).isAfter('2020-06-01') ? (
-            <IconButton
-              rightArrow
-              icon={Theme.icons.white.notes}
-              label="Notes"
-              onPress={navigateToNotes}
-            />
-          ) : null}
+          {notesExist && <IconButton
+            rightArrow
+            icon={Theme.icons.white.notes}
+            label="Notes"
+            onPress={navigateToNotes}
+            data-testID="notes-button"
+          />}
         </View>
 
         <View style={style.categorySection}>
@@ -688,59 +702,59 @@ export default function SermonLandingScreen({
             <ActivityIndicator />
           ) : videosInPlaylist?.length > 1 ||
             (sermonsInSeries && sermonsInSeries?.length > 1) ? (
-            <Fragment>
-              <Text style={style.categoryTitle}>
-                {route?.params?.customPlaylist
-                  ? 'More from this playlist'
-                  : 'More from this Series'}
-              </Text>
-              <View style={style.listContentContainer}>
-                {route?.params?.customPlaylist
-                  ? videosInPlaylist
-                      ?.sort((a: any, b: any) => {
-                        return b.video.publishedDate.localeCompare(
-                          a.video.publishedDate
-                        );
-                      })
-                      .map((video: any) => {
-                        if (video.video.episodeTitle !== sermon.episodeTitle)
-                          return (
+                <Fragment>
+                  <Text style={style.categoryTitle}>
+                    {route?.params?.customPlaylist
+                      ? 'More from this playlist'
+                      : 'More from this Series'}
+                  </Text>
+                  <View style={style.listContentContainer}>
+                    {route?.params?.customPlaylist
+                      ? videosInPlaylist
+                        ?.sort((a: any, b: any) => {
+                          return b.video.publishedDate.localeCompare(
+                            a.video.publishedDate
+                          );
+                        })
+                        .map((video: any) => {
+                          if (video.video.episodeTitle !== sermon.episodeTitle)
+                            return (
+                              <TeachingListItem
+                                key={video?.video?.id}
+                                teaching={video.video}
+                                handlePress={() =>
+                                  navigation.push('SermonLandingScreen', {
+                                    customPlaylist: true,
+                                    seriesId: route?.params?.seriesId,
+                                    item: video.video,
+                                  })
+                                }
+                              />
+                            );
+                          else return null;
+                        })
+                      : sermonsInSeries
+                        ?.sort((a, b) => {
+                          const aNum = a?.episodeNumber ?? 0;
+                          const bNum = b?.episodeNumber ?? 0;
+                          return bNum - aNum;
+                        })
+                        .map((seriesSermon: any) =>
+                          seriesSermon?.id !== sermon.id ? (
                             <TeachingListItem
-                              key={video?.video?.id}
-                              teaching={video.video}
+                              key={seriesSermon?.id}
+                              teaching={seriesSermon}
                               handlePress={() =>
                                 navigation.push('SermonLandingScreen', {
-                                  customPlaylist: true,
-                                  seriesId: route?.params?.seriesId,
-                                  item: video.video,
+                                  item: seriesSermon,
                                 })
                               }
                             />
-                          );
-                        else return null;
-                      })
-                  : sermonsInSeries
-                      ?.sort((a, b) => {
-                        const aNum = a?.episodeNumber ?? 0;
-                        const bNum = b?.episodeNumber ?? 0;
-                        return bNum - aNum;
-                      })
-                      .map((seriesSermon: any) =>
-                        seriesSermon?.id !== sermon.id ? (
-                          <TeachingListItem
-                            key={seriesSermon?.id}
-                            teaching={seriesSermon}
-                            handlePress={() =>
-                              navigation.push('SermonLandingScreen', {
-                                item: seriesSermon,
-                              })
-                            }
-                          />
-                        ) : null
-                      )}
-              </View>
-            </Fragment>
-          ) : null}
+                          ) : null
+                        )}
+                  </View>
+                </Fragment>
+              ) : null}
         </View>
       </Content>
       {share ? (
