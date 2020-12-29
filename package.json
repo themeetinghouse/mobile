@@ -13,6 +13,11 @@
     "preset": "jest-expo",
     "transformIgnorePatterns": [
       "node_modules/(?!(jest-)?react-native|@codler/react-native-keyboard-aware-scroll-view|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/assets/",
+      "Theme.style.ts"
     ]
   },
   "dependencies": {
