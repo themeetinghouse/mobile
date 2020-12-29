@@ -10,7 +10,10 @@
     "buildExpo": "export SENTRY_ORG=the-meeting-house;VERSION=`sentry-cli releases propose-version`;sentry-cli releases new -p the-meeting-house-mobile $VERSION;sentry-cli releases set-commits --auto $VERSION;echo export const version ={git:\\\"$VERSION\\\"}>version.js;expo build:ios -t archive;expo build:android -t apk;sentry-cli releases finalize $VERSION;sentry-cli releases deploys $VERSION new -e prod;"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|@codler/react-native-keyboard-aware-scroll-view|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+    ]
   },
   "dependencies": {
     "@expo/vector-icons": "^12.0.0",
@@ -57,6 +60,7 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@testing-library/react-native": "^7.1.0",
     "@types/jest": "^26.0.7",
     "@types/nanoid": "^2.1.0",
     "@types/react": "~16.9.35",
