@@ -6,6 +6,8 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { HomeStackParamList } from '../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { Announcement } from 'services/AnnouncementService';
+import * as Linking from 'expo-linking';
 
 const style = StyleSheet.create({
     content: {
@@ -54,7 +56,7 @@ interface Props {
 
 export default function AnnouncementDetailScreen(props: Props): JSX.Element {
 
-    const announcementItem = props.route.params?.item;
+    const announcementItem: Announcement = props.route.params?.item;
 
     useLayoutEffect(() => {
         props.navigation.setOptions({
@@ -91,11 +93,14 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
             <Content style={style.content}>
                 <Text style={style.title}>{announcementItem.title}</Text>
                 <Text style={style.body}>{announcementItem.description}</Text>
-                <WhiteButton
-                    style={{ height: 56, marginBottom: 20, marginTop: 20 }}
-                    label="Call to Action"
-
-                ></WhiteButton>
+                {announcementItem.callToAction ?
+                    <WhiteButton
+                        style={{ height: 56, marginBottom: 20, marginTop: 20 }}
+                        label="Call to Action"
+                        onPress={() => {
+                            Linking.openURL(announcementItem.callToAction ?? "");
+                        }}
+                    ></WhiteButton> : null}
             </Content>
         </Container>
     )

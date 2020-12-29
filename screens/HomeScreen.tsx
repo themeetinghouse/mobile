@@ -20,7 +20,7 @@ import { Theme, Style, HeaderStyle } from "../Theme.style";
 import EventCard from "../components/home/EventCard/EventCard";
 import RecentTeaching from "../components/home/RecentTeaching/RecentTeaching";
 import AnnouncementCard from '../components/home/AnnouncementCard/AnnouncementCard';
-import AnnouncementService from '../services/AnnouncementService';
+import AnnouncementService, { Announcement } from '../services/AnnouncementService';
 //import SeriesService from '../services/SeriesService';
 import EventsService from "../services/EventsService";
 // import SermonsService from '../services/SermonsService';
@@ -85,7 +85,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setpreLive] = useState(false);
   const [live, setLive] = useState(false);
-  const [announcements, setAnnouncements] = useState<any>([]);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
@@ -162,8 +162,13 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
 
     const loadAnnouncements = async () => {
-      const announcementsResult = await AnnouncementService.loadAnnouncements();
-      setAnnouncements(announcementsResult);
+      const announcementsResult = await AnnouncementService.loadAnnouncements({
+        id: location?.locationData?.locationId,
+        name: location?.locationData?.locationName,
+      } as Location);
+      if (announcementsResult)
+        setAnnouncements(announcementsResult)
+
     }
     loadAnnouncements();
 
@@ -277,7 +282,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         <AnnouncementBar message={"We are live now!"}></AnnouncementBar>
       ) : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
-        <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
+        <View style={[style.categoryContainer]}>
           <RecentTeaching />
           <View style={[style.categoryContainer, { paddingHorizontal: "5%" }]}>
             <WhiteButton
@@ -290,14 +295,14 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
         </View>
         <View style={style.categoryContainer}>
-          {announcements.map((announcement: any) => (
+          {announcements.length > 0 ? announcements.map((announcement: Announcement) => (
             <AnnouncementCard
               key={announcement.id}
               announcement={announcement}
               handlePress={() =>
-                navigation.push('AnnouncementDetailsScreen', { item: announcement })
+                navigation.push('AnnouncementDetailsScreen', { item: announcement as Announcement })
               } />
-          ))}
+          )) : announcements.length === 0 ? null : <View><ActivityIndicator></ActivityIndicator></View>}
         </View>
         {location?.locationData?.locationId !== "unknown" ||
           location?.locationData.locationName !== "unknown" ? (

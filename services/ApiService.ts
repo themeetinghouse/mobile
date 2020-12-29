@@ -19,7 +19,7 @@ type QueryRequest = {
 
 export async function runGraphQLQuery(queryRequest: QueryRequest): Promise<any> {
     const response = await axios.post(
-        settings.url, 
+        settings.url,
         queryRequest,
         {
             headers: {
@@ -34,7 +34,7 @@ export async function runGraphQLQuery(queryRequest: QueryRequest): Promise<any> 
 
 export async function post(url: string, data: any): Promise<any> {
     const response = await axios.post(
-        url, 
+        url,
         data,
         {
             headers: {
@@ -43,18 +43,18 @@ export async function post(url: string, data: any): Promise<any> {
         });
     const result = response;
     console.log("ApiService.post(): response = %o", result);
-    return result;    
+    return result;
 }
 
 export async function get(url: string, _data?: any): Promise<any> {
     const response = await axios.get(
-        url, 
+        url,
         {
             headers: {
                 "Content-Type": "application/json"
             }
         });
-//    console.log("ApiService.get(): response = ", response);
+    //    console.log("ApiService.get(): response = ", response);
     const result = response.data;
-    return result;    
+    return result;
 }
