@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from "react";
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import {
   Container,
   Content,
@@ -11,18 +11,18 @@ import {
   Input,
   List,
   ListItem,
-} from "native-base";
-import Theme, { Style, HeaderStyle } from "../Theme.style";
-import { StyleSheet } from "react-native";
-import { TouchableOpacity } from "react-native";
-import LocationsService from "../services/LocationsService";
-import LocationContext, { LocationData } from "../contexts/LocationContext";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { Auth } from "@aws-amplify/auth";
-import UserContext, { TMHCognitoUser } from "../contexts/UserContext";
-import * as SecureStore from "expo-secure-store";
-import { RouteProp } from "@react-navigation/native";
-import { MainStackParamList } from "navigation/AppNavigator";
+} from 'native-base';
+import Theme, { Style, HeaderStyle } from '../Theme.style';
+import { StyleSheet } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import LocationsService from '../services/LocationsService';
+import LocationContext, { LocationData } from '../contexts/LocationContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { Auth } from '@aws-amplify/auth';
+import UserContext, { TMHCognitoUser } from '../contexts/UserContext';
+import * as SecureStore from 'expo-secure-store';
+import { RouteProp } from '@react-navigation/native';
+import { MainStackParamList } from 'navigation/AppNavigator';
 
 const style = StyleSheet.create({
   content: {
@@ -41,7 +41,7 @@ const style = StyleSheet.create({
   },
   headerBody: {
     flexGrow: 3,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   headerRight: {
     flexGrow: 0,
@@ -51,7 +51,7 @@ const style = StyleSheet.create({
   headerTitle: {
     ...HeaderStyle.title,
     ...{
-      width: "100%",
+      width: '100%',
     },
   },
   headerButtonText: HeaderStyle.linkText,
@@ -95,7 +95,7 @@ const style = StyleSheet.create({
 
 type LocationSelectionScreenInput = {
   navigation: StackNavigationProp<MainStackParamList>;
-  route: RouteProp<MainStackParamList, "LocationSelectionScreen">;
+  route: RouteProp<MainStackParamList, 'LocationSelectionScreen'>;
 };
 
 export default function LocationSelectionScreen({
@@ -109,11 +109,11 @@ export default function LocationSelectionScreen({
   const [selectedLocation, setSelectedLocation] = useState(
     location?.locationData
   );
-  const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState('');
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: "Location",
+      title: 'Location',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
@@ -160,11 +160,11 @@ export default function LocationSelectionScreen({
         const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
         userContext.setUserData({
           ...user.attributes,
-          "custom:home_location": locationId,
+          'custom:home_location': locationId,
         });
         const update = await Auth.updateUserAttributes(user, {
           ...user.attributes,
-          "custom:home_location": locationId,
+          'custom:home_location': locationId,
         });
         console.log(update);
       } catch (e) {
@@ -173,7 +173,7 @@ export default function LocationSelectionScreen({
     } else if (locationId) {
       try {
         const updateLocalStore = await SecureStore.setItemAsync(
-          "location",
+          'location',
           locationId
         );
         console.log(updateLocalStore);
@@ -181,12 +181,12 @@ export default function LocationSelectionScreen({
         console.debug(e);
       }
     } else {
-      console.debug("locationId is undefined");
+      console.debug('locationId is undefined');
     }
   }
 
   return (
-    <Container style={{ backgroundColor: "black" }}>
+    <Container style={{ backgroundColor: 'black' }}>
       <Content style={style.content}>
         <View>
           <Item>
@@ -204,7 +204,7 @@ export default function LocationSelectionScreen({
             {searchText ? (
               <TouchableOpacity
                 onPress={() => {
-                  setSearchText("");
+                  setSearchText('');
                 }}
               >
                 <Thumbnail
