@@ -39,7 +39,7 @@ export default function AnnouncementCard({ announcement, handlePress }: Announce
         <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
             <Thumbnail style={style.icon} source={Theme.icons.white.announcement}></Thumbnail>
             <Text style={style.title}>{announcement.title}</Text>
-            <Text style={style.body}>{announcement.description}</Text>
+            <Text style={style.body}>{announcement.description.slice(0, 200).trim() + "..."}</Text>
         </TouchableWithoutFeedback>
     )
 }
