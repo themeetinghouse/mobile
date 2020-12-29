@@ -40,6 +40,7 @@ export default function SearchBar({
           onChangeText={handleTextChanged}
           placeholder={placeholderLabel}
         />
+
         {searchText ? (
           <TouchableOpacity onPress={() => handleTextChanged('')}>
             <Thumbnail
