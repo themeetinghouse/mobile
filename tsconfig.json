@@ -11,6 +11,7 @@
       "strict": true,
       "target": "esnext",
       "baseUrl": ".",
+      "skipLibCheck": true,
       "paths": {
         "react-native-youtube-iframe": ["/types/react-native-youtube-iframe"]
       }
