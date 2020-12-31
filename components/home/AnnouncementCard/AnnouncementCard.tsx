@@ -51,7 +51,7 @@ export default function AnnouncementCard({ announcement, handlePress }: Announce
             <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black, }}>
                 <ImageBackground style={{ flex: 1, backgroundColor: Theme.colors.gray1, borderBottomWidth: 1, borderBottomColor: "#313131", }} source={{ uri: announcement.image }}>
                     <LinearGradient
-                        colors={["rgba(255,255,255, 0)", "rgba(0,0,0, 0.9)"]}
+                        colors={["rgba(0,0,0, 0.2)", "rgba(0,0,0, 0.9)"]}
                         style={{
                             position: 'absolute',
                             left: 0,
