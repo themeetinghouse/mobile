@@ -33,6 +33,7 @@ export default class AnnouncementService {
       query: listAnnouncements,
       variables: {
         filter: {
+          publishedDate: { le: today },
           expirationDate: { gt: today },
           or: [
             { parish: { eq: currentLocation ?? "Cross-Regional" } },
