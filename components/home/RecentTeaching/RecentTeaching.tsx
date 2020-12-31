@@ -73,11 +73,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
     const [fullDescription, setFullDescription] = useState(false);
 
     if (teaching && moment(teaching.publishedDate).isSameOrAfter(moment(note?.id))) {
-        const series = teaching.series || { title: "" };
-        const seriesImageUri = series.title
-            ? `https://themeetinghouse.com/static/photos/series/adult-sunday-${teaching?.series?.title?.replace("?", "")}.jpg`
-            : "https://www.themeetinghouse.com/static/NoCompassionLogo.png";
-
+        const seriesImageUri = `https://themeetinghouse.com/static/photos/series/adult-sunday-${teaching?.series?.title?.replace("?", "")}.jpg`
         const teachingImage = teaching?.Youtube?.snippet?.thumbnails?.standard ?? null;
 
         const openNotes = () => {
@@ -94,9 +90,9 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
                         }} >
                             <Image style={style.teachingImage} source={{ uri: teachingImage.url }} />
                         </TouchableWithoutFeedback>
-                        <Image style={[style.seriesImage, style.seriesImageWithTeachingImage]} source={{ uri: seriesImageUri }} />
+                        <FallbackImage style={{ ...style.seriesImage, ...style.seriesImageWithTeachingImage }} uri={seriesImageUri} catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png" />
                     </View>
-                    : <Image style={style.seriesImage} source={{ uri: seriesImageUri }}></Image>
+                    : <FallbackImage style={style.seriesImage} uri={seriesImageUri} catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png" />
                 }
                 <View style={{ marginHorizontal: 16, alignItems: 'center' }} >
                     <Text style={style.title}>{teaching.episodeTitle}</Text>
@@ -117,9 +113,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
 
     if (note) {
         const seriesImageUri = `https://themeetinghouse.com/static/photos/series/adult-sunday-${note?.seriesId.replace("?", "")}.jpg`
-        const openNotes = () => {
-            navigation.navigate("NotesScreen", { date: note.id })
-        }
+        const openNotes = () => { navigation.navigate("NotesScreen", { date: note.id }) }
         return (
             <View style={style.container} testID='teaching-notes'>
                 <FallbackImage style={style.seriesImage} uri={seriesImageUri} catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png" />

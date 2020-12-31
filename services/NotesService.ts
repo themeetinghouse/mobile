@@ -20,7 +20,22 @@ export default class NotesService {
     )) as GraphQLResult<GetNotesQuery>;
     return notes.data?.getNotes ?? null;
   };
+
+  static checkIfNotesExist = async (date: string): Promise<boolean> => {
+    const notes = (await API.graphql(
+      graphqlOperation(checkIfNotesExistQuery, { id: date })
+    )) as GraphQLResult<GetNotesQuery>;
+    return Boolean(notes.data?.getNotes?.id);
+  };
 }
+
+const checkIfNotesExistQuery = /* GraphQL */ `
+  query GetNotes($id: ID!) {
+    getNotes(id: $id) {
+      id
+    }
+  }
+`;
 
 const getNotesNoContent = /* GraphQL */ `
   query GetNotes($id: ID!) {
