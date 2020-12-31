@@ -1,5 +1,9 @@
 # The Meeting House Mobile App
 
+![CodeQL](https://github.com/themeetinghouse/mobile/workflows/CodeQL/badge.svg)
+![CI](https://github.com/themeetinghouse/mobile/workflows/CI/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/themeetinghouse/mobile/badge.svg)](https://coveralls.io/github/themeetinghouse/mobile)
+
 Currently supports iOS and Android.
 
 ## Development
