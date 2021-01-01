@@ -38,7 +38,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "2",
+      "buildNumber": "4",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -56,7 +56,7 @@
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20082,
+      "versionCode": 20084,
       "intentFilters": [
         {
           "action": "VIEW",
