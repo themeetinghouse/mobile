@@ -1,5 +1,5 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
+  "main": "src/App.tsx",
   "scripts": {
     "start": "export SENTRY_ORG=the-meeting-house;VERSION=`sentry-cli releases propose-version`;echo export const version ={git:\\\"$VERSION\\\"}>version.js;expo start",
     "android": "expo start:android",
@@ -17,7 +17,7 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/assets/",
-      "Theme.style.ts"
+      "/src/Theme.style.ts"
     ]
   },
   "dependencies": {
@@ -78,6 +78,7 @@
     "eslint-plugin-react": "^7.20.5",
     "expo-cli": "^4.0.15",
     "jest-expo": "^40.0.0",
+    "prettier": "^2.2.1",
     "typescript": "~4.0.0"
   },
   "private": true
