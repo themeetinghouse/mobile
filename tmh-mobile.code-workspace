@@ -16,8 +16,11 @@
       "BRAM",
       "BRFD",
       "BROWSABLE",
+      "Bruxy",
       "Calendarid",
+      "Cavey",
       "Entypo",
+      "Goetze",
       "HMAN",
       "HMDT",
       "HMMT",
@@ -44,6 +47,7 @@
       "biblegateway",
       "bottomlinear",
       "caretdown",
+      "codler",
       "ellipsize",
       "embeddable",
       "epfczvjlgbjroyt",
@@ -62,6 +66,7 @@
       "modestbranding",
       "myaccount",
       "mycomments",
+      "nent",
       "netinfo",
       "oipni",
       "preroll",
@@ -108,7 +113,7 @@
       "**/.git/objects/**",
       ".vscode",
       ".vscode-insiders",
-      "services/API.ts"
+      "src/services/API.ts"
     ]
   }
 }
