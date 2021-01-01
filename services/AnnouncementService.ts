@@ -42,7 +42,7 @@ export default class AnnouncementService {
         }
       },
     })
-    const announcements = await queryResult?.listAnnouncements?.items;
+    const announcements = await queryResult?.listAnnouncements?.items?.sort((a: Announcement, b: Announcement) => b.publishedDate.localeCompare(a.publishedDate));
     return announcements
   }
 
