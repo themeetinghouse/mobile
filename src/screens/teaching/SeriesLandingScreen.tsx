@@ -5,7 +5,6 @@ import React, {
   Fragment,
   useLayoutEffect,
 } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import {
@@ -14,19 +13,21 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
-import TeachingListItem from '../../components/teaching/TeachingListItem';
-import SeriesService, { getCustomPlaylist } from '../../services/SeriesService';
-import ActivityIndicator from '../../components/ActivityIndicator';
-import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import TeachingListItem from '../../components/teaching/TeachingListItem';
+import SeriesService from '../../services/SeriesService';
+import ActivityIndicator from '../../components/ActivityIndicator';
+import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import ShareModal from '../../components/modals/Share';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
 import { FallbackImageBackground } from '../../components/FallbackImage';
+import { getSeries, getCustomPlaylist } from '../../graphql/queries';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -132,7 +133,10 @@ interface Params {
   route: RouteProp<TeachingStackParamList, 'SeriesLandingScreen'>;
 }
 
-function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
+export default function SeriesLandingScreen({
+  navigation,
+  route,
+}: Params): JSX.Element {
   const seriesParam = route.params?.item;
   const seriesId = route.params?.seriesId;
   const safeArea = useSafeAreaInsets();
@@ -212,7 +216,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
       headerLeftContainerStyle: { left: 16 },
       headerRightContainerStyle: { right: 16 },
     });
-  });
+  }, [headerOpacity]);
 
   useEffect(() => {
     const loadSermonsInSeriesAsync = async () => {
@@ -251,7 +255,7 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
   }
 
   return (
-    <Fragment>
+    <>
       <Animated.ScrollView
         style={[style.content, { marginTop: -safeArea.top }]}
         onScroll={Animated.event(
@@ -302,12 +306,16 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                   <Text style={style.detailsText}>
                     {moment(series.startDate).year()} &bull;{' '}
                     {series.videos?.items?.length}{' '}
-                    {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}
+                    {series.videos?.items?.length === 1
+                      ? 'episode'
+                      : 'episodes'}
                   </Text>
                 ) : (
                   <Text style={style.detailsText}>
                     {series.videos?.items?.length}{' '}
-                    {series.videos?.items?.length == 1 ? 'episode' : 'episodes'}
+                    {series.videos?.items?.length === 1
+                      ? 'episode'
+                      : 'episodes'}
                   </Text>
                 )}
               </View>
@@ -318,20 +326,21 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
                   <ActivityIndicator />
                 ) : (
                   videos
-                    .sort((a: any, b: any) => {
+                    .sort((a, b) => {
                       if (route?.params?.customPlaylist)
-                        return b.publishedDate.localeCompare(a.publishedDate);
-                      else {
-                        const aNum = a?.episodeNumber ?? 0;
-                        const bNum = b?.episodeNumber ?? 0;
-                        return bNum - aNum;
-                      }
+                        return (b?.publishedDate ?? '')?.localeCompare(
+                          a?.publishedDate ?? ''
+                        );
+
+                      const aNum = a?.episodeNumber ?? 0;
+                      const bNum = b?.episodeNumber ?? 0;
+                      return bNum - aNum;
                     })
-                    .map((seriesSermon: any) => {
+                    .map((seriesSermon) => {
                       return (
                         <TeachingListItem
-                          key={seriesSermon.id}
-                          teaching={seriesSermon}
+                          key={seriesSermon?.id}
+                          teaching={seriesSermon as any}
                           handlePress={() =>
                             navigation.push(
                               'SermonLandingScreen',
@@ -364,68 +373,6 @@ function SeriesLandingScreen({ navigation, route }: Params): JSX.Element {
           message={series?.title}
         />
       ) : null}
-    </Fragment>
+    </>
   );
 }
-
-export default SeriesLandingScreen;
-
-const getSeries = `
-  query GetSeries($id: ID!) {
-    getSeries(id: $id) {
-      id
-      seriesType
-      title
-      description
-      image
-      startDate
-      endDate
-      videos {
-        items {
-          id
-          episodeTitle
-          episodeNumber
-          seriesTitle
-          series {
-            id
-          }
-          publishedDate
-          description
-          length
-          notesURL
-          videoURL
-          audioURL
-          YoutubeIdent
-          videoTypes
-          Youtube {
-            snippet {
-              thumbnails {
-                default {
-                  url
-                }
-                medium {
-                  url
-                }
-                high {
-                  url
-                }
-                standard {
-                  url
-                }
-                maxres {
-                  url
-                }
-              }
-              channelTitle
-              localized {
-                title
-                description
-              }
-            }
-          }
-        }
-        nextToken
-      }
-    }
-  }
-`;

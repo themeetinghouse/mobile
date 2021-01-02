@@ -6,15 +6,15 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';
-import { Theme, Style } from '../../Theme.style';
-import IconButton from '../buttons/IconButton';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import { Theme, Style } from '../../Theme.style';
+import IconButton from '../buttons/IconButton';
 import { GetNotesQuery } from '../../services/API';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
 import ActivityIndicator from '../ActivityIndicator';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { VideoData } from '../../utils/types';
 import FallbackImage from '../FallbackImage';
 
@@ -119,12 +119,12 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
             />
           </View>
         ) : (
-            <FallbackImage
-              style={style.seriesImage}
-              uri={seriesImageUri}
-              catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png"
-            />
-          )}
+          <FallbackImage
+            style={style.seriesImage}
+            uri={seriesImageUri}
+            catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png"
+          />
+        )}
         <View style={{ marginHorizontal: 16, alignItems: 'center' }}>
           <Text style={style.title}>{teaching.episodeTitle}</Text>
           <View style={{ flexDirection: 'row' }}>

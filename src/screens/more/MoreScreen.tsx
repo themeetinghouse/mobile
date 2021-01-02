@@ -10,12 +10,12 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
-import UserContext from '../../contexts/UserContext';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import UserContext from '../../contexts/UserContext';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import LocationContext from '../../contexts/LocationContext';
 
@@ -32,10 +32,6 @@ const style = StyleSheet.create({
     flexShrink: 0,
     flexBasis: 50,
   },
-  headerBody: {
-    flexGrow: 3,
-    justifyContent: 'center',
-  },
   headerRight: {
     flexGrow: 0,
     flexShrink: 0,
@@ -47,25 +43,12 @@ const style = StyleSheet.create({
       width: '100%',
     },
   },
-  headerButtonText: HeaderStyle.linkText,
   title: {
     ...Style.title,
     ...{
       marginTop: 130,
       marginBottom: 16,
     },
-  },
-  body: {
-    ...Style.body,
-    ...{
-      marginBottom: 40,
-    },
-  },
-  searchIcon: Style.icon,
-  searchInput: {
-    color: Theme.colors.white,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    fontSize: Theme.fonts.medium,
   },
   listItem: {
     marginLeft: 0,
@@ -92,10 +75,13 @@ const style = StyleSheet.create({
   icon: Style.icon,
 });
 
-function MoreScreen(): JSX.Element {
+export default function MoreScreen(): JSX.Element {
   const location = useContext(LocationContext);
   const user = useContext(UserContext);
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+  // eslint-disable-next-line camelcase
+  const emailVerified = user?.userData?.email_verified;
+
   let items = [];
 
   useLayoutEffect(() => {
@@ -112,24 +98,23 @@ function MoreScreen(): JSX.Element {
           <Button
             icon
             transparent
-            style={{}}
             onPress={() => navigation.navigate('ProfileScreen')}
           >
             <Thumbnail
               square
               source={
-                user?.userData?.email_verified
+                emailVerified
                   ? Theme.icons.white.userLoggedIn
                   : Theme.icons.white.user
               }
               style={style.icon}
-            ></Thumbnail>
+            />
           </Button>
         );
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, [user?.userData]);
+  }, [emailVerified, navigation]);
 
   if (location?.locationData?.locationId === 'unknown')
     items = [
@@ -140,7 +125,7 @@ function MoreScreen(): JSX.Element {
         icon: Theme.icons.white.give,
         action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
       },
-      //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
       {
         id: 'connect',
         text: 'Connect',
@@ -174,7 +159,7 @@ function MoreScreen(): JSX.Element {
         icon: Theme.icons.white.give,
         action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
       },
-      //{ id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
+      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
       {
         id: 'connect',
         text: 'Connect',
@@ -225,7 +210,7 @@ function MoreScreen(): JSX.Element {
                       style={style.listIcon}
                       source={item.icon}
                       square
-                    ></Thumbnail>
+                    />
                     <View>
                       <Text style={style.listText}>{item.text}</Text>
                       <Text style={style.listSubtext}>{item.subtext}</Text>
@@ -236,7 +221,7 @@ function MoreScreen(): JSX.Element {
                       style={style.listArrowIcon}
                       source={Theme.icons.white.arrow}
                       square
-                    ></Thumbnail>
+                    />
                   </View>
                 </ListItem>
               );
@@ -262,7 +247,7 @@ function MoreScreen(): JSX.Element {
                       style={style.listIcon}
                       source={item.icon}
                       square
-                    ></Thumbnail>
+                    />
                     <View>
                       <Text style={style.listText}>{item.text}</Text>
                       <Text style={style.listSubtext}>{item.subtext}</Text>
@@ -273,7 +258,7 @@ function MoreScreen(): JSX.Element {
                       style={style.listArrowIcon}
                       source={Theme.icons.white.arrow}
                       square
-                    ></Thumbnail>
+                    />
                   </View>
                 </ListItem>
               );
@@ -284,5 +269,3 @@ function MoreScreen(): JSX.Element {
     </Container>
   );
 }
-
-export default MoreScreen;

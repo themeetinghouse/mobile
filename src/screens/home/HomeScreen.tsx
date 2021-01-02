@@ -15,6 +15,12 @@ import {
   Left,
   Right,
 } from 'native-base';
+import { StackNavigationProp } from '@react-navigation/stack';
+import moment from 'moment';
+import { StyleSheet, AppState } from 'react-native';
+import * as Linking from 'expo-linking';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import EventCard from '../../components/home/EventCard';
 import RecentTeaching from '../../components/home/RecentTeaching';
@@ -23,18 +29,13 @@ import ActivityIndicator from '../../components/ActivityIndicator';
 import LocationContext from '../../contexts/LocationContext';
 import { Location } from '../../services/LocationsService';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import moment from 'moment';
-import { StyleSheet, AppState } from 'react-native';
 import WhiteButton from '../../components/buttons/WhiteButton';
 import InstagramService, { InstagramData } from '../../services/Instagram';
 import InstagramFeed from '../../components/home/InstagramFeed';
-import * as Linking from 'expo-linking';
 import AllButton from '../../components/buttons/AllButton';
 import AnnouncementBar from '../../components/home/AnnouncementBar';
 import LiveEventService from '../../services/LiveEventService';
 import UserContext from '../../contexts/UserContext';
-import { CompositeNavigationProp } from '@react-navigation/native';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import Header from '../../components/Header';
 import {
@@ -44,8 +45,8 @@ import {
   GetVideoByVideoTypeQuery,
 } from '../../services/API';
 import { VideoData } from '../../utils/types';
-import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import NotesService from '../../services/NotesService';
+import { getVideoByVideoType } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   categoryContainer: {
@@ -86,9 +87,8 @@ interface Params {
 
 export default function HomeScreen({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
-  const [preLive, setpreLive] = useState(false);
+  const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
-  //const [announcements, setAnnouncements] = useState<any>([]);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
@@ -98,20 +98,25 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [liveEvents, setLiveEvents] = useState<any>([]);
   const [teaching, setTeaching] = useState<VideoData>(null);
   const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
-
   const user = useContext(UserContext);
+
+  const locationName = location?.locationData?.locationName;
+  const locationId = location?.locationData?.locationId;
+  // eslint-disable-next-line camelcase
+  const emailVerified = user?.userData?.email_verified;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
       header: function render() {
         return (
           <Header>
-            <Left style={{ flexGrow: 1 }}></Left>
+            <Left style={{ flexGrow: 1 }} />
             <Button
               style={[style.headerButton, { flexGrow: 0 }]}
               onPress={() =>
                 navigation.navigate('LocationSelectionScreen', {
-                  persist: !Boolean(user?.userData?.email_verified),
+                  persist: !emailVerified,
                 })
               }
             >
@@ -119,15 +124,15 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
                 <Text style={style.title}>Home</Text>
                 <View style={style.locationContainer}>
                   <Text style={[style.subtitle, style.locationName]}>
-                    {location?.locationData?.locationName === 'unknown'
+                    {locationName === 'unknown'
                       ? 'Select Location'
-                      : location?.locationData?.locationName}
+                      : locationName}
                   </Text>
                   <Thumbnail
                     square
                     source={Theme.icons.white.caretDown}
                     style={{ width: 12, height: 24 }}
-                  ></Thumbnail>
+                  />
                 </View>
               </View>
             </Button>
@@ -140,19 +145,19 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
                 <Thumbnail
                   square
                   source={
-                    user?.userData?.email_verified
+                    emailVerified
                       ? Theme.icons.white.userLoggedIn
                       : Theme.icons.white.user
                   }
                   style={style.icon}
-                ></Thumbnail>
+                />
               </Button>
             </Right>
           </Header>
         );
       },
     });
-  }, [navigation, location, user?.userData]);
+  }, [locationName, navigation, emailVerified]);
 
   useEffect(() => {
     const loadLiveStreams = async () => {
@@ -166,16 +171,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     loadLiveStreams();
 
-    /*
-    const loadAnnouncements = async () => {
-      const announcementsResult = await AnnouncementService.loadAnnouncements();
-      setAnnouncements(announcementsResult);
-    }
-    loadAnnouncements();
-    */
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(
-        location?.locationData?.locationId ?? ''
+        locationId ?? ''
       );
       setImages(data.images);
       setInstaUsername(data.username);
@@ -185,8 +183,8 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       try {
         setIsLoading(true);
         const eventsResult = await EventsService.loadEventsList({
-          id: location?.locationData?.locationId,
-          name: location?.locationData?.locationName,
+          id: locationId,
+          name: locationName,
         } as Location);
         setEvents(eventsResult);
         setIsLoading(false);
@@ -196,12 +194,8 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         console.log(error);
       }
     };
-    if (
-      location?.locationData?.locationId !== 'unknown' ||
-      location?.locationData?.locationName !== 'unknown'
-    )
-      loadEvents();
-  }, [location]);
+    if (locationId !== 'unknown' || locationName !== 'unknown') loadEvents();
+  }, [locationId, locationName]);
 
   const sendQuestion = () => {
     Linking.openURL('mailto:ask@themeetinghouse.com');
@@ -228,44 +222,33 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         })[0];
         if (current?.id.includes('After Party')) {
           /* More logic is required to include After Party message in banner */
-          //console.log("Event is After Party. Live has ended. Exiting interval")
           clearInterval(interval);
           setLive(false);
-          setpreLive(false);
+          setPreLive(false);
           return;
         }
         if (current && rightNow <= current.endTime) {
-          /*        
-          console.log("Tick: " + rightNow + ":" + moment().format("ss"))
-          console.log("\n====================================================")
-          console.log("Prelive: " + preLive)
-          console.log("live: " + live)
-          console.log(`videoStartTime is ${current?.videoStartTime} endTime is ${current?.endTime} and current time is ${rightNow}`)
-          console.log(current) 
-          console.log("====================================================\n")
-          */
           if (
             rightNow >= current.startTime &&
             rightNow < current.videoStartTime
           ) {
-            setpreLive(true);
+            setPreLive(true);
           } else {
-            setpreLive(false);
+            setPreLive(false);
           }
           const start = current?.videoStartTime;
           const end = current?.endTime;
           const showTime = rightNow >= start && rightNow <= end;
           if (showTime) {
-            if (preLive) setpreLive(false);
+            if (preLive) setPreLive(false);
             setLive(true);
           }
         } else {
           setLive(false);
-          setpreLive(false);
+          setPreLive(false);
           if (rightNow > liveEvents[liveEvents.length - 1]?.endTime) {
             // Ends for the day
             clearInterval(interval);
-            //console.log("Events ended.")
           }
         }
       }, 2000);
@@ -273,16 +256,16 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     }
   }, [appStateVisible, liveEvents]);
 
-  const _handleAppStateChange = (nextAppState: any) => {
+  const handleAppStateChange = (nextAppState: any) => {
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
   };
 
   useEffect(() => {
-    AppState.addEventListener('change', _handleAppStateChange);
+    AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener('change', _handleAppStateChange);
+      AppState.removeEventListener('change', handleAppStateChange);
     };
   }, []);
 
@@ -315,11 +298,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
 
   return (
     <Container>
-      {preLive ? (
-        <AnnouncementBar message="We will be going live soon!" />
-      ) : live ? (
-        <AnnouncementBar message="We are live now!" />
+      {preLive || live ? (
+        <AnnouncementBar
+          message={preLive ? 'We will be going live soon!' : 'We are live now!'}
+        />
       ) : null}
+
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching teaching={teaching} note={note} />
@@ -329,11 +313,10 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               label="Send Question"
               style={{ height: 56 }}
               onPress={sendQuestion}
-            ></WhiteButton>
+            />
           </View>
         </View>
-        {location?.locationData?.locationId !== 'unknown' ||
-        location?.locationData.locationName !== 'unknown' ? (
+        {locationId !== 'unknown' || locationName !== 'unknown' ? (
           <View style={style.categoryContainer}>
             {isLoading ? (
               <View style={{ height: 500 }}>
@@ -353,7 +336,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
                             item: event,
                           })
                         }
-                      ></EventCard>
+                      />
                     ))}
                   </>
                 ) : (
@@ -364,7 +347,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           </View>
         ) : null}
 
-        {/*This should fallback to main TMH Site instead*/}
+        {/* This should fallback to main TMH Site instead */}
         {images && images.length > 1 ? (
           <View style={style.categoryContainer}>
             <Text style={style.categoryTitle}>@{instaUsername}</Text>
@@ -379,120 +362,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
             </AllButton>
           </View>
         ) : null}
-
-        {/*<View style={style.categoryContainer}>
-          {announcements.map((announcement: any) => (
-            <AnnouncementCard
-              key={announcement.id}
-              announcement={announcement}
-              handlePress={() =>
-                navigation.push('AnnouncementDetailsScreen', { item: announcement })
-              } />
-          ))}
-          <AllButton>See all announcements</AllButton>
-            </View>*/}
       </Content>
     </Container>
-    // <View style={styles.container}>
-    //   <ScrollView
-    //     style={styles.container}
-    //     contentContainerStyle={styles.contentContainer}>
-
-    //     <View>
-    //       <Text>More text here!</Text>
-    //       <Button color="purple" title="Click me!" onPress={() => {
-    //           console.log('Navigating to details.  props.navigation = %o', props.navigation);
-    //           // Works:
-    //           //props.navigation.navigate('Details');
-    //           props.navigation.navigate({ routeName: 'Details'});
-    //           //NavigationActions.navigate({ routeName: 'Links' });
-
-    //           // Doesn't work
-    //           //props.navigation.navigate({routeName: 'Links', params: {}, action: NavigationActions.navigate({ routeName: 'Details2' })});
-    //           //props.navigation.navigate('Details2');
-    //           //props.navigation.navigate({routeName: 'Links'});
-
-    //           //props.navigation.navigate({routeName: 'Links2', params: {}, action: NavigationActions.navigate({ routeName: 'Details' })});
-    //           //props.navigation.navigate('Home', {}, NavigationActions.navigate({ routeName: 'Details' }));
-    //           //NavigationActions.navigate({ routeName: 'Details' });
-    //           //props.navigation.navigate('HomeStack', {}, NavigationActions.navigate({ routeName: 'Details' }));
-    //           // NavigationActions.navigate(
-    //           //   { routeName: "Home",
-    //           //     action: NavigationActions.navigate({routeName: 'Details'})
-    //           //   }
-    //           // );
-    //       }}></Button>
-    //     </View>
-
-    //   </ScrollView>
-    // </View>
   );
 }
-
-const getVideoByVideoType = `query GetVideoByVideoType(
-  $videoTypes: String
-  $publishedDate: ModelStringKeyConditionInput
-  $sortDirection: ModelSortDirection
-  $filter: ModelVideoFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  getVideoByVideoType(
-    videoTypes: $videoTypes
-    publishedDate: $publishedDate
-    sortDirection: $sortDirection
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
-    items {
-      id
-      episodeTitle
-      episodeNumber
-      seriesTitle
-      series {
-        id
-        title
-      }
-      speakers{
-          items{
-              speaker{
-                  id
-              }
-          }
-      }
-      publishedDate
-      description
-      length
-      viewCount
-      YoutubeIdent
-      Youtube {
-        snippet {
-          thumbnails {
-            default {
-              url
-            }
-            medium {
-              url
-            }
-            high {
-              url
-            }
-            standard {
-              url
-            }
-            maxres {
-              url
-            }
-          }
-        }
-      }
-      videoTypes
-      notesURL
-      videoURL
-      audioURL
-    }
-    nextToken
-  }
-}
-`;

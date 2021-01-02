@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TextStyle,
   Dimensions,
 } from 'react-native';
-import { Theme } from '../../../Theme.style';
 import * as Linking from 'expo-linking';
 import { Thumbnail, Button } from 'native-base';
 import {
@@ -16,12 +15,13 @@ import {
 } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import moment from 'moment';
 import { MainStackParamList } from '../../../navigation/AppNavigator';
 import { CommentDataType, GetNotesQuery } from '../../../services/API';
 import CommentContext, {
   CommentContextType,
 } from '../../../contexts/CommentContext';
-import moment from 'moment';
+import { Theme } from '../../../Theme.style';
 
 type ContentType =
   | 'unstyled'
@@ -190,14 +190,14 @@ export function CustomText({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [allComments]);
+  }, [block.key, type, allComments.comments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
     setSelected(false);
     navigation.push('CommentScreen', {
       key: block.key,
-      noteId: noteId,
+      noteId,
       commentType: CommentDataType.text,
       noteType: type,
       textSnippet: block.text,
@@ -206,7 +206,7 @@ export function CustomText({
 
   if (processedStyles.length === 0) {
     return (
-      <Fragment>
+      <>
         <Text
           onPress={() => setSelected(!selected)}
           onLayout={(e) => setPos(e.nativeEvent.layout.y)}
@@ -238,82 +238,81 @@ export function CustomText({
         {comments.map((comment) => (
           <Comment key={comment?.id} comment={comment} styles={styles} />
         ))}
-      </Fragment>
+      </>
     );
-  } else {
-    return (
-      <Fragment>
+  }
+  return (
+    <>
+      <Text
+        selectable
+        onLayout={(e) => setPos(e.nativeEvent.layout.y)}
+        onPress={() => setSelected(!selected)}
+        style={{ ...styles.text, marginVertical: 12 }}
+      >
         <Text
-          selectable
-          onLayout={(e) => setPos(e.nativeEvent.layout.y)}
-          onPress={() => setSelected(!selected)}
-          style={{ ...styles.text, marginVertical: 12 }}
+          style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
         >
-          <Text
-            style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
-          >
-            {block.text.slice(0, processedStyles[0].offset)}
-          </Text>
-          {processedStyles.map((style, index) => {
-            return (
-              <Text key={index}>
+          {block.text.slice(0, processedStyles[0].offset)}
+        </Text>
+        {processedStyles.map((style, index) => {
+          return (
+            <Text key={style.offset}>
+              <Text
+                style={{
+                  ...styles.text,
+                  ...style.style,
+                  ...(selected ? underline.selected : {}),
+                }}
+              >
+                {block.text.slice(style.offset, style.offset + style.length)}
+              </Text>
+              {index + 1 < processedStyles.length ? (
                 <Text
                   style={{
                     ...styles.text,
-                    ...style.style,
                     ...(selected ? underline.selected : {}),
                   }}
                 >
-                  {block.text.slice(style.offset, style.offset + style.length)}
+                  {block.text.slice(
+                    style.offset + style.length,
+                    processedStyles[index + 1].offset
+                  )}
                 </Text>
-                {index + 1 < processedStyles.length ? (
-                  <Text
-                    style={{
-                      ...styles.text,
-                      ...(selected ? underline.selected : {}),
-                    }}
-                  >
-                    {block.text.slice(
-                      style.offset + style.length,
-                      processedStyles[index + 1].offset
-                    )}
-                  </Text>
-                ) : null}
-              </Text>
-            );
-          })}
-          <Text
-            style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
-          >
-            {block.text.slice(
-              processedStyles[processedStyles.length - 1].offset +
-                processedStyles[processedStyles.length - 1].length
-            )}
-          </Text>
+              ) : null}
+            </Text>
+          );
+        })}
+        <Text
+          style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
+        >
+          {block.text.slice(
+            processedStyles[processedStyles.length - 1].offset +
+              processedStyles[processedStyles.length - 1].length
+          )}
         </Text>
-        {selected ? (
-          <Button
-            onPress={openComment}
-            transparent
-            style={{ position: 'absolute', right: 16, top: pos - 5 }}
-          >
-            <Thumbnail
-              source={
-                mode === 'dark'
-                  ? Theme.icons.white.addComment
-                  : Theme.icons.black.addComment
-              }
-              square
-              style={{ width: 24, height: 24 }}
-            />
-          </Button>
-        ) : null}
-        {comments.map((comment) => (
-          <Comment key={comment?.id} comment={comment} styles={styles} />
-        ))}
-      </Fragment>
-    );
-  }
+      </Text>
+      {selected ? (
+        <Button
+          onPress={openComment}
+          transparent
+          style={{ position: 'absolute', right: 16, top: pos - 5 }}
+        >
+          <Thumbnail
+            source={
+              mode === 'dark'
+                ? Theme.icons.white.addComment
+                : Theme.icons.black.addComment
+            }
+            square
+            style={{ width: 24, height: 24 }}
+          />
+        </Button>
+      ) : null}
+      {comments.map((comment) => (
+        <Comment key={comment?.id} comment={comment} styles={styles} />
+      ))}
+    </>
+  );
 }
 
 export function CustomListItem({
@@ -335,14 +334,14 @@ export function CustomListItem({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [allComments]);
+  }, [block.key, type, allComments.comments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
     setSelected(false);
     navigation.push('CommentScreen', {
       key: block.key,
-      noteId: noteId,
+      noteId,
       commentType: CommentDataType.text,
       noteType: type,
       textSnippet: block.text,
@@ -351,7 +350,7 @@ export function CustomListItem({
 
   if (processedStyles.length === 0) {
     return (
-      <Fragment>
+      <>
         <Text
           onPress={() => setSelected(!selected)}
           onLayout={(e) => setPos(e.nativeEvent.layout.y)}
@@ -383,92 +382,91 @@ export function CustomListItem({
         {comments.map((comment) => (
           <Comment key={comment?.id} comment={comment} styles={styles} />
         ))}
-      </Fragment>
+      </>
     );
-  } else {
-    return (
-      <Fragment>
+  }
+  return (
+    <>
+      <Text
+        onPress={() => setSelected(!selected)}
+        onLayout={(e) => setPos(e.nativeEvent.layout.y)}
+        style={{
+          ...styles.text,
+          ...{ marginLeft: 16 },
+          ...(selected ? underline.selected : {}),
+        }}
+      >
+        &bull;{' '}
         <Text
-          onPress={() => setSelected(!selected)}
-          onLayout={(e) => setPos(e.nativeEvent.layout.y)}
-          style={{
-            ...styles.text,
-            ...{ marginLeft: 16 },
-            ...(selected ? underline.selected : {}),
-          }}
+          style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
         >
-          &bull;{' '}
-          <Text
-            style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
-          >
-            {block.text.slice(0, processedStyles[0].offset)}
-          </Text>
-          {processedStyles.map((style, index) => {
-            return (
-              <Text key={index}>
+          {block.text.slice(0, processedStyles[0].offset)}
+        </Text>
+        {processedStyles.map((style, index) => {
+          return (
+            <Text key={style.offset}>
+              <Text
+                style={{
+                  ...styles.text,
+                  ...style.style,
+                  ...(selected ? underline.selected : {}),
+                }}
+              >
+                {block.text.slice(style.offset, style.offset + style.length)}
+              </Text>
+              {index + 1 < processedStyles.length ? (
                 <Text
                   style={{
                     ...styles.text,
-                    ...style.style,
                     ...(selected ? underline.selected : {}),
                   }}
                 >
-                  {block.text.slice(style.offset, style.offset + style.length)}
+                  {block.text.slice(
+                    style.offset + style.length,
+                    processedStyles[index + 1].offset
+                  )}
                 </Text>
-                {index + 1 < processedStyles.length ? (
-                  <Text
-                    style={{
-                      ...styles.text,
-                      ...(selected ? underline.selected : {}),
-                    }}
-                  >
-                    {block.text.slice(
-                      style.offset + style.length,
-                      processedStyles[index + 1].offset
-                    )}
-                  </Text>
-                ) : null}
-              </Text>
-            );
-          })}
-          <Text
-            style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
-          >
-            {block.text.slice(
-              processedStyles[processedStyles.length - 1].offset +
-                processedStyles[processedStyles.length - 1].length
-            )}
-          </Text>
+              ) : null}
+            </Text>
+          );
+        })}
+        <Text
+          style={{ ...styles.text, ...(selected ? underline.selected : {}) }}
+        >
+          {block.text.slice(
+            processedStyles[processedStyles.length - 1].offset +
+              processedStyles[processedStyles.length - 1].length
+          )}
         </Text>
-        {selected ? (
-          <Button
-            transparent
-            style={{ position: 'absolute', right: 16, top: pos - 5 }}
-            onPress={openComment}
-          >
-            <Thumbnail
-              source={
-                mode === 'dark'
-                  ? Theme.icons.white.addComment
-                  : Theme.icons.black.addComment
-              }
-              square
-              style={{ width: 24, height: 24 }}
-            />
-          </Button>
-        ) : null}
-        {comments.map((comment) => (
-          <Comment key={comment?.id} comment={comment} styles={styles} />
-        ))}
-      </Fragment>
-    );
-  }
+      </Text>
+      {selected ? (
+        <Button
+          transparent
+          style={{ position: 'absolute', right: 16, top: pos - 5 }}
+          onPress={openComment}
+        >
+          <Thumbnail
+            source={
+              mode === 'dark'
+                ? Theme.icons.white.addComment
+                : Theme.icons.black.addComment
+            }
+            square
+            style={{ width: 24, height: 24 }}
+          />
+        </Button>
+      ) : null}
+      {comments.map((comment) => (
+        <Comment key={comment?.id} comment={comment} styles={styles} />
+      ))}
+    </>
+  );
 }
 
 export function CustomHeading({
   block,
   styles,
-}: CustomTextParams): JSX.Element {
+}: Pick<CustomTextParams, 'block' | 'styles'>): JSX.Element {
   return (
     <Text style={{ ...styles.header, fontFamily: Theme.fonts.fontFamilyBold }}>
       {block.text}
@@ -509,14 +507,14 @@ export function CustomImage({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [allComments]);
+  }, [block.key, type, allComments.comments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
     setSelected(false);
     navigation.push('CommentScreen', {
       key: block.key,
-      noteId: noteId,
+      noteId,
       commentType: CommentDataType.image,
       noteType: type,
       imageUri: data.src,
@@ -524,7 +522,7 @@ export function CustomImage({
   };
 
   return (
-    <Fragment>
+    <>
       <View
         onLayout={(e) => setPos(e.nativeEvent.layout.y)}
         style={{
@@ -575,7 +573,7 @@ export function CustomImage({
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />
       ))}
-    </Fragment>
+    </>
   );
 }
 
@@ -636,7 +634,7 @@ export function HyperLink({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [allComments]);
+  }, [block.key, type, allComments.comments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
@@ -644,7 +642,7 @@ export function HyperLink({
     if (show)
       navigation.push('CommentScreen', {
         key: block.key,
-        noteId: noteId,
+        noteId,
         commentType: CommentDataType.biblePassage,
         noteType: type,
         textSnippet: passage.text,
@@ -652,7 +650,7 @@ export function HyperLink({
     else
       navigation.push('CommentScreen', {
         key: block.key,
-        noteId: noteId,
+        noteId,
         commentType: CommentDataType.text,
         noteType: type,
         textSnippet: block.text,
@@ -690,132 +688,146 @@ export function HyperLink({
       return superscript[num];
     });
 
-    return processed + ' ';
+    return `${processed} `;
+  };
+
+  const renderEndOfBiblePassage = (
+    index: number,
+    length: number,
+    data: any
+  ): string => {
+    if (index === length - 1 || (index === 0 && length <= 2)) {
+      return '';
+    }
+
+    if (data.items[data.items.length - 1]?.text?.includes(':')) {
+      return '\n';
+    }
+
+    return '\n \n';
   };
 
   const parseBibleJSON = (data: any, index: number, length: number) => {
     if (data?.attrs?.style === 's1') {
       return (
         <Text style={styles.header} key={index}>
-          {data.items.map((item: any, index: number) => {
+          {data.items.map((item: any) => {
             if (item.text) {
               return (
                 <Text
-                  key={item.text + index}
+                  key={item.text}
                   style={{
                     ...styles.header,
                     fontFamily: Theme.fonts.fontFamilyBold,
                   }}
                 >
-                  {item.text + '\n'}
+                  {`${item.text}\n`}
                 </Text>
               );
-            } else {
-              return null;
             }
+            return null;
           })}
         </Text>
       );
-    } else if (data?.attrs.style === 'q1' || data?.attrs.style === 'q2') {
+    }
+    if (data?.attrs.style === 'q1' || data?.attrs.style === 'q2') {
       return (
         <Text key={index} style={styles.text}>
-          {data.items.map((item: any, index: number) => {
+          {data.items.map((item: any, dataIndex: number) => {
             if (item.attrs?.style === 'v') {
               return (
-                <Text key={index + 'v'} style={styles.text}>
+                <Text key={item.attrs?.number} style={styles.text}>
                   {replaceVerseNumbers(item.attrs?.number)}
                 </Text>
               );
-            } else if (item.text) {
+            }
+            if (item.text) {
               if (
-                data.items[index - 1] &&
-                data.items[index - 1]?.attrs?.style === 'v'
+                data.items[dataIndex - 1] &&
+                data.items[dataIndex - 1]?.attrs?.style === 'v'
               ) {
                 return (
-                  <Text key={item.text + index} style={styles.text}>
-                    {item.text + (index === length - 1 ? '' : '\n')}
+                  <Text key={item.text} style={styles.text}>
+                    {item.text + (dataIndex === length - 1 ? '' : '\n')}
                   </Text>
                 );
-              } else if (
-                index === 0 &&
+              }
+              if (
+                dataIndex === 0 &&
                 data.items.length >= 2 &&
                 data.items[1].text
               ) {
                 return (
-                  <Text key={item.text + index} style={styles.text}>
+                  <Text key={item.text} style={styles.text}>
                     {(data.attrs.style === 'q2' ? '   ' : '') + item.text}
                   </Text>
                 );
               }
               return (
-                <Text key={item.text + index} style={styles.text}>
+                <Text key={item.text} style={styles.text}>
                   {(data.attrs.style === 'q2' ? '   ' : '') +
                     item.text +
-                    (index === length - 1 ? '' : '\n')}
+                    (dataIndex === length - 1 ? '' : '\n')}
                 </Text>
               );
-            } else if (item.items) {
+            }
+            if (item.items) {
               return (
                 <Text key={index} style={styles.text}>
                   {item.items.map((item2: any) => {
                     return (
-                      <Text key={item2.text + index} style={styles.text}>
+                      <Text key={item2.text} style={styles.text}>
                         {item2.text}
                       </Text>
                     );
                   })}
                 </Text>
               );
-            } else {
-              return null;
             }
+            return null;
           })}
-        </Text>
-      );
-    } else {
-      if (!data.items.length) {
-        return null;
-      }
-      return (
-        <Text key={index} style={styles.text}>
-          {index === 0 ? '' : '   '}
-          {data.items.map((item: any, index: number) => {
-            if (item.attrs?.style === 'v') {
-              return (
-                <Text key={index + 'v'} style={styles.text}>
-                  {replaceVerseNumbers(item.attrs?.number)}
-                </Text>
-              );
-            } else if (item.text) {
-              return (
-                <Text key={item.text + index} style={styles.text}>
-                  {item.text}
-                </Text>
-              );
-            } else if (item.items) {
-              return (
-                <Text key={index} style={styles.text}>
-                  {item.items.map((item2: any) => {
-                    return (
-                      <Text key={item2.text + index} style={styles.text}>
-                        {item2.text}
-                      </Text>
-                    );
-                  })}
-                </Text>
-              );
-            } else {
-              return null;
-            }
-          })}
-          {index === length - 1 || (index === 0 && length <= 2)
-            ? ''
-            : data.items[data.items.length - 1]?.text?.includes(':')
-            ? '\n'
-            : '\n \n'}
         </Text>
       );
     }
+    if (!data.items.length) {
+      return null;
+    }
+    return (
+      <Text key={index} style={styles.text}>
+        {index === 0 ? '' : '   '}
+        {data.items.map((item: any) => {
+          if (item.attrs?.style === 'v') {
+            return (
+              <Text key={item.attrs?.number} style={styles.text}>
+                {replaceVerseNumbers(item.attrs?.number)}
+              </Text>
+            );
+          }
+          if (item.text) {
+            return (
+              <Text key={item.text} style={styles.text}>
+                {item.text}
+              </Text>
+            );
+          }
+          if (item.items) {
+            return (
+              <Text key={item.items[0].text} style={styles.text}>
+                {item.items.map((item2: any) => {
+                  return (
+                    <Text key={item2.text} style={styles.text}>
+                      {item2.text}
+                    </Text>
+                  );
+                })}
+              </Text>
+            );
+          }
+          return null;
+        })}
+        {renderEndOfBiblePassage(index, length, data)}
+      </Text>
+    );
   };
 
   const renderBibleVerse = (reference: string) => {
@@ -827,9 +839,8 @@ export function HyperLink({
     if (biblePassage?.content) {
       try {
         passageJSON = JSON.parse(biblePassage?.content);
-      } catch (e) {
+      } catch {
         passageJSON = null;
-        console.debug(e);
       }
     }
 
@@ -868,7 +879,7 @@ export function HyperLink({
               source={Theme.icons.white.newWindow}
               square
               style={{ width: 16, height: 16 }}
-            ></Thumbnail>
+            />
           </TouchableOpacity>
         </View>
         {!passageJSON ? (
@@ -888,7 +899,7 @@ export function HyperLink({
   };
 
   return (
-    <Fragment>
+    <>
       <Text
         style={{ ...styles.text, marginVertical: 12 }}
         onLayout={(e) => setPos(e.nativeEvent.layout.y)}
@@ -901,7 +912,7 @@ export function HyperLink({
         </Text>
         {links.map((link, index) => {
           return (
-            <Text key={index}>
+            <Text key={link.text}>
               <Text
                 onPress={() => handleClick(link)}
                 style={{
@@ -971,6 +982,6 @@ export function HyperLink({
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />
       ))}
-    </Fragment>
+    </>
   );
 }

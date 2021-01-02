@@ -1,11 +1,12 @@
 import React from 'react';
-import { Theme } from '../../Theme.style';
 import { Text } from 'native-base';
-import FallbackImage from '../FallbackImage';
 import { StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
-const width = Dimensions.get('screen').width;
+import { Theme } from '../../Theme.style';
+import FallbackImage from '../FallbackImage';
+import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
+
+const { width } = Dimensions.get('screen');
 
 const style = StyleSheet.create({
   container: {
@@ -50,7 +51,7 @@ export default function SeriesItem({
         navigation.push('SeriesLandingScreen', {
           item: seriesData,
           seriesId: seriesData.id,
-          customPlaylist: customPlaylist,
+          customPlaylist,
         });
       }}
       style={style.seriesItem}

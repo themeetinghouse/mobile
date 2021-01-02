@@ -1,11 +1,11 @@
 import { Button, Text, Thumbnail, View } from 'native-base';
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
-import MediaContext from '../../contexts/MediaContext';
-import { Theme } from '../../Theme.style';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Theme } from '../../Theme.style';
+import MediaContext from '../../contexts/MediaContext';
 import MiniPlayerStyleContext from '../../contexts/MiniPlayerStyleContext';
 
 interface Params {
@@ -13,7 +13,7 @@ interface Params {
 }
 
 export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
-  const width = Dimensions.get('window').width;
+  const { width } = Dimensions.get('window');
   const mediaContext = useContext(MediaContext);
   const [videoReady, setVideoReady] = useState(false);
   const [audioDuration, setAudioDuration] = useState(0.1);
@@ -85,17 +85,17 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     },
   });
 
-  const bottomTabHidden = [
-    'NotesScreen',
-    'ProfileScreen',
-    'AccountScreen',
-    'ChangePasswordScreen',
-    'LocationSelectionScreen',
-    'DateRangeSelectScreen',
-    'SermonLandingScreen',
-  ];
-
   useEffect(() => {
+    const bottomTabHidden = [
+      'NotesScreen',
+      'ProfileScreen',
+      'AccountScreen',
+      'ChangePasswordScreen',
+      'LocationSelectionScreen',
+      'DateRangeSelectScreen',
+      'SermonLandingScreen',
+    ];
+
     if (bottomTabHidden.includes(currentScreen)) {
       setBottomPos(0);
     } else {
@@ -114,6 +114,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     return () => clearInterval(interval);
   }, []);
 
+  function updateAudioPosition(e: AVPlaybackStatus) {
+    if (e.isLoaded) {
+      setAudioPosition(Math.round(e.positionMillis));
+      if (e.durationMillis) setAudioDuration(Math.round(e.durationMillis));
+    }
+  }
+
   useEffect(() => {
     async function updateAudio() {
       if (mediaContext.media.playerType === 'mini audio') {
@@ -127,13 +134,6 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     }
     updateAudio();
   }, [mediaContext]);
-
-  function updateAudioPosition(e: AVPlaybackStatus) {
-    if (e.isLoaded) {
-      setAudioPosition(Math.round(e.positionMillis));
-      if (e.durationMillis) setAudioDuration(Math.round(e.durationMillis));
-    }
-  }
 
   const handleVideoReady = () => {
     playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
@@ -242,7 +242,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                       : Theme.icons.white.playMiniPlayer
                   }
                   style={{ width: 24, height: 24 }}
-                ></Thumbnail>
+                />
               </Button>
               <Button
                 transparent
@@ -253,7 +253,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                   accessibilityLabel="Close Mini-player"
                   source={Theme.icons.white.closeCancel}
                   style={{ width: 24, height: 24 }}
-                ></Thumbnail>
+                />
               </Button>
             </View>
           </View>
@@ -265,13 +265,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                 width: width * (audioPosition / audioDuration),
                 backgroundColor: Theme.colors.grey5,
               }}
-            ></View>
+            />
             <View
               style={{
                 width: width * (audioDuration - audioPosition / audioDuration),
                 backgroundColor: Theme.colors.grey2,
               }}
-            ></View>
+            />
           </View>
         </View>
       );
@@ -333,7 +333,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                     : Theme.icons.white.playMiniPlayer
                 }
                 style={{ width: 24, height: 24 }}
-              ></Thumbnail>
+              />
             </Button>
             <Button
               transparent
@@ -344,7 +344,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                 accessibilityLabel="Close Mini-player"
                 source={Theme.icons.white.closeCancel}
                 style={{ width: 24, height: 24 }}
-              ></Thumbnail>
+              />
             </Button>
           </View>
         </View>

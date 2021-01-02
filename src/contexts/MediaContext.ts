@@ -38,4 +38,5 @@ const MediaContext = createContext<MediaContextType>({
   closeVideo: () => null,
   setPlayerTypeNone: () => null,
 });
+
 export default MediaContext;

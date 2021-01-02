@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import Theme from '../Theme.style';
 
-const style = StyleSheet.create({
+const indicatorStyle = StyleSheet.create({
   container: {
     padding: 15,
   },
@@ -18,14 +18,17 @@ interface Props {
   style?: ViewStyle;
 }
 
-export default function ActivityIndicator(props: Props): JSX.Element {
+export default function ActivityIndicator({
+  animating,
+  style,
+}: Props): JSX.Element {
   return (
-    <View style={[style.container, props.style]}>
+    <View style={[indicatorStyle.container, style]}>
       <NativeActivityIndicator
         size="large"
         color={Theme.colors.white}
-        animating={props.animating}
-      ></NativeActivityIndicator>
+        animating={animating}
+      />
     </View>
   );
 }

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Platform, Animated } from 'react-native';
 import { View, Text } from 'native-base';
-import { Theme } from '../../Theme.style';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  TouchableOpacity,
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
   text: {

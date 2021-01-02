@@ -1,12 +1,12 @@
 import React, { useLayoutEffect } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import { TouchableOpacity, StyleSheet } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = StyleSheet.create({
@@ -90,7 +90,7 @@ export default function AllSermonsScreen({
         return <View style={{ flex: 1 }} />;
       },
     });
-  });
+  }, [navigation]);
 
   return (
     <Container>

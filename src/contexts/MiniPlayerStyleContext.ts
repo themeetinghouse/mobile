@@ -10,4 +10,5 @@ const MiniPlayerStyleContext = createContext<MiniPlayerStyleContext>({
   display: 'flex',
   setDisplay: () => null,
 });
+
 export default MiniPlayerStyleContext;

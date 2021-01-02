@@ -14,4 +14,5 @@ const LocationContext = createContext<LocationContext>({
   locationData: null,
   setLocationData: () => null,
 });
+
 export default LocationContext;

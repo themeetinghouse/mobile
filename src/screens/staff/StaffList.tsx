@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { Thumbnail } from 'native-base';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import StaffItem from '../../components/staff/StaffItem';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { MoreStackParamList } from '../../navigation/MainTabNavigator';
-import { RouteProp } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
@@ -26,7 +25,6 @@ const style = StyleSheet.create({
 
 interface Params {
   navigation: StackNavigationProp<MoreStackParamList>;
-  route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
 export type Staff = {
   FirstName: string;
@@ -42,7 +40,7 @@ export type Staff = {
 export default function StaffList({ navigation }: Params): JSX.Element {
   const [staff, setStaffByName] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -85,22 +83,24 @@ export default function StaffList({ navigation }: Params): JSX.Element {
       },
     });
   }, [navigation]);
+
   useEffect(() => {
     const loadStaff = async () => {
-      setisLoading(true);
+      setIsLoading(true);
       const staffResults = await StaffDirectoryService.loadStaffList();
       setStaffByName(
         staffResults.sort((a: any, b: any) =>
-          a.LastName > b.LastName ? 1 : b.LastName > a.LastName ? -1 : 0
+          (a?.lastName ?? '').localeCompare(b?.lastName ?? '')
         )
       );
-      setisLoading(false);
+      setIsLoading(false);
     };
     loadStaff();
     return () => {
       console.log('Cleanup'); // cancel async stuff here
     };
   }, []);
+
   return (
     <>
       {isLoading ? (
@@ -113,7 +113,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             bottom: '50%',
           }}
         >
-          <ActivityIndicator animating={isLoading}></ActivityIndicator>
+          <ActivityIndicator animating={isLoading} />
         </View>
       ) : null}
       <FlatList
@@ -125,8 +125,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
               searchText={searchText}
               handleTextChanged={(newStr) => setSearchText(newStr)}
               placeholderLabel="Search by name or location..."
-            ></SearchBar>
-            {/*<ToggleButton sortByName={sortByName} setSortByName={setSortByName} btnText_one={"By Location"} btnText_two={"By Last Name"}></ToggleButton> */}
+            />
           </View>
         }
         data={staff.filter(
@@ -136,9 +135,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             searchText === '' ||
             item.Location.toLowerCase().includes(searchText.toLowerCase())
         )}
-        renderItem={({ item }: any) => (
-          <StaffItem navigation={navigation} staff={item}></StaffItem>
-        )}
+        renderItem={({ item }: any) => <StaffItem staff={item} />}
         initialNumToRender={10}
       />
     </>

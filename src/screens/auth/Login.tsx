@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,26 +13,26 @@ import {
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { Analytics } from '@aws-amplify/analytics';
-import { Theme, Style } from '../../Theme.style';
-import WhiteButton, {
-  WhiteButtonAsync,
-} from '../../components/buttons/WhiteButton';
-import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import {
   CompositeNavigationProp,
   useRoute,
   RouteProp,
 } from '@react-navigation/native';
-import { MainStackParamList } from '../../navigation/AppNavigator';
 import { Thumbnail, Button } from 'native-base';
-import LocationContext from '../../contexts/LocationContext';
-import LocationsService from '../../services/LocationsService';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MediaContext from '../../contexts/MediaContext';
 import * as Notifications from 'expo-notifications';
+import { Theme, Style } from '../../Theme.style';
+import WhiteButton, {
+  WhiteButtonAsync,
+} from '../../components/buttons/WhiteButton';
+import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
+import { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import LocationContext from '../../contexts/LocationContext';
+import LocationsService from '../../services/LocationsService';
+import NoMedia from '../../components/NoMedia';
 
 const style = StyleSheet.create({
   title: {
@@ -107,7 +107,6 @@ export default function Login({ navigation }: Params): JSX.Element {
   const [sending, setSending] = useState(false);
 
   const safeArea = useSafeAreaInsets();
-  const media = useContext(MediaContext);
   const userContext = useContext(UserContext);
   const location = useContext(LocationContext);
   const route = useRoute<RouteProp<AuthStackParamList, 'LoginScreen'>>();
@@ -116,29 +115,7 @@ export default function Login({ navigation }: Params): JSX.Element {
     if (route.params?.newUser) {
       setError(accountVerifiedMessage);
     }
-  }, [route]);
-
-  useEffect(() => {
-    async function closeMedia() {
-      if (media.media.audio) {
-        try {
-          await media.media.audio?.sound.unloadAsync();
-        } catch (e) {
-          console.debug(e);
-        }
-      }
-      media.setMedia({
-        video: null,
-        videoTime: 0,
-        audio: null,
-        playerType: 'none',
-        playing: false,
-        series: '',
-        episode: '',
-      });
-    }
-    closeMedia();
-  }, []);
+  }, [route.params?.newUser]);
 
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
     setUser('');
@@ -153,24 +130,24 @@ export default function Login({ navigation }: Params): JSX.Element {
     setError('');
     navigation.push('Main', {
       screen: 'Home',
-      params: { screen: 'HomeScreen' },
     });
   }
 
   function handleEnter(
     keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => any
+    cb: () => void
   ): void {
     if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
+
   const mapObj = (f: any) => (obj: any) =>
     Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
   const toArrayOfStrings = (value: any) => [`${value}`];
   const mapToArrayOfStrings = mapObj(toArrayOfStrings);
 
-  async function trackUserId(user: TMHCognitoUser) {
+  async function trackUserId(cognitoUser: TMHCognitoUser) {
     try {
-      const attributes = user.attributes;
+      const { attributes } = cognitoUser;
       const userAttributes = mapToArrayOfStrings(attributes);
       const token = (await Notifications.getDevicePushTokenAsync()).data;
       await Analytics.updateEndpoint({
@@ -180,8 +157,8 @@ export default function Login({ navigation }: Params): JSX.Element {
         userId: attributes?.sub,
         userAttributes,
       });
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e);
     }
   }
   const signIn = async () => {
@@ -206,139 +183,141 @@ export default function Login({ navigation }: Params): JSX.Element {
         });
       navigateHome();
     } catch (e) {
-      console.debug(e);
       setError(e.message);
     }
     setSending(false);
   };
 
   return (
-    <ScrollView
-      style={{ width: '100%', paddingTop: safeArea.top }}
-      contentContainerStyle={{
-        minHeight:
-          Platform.OS === 'android'
-            ? Dimensions.get('window').height - (StatusBar.currentHeight ?? 24)
-            : Dimensions.get('screen').height - safeArea.top,
-      }}
-    >
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'black',
-          paddingTop: 20,
+    <NoMedia>
+      <ScrollView
+        style={{ width: '100%', paddingTop: safeArea.top }}
+        contentContainerStyle={{
+          minHeight:
+            Platform.OS === 'android'
+              ? Dimensions.get('window').height -
+                (StatusBar.currentHeight ?? 24)
+              : Dimensions.get('screen').height - safeArea.top,
         }}
       >
-        <Button
-          transparent
-          style={{ position: 'absolute', left: '5%' }}
-          onPress={() => navigateHome()}
-        >
-          <Thumbnail
-            square
-            accessibilityLabel="Close Button"
-            source={Theme.icons.white.closeCancel}
-            style={{ width: 24, height: 24 }}
-          ></Thumbnail>
-        </Button>
-        <Text style={style.headerTextActive}>Login</Text>
-        <Text
-          onPress={() => navigateInAuthStack('SignUpScreen')}
-          style={style.headerTextInactive}
-        >
-          Sign Up
-        </Text>
-      </View>
-      <View
-        style={{
-          flexGrow: 1,
-          backgroundColor: 'black',
-          width: '100%',
-          paddingHorizontal: '5%',
-          paddingBottom: 56,
-        }}
-      >
-        <Text style={style.title}>Email</Text>
-        <TextInput
-          accessibilityLabel="Email Address"
-          keyboardAppearance="dark"
-          autoCompleteType="email"
-          textContentType="emailAddress"
-          keyboardType="email-address"
-          style={style.input}
-          value={user}
-          autoCapitalize="none"
-          onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
-        />
-        <Text style={style.title}>Password</Text>
-        <TextInput
-          accessibilityLabel="Password"
-          keyboardAppearance="dark"
-          autoCompleteType="password"
-          textContentType="password"
-          onKeyPress={(e) => handleEnter(e, signIn)}
-          value={pass}
-          onChange={(e) => setPass(e.nativeEvent.text)}
-          secureTextEntry={true}
-          style={style.input}
-        />
-        <TouchableOpacity
-          onPress={() => navigateInAuthStack('ForgotPasswordScreen')}
-          style={{ alignSelf: 'flex-end' }}
-        >
-          <Text style={style.forgotPassText}>Forgot Password?</Text>
-        </TouchableOpacity>
-        <View style={{ marginTop: 12 }}>
-          <Text
-            style={{
-              color:
-                error === accountVerifiedMessage
-                  ? Theme.colors.green
-                  : Theme.colors.red,
-              alignSelf: 'center',
-              fontFamily: Theme.fonts.fontFamilyRegular,
-              fontSize: 12,
-            }}
-          >
-            {error}
-          </Text>
-        </View>
-        <WhiteButtonAsync
-          isLoading={sending}
-          label={'Log In'}
-          onPress={signIn}
-          style={{ marginTop: 12, height: 56 }}
-        />
-      </View>
-      <View
-        style={{
-          flexGrow: 0,
-          paddingVertical: 16,
-          paddingBottom: 52,
-          backgroundColor: Theme.colors.background,
-          paddingHorizontal: '5%',
-        }}
-      >
-        <Text
+        <View
           style={{
-            color: Theme.colors.grey5,
-            alignSelf: 'center',
-            fontSize: 16,
-            fontFamily: Theme.fonts.fontFamilyRegular,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black',
+            paddingTop: 20,
           }}
         >
-          Don&apos;t have an account?
-        </Text>
-        <WhiteButton
-          outlined
-          label="Sign Up"
-          onPress={() => navigateInAuthStack('SignUpScreen')}
-          style={{ marginTop: 12, height: 56 }}
-        />
-      </View>
-    </ScrollView>
+          <Button
+            transparent
+            style={{ position: 'absolute', left: '5%' }}
+            onPress={() => navigateHome()}
+          >
+            <Thumbnail
+              square
+              accessibilityLabel="Close Button"
+              source={Theme.icons.white.closeCancel}
+              style={{ width: 24, height: 24 }}
+            />
+          </Button>
+          <Text style={style.headerTextActive}>Login</Text>
+          <Text
+            onPress={() => navigateInAuthStack('SignUpScreen')}
+            style={style.headerTextInactive}
+          >
+            Sign Up
+          </Text>
+        </View>
+        <View
+          style={{
+            flexGrow: 1,
+            backgroundColor: 'black',
+            width: '100%',
+            paddingHorizontal: '5%',
+            paddingBottom: 56,
+          }}
+        >
+          <Text style={style.title}>Email</Text>
+          <TextInput
+            accessibilityLabel="Email Address"
+            keyboardAppearance="dark"
+            autoCompleteType="email"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+            style={style.input}
+            value={user}
+            autoCapitalize="none"
+            onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
+          />
+          <Text style={style.title}>Password</Text>
+          <TextInput
+            accessibilityLabel="Password"
+            keyboardAppearance="dark"
+            autoCompleteType="password"
+            textContentType="password"
+            onKeyPress={(e) => handleEnter(e, signIn)}
+            value={pass}
+            onChange={(e) => setPass(e.nativeEvent.text)}
+            secureTextEntry
+            style={style.input}
+          />
+          <TouchableOpacity
+            onPress={() => navigateInAuthStack('ForgotPasswordScreen')}
+            style={{ alignSelf: 'flex-end' }}
+          >
+            <Text style={style.forgotPassText}>Forgot Password?</Text>
+          </TouchableOpacity>
+          <View style={{ marginTop: 12 }}>
+            <Text
+              style={{
+                color:
+                  error === accountVerifiedMessage
+                    ? Theme.colors.green
+                    : Theme.colors.red,
+                alignSelf: 'center',
+                fontFamily: Theme.fonts.fontFamilyRegular,
+                fontSize: 12,
+              }}
+            >
+              {error}
+            </Text>
+          </View>
+          <WhiteButtonAsync
+            isLoading={sending}
+            label="Log In"
+            onPress={signIn}
+            style={{ marginTop: 12, height: 56 }}
+          />
+        </View>
+        <View
+          style={{
+            flexGrow: 0,
+            paddingVertical: 16,
+            paddingBottom: 52,
+            backgroundColor: Theme.colors.background,
+            paddingHorizontal: '5%',
+          }}
+        >
+          <Text
+            style={{
+              color: Theme.colors.grey5,
+              alignSelf: 'center',
+              fontSize: 16,
+              fontFamily: Theme.fonts.fontFamilyRegular,
+            }}
+          >
+            Don&apos;t have an account?
+          </Text>
+          <WhiteButton
+            outlined
+            label="Sign Up"
+            onPress={() => navigateInAuthStack('SignUpScreen')}
+            style={{ marginTop: 12, height: 56 }}
+          />
+        </View>
+      </ScrollView>
+    </NoMedia>
   );
 }

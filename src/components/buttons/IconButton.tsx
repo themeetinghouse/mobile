@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Right, Thumbnail, Text } from 'native-base';
-import { Theme, Style } from '../../Theme.style';
 import {
   TouchableOpacity,
   ImageSourcePropType,
   StyleSheet,
+  ViewStyle,
+  TextStyle,
 } from 'react-native';
+import { Theme, Style } from '../../Theme.style';
 
-const style = StyleSheet.create({
+const buttonStyle = StyleSheet.create({
   container: {
     paddingTop: 10,
     paddingBottom: 10,
@@ -39,35 +41,43 @@ const style = StyleSheet.create({
 });
 
 interface Props {
-  style?: any;
-  onPress?: () => any;
+  style?: ViewStyle;
+  labelStyle?: TextStyle;
+  onPress?: () => void;
   icon?: ImageSourcePropType;
   label: string;
   rightArrow?: boolean;
 }
 
-export default function IconButton(props: Props): JSX.Element {
+export default function IconButton({
+  style,
+  labelStyle,
+  onPress,
+  icon,
+  label,
+  rightArrow,
+}: Props): JSX.Element {
   return (
-    <View style={[style.container, props.style]}>
-      <TouchableOpacity style={style.button} onPress={props.onPress}>
-        {props.icon && (
+    <View style={[buttonStyle.container, style]}>
+      <TouchableOpacity style={buttonStyle.button} onPress={onPress}>
+        {icon && (
           <Thumbnail
             square
-            source={props.icon}
-            style={[Style.icon, style.icon]}
-          ></Thumbnail>
+            source={icon}
+            style={[Style.icon, buttonStyle.icon]}
+          />
         )}
         <View>
-          <Text style={[style.label, (props.style && props.style.label) || {}]}>
-            {props.label}
+          <Text style={[buttonStyle.label, (style && labelStyle) || {}]}>
+            {label}
           </Text>
         </View>
-        {props.rightArrow && (
+        {rightArrow && (
           <Right>
             <Thumbnail
               source={Theme.icons.white.arrow}
-              style={style.iconRight}
-            ></Thumbnail>
+              style={buttonStyle.iconRight}
+            />
           </Right>
         )}
       </TouchableOpacity>

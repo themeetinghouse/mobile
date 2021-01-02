@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Right, Text, Thumbnail } from 'native-base';
+import { StyleSheet, ImageSourcePropType } from 'react-native';
+
 import { Theme } from '../../Theme.style';
-import { StyleSheet } from 'react-native';
-import { ImageSourcePropType } from 'react-native';
 
 const style = StyleSheet.create({
   button: {
@@ -27,7 +27,7 @@ const style = StyleSheet.create({
 
 type Params = {
   children: string;
-  handlePress?(): any;
+  handlePress?(): void;
   icon?: ImageSourcePropType;
 };
 
@@ -46,7 +46,7 @@ export default function AllButton({
           square
           source={icon ?? Theme.icons.white.arrow}
           style={style.icon}
-        ></Thumbnail>
+        />
       </Right>
     </Button>
   );

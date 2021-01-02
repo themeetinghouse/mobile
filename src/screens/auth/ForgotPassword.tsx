@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { Auth } from '@aws-amplify/auth';
 import {
   StyleSheet,
@@ -12,16 +12,16 @@ import {
   Keyboard,
   TouchableOpacity,
 } from 'react-native';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import WhiteButton, {
   WhiteButtonAsync,
 } from '../../components/buttons/WhiteButton';
 import { Theme, Style } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
-import { CompositeNavigationProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import MediaContext from '../../contexts/MediaContext';
+import NoMedia from '../../components/NoMedia';
 
 const style = StyleSheet.create({
   title: {
@@ -75,37 +75,14 @@ interface Params {
   >;
 }
 
-export default function Login({ navigation }: Params): JSX.Element {
+export default function ForgotPassword({ navigation }: Params): JSX.Element {
   const userContext = useContext(UserContext);
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [codeSent, setCodeSent] = useState(false);
-  const media = useContext(MediaContext);
   const [sending, setSending] = useState(false);
-
-  useEffect(() => {
-    async function closeMedia() {
-      if (media.media.audio) {
-        try {
-          await media.media.audio?.sound.unloadAsync();
-        } catch (e) {
-          console.debug(e);
-        }
-      }
-      media.setMedia({
-        video: null,
-        videoTime: 0,
-        audio: null,
-        playerType: 'none',
-        playing: false,
-        series: '',
-        episode: '',
-      });
-    }
-    closeMedia();
-  }, []);
 
   function updateCodeState(state: boolean): void {
     setPass('');
@@ -131,13 +108,12 @@ export default function Login({ navigation }: Params): JSX.Element {
     setCodeSent(false);
     navigation.push('Main', {
       screen: 'Home',
-      params: { screen: 'HomeScreen' },
     });
   }
 
   function handleEnter(
     keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => any
+    cb: () => void
   ): void {
     if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
@@ -147,7 +123,6 @@ export default function Login({ navigation }: Params): JSX.Element {
     try {
       await Auth.forgotPassword(user).then(() => updateCodeState(true));
     } catch (e) {
-      console.debug(e);
       if (e.code === 'UserNotFoundException') setError('Username not found.');
       else if (e.code === 'InvalidPasswordException')
         setError(e.message.split(': ')[1]);
@@ -165,164 +140,167 @@ export default function Login({ navigation }: Params): JSX.Element {
       updateCodeState(true);
       toLogin();
     } catch (e) {
-      console.debug(e);
       setError(e.message);
     }
     setSending(false);
   };
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <View style={{ width: '100%', flex: 1 }}>
-        <SafeAreaView style={{ backgroundColor: 'black' }} />
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingTop: 20,
-            backgroundColor: 'black',
-          }}
-        >
-          <Text style={style.headerTextActive}>Reset your password</Text>
-        </View>
-        {!codeSent ? (
+    <NoMedia>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={{ width: '100%', flex: 1 }}>
+          <SafeAreaView style={{ backgroundColor: 'black' }} />
           <View
             style={{
-              flexGrow: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingTop: 20,
               backgroundColor: 'black',
-              width: '100%',
-              paddingHorizontal: '5%',
-              paddingBottom: 56,
             }}
           >
-            <Text style={style.title}>Email</Text>
-            <TextInput
-              accessibilityLabel="Email Address"
-              onKeyPress={(e) => handleEnter(e, sendCode)}
-              keyboardAppearance="dark"
-              autoCompleteType="email"
-              textContentType="emailAddress"
-              keyboardType="email-address"
-              style={style.input}
-              value={user}
-              autoCapitalize="none"
-              onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
-            />
-            <View style={{ marginTop: 12 }}>
-              <Text
-                style={{
-                  color: Theme.colors.red,
-                  alignSelf: 'center',
-                  fontFamily: Theme.fonts.fontFamilyRegular,
-                  fontSize: 12,
-                }}
-              >
-                {error}
-              </Text>
-            </View>
-            <WhiteButtonAsync
-              isLoading={sending}
-              label={'Submit'}
-              onPress={sendCode}
-              style={{ marginTop: 12, height: 56 }}
-            />
-            <TouchableOpacity
-              onPress={() => updateCodeState(true)}
-              style={{ alignSelf: 'flex-end' }}
+            <Text style={style.headerTextActive}>Reset your password</Text>
+          </View>
+          {!codeSent ? (
+            <View
+              style={{
+                flexGrow: 1,
+                backgroundColor: 'black',
+                width: '100%',
+                paddingHorizontal: '5%',
+                paddingBottom: 56,
+              }}
             >
-              <Text style={style.forgotPassText}>Submit a Code</Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
+              <Text style={style.title}>Email</Text>
+              <TextInput
+                accessibilityLabel="Email Address"
+                onKeyPress={(e) => handleEnter(e, sendCode)}
+                keyboardAppearance="dark"
+                autoCompleteType="email"
+                textContentType="emailAddress"
+                keyboardType="email-address"
+                style={style.input}
+                value={user}
+                autoCapitalize="none"
+                onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
+              />
+              <View style={{ marginTop: 12 }}>
+                <Text
+                  style={{
+                    color: Theme.colors.red,
+                    alignSelf: 'center',
+                    fontFamily: Theme.fonts.fontFamilyRegular,
+                    fontSize: 12,
+                  }}
+                >
+                  {error}
+                </Text>
+              </View>
+              <WhiteButtonAsync
+                isLoading={sending}
+                label="Submit"
+                onPress={sendCode}
+                style={{ marginTop: 12, height: 56 }}
+              />
+              <TouchableOpacity
+                onPress={() => updateCodeState(true)}
+                style={{ alignSelf: 'flex-end' }}
+              >
+                <Text style={style.forgotPassText}>Submit a Code</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View
+              style={{
+                flexGrow: 1,
+                backgroundColor: 'black',
+                width: '100%',
+                paddingHorizontal: '5%',
+                paddingBottom: 56,
+              }}
+            >
+              <Text style={style.title}>Email</Text>
+              <TextInput
+                accessibilityLabel="Email Address"
+                keyboardAppearance="dark"
+                autoCompleteType="email"
+                textContentType="emailAddress"
+                keyboardType="email-address"
+                style={style.input}
+                value={user}
+                autoCapitalize="none"
+                onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
+              />
+              <Text style={style.title}>One-Time Security Code</Text>
+              <TextInput
+                accessibilityLabel="One-time security code"
+                keyboardAppearance="dark"
+                textContentType="oneTimeCode"
+                keyboardType="number-pad"
+                style={style.input}
+                value={code}
+                onChange={(e) => setCode(e.nativeEvent.text)}
+              />
+              <Text style={style.title}>New Password</Text>
+              <TextInput
+                accessibilityLabel="New Password"
+                textContentType="newPassword"
+                passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
+                keyboardAppearance="dark"
+                onKeyPress={(e) => handleEnter(e, reset)}
+                value={pass}
+                onChange={(e) => setPass(e.nativeEvent.text)}
+                secureTextEntry
+                style={style.input}
+              />
+              <View style={{ marginTop: 12 }}>
+                <Text
+                  style={{
+                    color: Theme.colors.red,
+                    alignSelf: 'center',
+                    fontFamily: Theme.fonts.fontFamilyRegular,
+                    fontSize: 12,
+                  }}
+                >
+                  {error}
+                </Text>
+              </View>
+              <WhiteButtonAsync
+                isLoading={sending}
+                label="Submit"
+                onPress={reset}
+                style={{ marginTop: 12, height: 56 }}
+              />
+            </View>
+          )}
           <View
             style={{
-              flexGrow: 1,
-              backgroundColor: 'black',
-              width: '100%',
+              flexGrow: 0,
+              paddingBottom: 52,
+              backgroundColor: Theme.colors.background,
               paddingHorizontal: '5%',
-              paddingBottom: 56,
             }}
           >
-            <Text style={style.title}>Email</Text>
-            <TextInput
-              accessibilityLabel="Email Address"
-              keyboardAppearance="dark"
-              autoCompleteType="email"
-              textContentType="emailAddress"
-              keyboardType="email-address"
-              style={style.input}
-              value={user}
-              autoCapitalize="none"
-              onChange={(e) => setUser(e.nativeEvent.text.toLowerCase())}
-            />
-            <Text style={style.title}>One-Time Security Code</Text>
-            <TextInput
-              accessibilityLabel="One-time security code"
-              keyboardAppearance="dark"
-              textContentType="oneTimeCode"
-              keyboardType="number-pad"
-              style={style.input}
-              value={code}
-              onChange={(e) => setCode(e.nativeEvent.text)}
-            />
-            <Text style={style.title}>New Password</Text>
-            <TextInput
-              accessibilityLabel="New Password"
-              textContentType="newPassword"
-              passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
-              keyboardAppearance="dark"
-              onKeyPress={(e) => handleEnter(e, reset)}
-              value={pass}
-              onChange={(e) => setPass(e.nativeEvent.text)}
-              secureTextEntry={true}
-              style={style.input}
-            />
-            <View style={{ marginTop: 12 }}>
-              <Text
-                style={{
-                  color: Theme.colors.red,
-                  alignSelf: 'center',
-                  fontFamily: Theme.fonts.fontFamilyRegular,
-                  fontSize: 12,
-                }}
-              >
-                {error}
-              </Text>
-            </View>
-            <WhiteButtonAsync
-              isLoading={sending}
-              label={'Submit'}
-              onPress={reset}
-              style={{ marginTop: 12, height: 56 }}
+            <WhiteButton
+              outlined
+              label={
+                // eslint-disable-next-line camelcase
+                userContext?.userData?.email_verified
+                  ? 'Back to home'
+                  : 'Back to login'
+              }
+              onPress={
+                // eslint-disable-next-line camelcase
+                userContext?.userData?.email_verified
+                  ? () => toHome()
+                  : () => toLogin()
+              }
+              style={{ marginTop: 24, height: 56 }}
             />
           </View>
-        )}
-        <View
-          style={{
-            flexGrow: 0,
-            paddingBottom: 52,
-            backgroundColor: Theme.colors.background,
-            paddingHorizontal: '5%',
-          }}
-        >
-          <WhiteButton
-            outlined
-            label={
-              userContext?.userData?.email_verified
-                ? 'Back to home'
-                : 'Back to login'
-            }
-            onPress={
-              userContext?.userData?.email_verified
-                ? () => toHome()
-                : () => toLogin()
-            }
-            style={{ marginTop: 24, height: 56 }}
-          />
         </View>
-      </View>
-    </TouchableWithoutFeedback>
+      </TouchableWithoutFeedback>
+    </NoMedia>
   );
 }

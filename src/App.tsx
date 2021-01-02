@@ -1,32 +1,34 @@
+/* eslint-disable global-require */
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import React, { useEffect, useState, createRef, useRef } from 'react';
 import { Platform, StatusBar, ViewStyle } from 'react-native';
-import AppNavigator from './navigation/AppNavigator';
-import LocationsService from './services/LocationsService';
+
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
-import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
-import CommentContext, { CommentContextType } from './contexts/CommentContext';
-import LocationContext, { LocationData } from './contexts/LocationContext';
-import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
-import MediaContext, { MediaData } from './contexts/MediaContext';
 import {
   DefaultTheme,
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import MiniPlayer from './components/teaching/MiniPlayer';
 import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { init as initSentry } from 'sentry-expo';
-import { version } from '../version';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import * as Constants from 'expo-constants';
 import { Subscription } from '@unimodules/core';
 import { Analytics } from 'aws-amplify';
 import { registerRootComponent } from 'expo';
+import MiniPlayer from './components/teaching/MiniPlayer';
+import { version } from '../version';
+import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
+import CommentContext, { CommentContextType } from './contexts/CommentContext';
+import LocationContext, { LocationData } from './contexts/LocationContext';
+import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
+import MediaContext, { MediaData } from './contexts/MediaContext';
+import AppNavigator from './navigation/AppNavigator';
+import LocationsService from './services/LocationsService';
 
 initSentry({
   dsn:
@@ -81,7 +83,25 @@ const CustomTheme = {
   },
 };
 
-function App(props: Props): JSX.Element {
+async function loadResourcesAsync() {
+  await Promise.all([
+    /* Asset.loadAsync([
+      require('./assets/images/robot-dev.png'),
+      require('./assets/images/robot-prod.png'),
+    ]), */
+    Font.loadAsync({
+      Roboto: require('native-base/Fonts/Roboto.ttf'),
+      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
+      'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
+      'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
+      'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
+      'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
+      'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
+    }),
+  ]);
+}
+
+function App({ skipLoadingScreen }: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null);
   const [locationData, setLocationData] = useState<LocationData>(null);
@@ -165,26 +185,7 @@ function App(props: Props): JSX.Element {
       return { ...prevState, playerType: 'none' };
     });
   };
-  const mapObj = (f: any) => (obj: any) =>
-    Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
-  const toArrayOfStrings = (value: any) => [`${value}`];
-  const mapToArrayOfStrings = mapObj(toArrayOfStrings);
-  const trackUserId = async (user: TMHCognitoUser) => {
-    try {
-      const attributes = user.attributes;
-      const userAttributes = mapToArrayOfStrings(attributes);
-      const token = (await Notifications.getDevicePushTokenAsync()).data;
-      await Analytics.updateEndpoint({
-        address: token,
-        channelType: Platform.OS === 'ios' ? 'APNS' : 'GCM',
-        optOut: 'NONE',
-        userId: attributes?.sub,
-        userAttributes,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   const handleRouteChange = () => {
     const screen = navRef.current?.getCurrentRoute()?.name;
     setCurrentScreen(screen ?? 'unknown');
@@ -206,12 +207,38 @@ function App(props: Props): JSX.Element {
       );
     };
   }, []);
+
   useEffect(() => {
+    const mapObj = (f: any) => (obj: any) =>
+      Object.keys(obj).reduce(
+        (acc, key) => ({ ...acc, [key]: f(obj[key]) }),
+        {}
+      );
+    const toArrayOfStrings = (value: any) => [`${value}`];
+    const mapToArrayOfStrings = mapObj(toArrayOfStrings);
+
+    const trackUserId = async (user: TMHCognitoUser) => {
+      try {
+        const { attributes } = user;
+        const userAttributes = mapToArrayOfStrings(attributes);
+        const token = (await Notifications.getDevicePushTokenAsync()).data;
+        await Analytics.updateEndpoint({
+          address: token,
+          channelType: Platform.OS === 'ios' ? 'APNS' : 'GCM',
+          optOut: 'NONE',
+          userId: attributes?.sub,
+          userAttributes,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     async function checkForUser() {
       try {
         const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        console.debug(user);
         if (user.attributes) {
+          // eslint-disable-next-line camelcase
           if (user.attributes?.email_verified) {
             setUserData(user.attributes);
           }
@@ -250,7 +277,7 @@ function App(props: Props): JSX.Element {
     checkForUser();
   }, []);
 
-  if (!isLoadingComplete && !props.skipLoadingScreen) {
+  if (!isLoadingComplete && !skipLoadingScreen) {
     return (
       <AppLoading
         onError={(error) => {
@@ -260,61 +287,42 @@ function App(props: Props): JSX.Element {
         onFinish={() => setLoadingComplete(true)}
       />
     );
-  } else {
-    return (
-      <CommentContext.Provider value={{ comments, setComments }}>
-        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
-          <MediaContext.Provider
-            value={{
-              media,
-              setMedia,
-              setVideoTime,
-              closeAudio,
-              setAudioNull,
-              closeVideo,
-              setPlayerTypeNone,
-            }}
-          >
-            <LocationContext.Provider value={{ locationData, setLocationData }}>
-              <UserContext.Provider value={{ userData, setUserData }}>
-                <SafeAreaProvider style={{ backgroundColor: 'black' }}>
-                  {Platform.OS === 'ios' && (
-                    <StatusBar barStyle="light-content" />
-                  )}
-                  <NavigationContainer
-                    theme={CustomTheme}
-                    ref={navRef}
-                    onStateChange={handleRouteChange}
-                  >
-                    <AppNavigator />
-                    <MiniPlayer currentScreen={currentScreen} />
-                  </NavigationContainer>
-                </SafeAreaProvider>
-              </UserContext.Provider>
-            </LocationContext.Provider>
-          </MediaContext.Provider>
-        </MiniPlayerStyleContext.Provider>
-      </CommentContext.Provider>
-    );
   }
+  return (
+    <CommentContext.Provider value={{ comments, setComments }}>
+      <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
+        <MediaContext.Provider
+          value={{
+            media,
+            setMedia,
+            setVideoTime,
+            closeAudio,
+            setAudioNull,
+            closeVideo,
+            setPlayerTypeNone,
+          }}
+        >
+          <LocationContext.Provider value={{ locationData, setLocationData }}>
+            <UserContext.Provider value={{ userData, setUserData }}>
+              <SafeAreaProvider style={{ backgroundColor: 'black' }}>
+                {Platform.OS === 'ios' && (
+                  <StatusBar barStyle="light-content" />
+                )}
+                <NavigationContainer
+                  theme={CustomTheme}
+                  ref={navRef}
+                  onStateChange={handleRouteChange}
+                >
+                  <AppNavigator />
+                  <MiniPlayer currentScreen={currentScreen} />
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </UserContext.Provider>
+          </LocationContext.Provider>
+        </MediaContext.Provider>
+      </MiniPlayerStyleContext.Provider>
+    </CommentContext.Provider>
+  );
 }
 
 registerRootComponent(App);
-
-async function loadResourcesAsync() {
-  await Promise.all([
-    /*Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
-    ]),*/
-    Font.loadAsync({
-      Roboto: require('native-base/Fonts/Roboto.ttf'),
-      Roboto_medium: require('native-base/Fonts/Roboto_medium.ttf'),
-      'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
-      'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
-      'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
-      'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
-      'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
-    }),
-  ]);
-}

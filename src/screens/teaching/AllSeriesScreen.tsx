@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
-import SearchBar from '../../components/SearchBar';
-import SeriesService from '../../services/SeriesService';
-import { loadSomeAsync } from '../../utils/loading';
-import ActivityIndicator from '../../components/ActivityIndicator';
-import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { RouteProp } from '@react-navigation/native';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
+import SearchBar from '../../components/SearchBar';
+import SeriesService from '../../services/SeriesService';
+import loadSomeAsync from '../../utils/loading';
+import ActivityIndicator from '../../components/ActivityIndicator';
+import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import AllButton from '../../components/buttons/AllButton';
 import SeriesItem from '../../components/teaching/SeriesItem';
 
@@ -74,7 +75,7 @@ const style = StyleSheet.create({
 
 interface Params {
   navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
-  route: any;
+  route: RouteProp<TeachingStackParamList, 'AllSeriesScreen'>;
 }
 
 export default function AllSeriesScreen({
@@ -91,31 +92,31 @@ export default function AllSeriesScreen({
     nextToken: null,
   });
 
-  const loadAllSeriesAsync = async () => {
-    loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
-  };
-
-  const loadCustomPlaylists = async () => {
-    loadSomeAsync(
-      SeriesService.loadCustomPlaylists,
-      allSeries,
-      setAllSeries,
-      100
-    );
-  };
-
-  const generateYears = () => {
-    let currentYear = new Date().getFullYear();
-    const years = [];
-
-    while (currentYear >= 2006) {
-      years.push(currentYear.toString());
-      currentYear--;
-    }
-    setSeriesYears(['All'].concat(years));
-  };
-
   useEffect(() => {
+    const generateYears = () => {
+      let currentYear = new Date().getFullYear();
+      const years = [];
+
+      while (currentYear >= 2006) {
+        years.push(currentYear.toString());
+        currentYear -= 1;
+      }
+      setSeriesYears(['All'].concat(years));
+    };
+
+    const loadAllSeriesAsync = async () => {
+      loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
+    };
+
+    const loadCustomPlaylists = async () => {
+      loadSomeAsync(
+        SeriesService.loadCustomPlaylists,
+        allSeries,
+        setAllSeries,
+        100
+      );
+    };
+
     generateYears();
     if (route?.params?.customPlaylists) {
       loadCustomPlaylists();
@@ -123,6 +124,7 @@ export default function AllSeriesScreen({
       loadAllSeriesAsync();
     }
   }, []);
+
   const getSeriesDate = (series: any) => {
     return moment(series.startDate || moment()).format('YYYY');
   };
@@ -177,7 +179,7 @@ export default function AllSeriesScreen({
         return <View style={{ flex: 1 }} />;
       },
     });
-  }, []);
+  }, [navigation, route]);
 
   return (
     <Container>
@@ -187,13 +189,13 @@ export default function AllSeriesScreen({
           searchText={searchText}
           handleTextChanged={(newStr) => setSearchText(newStr)}
           placeholderLabel="Search by name..."
-        ></SearchBar>
+        />
         {!route?.params?.customPlaylists ? (
           <>
             <View style={style.dateSelectBar}>
               <FlatList
                 style={style.horizontalListContentContainer}
-                horizontal={true}
+                horizontal
                 data={seriesYears}
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item}
@@ -241,25 +243,23 @@ export default function AllSeriesScreen({
                 return (
                   <SeriesItem
                     key={s.id}
-                    customPlaylist={true}
+                    customPlaylist
                     navigation={navigation}
                     seriesData={s}
                     year={getSeriesDate(s)}
-                  ></SeriesItem>
-                );
-              } else {
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    navigation={navigation}
-                    seriesData={s}
-                    year={getSeriesDate(s)}
-                  ></SeriesItem>
+                  />
                 );
               }
-            } else {
-              return null;
+              return (
+                <SeriesItem
+                  key={s.id}
+                  navigation={navigation}
+                  seriesData={s}
+                  year={getSeriesDate(s)}
+                />
+              );
             }
+            return null;
           })}
         </View>
         {series?.length > 20 && showCount < series.length ? (

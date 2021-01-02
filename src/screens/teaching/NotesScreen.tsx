@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import NotesService from '../../services/NotesService';
 import {
   Text,
   Left,
@@ -9,19 +8,20 @@ import {
   Content,
   Thumbnail,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
-import NoteReader from '../../components/teaching/notes/NoteReader';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import TextOptions from '../../components/modals/TextOptions';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
+import Auth from '@aws-amplify/auth';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import TextOptions from '../../components/modals/TextOptions';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import MiniPlayerStyleContext from '../../contexts/MiniPlayerStyleContext';
-import Auth from '@aws-amplify/auth';
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import NoteReader from '../../components/teaching/notes/NoteReader';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import NotesService from '../../services/NotesService';
 import {
   GetCommentsByOwnerQuery,
   GetCommentsByOwnerQueryVariables,
@@ -29,8 +29,12 @@ import {
 } from '../../services/API';
 import CommentContext from '../../contexts/CommentContext';
 import OpenVerseModal from '../../components/modals/OpenVerseModal';
-import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
+import UserContext, {
+  TMHCognitoUser,
+  UserData,
+} from '../../contexts/UserContext';
 import Header from '../../components/Header';
+import { getCommentsByOwner } from '../../graphql/queries';
 
 interface Style {
   content: any;
@@ -79,7 +83,6 @@ const style = StyleSheet.create({
   headerTitle: {
     ...HeaderStyle.title,
     ...{
-      //width: "100%",
       marginLeft: 16,
       marginRight: 16,
       color: Theme.colors.gray4,
@@ -103,8 +106,6 @@ const style = StyleSheet.create({
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: Theme.fonts.medium,
-    // lineHeight: 24,
-    // marginBottom: 16,
     textAlign: 'right',
   },
   heading1: {
@@ -183,7 +184,19 @@ export default function NotesScreen({
   useEffect(() => {
     setUserPreference(userContext?.userData?.['custom:preference_openBible']);
   }, []);
+
   useLayoutEffect(() => {
+    const handleOpenTextOptions = () => {
+      if (!textOptions) {
+        miniPlayerStyle.setDisplay('none');
+        setOpenVerse(false);
+        setTextOptions(true);
+      } else {
+        miniPlayerStyle.setDisplay('flex');
+        setTextOptions(false);
+      }
+    };
+
     navigation.setOptions({
       headerShown: true,
       header: function render() {
@@ -195,7 +208,7 @@ export default function NotesScreen({
                   style={Style.icon}
                   source={Theme.icons.white.arrowLeft}
                   square
-                ></Thumbnail>
+                />
               </Button>
             </Left>
             <Body style={style.headerBody}>
@@ -230,14 +243,14 @@ export default function NotesScreen({
                   style={Style.icon}
                   source={Theme.icons.white.textOptions}
                   square
-                ></Thumbnail>
+                />
               </Button>
             </Right>
           </Header>
         );
       },
     });
-  });
+  }, []);
 
   async function handleFontScale(data: number) {
     try {
@@ -262,12 +275,13 @@ export default function NotesScreen({
       const queryNotes = await NotesService.loadNotes(date);
 
       try {
-        const fontScale = await SecureStore.getItemAsync('fontScale');
-        const mode = await SecureStore.getItemAsync('theme');
+        const font = await SecureStore.getItemAsync('fontScale');
+        const displayMode = await SecureStore.getItemAsync('theme');
 
-        if (fontScale) setFontScale(parseFloat(fontScale));
+        if (font) setFontScale(parseFloat(font));
 
-        if (mode === 'dark' || mode === 'light') setMode(mode);
+        if (displayMode === 'dark' || displayMode === 'light')
+          setMode(displayMode);
       } catch (e) {
         console.debug(e);
       }
@@ -303,7 +317,7 @@ export default function NotesScreen({
       }
     };
     load();
-  }, []);
+  }, [date]);
 
   useEffect(() => {
     const getComments = async () => {
@@ -329,14 +343,50 @@ export default function NotesScreen({
     getComments();
   }, [noteId]);
 
-  const handleOpenTextOptions = () => {
-    if (!textOptions) {
-      miniPlayerStyle.setDisplay('none');
-      setOpenVerse(false);
-      setTextOptions(true);
+  const handleOpenPassage = async (
+    openIn: 'app' | 'web',
+    rememberChoice: boolean,
+    youVersion?: string,
+    bibleGateway?: string
+  ): Promise<void> => {
+    if (rememberChoice) {
+      setUserPreference(openIn);
+      try {
+        const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+        userContext?.setUserData({
+          ...user.attributes,
+          'custom:preference_openBible': openIn,
+        } as UserData);
+        const update = await Auth.updateUserAttributes(user, {
+          ...user.attributes,
+          'custom:preference_openBible': openIn,
+        });
+        console.log(update);
+      } catch (e) {
+        console.debug(e);
+      }
+    }
+
+    if (openIn === 'app') {
+      try {
+        if (youVersion) {
+          await Linking.openURL(youVersion);
+          setOpenVerse(false);
+          miniPlayerStyle.setDisplay('flex');
+        }
+      } catch (e) {
+        console.debug(e);
+      }
     } else {
-      miniPlayerStyle.setDisplay('flex');
-      setTextOptions(false);
+      try {
+        if (bibleGateway) {
+          await Linking.openURL(bibleGateway);
+          setOpenVerse(false);
+          miniPlayerStyle.setDisplay('flex');
+        }
+      } catch (e) {
+        console.debug(e);
+      }
     }
   };
 
@@ -356,56 +406,6 @@ export default function NotesScreen({
       setOpenVerse(true);
       setTextOptions(false);
       setVerseURLs({ youVersion, bibleGateway });
-    }
-  };
-
-  const handleOpenPassage = async (
-    openIn: 'app' | 'web',
-    rememberChoice: boolean,
-    youVersion?: string,
-    bibleGateway?: string
-  ): Promise<void> => {
-    if (rememberChoice) {
-      setUserPreference(openIn);
-      try {
-        const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        userContext?.setUserData({
-          ...user.attributes,
-          'custom:preference_openBible': openIn,
-        });
-        const update = await Auth.updateUserAttributes(user, {
-          ...user.attributes,
-          'custom:preference_openBible': openIn,
-        });
-        console.log(update);
-      } catch (e) {
-        console.debug(e);
-      }
-    }
-
-    switch (openIn) {
-      case 'app':
-        try {
-          if (youVersion) {
-            await Linking.openURL(youVersion);
-            setOpenVerse(false);
-            miniPlayerStyle.setDisplay('flex');
-          }
-        } catch (e) {
-          console.debug(e);
-        }
-        break;
-      case 'web':
-        try {
-          if (bibleGateway) {
-            await Linking.openURL(bibleGateway);
-            setOpenVerse(false);
-            miniPlayerStyle.setDisplay('flex');
-          }
-        } catch (e) {
-          console.debug(e);
-        }
-        break;
     }
   };
 
@@ -500,41 +500,3 @@ export default function NotesScreen({
     </View>
   );
 }
-
-const getCommentsByOwner = /* GraphQL */ `
-  query GetCommentsByOwner(
-    $owner: String
-    $noteId: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelCommentFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getCommentsByOwner(
-      owner: $owner
-      noteId: $noteId
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        comment
-        tags
-        noteType
-        commentType
-        noteId
-        textSnippet
-        imageUri
-        key
-        date
-        time
-        owner
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, Text } from 'native-base';
-import Theme from '../../Theme.style';
 import { ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
+import Theme from '../../Theme.style';
 
 const styles = StyleSheet.create({
   button: {
@@ -38,10 +38,34 @@ const styles = StyleSheet.create({
   },
 });
 
+function getStyles(
+  outlined: boolean | undefined,
+  solidBlack: boolean | undefined
+) {
+  if (outlined) {
+    return {
+      buttonStyle: styles.buttonOutlined,
+      labelStyle: styles.labelOutlined,
+    };
+  }
+
+  if (solidBlack) {
+    return {
+      buttonStyle: styles.buttonBlack,
+      labelStyle: styles.labelBlack,
+    };
+  }
+
+  return {
+    buttonStyle: styles.button,
+    labelStyle: styles.label,
+  };
+}
+
 interface Params {
   style?: ViewStyle;
   label: string;
-  onPress?: () => any;
+  onPress?: () => void;
   outlined?: boolean;
   solidBlack?: boolean;
 }
@@ -53,29 +77,12 @@ export default function WhiteButton({
   outlined,
   solidBlack,
 }: Params): JSX.Element {
+  const { buttonStyle, labelStyle } = getStyles(outlined, solidBlack);
+
   return (
     <View style={style}>
-      <Button
-        style={
-          outlined
-            ? styles.buttonOutlined
-            : solidBlack
-            ? styles.buttonBlack
-            : styles.button
-        }
-        block
-        onPress={onPress}
-      >
-        <Text
-          style={
-            outlined
-              ? styles.labelOutlined
-              : solidBlack
-              ? styles.labelBlack
-              : styles.label
-          }
-          uppercase={false}
-        >
+      <Button style={buttonStyle} block onPress={onPress}>
+        <Text style={labelStyle} uppercase={false}>
           {label}
         </Text>
       </Button>
@@ -87,7 +94,6 @@ interface AsyncParams extends Params {
   isLoading: boolean;
 }
 
-// eslint-disable-next-line react/prop-types
 export function WhiteButtonAsync({
   style,
   label,
@@ -96,33 +102,15 @@ export function WhiteButtonAsync({
   solidBlack,
   isLoading,
 }: AsyncParams): JSX.Element {
+  const { buttonStyle, labelStyle } = getStyles(outlined, solidBlack);
+
   return (
     <View style={style}>
-      <Button
-        disabled={isLoading}
-        style={
-          outlined
-            ? styles.buttonOutlined
-            : solidBlack
-            ? styles.buttonBlack
-            : styles.button
-        }
-        block
-        onPress={onPress}
-      >
+      <Button disabled={isLoading} style={buttonStyle} block onPress={onPress}>
         {isLoading ? (
           <ActivityIndicator color="black" />
         ) : (
-          <Text
-            style={
-              outlined
-                ? styles.labelOutlined
-                : solidBlack
-                ? styles.labelBlack
-                : styles.label
-            }
-            uppercase={false}
-          >
+          <Text style={labelStyle} uppercase={false}>
             {label}
           </Text>
         )}
