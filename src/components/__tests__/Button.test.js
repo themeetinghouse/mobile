@@ -5,10 +5,14 @@ import IconButton from '../buttons/IconButton';
 import TeachingButton from '../buttons/TeachingButton';
 import WhiteButton, { WhiteButtonAsync } from '../buttons/WhiteButton';
 
+const mockPress = jest.fn();
+
+afterEach(() => {
+  mockPress.mockClear();
+});
+
 describe('Snapshot and functional tests for button components', () => {
   test('All button, default props', () => {
-    const mockPress = jest.fn();
-
     const { getByText, toJSON } = render(
       <AllButton handlePress={mockPress}>Test</AllButton>
     );
@@ -23,8 +27,6 @@ describe('Snapshot and functional tests for button components', () => {
   });
 
   test('Icon button, default props', () => {
-    const mockPress = jest.fn();
-
     const { getByText, toJSON } = render(
       <IconButton onPress={mockPress} label="Testing" />
     );
@@ -38,16 +40,12 @@ describe('Snapshot and functional tests for button components', () => {
   });
 
   test('Icon button, test rightArrow prop', () => {
-    const mockPress = jest.fn();
-
     const { toJSON } = render(<IconButton onPress={mockPress} rightArrow />);
 
     expect(toJSON()).toMatchSnapshot();
   });
 
   test('Teaching button, active', () => {
-    const mockPress = jest.fn();
-
     const { toJSON, getByText } = render(
       <TeachingButton onPress={mockPress} active label="TMH" />
     );
@@ -61,8 +59,6 @@ describe('Snapshot and functional tests for button components', () => {
   });
 
   test('Teaching button, inactive', () => {
-    const mockPress = jest.fn();
-
     const { toJSON, getByText } = render(
       <TeachingButton onPress={mockPress} active={false} label="TMH" />
     );
@@ -78,8 +74,6 @@ describe('Snapshot and functional tests for button components', () => {
   });
 
   test('White button, outlined', () => {
-    const mockPress = jest.fn();
-
     const { toJSON, getByText } = render(
       <WhiteButton onPress={mockPress} label="TMH" outlined />
     );
@@ -106,8 +100,6 @@ describe('Snapshot and functional tests for button components', () => {
   });
 
   test('Async white button, outlined, loading', () => {
-    const mockPress = jest.fn();
-
     const { toJSON, queryByText } = render(
       <WhiteButtonAsync onPress={mockPress} label="TMH" outlined isLoading />
     );
