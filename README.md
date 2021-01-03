@@ -2,7 +2,7 @@
 
 ![CodeQL](https://github.com/themeetinghouse/mobile/workflows/CodeQL/badge.svg)
 ![CI](https://github.com/themeetinghouse/mobile/workflows/CI/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/themeetinghouse/mobile/badge.svg)](https://coveralls.io/github/themeetinghouse/mobile)
+[![Coverage Status](https://coveralls.io/repos/github/themeetinghouse/mobile/badge.svg?branch=dev)](https://coveralls.io/github/themeetinghouse/mobile?branch=dev)
 
 Currently supports iOS and Android.
 
