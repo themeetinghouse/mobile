@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, act } from '@testing-library/react-native';
 import { Linking } from 'react-native';
 import InstagramFeed from '../home/InstagramFeed';
 
@@ -342,6 +342,8 @@ const instaData = {
   },
 };
 
+const dataLength = instaData.data.getInstagramByLocation.items.length;
+
 describe('Instagram grid', () => {
   test('Each image should render, check snapshot', () => {
     const { toJSON, queryByLabelText } = render(
@@ -362,12 +364,42 @@ describe('Instagram grid', () => {
       <InstagramFeed images={instaData.data.getInstagramByLocation.items} />
     );
 
-    expect(queryAllByRole('imagebutton').length).toEqual(8);
+    expect(queryAllByRole('imagebutton').length).toEqual(dataLength);
 
     queryAllByRole('imagebutton').forEach((image) => {
       fireEvent.press(image);
     });
 
-    expect(Linking.openURL).toHaveBeenCalledTimes(8);
+    expect(Linking.openURL).toHaveBeenCalledTimes(dataLength);
+  });
+
+  test('Image does not render on error', () => {
+    const { queryByLabelText, queryAllByRole } = render(
+      <InstagramFeed images={instaData.data.getInstagramByLocation.items} />
+    );
+
+    // all images render
+    expect(queryAllByRole('imagebutton').length).toEqual(dataLength);
+
+    // trigger error
+    act(() => {
+      queryByLabelText(
+        instaData.data.getInstagramByLocation.items[0].altText
+      ).props.onError();
+    });
+
+    // n-1 images render
+    expect(queryAllByRole('imagebutton').length).toEqual(dataLength - 1);
+
+    // trigger second error
+
+    act(() => {
+      queryByLabelText(
+        instaData.data.getInstagramByLocation.items[1].altText
+      ).props.onError();
+    });
+
+    // n-2 images render
+    expect(queryAllByRole('imagebutton').length).toEqual(dataLength - 2);
   });
 });
