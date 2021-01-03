@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 import FallbackImage, {
   AnimatedFallbackImage,
@@ -26,7 +26,9 @@ describe('FallbackImage components', () => {
       const { queryByTestId } = render(component);
 
       expect(queryByTestId('fallback-image').props.source.uri).toEqual(uri);
-      queryByTestId('fallback-image').props.onError();
+      act(() => {
+        queryByTestId('fallback-image').props.onError();
+      });
       expect(queryByTestId('fallback-image').props.source.uri).toEqual(
         catchUri
       );
