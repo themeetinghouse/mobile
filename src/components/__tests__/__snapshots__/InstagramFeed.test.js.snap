@@ -1,0 +1,318 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Instagram grid Each image should render, check snapshot 1`] = `
+<View
+  style={
+    Object {
+      "display": "flex",
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+    }
+  }
+>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 22, 2020. Image may contain: text that says '\\"You don't need to make Christmas great for everyone. You don't need to make up for what will certainly be missing because this year is a pandemic and therefore it'll be weirder and feel like less.\\" Natalie Frisk'."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/132051851_741777823429247_843297535879666640_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=v6U7hx-q_L0AX-7AZQt&tp=1&oh=606dd89ffe709ee4a2b7227ab0190899&oe=600D4880",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 21, 2020. Image may contain: 1 person, smiling, phone, hat, closeup and outdoor."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=c1248d89dcba71de38ac3a7b18d0cfa3&oe=600D0BFB",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 20, 2020. Image may contain: one or more people and people on stage."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/132028103_2494627844173384_820928203962253482_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=104&_nc_ohc=X8DQDDQDIUoAX-1VEjO&tp=1&oh=82640b7e707b991693d5c73d5a1f72f4&oe=600EBBC1",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 20, 2020. Image may contain: text that says '\\"The nativity isn't just a symbol of how God came into the world back then. It's a template for how God comes into the world today: through selfless acts of love.\\" Eric Versluis'."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/131895199_1029350220919924_4241838485484560234_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=104&_nc_ohc=xnbLsYys2RkAX_GHR2x&tp=1&oh=0c99668b60d9a13fff01cfe4439d452a&oe=600B64E1",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 19, 2020. Image may contain: one or more people, people playing musical instruments, people on stage and indoor."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/132025914_1061277941006132_6324099070317855743_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=108&_nc_ohc=zQANsImjy-4AX-E6ETa&tp=1&oh=0c1350643a480ad8501ab5478b1785ee&oe=600E1289",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 19, 2020. Image may contain: text that says 'CHRISTMAS IN 3 ACTS AFRAID ACT 3 FAIRYTALE'."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/c0.135.1080.1080a/s480x480/131934628_1100138873742563_9053745708158282391_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=si2VIF-at38AX-2cF66&tp=1&oh=eda965a6e04084293e80ef7e2099c26c&oe=600DCEEE",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo by The Meeting House on December 18, 2020. Image may contain: 1 person, standing."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/c0.111.1439.1439a/s480x480/131634785_838690830248172_516786905457951151_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=lKXrWdrycMYAX8b5zie&tp=1&oh=fe03476861af589a3001ef24c7cfee7e&oe=600E732E",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="Photo shared by The Meeting House on December 17, 2020 tagging @lrthoms. Image may contain: 2 people, people smiling, hat, closeup and indoor."
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/c0.96.768.768a/s480x480/131369823_1310063026053362_7161205273140893483_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=102&_nc_ohc=TgJKKyPp6dEAX9YZCjO&tp=1&oh=abc2822b48269bc4c88cfc577c7f02bc&oe=600D38C6",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+</View>
+`;

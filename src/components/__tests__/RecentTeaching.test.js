@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import RecentTeaching from '../home/RecentTeaching';
 
-export const mockTeaching = [
+const mockTeaching = [
   {
     Youtube: {
       snippet: {
@@ -213,7 +213,7 @@ export const mockTeaching = [
   },
 ];
 
-export const mockNotes = [
+const mockNotes = [
   {
     createdAt: '2020-09-06T05:38:19.616Z',
     episodeDescription:
@@ -272,55 +272,149 @@ export const mockNotes = [
   },
 ];
 
+const mockNavigate = jest.fn();
+const mockPush = jest.fn();
+
 jest.mock('@react-navigation/native', () => {
   return {
     ...jest.requireActual('@react-navigation/native'),
     useNavigation: () => ({
-      navigate: jest.fn(),
+      navigate: mockNavigate,
+      push: mockPush,
     }),
   };
 });
 
-// Regular Sunday
-test('On Sunday Sept 6, expect notes from Sunday Sept 6', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[0]} note={mockNotes[0]} />
-  );
-
-  expect(queryByTestId('teaching-notes')).toBeTruthy();
-  expect(queryByTestId('teaching-video')).toBeFalsy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
+afterEach(() => {
+  mockNavigate.mockClear();
+  mockPush.mockClear();
 });
 
-// During middle of week
-test('On Wednesday Dec 16, expect video from Sunday Dec 13', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[1]} note={mockNotes[1]} />
-  );
+describe('Recent Teaching component on Home Screen', () => {
+  // Regular Sunday
+  test('On Sunday Sept 6, expect notes from Sunday Sept 6', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[0]} note={mockNotes[0]} />
+    );
 
-  expect(queryByTestId('teaching-notes')).toBeFalsy();
-  expect(queryByTestId('teaching-video')).toBeTruthy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
-});
+    expect(queryByTestId('teaching-notes')).toBeTruthy();
+    expect(queryByTestId('teaching-video')).toBeFalsy();
+    expect(queryByTestId('notes-button')).toBeTruthy();
+  });
 
-// Sunday after Christmas Eve
-test('On Sunday Dec 27, expect notes from Dec 27 (not video from Christmas Eve)', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
-  );
+  // During middle of week
+  test('On Wednesday Dec 16, expect video from Sunday Dec 13', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[1]} note={mockNotes[1]} />
+    );
 
-  expect(queryByTestId('teaching-notes')).toBeTruthy();
-  expect(queryByTestId('teaching-video')).toBeFalsy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
-});
+    expect(queryByTestId('teaching-notes')).toBeFalsy();
+    expect(queryByTestId('teaching-video')).toBeTruthy();
+    expect(queryByTestId('notes-button')).toBeTruthy();
+  });
 
-// One day after Christmas Eve
-test('On Friday Dec 25, expect video from Christmas Eve, but no notes button', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
-  );
+  // Sunday after Christmas Eve
+  test('On Sunday Dec 27, expect notes from Dec 27 (not video from Christmas Eve)', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
+    );
 
-  expect(queryByTestId('teaching-notes')).toBeFalsy();
-  expect(queryByTestId('teaching-video')).toBeTruthy();
-  expect(queryByTestId('notes-button')).toBeFalsy();
+    expect(queryByTestId('teaching-notes')).toBeTruthy();
+    expect(queryByTestId('teaching-video')).toBeFalsy();
+    expect(queryByTestId('notes-button')).toBeTruthy();
+  });
+
+  // One day after Christmas Eve
+  test('On Friday Dec 25, expect video from Christmas Eve, but no notes button', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
+    );
+
+    expect(queryByTestId('teaching-notes')).toBeFalsy();
+    expect(queryByTestId('teaching-video')).toBeTruthy();
+    expect(queryByTestId('notes-button')).toBeFalsy();
+  });
+
+  test('Toggle teaching description expander (video available)', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
+    );
+
+    const descriptionText = queryByTestId('description');
+    expect(descriptionText.props.numberOfLines).toEqual(2);
+    fireEvent.press(descriptionText);
+    expect(descriptionText.props.numberOfLines).toBeUndefined();
+    fireEvent.press(descriptionText);
+    expect(descriptionText.props.numberOfLines).toEqual(2);
+  });
+
+  test('Toggle teaching description expander (notes only)', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
+    );
+
+    const descriptionText = queryByTestId('description');
+    expect(descriptionText.props.numberOfLines).toEqual(2);
+    fireEvent.press(descriptionText);
+    expect(descriptionText.props.numberOfLines).toBeUndefined();
+    fireEvent.press(descriptionText);
+    expect(descriptionText.props.numberOfLines).toEqual(2);
+  });
+
+  test('Snapshot using data from Sunday Dec 27', () => {
+    const { toJSON } = render(
+      <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
+    );
+
+    expect(toJSON()).toMatchSnapshot();
+  });
+
+  test('Snapshot using null data', () => {
+    const { toJSON, queryByTestId } = render(
+      <RecentTeaching teaching={null} note={null} />
+    );
+
+    // No content should render
+    expect(queryByTestId('teaching-notes')).toBeFalsy();
+    expect(queryByTestId('teaching-video')).toBeFalsy();
+    expect(queryByTestId('notes-button')).toBeFalsy();
+    expect(queryByTestId('description')).toBeFalsy();
+
+    expect(toJSON()).toMatchSnapshot();
+  });
+
+  test('Navigate (notes only)', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[0]} note={mockNotes[0]} />
+    );
+    const goToNotesBtn = queryByTestId('notes-button').findByProps({
+      label: 'Notes',
+    });
+
+    fireEvent.press(goToNotesBtn);
+    expect(mockNavigate).toBeCalledTimes(1);
+  });
+
+  test('Navigate (video available)', () => {
+    const { queryByTestId } = render(
+      <RecentTeaching teaching={mockTeaching[1]} note={mockNotes[1]} />
+    );
+
+    const goToTeachingBtn = queryByTestId('go-to-teaching');
+    const goToTeacherBtn = queryByTestId('go-to-teacher');
+    const goToNotesBtn = queryByTestId('notes-button').findByProps({
+      label: 'Notes',
+    });
+
+    fireEvent.press(goToTeachingBtn);
+    expect(mockNavigate).toBeCalledTimes(2);
+
+    fireEvent.press(goToTeacherBtn);
+    expect(mockPush).toBeCalledTimes(1);
+
+    mockPush.mockClear();
+
+    fireEvent.press(goToNotesBtn);
+    expect(mockPush).toBeCalledTimes(1);
+  });
 });

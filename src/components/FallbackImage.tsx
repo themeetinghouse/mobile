@@ -16,6 +16,7 @@ export default function FallbackImage({
 
   return (
     <Image
+      testID="fallback-image"
       source={{ uri: source }}
       style={style}
       onError={() => setSource(catchUri)}
@@ -36,6 +37,7 @@ export function AnimatedFallbackImage({
 
   return (
     <Animated.Image
+      testID="fallback-image"
       source={{ uri: source }}
       style={style}
       onError={() => setSource(catchUri)}
@@ -57,6 +59,7 @@ export function FallbackImageBackground({
 
   return (
     <ImageBackground
+      testID="fallback-image"
       source={{ uri: source }}
       style={style}
       onError={() => setSource(catchUri)}

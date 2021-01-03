@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Active indicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "padding": 15,
+      },
+      undefined,
+    ]
+  }
+>
+  <ActivityIndicator
+    animating={true}
+    color="#ffffff"
+    hidesWhenStopped={true}
+    size="large"
+  />
+</View>
+`;
+
+exports[`Inactive indicator 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "padding": 15,
+      },
+      undefined,
+    ]
+  }
+>
+  <ActivityIndicator
+    animating={false}
+    color="#ffffff"
+    hidesWhenStopped={true}
+    size="large"
+  />
+</View>
+`;

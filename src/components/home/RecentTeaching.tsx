@@ -99,6 +99,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
         {teachingImage?.url ? (
           <View style={{ width: '100%' }}>
             <TouchableWithoutFeedback
+              testID="go-to-teaching"
               onPress={() => {
                 navigation.navigate('Main', { screen: 'Teaching' });
                 navigation.navigate('SermonLandingScreen', { item: teaching });
@@ -133,6 +134,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
               {teaching?.speakers?.items?.[0] ? 'by ' : ''}
             </Text>
             <TouchableHighlight
+              testID="go-to-teacher"
               style={style.subtitle}
               onPress={() =>
                 navigation.push('Main', {
@@ -159,6 +161,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
             </TouchableHighlight>
           </View>
           <Text
+            testID="description"
             style={style.description}
             numberOfLines={fullDescription ? undefined : 2}
             ellipsizeMode="tail"
@@ -200,6 +203,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
             {moment(note.id).format('MMMM D, YYYY')}
           </Text>
           <Text
+            testID="description"
             style={style.description}
             numberOfLines={fullDescription ? undefined : 2}
             ellipsizeMode="tail"

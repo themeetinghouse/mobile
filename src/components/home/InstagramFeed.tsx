@@ -31,6 +31,7 @@ function InstagramImage({
   if (image?.thumbnails)
     return (
       <TouchableHighlight
+        accessibilityRole="imagebutton"
         style={style.imageContainer}
         key={image?.id}
         onPress={() => Linking.openURL(`https://instagram.com/p/${image?.id}`)}
