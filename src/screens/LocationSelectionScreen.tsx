@@ -12,16 +12,16 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../Theme.style';
-import { StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native';
-import LocationsService from '../services/LocationsService';
-import LocationContext, { LocationData } from '../contexts/LocationContext';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Auth } from '@aws-amplify/auth';
-import UserContext, { TMHCognitoUser } from '../contexts/UserContext';
 import * as SecureStore from 'expo-secure-store';
 import { RouteProp } from '@react-navigation/native';
+import UserContext, { TMHCognitoUser, UserData } from '../contexts/UserContext';
+import LocationContext, { LocationData } from '../contexts/LocationContext';
+import LocationsService from '../services/LocationsService';
+import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { MainStackParamList } from '../navigation/AppNavigator';
 
 const style = StyleSheet.create({
@@ -110,7 +110,35 @@ export default function LocationSelectionScreen({
     location?.locationData
   );
   const [searchText, setSearchText] = useState('');
+
   useLayoutEffect(() => {
+    async function updateUser(locationId: string | undefined) {
+      // eslint-disable-next-line camelcase
+      if (locationId && userContext?.userData?.email_verified) {
+        try {
+          const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+          userContext.setUserData({
+            ...user.attributes,
+            'custom:home_location': locationId,
+          } as UserData);
+          await Auth.updateUserAttributes(user, {
+            ...user.attributes,
+            'custom:home_location': locationId,
+          });
+        } catch (e) {
+          console.debug(e);
+        }
+      } else if (locationId) {
+        try {
+          await SecureStore.setItemAsync('location', locationId);
+        } catch (e) {
+          console.debug(e);
+        }
+      } else {
+        console.debug('locationId is undefined');
+      }
+    }
+
     navigation.setOptions({
       headerShown: true,
       title: 'Location',
@@ -140,7 +168,7 @@ export default function LocationSelectionScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  });
+  }, []);
 
   useEffect(() => {
     const loadLocations = () => {
@@ -154,37 +182,6 @@ export default function LocationSelectionScreen({
     loadLocations();
   }, []);
 
-  async function updateUser(locationId: string | undefined) {
-    if (locationId && userContext?.userData?.email_verified) {
-      try {
-        const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        userContext.setUserData({
-          ...user.attributes,
-          'custom:home_location': locationId,
-        });
-        const update = await Auth.updateUserAttributes(user, {
-          ...user.attributes,
-          'custom:home_location': locationId,
-        });
-        console.log(update);
-      } catch (e) {
-        console.debug(e);
-      }
-    } else if (locationId) {
-      try {
-        const updateLocalStore = await SecureStore.setItemAsync(
-          'location',
-          locationId
-        );
-        console.log(updateLocalStore);
-      } catch (e) {
-        console.debug(e);
-      }
-    } else {
-      console.debug('locationId is undefined');
-    }
-  }
-
   return (
     <Container style={{ backgroundColor: 'black' }}>
       <Content style={style.content}>
@@ -194,7 +191,7 @@ export default function LocationSelectionScreen({
               style={style.searchIcon}
               source={Theme.icons.white.search}
               square
-            ></Thumbnail>
+            />
             <Input
               style={searchText ? style.searchInputActive : style.searchInput}
               value={searchText}
@@ -211,7 +208,7 @@ export default function LocationSelectionScreen({
                   style={style.searchIcon}
                   source={Theme.icons.white.closeCancel}
                   square
-                ></Thumbnail>
+                />
               </TouchableOpacity>
             ) : null}
           </Item>
@@ -219,27 +216,25 @@ export default function LocationSelectionScreen({
         <View style={{ paddingVertical: 24 }}>
           <List>
             {locations.map(
-              (location) =>
-                location?.locationName
+              (item) =>
+                item?.locationName
                   .toLowerCase()
                   .includes(searchText.toLowerCase()) && (
                   <ListItem
-                    key={location.locationId}
+                    key={item.locationId}
                     style={style.listItem}
-                    onPress={() => setSelectedLocation(location)}
+                    onPress={() => setSelectedLocation(item)}
                   >
                     <Left>
-                      <Text style={style.listText}>
-                        {location.locationName}
-                      </Text>
+                      <Text style={style.listText}>{item.locationName}</Text>
                     </Left>
                     <Right>
-                      {selectedLocation?.locationId === location.locationId && (
+                      {selectedLocation?.locationId === item.locationId && (
                         <Thumbnail
                           style={style.listCheckIcon}
                           source={Theme.icons.white.check}
                           square
-                        ></Thumbnail>
+                        />
                       )}
                     </Right>
                   </ListItem>

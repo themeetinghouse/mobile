@@ -1,8 +1,8 @@
 import React from 'react';
-import { Theme } from '../Theme.style';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Theme } from '../Theme.style';
 
 interface Props {
   children: React.ReactNode;

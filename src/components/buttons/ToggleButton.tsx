@@ -1,8 +1,8 @@
 import React from 'react';
-import { Theme } from '../../Theme.style';
 import { Text, View } from 'native-base';
 import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
   button: {
@@ -43,14 +43,18 @@ const style = StyleSheet.create({
   },
 });
 interface Props {
-  btnText_one: string;
-  btnText_two: string;
+  btnTextOne: string;
+  btnTextTwo: string;
   setSortByName: any;
   sortByName: any;
 }
 
-export default function ToggleButton(props: Props): JSX.Element {
-  const { btnText_one, btnText_two, setSortByName, sortByName } = props;
+export default function ToggleButton({
+  btnTextOne,
+  btnTextTwo,
+  setSortByName,
+  sortByName,
+}: Props): JSX.Element {
   return (
     <View style={style.buttonContainer}>
       <TouchableOpacity
@@ -65,7 +69,7 @@ export default function ToggleButton(props: Props): JSX.Element {
                 : style.buttonText
             }
           >
-            {btnText_one}
+            {btnTextOne}
           </Text>
         </View>
       </TouchableOpacity>
@@ -81,7 +85,7 @@ export default function ToggleButton(props: Props): JSX.Element {
                 : style.buttonText
             }
           >
-            {btnText_two}
+            {btnTextTwo}
           </Text>
         </View>
       </TouchableOpacity>

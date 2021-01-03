@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Thumbnail, Item, Input } from 'native-base';
-import Theme, { Style } from '../Theme.style';
 import { TouchableOpacity, ViewStyle, StyleSheet } from 'react-native';
+import Theme, { Style } from '../Theme.style';
 
 const localStyle = StyleSheet.create({
   searchIcon: Style.icon,
@@ -17,7 +17,7 @@ interface Params {
   style: ViewStyle;
   searchText: string;
   placeholderLabel: string;
-  handleTextChanged: (data: string) => any;
+  handleTextChanged: (data: string) => void;
 }
 
 export default function SearchBar({
@@ -33,7 +33,7 @@ export default function SearchBar({
           style={localStyle.searchIcon}
           source={Theme.icons.white.search}
           square
-        ></Thumbnail>
+        />
         <Input
           style={localStyle.searchInput}
           value={searchText}
@@ -48,7 +48,7 @@ export default function SearchBar({
               style={localStyle.searchIcon}
               source={Theme.icons.white.closeCancel}
               square
-            ></Thumbnail>
+            />
           </TouchableOpacity>
         ) : null}
       </Item>

@@ -1,14 +1,15 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { Thumbnail } from 'native-base';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import TeacherItem from '../../components/staff/TeacherItem';
-import SpeakersService from '../../services/SpeakersService';
+import SpeakersService, {
+  loadSpeakersListData,
+} from '../../services/SpeakersService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { MoreStackParamList } from '../../navigation/MainTabNavigator';
-import { RouteProp } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
@@ -26,12 +27,13 @@ const style = StyleSheet.create({
 
 interface Params {
   navigation: StackNavigationProp<MoreStackParamList>;
-  route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
+
 export default function TeacherList({ navigation }: Params): JSX.Element {
   const [searchText, setSearchText] = useState('');
-  const [isLoading, setisLoading] = useState(false);
-  const [speakers, setSpeakers]: any = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [speakers, setSpeakers] = useState<loadSpeakersListData['items']>([]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -73,18 +75,20 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
       },
     });
   }, [navigation]);
+
   useEffect(() => {
     const loadTeachers = async () => {
-      setisLoading(true);
-      const speakers: any = await SpeakersService.loadSpeakersListOnly();
-      setSpeakers(speakers.items);
-      setisLoading(false);
+      setIsLoading(true);
+      const speakerData = await SpeakersService.loadSpeakersListOnly();
+      setSpeakers(speakerData.items);
+      setIsLoading(false);
     };
     loadTeachers();
     return () => {
       console.log('Cleanup'); // cancel async stuff here
     };
   }, []);
+
   return (
     <>
       {isLoading ? (
@@ -97,7 +101,7 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
             bottom: '50%',
           }}
         >
-          <ActivityIndicator animating={isLoading}></ActivityIndicator>
+          <ActivityIndicator animating={isLoading} />
         </View>
       ) : null}
       <FlatList
@@ -109,20 +113,17 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
               searchText={searchText}
               handleTextChanged={(newStr) => setSearchText(newStr)}
               placeholderLabel="Search by name..."
-            ></SearchBar>
+            />
           </View>
         }
-        data={speakers.filter(
-          (item: any) =>
-            item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        data={speakers?.filter(
+          (item) =>
+            item?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
             searchText === ''
         )}
-        renderItem={({ item }: any) => {
-          if (!item.hidden)
-            return (
-              <TeacherItem navigation={navigation} teacher={item}></TeacherItem>
-            );
-          else return null;
+        renderItem={({ item }) => {
+          if (!item?.hidden) return <TeacherItem teacher={item} />;
+          return null;
         }}
         initialNumToRender={10}
       />

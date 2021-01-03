@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
-import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import WhiteButton from '../../components/buttons/WhiteButton';
 import MiniPlayerStyleContext from '../../contexts/MiniPlayerStyleContext';
 
@@ -97,12 +97,15 @@ export default function DateRangeSelectScreen({
   let currentYear = moment().get('year');
   const startYear = moment('2006').get('year');
   const years = [];
-  while (currentYear >= startYear) years.push(currentYear--);
+  while (currentYear >= startYear) years.push((currentYear -= 1));
   const months = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
   const [firstDate, setFirstDate] = useState<Date>({});
   const [secondDate, setSecondDate] = useState<Date>({});
   const miniPlayerStyle = useContext(MiniPlayerStyleContext);
+
+  const { setDisplay } = miniPlayerStyle;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -126,22 +129,20 @@ export default function DateRangeSelectScreen({
         return <View style={{ flex: 1 }} />;
       },
     });
-  });
+  }, [navigation]);
 
   useEffect(() => {
-    miniPlayerStyle.setDisplay('none');
-  }, []);
+    setDisplay('none');
+  }, [setDisplay]);
 
   useEffect(() => {
     const unsub = navigation.addListener('blur', () => {
-      miniPlayerStyle.setDisplay('flex');
+      setDisplay('flex');
     });
     return unsub;
-  }, []);
+  }, [navigation, setDisplay]);
 
   const selectDateItem = (year: number, month: number) => {
-    //console.log("DateRangeSelectScreen.selectDateItem(): firstDate = ", firstDate?.year, firstDate?.month);
-    //console.log("DateRangeSelectScreen.selectDateItem(): secondDate = ", secondDate?.year, secondDate?.month);
     if (!firstDate.year) {
       firstDate.selectNext = true;
     } else if (!secondDate.year) {
@@ -149,8 +150,8 @@ export default function DateRangeSelectScreen({
     }
     if (firstDate.selectNext) {
       setFirstDate({
-        year: year,
-        month: month,
+        year,
+        month,
         selectNext: !firstDate.selectNext,
       });
       setSecondDate({
@@ -160,8 +161,8 @@ export default function DateRangeSelectScreen({
       });
     } else if (secondDate.selectNext) {
       setSecondDate({
-        year: year,
-        month: month,
+        year,
+        month,
         selectNext: !secondDate.selectNext,
       });
       setFirstDate({
@@ -199,14 +200,13 @@ export default function DateRangeSelectScreen({
     // If only one is defined (first click), then we only care about an exact match
     if (!firstDate.year || !secondDate.year) {
       return thisMoment.isSame(firstMoment) || thisMoment.isSame(secondMoment);
-    } else {
-      return (
-        (thisMoment.isSameOrAfter(firstMoment) &&
-          thisMoment.isSameOrBefore(secondMoment)) ||
-        (thisMoment.isSameOrAfter(secondMoment) &&
-          thisMoment.isSameOrBefore(firstMoment))
-      );
     }
+    return (
+      (thisMoment.isSameOrAfter(firstMoment) &&
+        thisMoment.isSameOrBefore(secondMoment)) ||
+      (thisMoment.isSameOrAfter(secondMoment) &&
+        thisMoment.isSameOrBefore(firstMoment))
+    );
   };
 
   const saveAndClose = () => {
@@ -235,20 +235,18 @@ export default function DateRangeSelectScreen({
           endDate: firstMoment.format(),
         });
       }
+    } else if (firstMoment) {
+      navigation.navigate('AllSermonsScreen', {
+        startDate: firstMoment.format(),
+        endDate: firstMoment.format(),
+      });
+    } else if (secondMoment) {
+      navigation.navigate('AllSermonsScreen', {
+        startDate: secondMoment.format(),
+        endDate: secondMoment.format(),
+      });
     } else {
-      if (firstMoment) {
-        navigation.navigate('AllSermonsScreen', {
-          startDate: firstMoment.format(),
-          endDate: firstMoment.format(),
-        });
-      } else if (secondMoment) {
-        navigation.navigate('AllSermonsScreen', {
-          startDate: secondMoment.format(),
-          endDate: secondMoment.format(),
-        });
-      } else {
-        navigation.navigate('AllSermonsScreen');
-      }
+      navigation.navigate('AllSermonsScreen');
     }
   };
 
@@ -256,12 +254,12 @@ export default function DateRangeSelectScreen({
     <Container style={{ backgroundColor: 'black' }}>
       <Content style={style.content}>
         {years.map((year) => (
-          <View key={year + ''} style={style.yearSection}>
+          <View key={`${year}`} style={style.yearSection}>
             <Text style={style.yearTitle}>{year}</Text>
             <View style={style.monthItemContainer}>
-              {months.map((m, index) => (
+              {months.map((month, index) => (
                 <TouchableOpacity
-                  key={m + '' + index}
+                  key={month + year}
                   style={[
                     style.monthHighlight,
                     isSelected(year, index) ? style.monthHighlightSelected : {},
@@ -271,7 +269,6 @@ export default function DateRangeSelectScreen({
                   }}
                 >
                   <Text
-                    key={index + ''}
                     style={[
                       style.monthItem,
                       isBetween(year, index) ? style.monthItemHighlight : {},

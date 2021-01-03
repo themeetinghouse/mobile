@@ -1,5 +1,5 @@
-import { GetCommentsByOwnerQuery } from '../services/API';
 import { createContext } from 'react';
+import { GetCommentsByOwnerQuery } from '../services/API';
 
 export type CommentContextType = {
   comments: NonNullable<
@@ -12,4 +12,5 @@ export const CommentContext = createContext<CommentContextType>({
   comments: [],
   setComments: () => null,
 });
+
 export default CommentContext;

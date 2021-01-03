@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { Theme, Style, HeaderStyle } from '../Theme.style';
+import React, { useEffect, useState, useRef } from 'react';
 import { Container, View } from 'native-base';
 import moment from 'moment';
 import { StyleSheet, Dimensions } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { useRef } from 'react';
+import { Theme, Style, HeaderStyle } from '../Theme.style';
+
 import NotesScreen from './teaching/NotesScreen';
 import { MainStackParamList } from '../navigation/AppNavigator';
 import LiveEventService from '../services/LiveEventService';
+
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
@@ -69,10 +70,12 @@ type LiveEvent = {
   liveYoutubeId: string | null;
 } | null;
 
-export default function LiveStreamScreen(props: Props): JSX.Element {
-  const [currentEvent, setcurrentEvent] = useState<LiveEvent>(null);
-  const [showTime, setshowTime] = useState<boolean>(false);
-  //const mediaContext = useContext(MediaContext);
+export default function LiveStreamScreen({
+  navigation,
+  route,
+}: Props): JSX.Element {
+  const [currentEvent, setCurrentEvent] = useState<LiveEvent>(null);
+  const [showTime, setShowTime] = useState<boolean>(false);
   const playerRef = useRef<YoutubeIframeRef>(null);
   const deviceWidth = Dimensions.get('window').width;
   const today = moment()
@@ -86,17 +89,17 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
     const loadLiveStreams = async () => {
       try {
         const liveStreamsResult = await LiveEventService.startLiveEventService();
-        liveStreamsResult.liveEvents.map((event: LiveEvent) => {
+        liveStreamsResult.liveEvents.forEach((event: LiveEvent) => {
           const rightNow = moment()
             .utcOffset(moment().isDST() ? '-0400' : '-0500')
             .format('HH:mm');
-          const showTime =
+          const isShowTime =
             event?.startTime &&
             event?.endTime &&
             rightNow >= event.startTime &&
             rightNow <= event.endTime;
-          if (showTime) {
-            setcurrentEvent(event);
+          if (isShowTime) {
+            setCurrentEvent(event);
           }
         });
       } catch (error) {
@@ -108,33 +111,30 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('Ticking in livestream page');
       const start = currentEvent?.videoStartTime;
       const end = currentEvent?.endTime;
       const rightNow = moment()
         .utcOffset(moment().isDST() ? '-0400' : '-0500')
         .format('HH:mm');
 
-      //console.log(videoStartTime is ${currentEvent?.videoStartTime} endTime is ${currentEvent?.endTime} and current time is ${rightNow}`)
       if (start && end) {
-        const showTime = rightNow >= start && rightNow <= end;
-        if (showTime) {
-          //console.log("ShowLive")
-          setshowTime(true);
+        const isShowTime = rightNow >= start && rightNow <= end;
+        if (isShowTime) {
+          setShowTime(true);
         }
       } else {
-        setshowTime(false);
+        setShowTime(false);
       }
       if (
         currentEvent?.videoStartTime &&
-        rightNow >= currentEvent.videoStartTime
+        rightNow >= currentEvent?.videoStartTime
       ) {
         clearInterval(interval);
-        return;
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [currentEvent]);
+
   // this page needs to be unmounted when navigating to teaching
   return (
     <Container style={{ backgroundColor: 'black' }}>
@@ -148,7 +148,7 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             height={Math.round(deviceWidth * (9 / 16))}
             width={Math.round(deviceWidth)}
             videoId={currentEvent ? (currentEvent.liveYoutubeId as string) : ''}
-            play={true}
+            play
             initialPlayerParams={{ modestbranding: true }}
           />
         ) : (
@@ -162,17 +162,17 @@ export default function LiveStreamScreen(props: Props): JSX.Element {
             videoId={
               currentEvent ? (currentEvent.prerollYoutubeId as string) : ''
             }
-            play={true}
+            play
             initialPlayerParams={{ modestbranding: true }}
           />
         )}
       </View>
       <NotesScreen
-        fromLiveStream={true}
+        fromLiveStream
         today={today}
-        navigation={props.navigation}
-        route={props.route}
-      ></NotesScreen>
+        navigation={navigation}
+        route={route}
+      />
     </Container>
   );
 }

@@ -1,5 +1,6 @@
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetNotesQuery } from './API';
+import { checkIfNotesExistQuery, getNotes, getNotesNoContent } from './queries';
 
 export default class NotesService {
   static loadNotes = async (
@@ -27,64 +28,3 @@ export default class NotesService {
     return Boolean(notes.data?.getNotes?.id);
   };
 }
-
-const checkIfNotesExistQuery = /* GraphQL */ `
-  query GetNotes($id: ID!) {
-    getNotes(id: $id) {
-      id
-    }
-  }
-`;
-
-const getNotesNoContent = /* GraphQL */ `
-  query GetNotes($id: ID!) {
-    getNotes(id: $id) {
-      id
-      title
-      episodeDescription
-      episodeNumber
-      seriesId
-      pdf
-      topics
-      tags
-      createdAt
-      updatedAt
-    }
-  }
-`;
-
-const getNotes = /* GraphQL */ `
-  query GetNotes($id: ID!) {
-    getNotes(id: $id) {
-      id
-      title
-      content
-      questions
-      jsonContent
-      jsonQuestions
-      episodeDescription
-      episodeNumber
-      seriesId
-      pdf
-      topics
-      tags
-      createdAt
-      updatedAt
-      verses {
-        items {
-          id
-          key
-          offset
-          length
-          dataType
-          content
-          youVersionUri
-          noteId
-          createdAt
-          updatedAt
-        }
-        nextToken
-      }
-    }
-  }
-`;

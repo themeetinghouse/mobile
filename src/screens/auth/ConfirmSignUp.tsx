@@ -12,13 +12,13 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useRoute, RouteProp } from '@react-navigation/native';
 import WhiteButton, {
   WhiteButtonAsync,
 } from '../../components/buttons/WhiteButton';
 import { Theme, Style } from '../../Theme.style';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { useRoute, RouteProp } from '@react-navigation/native';
 
 const style = StyleSheet.create({
   title: {
@@ -69,7 +69,7 @@ interface Params {
   navigation: StackNavigationProp<AuthStackParamList, 'ConfirmSignUpScreen'>;
 }
 
-export default function Login({ navigation }: Params): JSX.Element {
+export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
   const [user, setUser] = useState('');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -79,9 +79,11 @@ export default function Login({ navigation }: Params): JSX.Element {
     RouteProp<AuthStackParamList, 'ConfirmSignUpScreen'>
   >();
 
+  const email = route.params?.email;
+
   useEffect(() => {
-    if (route.params?.email) setUser(route.params.email.toLowerCase());
-  }, [route]);
+    if (email) setUser(email.toLowerCase());
+  }, [email]);
 
   function toLogin(isNewUser: boolean): void {
     setUser('');
@@ -90,6 +92,17 @@ export default function Login({ navigation }: Params): JSX.Element {
     setNeedsNewCode(false);
     navigation.navigate('LoginScreen', { newUser: isNewUser });
   }
+
+  const confirm = async () => {
+    setSending(true);
+    try {
+      await Auth.confirmSignUp(user, code).then(() => toLogin(true));
+    } catch (e) {
+      if (e.code === 'UserNotFoundException') setError('Username not found.');
+      else setError(e.message);
+    }
+    setSending(false);
+  };
 
   function handleEnter(
     keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>
@@ -105,19 +118,6 @@ export default function Login({ navigation }: Params): JSX.Element {
       setCode('');
       setError('');
     } catch (e) {
-      console.debug(e);
-      if (e.code === 'UserNotFoundException') setError('Username not found.');
-      else setError(e.message);
-    }
-    setSending(false);
-  };
-
-  const confirm = async () => {
-    setSending(true);
-    try {
-      await Auth.confirmSignUp(user, code).then(() => toLogin(true));
-    } catch (e) {
-      console.debug(e);
       if (e.code === 'UserNotFoundException') setError('Username not found.');
       else setError(e.message);
     }
@@ -178,7 +178,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             </View>
             <WhiteButtonAsync
               isLoading={sending}
-              label={'Submit'}
+              label="Submit"
               onPress={getNewCode}
               style={{ marginTop: 12, height: 56 }}
             />
@@ -230,7 +230,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             </View>
             <WhiteButtonAsync
               isLoading={sending}
-              label={'Submit'}
+              label="Submit"
               onPress={confirm}
               style={{ marginTop: 12, height: 56 }}
             />

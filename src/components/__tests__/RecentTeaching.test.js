@@ -2,60 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import RecentTeaching from '../home/RecentTeaching';
 
-jest.mock('@react-navigation/native', () => {
-  return {
-    ...jest.requireActual('@react-navigation/native'),
-    useNavigation: () => ({
-      navigate: jest.fn(),
-    }),
-  };
-});
-
-// Regular Sunday
-test('On Sunday Sept 6, expect notes from Sunday Sept 6', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[0]} note={mockNotes[0]} />
-  );
-
-  expect(queryByTestId('teaching-notes')).toBeTruthy();
-  expect(queryByTestId('teaching-video')).toBeFalsy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
-});
-
-// During middle of week
-test('On Wednesday Dec 16, expect video from Sunday Dec 13', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[1]} note={mockNotes[1]} />
-  );
-
-  expect(queryByTestId('teaching-notes')).toBeFalsy();
-  expect(queryByTestId('teaching-video')).toBeTruthy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
-});
-
-// Sunday after Christmas Eve
-test('On Sunday Dec 27, expect notes from Dec 27 (not video from Christmas Eve)', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
-  );
-
-  expect(queryByTestId('teaching-notes')).toBeTruthy();
-  expect(queryByTestId('teaching-video')).toBeFalsy();
-  expect(queryByTestId('notes-button')).toBeTruthy();
-});
-
-// One day after Christmas Eve
-test('On Friday Dec 25, expect video from Christmas Eve, but no notes button', () => {
-  const { queryByTestId } = render(
-    <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
-  );
-
-  expect(queryByTestId('teaching-notes')).toBeFalsy();
-  expect(queryByTestId('teaching-video')).toBeTruthy();
-  expect(queryByTestId('notes-button')).toBeFalsy();
-});
-
-const mockTeaching = [
+export const mockTeaching = [
   {
     Youtube: {
       snippet: {
@@ -266,7 +213,7 @@ const mockTeaching = [
   },
 ];
 
-const mockNotes = [
+export const mockNotes = [
   {
     createdAt: '2020-09-06T05:38:19.616Z',
     episodeDescription:
@@ -324,3 +271,56 @@ const mockNotes = [
     updatedAt: '2020-12-19T20:53:21.692Z',
   },
 ];
+
+jest.mock('@react-navigation/native', () => {
+  return {
+    ...jest.requireActual('@react-navigation/native'),
+    useNavigation: () => ({
+      navigate: jest.fn(),
+    }),
+  };
+});
+
+// Regular Sunday
+test('On Sunday Sept 6, expect notes from Sunday Sept 6', () => {
+  const { queryByTestId } = render(
+    <RecentTeaching teaching={mockTeaching[0]} note={mockNotes[0]} />
+  );
+
+  expect(queryByTestId('teaching-notes')).toBeTruthy();
+  expect(queryByTestId('teaching-video')).toBeFalsy();
+  expect(queryByTestId('notes-button')).toBeTruthy();
+});
+
+// During middle of week
+test('On Wednesday Dec 16, expect video from Sunday Dec 13', () => {
+  const { queryByTestId } = render(
+    <RecentTeaching teaching={mockTeaching[1]} note={mockNotes[1]} />
+  );
+
+  expect(queryByTestId('teaching-notes')).toBeFalsy();
+  expect(queryByTestId('teaching-video')).toBeTruthy();
+  expect(queryByTestId('notes-button')).toBeTruthy();
+});
+
+// Sunday after Christmas Eve
+test('On Sunday Dec 27, expect notes from Dec 27 (not video from Christmas Eve)', () => {
+  const { queryByTestId } = render(
+    <RecentTeaching teaching={mockTeaching[2]} note={mockNotes[2]} />
+  );
+
+  expect(queryByTestId('teaching-notes')).toBeTruthy();
+  expect(queryByTestId('teaching-video')).toBeFalsy();
+  expect(queryByTestId('notes-button')).toBeTruthy();
+});
+
+// One day after Christmas Eve
+test('On Friday Dec 25, expect video from Christmas Eve, but no notes button', () => {
+  const { queryByTestId } = render(
+    <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
+  );
+
+  expect(queryByTestId('teaching-notes')).toBeFalsy();
+  expect(queryByTestId('teaching-video')).toBeTruthy();
+  expect(queryByTestId('notes-button')).toBeFalsy();
+});

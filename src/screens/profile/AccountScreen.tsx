@@ -10,13 +10,13 @@ import {
   ListItem,
   Button,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet } from 'react-native';
-import UserContext from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import UserContext from '../../contexts/UserContext';
 import LocationsService from '../../services/LocationsService';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const style = StyleSheet.create({
   content: {
@@ -127,9 +127,10 @@ interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
 
-function Account({ navigation }: Params): JSX.Element {
+export default function Account({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
   const safeArea = useSafeAreaInsets();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -146,7 +147,7 @@ function Account({ navigation }: Params): JSX.Element {
               style={Style.icon}
               source={Theme.icons.white.arrowLeft}
               square
-            ></Thumbnail>
+            />
           </Button>
         );
       },
@@ -155,7 +156,8 @@ function Account({ navigation }: Params): JSX.Element {
         return <View style={{ flex: 1 }} />;
       },
     });
-  });
+  }, [navigation]);
+
   const items = [
     'Login',
     {
@@ -236,7 +238,7 @@ function Account({ navigation }: Params): JSX.Element {
                         style={style.listArrowIcon}
                         source={item.icon}
                         square
-                      ></Thumbnail>
+                      />
                     ) : null}
                   </View>
                 </ListItem>
@@ -248,4 +250,3 @@ function Account({ navigation }: Params): JSX.Element {
     </Container>
   );
 }
-export default Account;

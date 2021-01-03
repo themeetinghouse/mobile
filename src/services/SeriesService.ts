@@ -1,10 +1,16 @@
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { runGraphQLQuery } from './ApiService';
 import {
   GetSeriesBySeriesTypeQuery,
   GetSeriesQuery,
   ListCustomPlaylistsQuery,
 } from './API';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import {
+  listCustomPlaylists,
+  getCustomPlaylist,
+  getSeriesBySeriesType,
+  getSeries,
+} from './queries';
 
 type SeriesByTypeQueryResult = NonNullable<
   GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']
@@ -49,20 +55,20 @@ export default class SeriesService {
     const queryResult = (await API.graphql(
       graphqlOperation(listCustomPlaylists, {
         sortDirection: 'DESC',
-        limit: limit,
+        limit,
         seriesType: 'adult-sunday',
-        nextToken: nextToken,
+        nextToken,
       })
     )) as any;
     const items = queryResult?.data?.listCustomPlaylists?.items;
     if (items) {
-      for (const item of items) {
+      items.forEach((item) => {
         if (item) {
           item.image =
             'https://www.themeetinghouse.com/cache/640/static/photos/playlists/The%20Bible.png';
           SeriesService.updateSeriesImageFromPlaylist(item as any);
         }
-      }
+      });
     }
     return {
       items: items?.filter(
@@ -71,6 +77,7 @@ export default class SeriesService {
       nextToken: queryResult?.data?.listCustomPlaylists?.nextToken,
     };
   };
+
   static getCustomPlaylistById = async (
     customPlaylistId: string
   ): Promise<PlaylistData> => {
@@ -78,11 +85,11 @@ export default class SeriesService {
       query: getCustomPlaylist,
       variables: { id: customPlaylistId },
     });
-    //console.log("SeriesService.getCustomPlaylistById(): queryResult = ", queryResult);
     const series = queryResult.getCustomPlaylist;
     await SeriesService.updateSeriesImageFromPlaylist(series);
     return series;
   };
+
   static loadSeriesList = async (
     limit: number,
     nextToken?: string
@@ -90,9 +97,9 @@ export default class SeriesService {
     const queryResult = (await API.graphql(
       graphqlOperation(getSeriesBySeriesType, {
         sortDirection: 'DESC',
-        limit: limit,
+        limit,
         seriesType: 'adult-sunday',
-        nextToken: nextToken,
+        nextToken,
       })
     )) as GraphQLResult<GetSeriesBySeriesTypeQuery>;
 
@@ -119,9 +126,7 @@ export default class SeriesService {
       query: getSeries,
       variables: { id: seriesId },
     });
-    //console.log("SeriesService.loadSeriesById(): queryResult = ", queryResult);
     const series = queryResult.getSeries;
-    //SeriesService.updateSeriesImage(series);
     return series;
   };
 
@@ -148,6 +153,7 @@ export default class SeriesService {
         'https://www.themeetinghouse.com/static/NoCompassionLogo.png';
     }
   };
+
   static updateSeriesImageFromPlaylist = async (
     series: SeriesDataWithHeroImage
   ): Promise<void> => {
@@ -176,190 +182,3 @@ export default class SeriesService {
     }
   };
 }
-
-const getSeriesBySeriesType = `
-  query getSeriesBySeriesType(
-    $seriesType: String, 
-    $startDate: ModelStringKeyConditionInput, 
-    $sortDirection: ModelSortDirection, 
-    $filter: ModelSeriesFilterInput, 
-    $limit: Int, 
-    $nextToken: String
-  ) {
-    getSeriesBySeriesType(seriesType: $seriesType, startDate: $startDate, sortDirection: $sortDirection, filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        seriesType
-        title
-        description
-        image
-        startDate
-        endDate
-        videos {
-          items {
-            id
-            episodeTitle
-            episodeNumber
-            seriesTitle
-            series {
-              id
-            }
-            publishedDate
-            description
-            length
-            YoutubeIdent
-            videoTypes
-            notesURL
-            videoURL
-            audioURL
-          }
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-`;
-
-export const getSeries = `
-  query GetSeries($id: ID!) {
-    getSeries(id: $id) {
-      id
-      seriesType
-      title
-      description
-      image
-      startDate
-      endDate
-      videos {
-        items {
-          id
-          episodeTitle
-          episodeNumber
-          seriesTitle
-          series {
-            id
-          }
-          publishedDate
-          description
-          length
-          YoutubeIdent
-          videoTypes
-          notesURL
-          videoURL
-          audioURL
-        }
-        nextToken
-      }
-    }
-  }
-`;
-
-export const listCustomPlaylists = /* GraphQL */ `
-  query ListCustomPlaylists(
-    $filter: ModelCustomPlaylistFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listCustomPlaylists(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        seriesType
-        title
-        description
-        thumbnailDescription
-        createdAt
-        updatedAt
-        videos {
-          items {
-            id
-            videoID
-            customPlaylistID
-            customPlaylist {
-              id
-              seriesType
-              title
-              thumbnailDescription
-              videos {
-                items {
-                  id
-                  videoID
-                  customPlaylistID
-                }
-                nextToken
-              }
-            }
-            video {
-              id
-              createdBy
-              createdDate
-              episodeTitle
-              originalEpisodeTitle
-              episodeNumber
-              seriesTitle
-              customPlaylistIDs
-              publishedDate
-              recordedDate
-              description
-              viewCount
-              length
-              YoutubeIdent
-              videoTypes
-              notesURL
-              videoURL
-              audioURL
-              thumbnailDescription
-              createdAt
-              updatedAt
-            }
-          }
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-`;
-
-export const getCustomPlaylist = /* GraphQL */ `
-  query GetCustomPlaylist($id: ID!) {
-    getCustomPlaylist(id: $id) {
-      id
-      seriesType
-      title
-      description
-      videos {
-        items {
-          id
-          video {
-            id
-            episodeTitle
-            originalEpisodeTitle
-            episodeNumber
-            seriesTitle
-            publishedDate
-            description
-            Youtube {
-              snippet {
-                thumbnails {
-                  high {
-                    url
-                  }
-                  standard {
-                    url
-                  }
-                  maxres {
-                    url
-                  }
-                }
-              }
-            }
-            videoURL
-            audioURL
-          }
-        }
-        nextToken
-      }
-    }
-  }
-`;

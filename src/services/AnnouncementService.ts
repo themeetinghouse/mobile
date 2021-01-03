@@ -1,5 +1,3 @@
-//import axios from 'axios';
-
 export interface Announcement {
   id: string;
   title: string;

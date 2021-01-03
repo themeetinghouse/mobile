@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Button, Text, Thumbnail } from 'native-base';
-import Theme from '../../Theme.style';
 import { ViewStyle, ImageSourcePropType, StyleSheet } from 'react-native';
+import Theme from '../../Theme.style';
 
 const style = StyleSheet.create({
   button: {
@@ -37,7 +37,7 @@ const style = StyleSheet.create({
 interface Params {
   wrapperStyle?: ViewStyle;
   label: string;
-  onPress?: () => any;
+  onPress?: () => void;
   active: boolean;
   iconActive: ImageSourcePropType;
   iconInactive: ImageSourcePropType;
@@ -62,7 +62,7 @@ export default function TeachingButton({
           square
           source={active ? iconActive : iconInactive}
           style={style.icon}
-        ></Thumbnail>
+        />
         <Text
           style={active ? style.label : style.labelInactive}
           uppercase={false}

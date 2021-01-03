@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Thumbnail } from 'native-base';
+import { StyleSheet } from 'react-native';
 import HomeScreen from '../screens/home/HomeScreen';
 import TeachingScreen from '../screens/teaching/TeachingScreen';
 import AllSeriesScreen from '../screens/teaching/AllSeriesScreen';
 import AllSermonsScreen from '../screens/teaching/AllSermonsScreen';
-import { Thumbnail } from 'native-base';
 import TabHomeImage from '../../assets/icons/tab-home.png';
 import TabHomeActiveImage from '../../assets/icons/tab-home-active.png';
 import TabTeachingImage from '../../assets/icons/tab-teaching.png';
@@ -18,7 +19,6 @@ import MoreScreen from '../screens/more/MoreScreen';
 import SeriesLandingScreen from '../screens/teaching/SeriesLandingScreen';
 import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
 import { Theme } from '../Theme.style';
-import { StyleSheet } from 'react-native';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
@@ -85,20 +85,12 @@ function TeachingStack() {
   );
 }
 
-/*function SearchStack() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Search" component={SettingsScreen}></Stack.Screen>
-    </Stack.Navigator>
-  )
-}*/
-
 export type MoreStackParamList = {
-  //LocationSelectionScreen: any, //this is wrong (?)
+  // LocationSelectionScreen: any, //this is wrong (?)
   MoreScreen: undefined;
   StaffList: undefined;
   ParishTeam: undefined;
-  TeacherProfile: undefined;
+  TeacherProfile: { staff: any } | undefined;
 };
 
 const More = createStackNavigator<MoreStackParamList>();
@@ -116,28 +108,30 @@ function MoreStack() {
 
 export type TabNavigatorParamList = {
   Home:
-  | undefined
-  | {
-    screen: keyof HomeStackParamList;
-    params: HomeStackParamList[keyof HomeStackParamList];
-  };
+    | undefined
+    | {
+        screen: keyof HomeStackParamList;
+        params: HomeStackParamList[keyof HomeStackParamList];
+      };
   Teaching:
-  | undefined
-  | {
-    screen: keyof TeachingStackParamList;
-    params: TeachingStackParamList[keyof TeachingStackParamList];
-  };
+    | undefined
+    | {
+        screen: keyof TeachingStackParamList;
+        params: TeachingStackParamList[keyof TeachingStackParamList];
+      };
   More:
-  | undefined
-  | {
-    screen: keyof MoreStackParamList;
-    params: MoreStackParamList[keyof MoreStackParamList];
-  };
+    | undefined
+    | {
+        screen: keyof MoreStackParamList;
+        params: MoreStackParamList[keyof MoreStackParamList];
+      };
 };
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
 export default function MainTabNavigator(): JSX.Element {
+  type TabBarProps = { focused: boolean };
+
   const media = useContext(MediaContext);
 
   const style = StyleSheet.create({
@@ -158,7 +152,7 @@ export default function MainTabNavigator(): JSX.Element {
         },
       }}
       screenOptions={({ route }) => ({
-        tabBarIcon: function render({ focused }: { focused: boolean }) {
+        tabBarIcon: function render({ focused }: TabBarProps) {
           let icon;
 
           if (route.name === 'Home') {
@@ -168,9 +162,7 @@ export default function MainTabNavigator(): JSX.Element {
           } else if (route.name === 'More') {
             icon = focused ? TabMoreActiveImage : TabMoreImage;
           }
-          return (
-            <Thumbnail square source={icon} style={style.tabIcon}></Thumbnail>
-          );
+          return <Thumbnail square source={icon} style={style.tabIcon} />;
         },
       })}
     >

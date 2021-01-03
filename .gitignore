@@ -17,3 +17,5 @@ web-report/
 version.js
 
 coverage
+
+.eslintcache

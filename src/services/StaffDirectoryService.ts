@@ -10,6 +10,7 @@ export type Coordinator = {
   Teacher: boolean | null;
   Location: string;
 };
+
 export default class StaffDirectoryService {
   static mapToLocation(code: string): string {
     switch (code) {
@@ -59,13 +60,14 @@ export default class StaffDirectoryService {
         return 'unknown';
     }
   }
+
   static parseTelephone = (tel: string): string | undefined => {
     const telephone = tel.split(',')[0].replace(/\D/g, '');
     const extension = tel.split(',')[1]
       ? tel.split(',')[1].replace(/\D/g, '')
       : '';
-    if (telephone && extension) return telephone + ',' + extension;
-    else return telephone;
+    if (telephone && extension) return `${telephone},${extension}`;
+    return telephone;
   };
 
   static loadStaffJson = async (): Promise<any> => {
@@ -124,7 +126,7 @@ export default class StaffDirectoryService {
       let staffName = '';
       for (let x = 0; x < staff.length; x++) {
         for (let i = 0; i < listOfSpeakers.items.length; i++) {
-          staffName = staff[x].FirstName + ' ' + staff[x].LastName;
+          staffName = `${staff[x].FirstName} ${staff[x].LastName}`;
           if (staffName === listOfSpeakers.items[i].name)
             staff[x] = { ...staff[x], Teacher: true };
         }
@@ -134,10 +136,11 @@ export default class StaffDirectoryService {
       console.log(error);
     }
   };
+
   static loadStaffListByLocation = async (
     selectedLocation: any | null
   ): Promise<any> => {
-    //takes the users selected (location) parish
+    // takes the users selected (location) parish
     try {
       const staff = await StaffDirectoryService.loadStaffList();
       const coordinators = await StaffDirectoryService.loadCoordinatorsList();
@@ -223,9 +226,8 @@ export default class StaffDirectoryService {
             for (let i = 0; i < sectionedList.length; i++) {
               if (staffItem.sites[x] === sectionedList[i].code) {
                 return { ...staffItem, Location: sectionedList[i].title };
-              } else {
-                return null;
               }
+              return null;
             }
           }
         })
@@ -242,9 +244,8 @@ export default class StaffDirectoryService {
                   Location: sectionedList[i].title,
                   uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${coordinatorItem.sites[x]}_${coordinatorItem.FirstName}_${coordinatorItem.LastName}_app.jpg`,
                 };
-              } else {
-                return null;
               }
+              return null;
             }
           }
         })
@@ -256,10 +257,7 @@ export default class StaffDirectoryService {
       let staffName = '';
       for (let x = 0; x < sectionedList[0].data.length; x++) {
         for (let i = 0; i < listOfSpeakers.items.length; i++) {
-          staffName =
-            sectionedList[0].data[x].FirstName +
-            ' ' +
-            sectionedList[0].data[x].LastName;
+          staffName = `${sectionedList[0].data[x].FirstName} ${sectionedList[0].data[x].LastName}`;
           if (staffName === listOfSpeakers.items[i].name)
             sectionedList[0].data[x] = {
               ...sectionedList[0].data[x],
@@ -272,6 +270,7 @@ export default class StaffDirectoryService {
       console.log(error);
     }
   };
+
   static loadCoordinatorsList = async (): Promise<any> => {
     try {
       const getSiteData: any = await fetch(

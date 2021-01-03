@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Thumbnail } from 'native-base';
-import Theme from '../../Theme.style';
 import { Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import moment from 'moment';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import Auth from '@aws-amplify/auth';
 import { LoadSermonResult } from '../../services/SermonsService';
 import {
   GetCommentsByOwnerQueryVariables,
   GetCommentsByOwnerQuery,
 } from '../../services/API';
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import Auth from '@aws-amplify/auth';
+import Theme from '../../Theme.style';
 import { TMHCognitoUser } from '../../contexts/UserContext';
+import { commentExistsQuery } from '../../graphql/queries';
 
 const imageWidth = 0.42 * Dimensions.get('screen').width;
 
@@ -57,7 +58,7 @@ const style = StyleSheet.create({
 });
 
 interface Params {
-  handlePress: () => any;
+  handlePress: () => void;
   teaching: NonNullable<LoadSermonResult['items']>[0];
 }
 
@@ -66,6 +67,7 @@ export default function TeachingListItem({
   handlePress,
 }: Params): JSX.Element {
   const [hasComments, setHasComments] = useState(false);
+
   useEffect(() => {
     const getComments = async () => {
       try {
@@ -75,7 +77,7 @@ export default function TeachingListItem({
           noteId: { eq: teaching?.publishedDate },
         };
         const json = (await API.graphql({
-          query: getCommentsByOwner,
+          query: commentExistsQuery,
           variables: input,
           authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
         })) as GraphQLResult<GetCommentsByOwnerQuery>;
@@ -90,7 +92,7 @@ export default function TeachingListItem({
       }
     };
     getComments();
-  }, []);
+  }, [teaching?.publishedDate]);
 
   return (
     <TouchableOpacity onPress={handlePress}>
@@ -135,28 +137,3 @@ export default function TeachingListItem({
     </TouchableOpacity>
   );
 }
-
-const getCommentsByOwner = /* GraphQL */ `
-  query GetCommentsByOwner(
-    $owner: String
-    $noteId: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelCommentFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getCommentsByOwner(
-      owner: $owner
-      noteId: $noteId
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-      }
-      nextToken
-    }
-  }
-`;

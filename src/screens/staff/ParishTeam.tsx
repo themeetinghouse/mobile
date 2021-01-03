@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, SectionList } from 'react-native';
 import { Thumbnail, Left } from 'native-base';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import StaffItem from '../../components/staff/StaffItem';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import { MoreStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import LocationContext from '../../contexts/LocationContext';
 import ActivityIndicator from '../../components/ActivityIndicator';
+
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
@@ -28,14 +28,13 @@ const style = StyleSheet.create({
 
 interface Params {
   navigation: StackNavigationProp<MoreStackParamList>;
-  route: RouteProp<MoreStackParamList, 'MoreScreen'>;
 }
 
 export default function StaffList({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [staffByLocation, setStaffByLocation] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -81,13 +80,12 @@ export default function StaffList({ navigation }: Params): JSX.Element {
 
   useEffect(() => {
     const loadStaff = async () => {
-      setisLoading(true);
+      setIsLoading(true);
       const staffByLocationResults = await StaffDirectoryService.loadStaffListByLocation(
         location as any
       );
-      //const sorted = staffResults.sort((a, b) => (a.LastName > b.LastName) ? 1 : ((b.LastName > a.LastName) ? -1 : 0))
       setStaffByLocation(staffByLocationResults);
-      setisLoading(false);
+      setIsLoading(false);
     };
     loadStaff();
 
@@ -95,6 +93,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
       console.log('Cleanup');
     };
   }, [location]);
+
   return (
     <>
       {isLoading ? (
@@ -107,7 +106,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
             bottom: '50%',
           }}
         >
-          <ActivityIndicator animating={isLoading}></ActivityIndicator>
+          <ActivityIndicator animating={isLoading} />
         </View>
       ) : null}
       <SectionList
@@ -120,7 +119,7 @@ export default function StaffList({ navigation }: Params): JSX.Element {
               searchText={searchText}
               handleTextChanged={(newStr) => setSearchText(newStr)}
               placeholderLabel="Search by name"
-            ></SearchBar>
+            />
           </View>
         }
         renderSectionHeader={({ section: { title, data } }) => {
@@ -162,21 +161,21 @@ export default function StaffList({ navigation }: Params): JSX.Element {
                 </View>
               </>
             );
-          } else return null; // no results message here
+          }
+          return null; // no results message here
         }}
         renderSectionFooter={({ section: { data } }) => {
           if (data.length === 0) return null;
-          else return <View style={{ marginBottom: 15 }}></View>;
+          return <View style={{ marginBottom: 15 }} />;
         }}
         renderItem={({ item }) => {
           if (
             item.FirstName.toLowerCase().includes(searchText.toLowerCase()) ||
             item.LastName.toLowerCase().includes(searchText.toLowerCase())
           )
-            return <StaffItem navigation={navigation} staff={item}></StaffItem>;
-          else {
-            return <></>;
-          }
+            return <StaffItem staff={item} />;
+
+          return null;
         }}
         keyExtractor={(item: any) => item.FirstName + item.LastName}
         progressViewOffset={300}

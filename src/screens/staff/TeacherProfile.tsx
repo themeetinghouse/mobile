@@ -9,17 +9,20 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import CachedImage from 'react-native-expo-cached-image';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { MoreStackParamList } from 'src/navigation/MainTabNavigator';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { runGraphQLQuery } from '../../services/ApiService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import AllButton from '../../components/buttons/AllButton';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
+import { listSpeakersQuery } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   container: {
@@ -85,25 +88,27 @@ const style = StyleSheet.create({
     flex: 1,
   },
 });
+
 interface Props {
   navigation: StackNavigationProp<MainStackParamList>;
-  route: any;
+  route: RouteProp<MoreStackParamList, 'TeacherProfile'>;
 }
 
 function TeacherProfile({ navigation, route }: Props): JSX.Element {
   const [searchText, setSearchText] = useState('');
-  const [teachings, setTeachings] = useState({
+  const [teachings, setTeachings] = useState<any>({
     items: [],
     nextToken: null,
-  } as any);
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [showCount, setShowCount] = useState(20);
   const [nextToken, setNextToken] = useState(null);
-  const [uri, setUri] = useState(route.params.staff.uri);
+  const [uri, setUri] = useState(route.params?.staff?.uri);
   const [teacherData, setTeacherData] = useState({
     Phone: '',
     Email: '',
   });
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -133,7 +138,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                 fontSize: 16,
                 transform: [{ translateX: -4 }],
               }}
-            ></Text>
+            />
           </TouchableOpacity>
         );
       },
@@ -151,7 +156,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                     style={style.icon}
                     source={Theme.icons.white.phone}
                     square
-                  ></Thumbnail>
+                  />
                 </TouchableOpacity>
               ) : null}
               {teacherData.Email !== '' ? (
@@ -163,7 +168,7 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                     style={style.icon}
                     source={Theme.icons.white.contact}
                     square
-                  ></Thumbnail>
+                  />
                 </TouchableOpacity>
               ) : null}
             </View>
@@ -171,58 +176,92 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
         );
       },
     });
-  }, [navigation, teacherData]);
-  const nameOrId = () => {
-    if (route.params.staff.idFromTeaching)
-      return route.params.staff.idFromTeaching.toString();
-    else
-      return (
-        route.params.staff.FirstName +
-        ' ' +
-        route.params.staff.LastName
-      ).toString();
-  };
-  const loadSpeakerVideos = async () => {
-    setIsLoading(true);
-    try {
-      const queryResult = await runGraphQLQuery({
-        query: listSpeakersQuery,
-        variables: { nextToken: nextToken, filter: { id: { eq: nameOrId() } } },
-      });
-      setTeachings({
-        items: teachings.items.concat(
-          queryResult.listSpeakers.items[0].videos.items
-        ),
-      });
-      setUri(queryResult.listSpeakers.items[0].image);
-      setNextToken(queryResult.listSpeakers.items[0].videos.nextToken);
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  }, [navigation, teacherData.Email, teacherData.Phone]);
+
   const uriError = () => {
     setUri(Theme.icons.white.user);
   };
-  const loadSpeakerData = async () => {
-    try {
-      const staffData = await StaffDirectoryService.loadStaffJson();
-      const teacher = staffData.filter(
-        (a: any) => a.FirstName + ' ' + a.LastName === nameOrId()
-      )?.[0];
-      if (teacher)
-        setTeacherData({
-          Email: teacher.Email,
-          Phone: teacher.Phone,
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   useEffect(() => {
+    const nameOrId = () => {
+      if (route.params?.staff.idFromTeaching)
+        return route.params?.staff.idFromTeaching.toString();
+      return `${route.params?.staff.FirstName} ${route.params?.staff.LastName}`.toString();
+    };
+
+    const loadSpeakerData = async () => {
+      try {
+        const staffData = await StaffDirectoryService.loadStaffJson();
+        const teacher = staffData.filter(
+          (a: any) => `${a.FirstName} ${a.LastName}` === nameOrId()
+        )?.[0];
+        if (teacher)
+          setTeacherData({
+            Email: teacher.Email,
+            Phone: teacher.Phone,
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const loadSpeakerVideos = async () => {
+      setIsLoading(true);
+      try {
+        const queryResult = await runGraphQLQuery({
+          query: listSpeakersQuery,
+          variables: { nextToken, filter: { id: { eq: nameOrId() } } },
+        });
+        setTeachings({
+          items: teachings.items.concat(
+            queryResult.listSpeakers.items[0].videos.items
+          ),
+        });
+        setUri(queryResult.listSpeakers.items[0].image);
+        setNextToken(queryResult.listSpeakers.items[0].videos.nextToken);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     loadSpeakerVideos();
     loadSpeakerData();
   }, []);
+
+  const renderImage = () => {
+    if (uri && uri !== Theme.icons.white.user) {
+      if (Platform.OS === 'android') {
+        return (
+          <CachedImage
+            onLoadEnd={() => setIsLoading(false)}
+            style={style.picture}
+            onError={() => {
+              uriError();
+            }}
+            source={{ uri }}
+          />
+        );
+      }
+
+      return (
+        <Image
+          onLoadEnd={() => setIsLoading(false)}
+          style={style.picture}
+          onError={() => {
+            setIsLoading(false);
+            uriError();
+          }}
+          source={{ uri, cache: 'default' }}
+        />
+      );
+    }
+
+    return (
+      <View style={style.fallbackPictureContainer}>
+        <Image style={style.fallBackPicture} source={Theme.icons.white.user} />
+      </View>
+    );
+  };
+
   return (
     <View style={style.container}>
       <View
@@ -233,62 +272,25 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
           top: '45%',
         }}
       >
-        <ActivityIndicator animating={isLoading}></ActivityIndicator>
+        <ActivityIndicator animating={isLoading} />
       </View>
       <ScrollView>
         <View>
-          <View style={style.pictureContainer}>
-            {Platform.OS === 'android' ? (
-              uri && uri !== Theme.icons.white.user ? (
-                <CachedImage
-                  onLoadEnd={() => setIsLoading(false)}
-                  style={style.picture}
-                  onError={() => {
-                    uriError();
-                  }}
-                  source={{ uri }}
-                />
-              ) : (
-                <View style={style.fallbackPictureContainer}>
-                  <Image
-                    style={style.fallBackPicture}
-                    source={Theme.icons.white.user}
-                  ></Image>
-                </View>
-              )
-            ) : uri && uri !== Theme.icons.white.user ? (
-              <Image
-                onLoadEnd={() => setIsLoading(false)}
-                style={style.picture}
-                onError={() => {
-                  setIsLoading(false);
-                  uriError();
-                }}
-                source={{ uri: uri, cache: 'default' }}
-              />
-            ) : (
-              <View style={style.fallbackPictureContainer}>
-                <Image
-                  style={style.fallBackPicture}
-                  source={Theme.icons.white.user}
-                ></Image>
-              </View>
-            )}
-          </View>
+          <View style={style.pictureContainer}>{renderImage()}</View>
           <Text style={style.Name}>
-            {route.params.staff.idFromTeaching
-              ? route.params.staff.idFromTeaching
-              : route.params.staff.FirstName}{' '}
-            {route.params.staff.LastName}
+            {route.params?.staff.idFromTeaching
+              ? route.params?.staff.idFromTeaching
+              : route.params?.staff.FirstName}{' '}
+            {route.params?.staff.LastName}
           </Text>
-          <Text style={style.Position}>{route.params.staff.Position}</Text>
+          <Text style={style.Position}>{route.params?.staff.Position}</Text>
         </View>
         <SearchBar
           style={style.searchBar}
           searchText={searchText}
           handleTextChanged={(newStr) => setSearchText(newStr)}
           placeholderLabel="Search sermons..."
-        ></SearchBar>
+        />
         <View style={style.listContentContainer}>
           {teachings.items.length > 0
             ? teachings.items
@@ -316,6 +318,8 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
                       />
                     );
                   }
+
+                  return null;
                 })
             : null}
         </View>
@@ -350,61 +354,5 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
     </View>
   );
 }
-export default memo(TeacherProfile);
 
-export const listSpeakersQuery = `
-  query ListSpeakers(
-    $filter: ModelSpeakerFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listSpeakers(filter: $filter, limit: $limit) {
-      items {
-        id
-        name
-        image
-        videos (limit: 9999, sortDirection:DESC, nextToken: $nextToken) {
-          items {
-            id
-            video{
-              publishedDate
-              description
-              audioURL
-              YoutubeIdent
-              id
-              episodeTitle
-              episodeNumber
-              seriesTitle
-              Youtube{
-                snippet {
-                  thumbnails {
-                    default {
-                      url
-                    }
-                    medium {
-                      url
-                    }
-                    high {
-                      url
-                    }
-                    standard {
-                      url
-                    }
-                    maxres {
-                      url
-                    }
-                  }
-                }
-                contentDetails{
-                  videoId
-                }
-              }
-            }
-          }
-          nextToken
-        }
-      }
-      nextToken
-    }
-  }
-  `;
+export default memo(TeacherProfile);

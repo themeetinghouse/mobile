@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { Container, Text, Button, View, Thumbnail } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -13,9 +12,11 @@ import {
 import { Auth } from '@aws-amplify/auth';
 import { TextInput, FlatList } from 'react-native-gesture-handler';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
-import { MainStackParamList } from '../../navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import moment from 'moment';
+import { GRAPHQL_AUTH_MODE, GraphQLResult, API } from '@aws-amplify/api';
+import { nanoid } from 'nanoid/async/index.native';
 import {
   CreateCommentInput,
   NoteDataType,
@@ -27,14 +28,18 @@ import {
   UpdateCommentMutation,
   CreateCommentMutation,
 } from '../../services/API';
-import moment from 'moment';
-import { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
-import { API } from '@aws-amplify/api';
-import { nanoid } from 'nanoid/async/index.native';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import CommentContext from '../../contexts/CommentContext';
 import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
 import MiniPlayerStyleContext from '../../contexts/MiniPlayerStyleContext';
 import NeedsSignUpModal from '../../components/modals/NeedsSignUpModal';
+import { getTagsByOwner } from '../../graphql/queries';
+import {
+  updateComment,
+  createComment,
+  deleteComment,
+} from '../../graphql/mutations';
 
 const style = StyleSheet.create({
   content: {
@@ -68,52 +73,6 @@ const style = StyleSheet.create({
       width: '100%',
     },
   },
-  title: {
-    ...Style.title,
-    ...{
-      marginTop: 130,
-      marginBottom: 16,
-    },
-  },
-  body: {
-    ...Style.body,
-    ...{
-      marginBottom: 40,
-    },
-  },
-  listItem: {
-    marginLeft: 0,
-    borderColor: Theme.colors.gray2,
-    backgroundColor: Theme.colors.background,
-  },
-  listText: {
-    fontSize: Theme.fonts.medium,
-    color: Theme.colors.grey5,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    marginLeft: 16,
-    lineHeight: 24,
-  },
-  listSubtext: {
-    fontSize: Theme.fonts.smallMedium,
-    color: Theme.colors.grey4,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    marginLeft: 16,
-    marginTop: 10,
-  },
-  listIcon: {
-    ...Style.icon,
-    ...{
-      marginRight: 16,
-      marginLeft: 16,
-    },
-  },
-  listArrowIcon: Style.icon,
-  headerText: {
-    fontSize: 16,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    color: 'white',
-    lineHeight: 24,
-  },
   input: {
     fontFamily: Theme.fonts.fontFamilyRegular,
     color: 'white',
@@ -125,92 +84,6 @@ interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
   route: RouteProp<MainStackParamList, 'CommentScreen'>;
 }
-
-const getTagsByOwner = /* GraphQL */ `
-  query GetCommentsByOwner(
-    $owner: String
-    $noteId: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelCommentFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getCommentsByOwner(
-      owner: $owner
-      noteId: $noteId
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        tags
-      }
-      nextToken
-    }
-  }
-`;
-
-const createComment = /* GraphQL */ `
-  mutation CreateComment($input: CreateCommentInput!) {
-    createComment(input: $input) {
-      id
-      comment
-      tags
-      noteType
-      commentType
-      noteId
-      textSnippet
-      imageUri
-      key
-      date
-      time
-      owner
-      createdAt
-      updatedAt
-    }
-  }
-`;
-const updateComment = /* GraphQL */ `
-  mutation UpdateComment($input: UpdateCommentInput!) {
-    updateComment(input: $input) {
-      id
-      comment
-      tags
-      noteType
-      commentType
-      noteId
-      textSnippet
-      imageUri
-      key
-      date
-      time
-      owner
-      createdAt
-      updatedAt
-    }
-  }
-`;
-const deleteComment = /* GraphQL */ `
-  mutation DeleteComment($input: DeleteCommentInput!) {
-    deleteComment(input: $input) {
-      id
-      comment
-      tags
-      noteType
-      commentType
-      noteId
-      textSnippet
-      imageUri
-      key
-      date
-      time
-      owner
-      createdAt
-      updatedAt
-    }
-  }
-`;
 
 export default function CommentScreen({
   navigation,
@@ -232,11 +105,84 @@ export default function CommentScreen({
   const [showHint, setShowHint] = useState(false);
 
   const routeParams = route.params;
+
+  // eslint-disable-next-line camelcase
+  const emailVerified = userContext?.userData?.email_verified;
+
+  const { setDisplay } = miniPlayerStyle;
+
   useLayoutEffect(() => {
+    const postComment = async () => {
+      if (edit && comment) {
+        try {
+          const input: UpdateCommentInput = {
+            id: commentId,
+            comment,
+            tags,
+            date: moment().format('MMMM D, YYYY'),
+            time: moment().format('h:mm A'),
+          };
+
+          const json = (await API.graphql({
+            query: updateComment,
+            variables: { input },
+            authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+          })) as GraphQLResult<UpdateCommentMutation>;
+
+          const index = commentContext.comments.findIndex(
+            (item) => item?.id === commentId
+          );
+          if (index !== -1 && json.data?.updateComment)
+            commentContext.comments[index] = json.data.updateComment;
+
+          navigation.goBack();
+        } catch (e) {
+          console.debug(e);
+        }
+      } else if ('key' in routeParams && comment) {
+        try {
+          const nanoId = await nanoid();
+          const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+          const input: CreateCommentInput = {
+            id: nanoId,
+            comment,
+            tags,
+            noteType:
+              routeParams.noteType === 'notes'
+                ? NoteDataType.notes
+                : NoteDataType.questions,
+            commentType: routeParams.commentType,
+            noteId: routeParams.noteId,
+            textSnippet: routeParams.textSnippet,
+            imageUri: routeParams.imageUri,
+            key: routeParams.key,
+            date: moment().format('MMMM D, YYYY'),
+            time: moment().format('h:mm A'),
+            owner: cognitoUser.username,
+          };
+
+          const json = (await API.graphql({
+            query: createComment,
+            variables: { input },
+            authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+          })) as GraphQLResult<CreateCommentMutation>;
+
+          if (json.data?.createComment)
+            commentContext.comments.push(json.data.createComment);
+
+          setEdit(true);
+          setCommentId(nanoId);
+          navigation.goBack();
+        } catch (e) {
+          console.debug(e);
+        }
+      }
+    };
+
     navigation.setOptions({
       headerShown: true,
       title:
-        mode === 'comment' ? (edit ? 'Edit' : 'Add') + ' Comment' : 'Add Tags',
+        mode === 'comment' ? `${edit ? 'Edit' : 'Add'} Comment` : 'Add Tags',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
@@ -248,11 +194,7 @@ export default function CommentScreen({
                 : () => setMode('comment')
             }
           >
-            <Text
-              style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}
-            >
-              Cancel
-            </Text>
+            <Text style={HeaderStyle.linkText}>Cancel</Text>
           </TouchableOpacity>
         );
       },
@@ -264,9 +206,7 @@ export default function CommentScreen({
               mode === 'comment' ? postComment : () => setMode('comment')
             }
           >
-            <Text
-              style={true ? HeaderStyle.linkText : HeaderStyle.linkTextInactive}
-            >
+            <Text style={HeaderStyle.linkText}>
               {mode === 'comment' ? 'Save' : 'Done'}
             </Text>
           </TouchableOpacity>
@@ -274,20 +214,22 @@ export default function CommentScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  });
+  }, []);
 
   useEffect(() => {
-    miniPlayerStyle.setDisplay('none');
+    setDisplay('none');
+  }, [setDisplay]);
 
-    if (!userContext?.userData?.email_verified) setSignUpModal(true);
-  }, []);
+  useEffect(() => {
+    if (!emailVerified) setSignUpModal(true);
+  }, [emailVerified]);
 
   useEffect(() => {
     const unsub = navigation.addListener('blur', () => {
-      miniPlayerStyle.setDisplay('flex');
+      setDisplay('flex');
     });
     return unsub;
-  }, []);
+  }, [setDisplay, navigation]);
 
   useEffect(() => {
     const getTags = async () => {
@@ -331,7 +273,7 @@ export default function CommentScreen({
       setCommentId(routeParams.commentId);
       setEdit(true);
     }
-  }, []);
+  }, [routeParams]);
 
   const removeTag = (toRemove: string) => {
     setTags((prevState) => {
@@ -365,73 +307,6 @@ export default function CommentScreen({
     setTimeout(() => {
       setShowHint(false);
     }, 3000);
-  };
-
-  const postComment = async () => {
-    if (edit && comment) {
-      try {
-        const input: UpdateCommentInput = {
-          id: commentId,
-          comment: comment,
-          tags: tags,
-          date: moment().format('MMMM D, YYYY'),
-          time: moment().format('h:mm A'),
-        };
-
-        const json = (await API.graphql({
-          query: updateComment,
-          variables: { input },
-          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        })) as GraphQLResult<UpdateCommentMutation>;
-
-        const index = commentContext.comments.findIndex(
-          (item) => item?.id === commentId
-        );
-        if (index !== -1 && json.data?.updateComment)
-          commentContext.comments[index] = json.data.updateComment;
-
-        navigation.goBack();
-      } catch (e) {
-        console.debug(e);
-      }
-    } else if ('key' in routeParams && comment) {
-      try {
-        const nanoId = await nanoid();
-        const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        const input: CreateCommentInput = {
-          id: nanoId,
-          comment: comment,
-          tags: tags,
-          noteType:
-            routeParams.noteType === 'notes'
-              ? NoteDataType.notes
-              : NoteDataType.questions,
-          commentType: routeParams.commentType,
-          noteId: routeParams.noteId,
-          textSnippet: routeParams.textSnippet,
-          imageUri: routeParams.imageUri,
-          key: routeParams.key,
-          date: moment().format('MMMM D, YYYY'),
-          time: moment().format('h:mm A'),
-          owner: cognitoUser.username,
-        };
-
-        const json = (await API.graphql({
-          query: createComment,
-          variables: { input },
-          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        })) as GraphQLResult<CreateCommentMutation>;
-
-        if (json.data?.createComment)
-          commentContext.comments.push(json.data.createComment);
-
-        setEdit(true);
-        setCommentId(nanoId);
-        navigation.goBack();
-      } catch (e) {
-        console.debug(e);
-      }
-    }
   };
 
   function addTag(tag: string) {
@@ -535,7 +410,7 @@ export default function CommentScreen({
                 source={{ uri: routeParams.imageUri }}
                 style={{ width: 64, height: 64 }}
                 resizeMode="contain"
-              ></Image>
+              />
             ) : (
               <Text
                 style={{
@@ -557,7 +432,7 @@ export default function CommentScreen({
               placeholder="Write a comment"
               placeholderTextColor={Theme.colors.grey4}
               style={style.input}
-            ></TextInput>
+            />
           </View>
           <View style={{ flexGrow: 0 }}>
             <View
@@ -585,7 +460,7 @@ export default function CommentScreen({
                   source={Theme.icons.white.delete}
                   square
                   style={{ width: 24, height: 24 }}
-                ></Thumbnail>
+                />
               </Button>
             </View>
             <View
@@ -601,7 +476,7 @@ export default function CommentScreen({
                 source={Theme.icons.white.tags}
                 square
                 style={{ width: 16, height: 16, marginRight: 16 }}
-              ></Thumbnail>
+              />
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={tags}
@@ -659,7 +534,7 @@ export default function CommentScreen({
               placeholder="Separate tags with commas"
               placeholderTextColor={Theme.colors.grey4}
               style={style.input}
-            ></TextInput>
+            />
           </View>
           <View style={{ flexGrow: 0 }}>
             <View
@@ -675,7 +550,7 @@ export default function CommentScreen({
                 source={Theme.icons.white.tags}
                 square
                 style={{ width: 16, height: 16, marginRight: 16 }}
-              ></Thumbnail>
+              />
               <FlatList
                 showsHorizontalScrollIndicator={false}
                 data={tags}

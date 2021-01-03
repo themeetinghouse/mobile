@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Button, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import {
@@ -13,27 +12,32 @@ import {
   NativeScrollEvent,
 } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
+import { FlatList } from 'react-native-gesture-handler';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { CompositeNavigationProp } from '@react-navigation/native';
+import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AllButton from '../../components/buttons/AllButton';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
-import { FlatList } from 'react-native-gesture-handler';
 import SermonsService from '../../services/SermonsService';
-import SeriesService, { LoadPlaylistData } from '../../services/SeriesService';
+import SeriesService, {
+  LoadPlaylistData,
+  LoadSeriesListData,
+} from '../../services/SeriesService';
 import SpeakersService from '../../services/SpeakersService';
-import { loadSomeAsync } from '../../utils/loading';
-import { LoadSeriesListData } from '../../services/SeriesService';
+import loadSomeAsync from '../../utils/loading';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { CompositeNavigationProp } from '@react-navigation/native';
-import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import {
   GetVideoByVideoTypeQueryVariables,
   GetVideoByVideoTypeQuery,
 } from '../../services/API';
 import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
+import { popularTeachingQuery } from '../../graphql/queries';
+
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
 
@@ -245,6 +249,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const [bounce, setBounce] = useState(false);
   const [popular, setPopular] = useState<PopularVideoData>([]);
 
+  // eslint-disable-next-line camelcase
+  const emailVerified = user?.userData?.email_verified;
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -265,20 +272,20 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             <Thumbnail
               square
               source={
-                user?.userData?.email_verified
+                emailVerified
                   ? Theme.icons.white.userLoggedIn
                   : Theme.icons.white.user
               }
               style={style.icon}
-            ></Thumbnail>
+            />
           </Button>
         );
       },
       headerRightContainerStyle: { right: 16 },
     });
-  });
+  }, [navigation, emailVerified]);
 
-  const loadRecentSermonsAsync = async () => {
+  const loadRecentSermons = async () => {
     loadSomeAsync(
       SermonsService.loadRecentSermonsList,
       recentTeaching,
@@ -286,25 +293,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       6
     );
   };
-  const loadHighlightsAsync = async () => {
-    loadSomeAsync(
-      SermonsService.loadHighlightsList,
-      highlights,
-      setHighlights,
-      5
-    );
-  };
-  const loadSpeakersAsync = async () => {
+
+  const loadSpeakers = async () => {
     loadSomeAsync(SpeakersService.loadSpeakersList, speakers, setSpeakers);
   };
-  const loadRecentSeriesAsync = async () => {
-    loadSomeAsync(
-      SeriesService.loadSeriesList,
-      recentSeries,
-      setRecentSeries,
-      10
-    );
-  };
+
   const loadCustomPlaylists = async () => {
     loadSomeAsync(
       SeriesService.loadCustomPlaylists,
@@ -313,34 +306,54 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       10
     );
   };
-  const getPopularTeaching = async () => {
-    const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
-    const variables: GetVideoByVideoTypeQueryVariables = {
-      limit: 30,
-      videoTypes: 'adult-sunday',
-      publishedDate: { gt: startDate },
-    };
 
-    const json = (await API.graphql({
-      query: getVideoByVideoType,
-      variables,
-      authMode: GRAPHQL_AUTH_MODE.API_KEY,
-    })) as GraphQLResult<GetVideoByVideoTypeQuery>;
-    const items = json?.data?.getVideoByVideoType?.items ?? [];
-    const popular = items.filter((item) =>
-      item?.viewCount ? parseInt(item?.viewCount, 10) >= 700 : false
+  const loadHighlights = async () => {
+    loadSomeAsync(
+      SermonsService.loadHighlightsList,
+      highlights,
+      setHighlights,
+      5
     );
-    setPopular(popular);
+  };
+
+  const loadRecentSeries = async () => {
+    loadSomeAsync(
+      SeriesService.loadSeriesList,
+      recentSeries,
+      setRecentSeries,
+      10
+    );
   };
 
   useEffect(() => {
-    loadRecentSeriesAsync();
-    loadRecentSermonsAsync();
-    loadHighlightsAsync();
-    loadSpeakersAsync();
+    const getPopularTeaching = async () => {
+      const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
+      const variables: GetVideoByVideoTypeQueryVariables = {
+        limit: 30,
+        videoTypes: 'adult-sunday',
+        publishedDate: { gt: startDate },
+      };
+
+      const json = (await API.graphql({
+        query: popularTeachingQuery,
+        variables,
+        authMode: GRAPHQL_AUTH_MODE.API_KEY,
+      })) as GraphQLResult<GetVideoByVideoTypeQuery>;
+      const items = json?.data?.getVideoByVideoType?.items ?? [];
+      const popularTeaching = items.filter((item) =>
+        item?.viewCount ? parseInt(item?.viewCount, 10) >= 700 : false
+      );
+      setPopular(popularTeaching);
+    };
+
+    loadRecentSeries();
+    loadRecentSermons();
+    loadHighlights();
+    loadSpeakers();
     loadCustomPlaylists();
     getPopularTeaching();
   }, []);
+
   const contentOffset =
     (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
 
@@ -349,10 +362,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   };
 
   const getTeachingImage = (teaching: any) => {
-    const thumbnails = teaching.Youtube.snippet.thumbnails;
+    const { thumbnails } = teaching?.Youtube?.snippet;
 
-    if (thumbnails.standard) return thumbnails.standard.url;
-    else if (thumbnails.maxres) return thumbnails.maxres.url;
+    if (thumbnails?.standard) return thumbnails?.standard?.url;
+    return thumbnails?.maxres?.url;
   };
 
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
@@ -363,9 +376,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     }
   }
 
-  /*const getSpeakerImage = (speaker: any) => {
-        return `https://www.themeetinghouse.com/static/photos/staff/${speaker.name.replace(/ /g, '_')}_app.jpg`
-    }*/
   const renderSeriesSwipeItem = (
     item: any,
     index: number,
@@ -377,7 +387,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return (
       <TouchableOpacity
         key={item.id}
-        onPress={() => navigation.push('SeriesLandingScreen', { item: item })}
+        onPress={() => navigation.push('SeriesLandingScreen', { item })}
         style={style.seriesThumbnailContainer}
       >
         <AnimatedFallbackImage
@@ -432,8 +442,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             style={{ width: '100%' }}
             contentOffset={contentOffset}
             onEndReachedThreshold={0.2}
-            onEndReached={loadRecentSeriesAsync}
-            useVelocityForIndex={true}
+            onEndReached={loadRecentSeries}
+            useVelocityForIndex
             renderItem={({ item, itemIndex, animatedValue }) =>
               renderSeriesSwipeItem(item, itemIndex, animatedValue)
             }
@@ -485,7 +495,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 index,
               };
             }}
-            horizontal={true}
+            horizontal
             data={highlights.items}
             renderItem={({ item, index }) => (
               <TouchableOpacity
@@ -507,10 +517,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 />
               </TouchableOpacity>
             )}
-            onEndReached={loadHighlightsAsync}
+            onEndReached={loadHighlights}
             onEndReachedThreshold={0.8}
             ListFooterComponent={() => <ActivityIndicator />}
-          ></FlatList>
+          />
         </View>
 
         <View style={style.categorySection}>
@@ -561,12 +571,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 return (
                   <SeriesItem
                     key={s.id}
-                    customPlaylist={true}
+                    customPlaylist
                     navigation={navigation as any}
                     seriesData={s}
-                  ></SeriesItem>
+                  />
                 );
-              else return null;
+              return null;
             })}
           </View>
           <AllButton
@@ -588,7 +598,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   style.horizontalListContentContainer,
                   { marginBottom: 2 },
                 ]}
-                horizontal={true}
+                horizontal
                 data={speakers.items}
                 renderItem={({ item, index }: any) =>
                   !item.hidden ? (
@@ -622,7 +632,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                           <Image
                             style={{ width: 30, height: 30 }}
                             source={Theme.icons.white.user}
-                          ></Image>
+                          />
                           <Image
                             style={[
                               style.teacherThumbnail,
@@ -631,7 +641,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                                 : {},
                             ]}
                             source={{ uri: item.image }}
-                          ></Image>
+                          />
                         </View>
                         <Text style={style.teacherDetail1}>{item.name}</Text>
                       </View>
@@ -641,7 +651,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 ListFooterComponent={() =>
                   speakers.loading ? <ActivityIndicator /> : null
                 }
-              ></FlatList>
+              />
               <AllButton handlePress={() => navigation.push('TeacherList')}>
                 All teachers
               </AllButton>
@@ -654,62 +664,3 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     </Container>
   );
 }
-export const getVideoByVideoType = `query GetVideoByVideoType(
-    $videoTypes: String
-    $publishedDate: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelVideoFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getVideoByVideoType(
-      videoTypes: $videoTypes
-      publishedDate: $publishedDate
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        episodeTitle
-        episodeNumber
-        seriesTitle
-        series {
-          id
-        }
-        publishedDate
-        description
-        length
-        viewCount
-        YoutubeIdent
-        Youtube {
-          snippet {
-            thumbnails {
-              default {
-                url
-              }
-              medium {
-                url
-              }
-              high {
-                url
-              }
-              standard {
-                url
-              }
-              maxres {
-                url
-              }
-            }
-          }
-        }
-        videoTypes
-        notesURL
-        videoURL
-        audioURL
-      }
-      nextToken
-    }
-  }
-  `;

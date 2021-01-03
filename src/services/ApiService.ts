@@ -29,7 +29,7 @@ export async function runGraphQLQuery(
     },
   });
   const result = response.data.data;
-  //console.log("ApiService.post(): response = %o", result);
+  // console.log("ApiService.post(): response = %o", result);
   return result;
 }
 

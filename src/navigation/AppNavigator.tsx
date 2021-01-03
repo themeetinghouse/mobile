@@ -1,13 +1,13 @@
 import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 import MainTabNavigator, {
   TabNavigatorParamList,
   HomeStackParamList,
   TeachingStackParamList,
   MoreStackParamList,
 } from './MainTabNavigator';
-import AuthNavigator from './AuthNavigator';
-import { createStackNavigator } from '@react-navigation/stack';
-import { AuthStackParamList } from './AuthNavigator';
+import AuthNavigator, { AuthStackParamList } from './AuthNavigator';
+
 import NotesScreen from '../screens/teaching/NotesScreen';
 import CommentScreen from '../screens/teaching/CommentScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';

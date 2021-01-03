@@ -9,7 +9,6 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -19,15 +18,16 @@ import {
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { TextInput } from 'react-native-gesture-handler';
-import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator';
-import { MainStackParamList } from '../../navigation/AppNavigator';
 import {
   CommonActions,
   CompositeNavigationProp,
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
 
 const style = StyleSheet.create({
   content: {
@@ -128,7 +128,38 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
   const [newPass, setNewPass] = useState('');
   const [error, setError] = useState('');
   const safeArea = useSafeAreaInsets();
+
   useLayoutEffect(() => {
+    const signOut = async () => {
+      await Auth.signOut().then(() => {
+        userContext?.setUserData(null);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 1,
+            routes: [{ name: 'Auth' }],
+          })
+        );
+      });
+    };
+
+    const changePassword = async (): Promise<void> => {
+      try {
+        const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+        await Auth.changePassword(user, currentPass, newPass);
+        signOut();
+      } catch (e) {
+        if (e.code === 'NotAuthorizedException')
+          setError('Current password incorrect');
+        else if (e.code === 'InvalidPasswordException')
+          setError(e.message.split(': ')[1]);
+        else if (e.code === 'InvalidParameterException')
+          if (e.message.includes('previousPassword'))
+            setError('Current password incorrect');
+          else setError('Password not long enough');
+        else setError(e.message);
+      }
+    };
+
     navigation.setOptions({
       headerShown: true,
       title: 'Password',
@@ -141,7 +172,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
               style={Style.icon}
               source={Theme.icons.white.arrowLeft}
               square
-            ></Thumbnail>
+            />
           </Button>
         );
       },
@@ -150,7 +181,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
         return (
           <TouchableOpacity
             disabled={!(currentPass && newPass)}
-            onPress={changePassword}
+            onPress={() => changePassword()}
           >
             <Text
               style={
@@ -174,37 +205,6 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
     setError('');
     navigation.navigate('Auth', { screen: 'ForgotPasswordScreen' });
   }
-
-  const signOut = async () => {
-    await Auth.signOut().then(() => {
-      userContext?.setUserData(null);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 1,
-          routes: [{ name: 'Auth' }],
-        })
-      );
-    });
-  };
-
-  const changePassword = async (): Promise<void> => {
-    try {
-      const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-      await Auth.changePassword(user, currentPass, newPass);
-      signOut();
-    } catch (e) {
-      console.debug(e);
-      if (e.code === 'NotAuthorizedException')
-        setError('Current password incorrect');
-      else if (e.code === 'InvalidPasswordException')
-        setError(e.message.split(': ')[1]);
-      else if (e.code === 'InvalidParameterException')
-        if (e.message.includes('previousPassword'))
-          setError('Current password incorrect');
-        else setError('Password not long enough');
-      else setError(e.message);
-    }
-  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -239,7 +239,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                         style={style.input}
                         value={currentPass}
                         onChange={(e) => setCurrentPass(e.nativeEvent.text)}
-                      ></TextInput>
+                      />
                     </View>
                   </View>
                   <View style={{ alignItems: 'flex-start' }}>
@@ -271,7 +271,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                       style={style.input}
                       value={newPass}
                       onChange={(e) => setNewPass(e.nativeEvent.text)}
-                    ></TextInput>
+                    />
                   </View>
                 </View>
               </ListItem>

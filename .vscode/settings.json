@@ -1,4 +1,5 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "react-native.packager.port": 19001,
   "editor.formatOnSave": true,
   "[graphql]": {
@@ -11,5 +12,5 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "node_modules": true
-  }
+  },
 }

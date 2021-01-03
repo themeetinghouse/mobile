@@ -12,11 +12,11 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
-import { StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native';
-import LocationsService from '../../services/LocationsService';
+import { StyleSheet, TouchableOpacity } from 'react-native';
+
 import { StackNavigationProp } from '@react-navigation/stack';
+import LocationsService from '../../services/LocationsService';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { LocationData } from '../../contexts/LocationContext';
 
@@ -134,14 +134,18 @@ export default function LocationSelectionScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, []);
+  }, [
+    selectedLocation?.locationId,
+    selectedLocation?.locationName,
+    navigation,
+  ]);
 
   useEffect(() => {
     const loadLocations = () => {
       const locationsResult = LocationsService.loadLocationDataForContext();
       setLocations(
         locationsResult.sort((a, b) =>
-          (a?.locationName as string).localeCompare(b?.locationName as string)
+          (a?.locationName ?? '').localeCompare(b?.locationName ?? '')
         )
       );
     };
@@ -157,7 +161,7 @@ export default function LocationSelectionScreen({
               style={style.searchIcon}
               source={Theme.icons.white.search}
               square
-            ></Thumbnail>
+            />
             <Input
               style={searchText ? style.searchInputActive : style.searchInput}
               value={searchText}
@@ -175,7 +179,7 @@ export default function LocationSelectionScreen({
                   accessibilityLabel="Close Location Search"
                   source={Theme.icons.white.closeCancel}
                   square
-                ></Thumbnail>
+                />
               </TouchableOpacity>
             ) : null}
           </Item>
@@ -203,7 +207,7 @@ export default function LocationSelectionScreen({
                           style={style.listCheckIcon}
                           source={Theme.icons.white.check}
                           square
-                        ></Thumbnail>
+                        />
                       )}
                     </Right>
                   </ListItem>

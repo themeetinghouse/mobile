@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { InstagramData } from '../../services/Instagram';
 import { Image, View, StyleSheet, Dimensions } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import * as Linking from 'expo-linking';
+import { InstagramData } from '../../services/Instagram';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -28,7 +28,7 @@ function InstagramImage({
   const [validImage, setValidImage] = useState(true);
 
   if (!validImage) return null;
-  else if (image?.thumbnails)
+  if (image?.thumbnails)
     return (
       <TouchableHighlight
         style={style.imageContainer}
@@ -43,7 +43,7 @@ function InstagramImage({
         />
       </TouchableHighlight>
     );
-  else return null;
+  return null;
 }
 
 interface Params {

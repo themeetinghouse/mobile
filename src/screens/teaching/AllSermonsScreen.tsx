@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import {
@@ -8,20 +7,22 @@ import {
   TouchableHighlight,
   Platform,
 } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import {
   GetVideoByVideoTypeQuery,
   GetVideoByVideoTypeQueryVariables,
   ModelSortDirection,
 } from '../../services/API';
 import AllButton from '../../components/buttons/AllButton';
+import { allSermonsQuery } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   content: {
@@ -103,38 +104,38 @@ export default function AllSermonsScreen({
     navigation.addListener('blur', () => {
       setBlurred(true);
     });
-  }, []);
-
-  async function loadSermonsAsync(nextToken?: string) {
-    if (!blurred) {
-      const query: GetVideoByVideoTypeQueryVariables = {
-        limit: 50,
-        nextToken: nextToken,
-        videoTypes: 'adult-sunday',
-        sortDirection: ModelSortDirection.DESC,
-      };
-      try {
-        const videos = (await API.graphql(
-          graphqlOperation(getVideoByVideoType, query)
-        )) as GraphQLResult<GetVideoByVideoTypeQuery>;
-        if (videos.data?.getVideoByVideoType?.items)
-          setSermons((prevState) => {
-            return prevState.concat(
-              videos.data?.getVideoByVideoType?.items ?? []
-            );
-          });
-        if (videos.data?.getVideoByVideoType?.nextToken) {
-          loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken);
-        }
-      } catch (e) {
-        console.debug(e);
-      }
-    }
-  }
+  }, [navigation]);
 
   useEffect(() => {
+    async function loadSermonsAsync(nextToken?: string) {
+      if (!blurred) {
+        const query: GetVideoByVideoTypeQueryVariables = {
+          limit: 50,
+          nextToken,
+          videoTypes: 'adult-sunday',
+          sortDirection: ModelSortDirection.DESC,
+        };
+        try {
+          const videos = (await API.graphql(
+            graphqlOperation(allSermonsQuery, query)
+          )) as GraphQLResult<GetVideoByVideoTypeQuery>;
+          if (videos.data?.getVideoByVideoType?.items)
+            setSermons((prevState) => {
+              return prevState.concat(
+                videos.data?.getVideoByVideoType?.items ?? []
+              );
+            });
+          if (videos.data?.getVideoByVideoType?.nextToken) {
+            loadSermonsAsync(videos.data?.getVideoByVideoType?.nextToken);
+          }
+        } catch (e) {
+          console.debug(e);
+        }
+      }
+    }
+
     loadSermonsAsync();
-  }, []);
+  }, [blurred]);
 
   let filteredSermons = sermons.filter((s) =>
     searchText
@@ -142,20 +143,21 @@ export default function AllSermonsScreen({
       : true
   );
 
-  let dateStartStr = '',
-    dateEndStr = '';
+  let dateStartStr = '';
+  let dateEndStr = '';
   if (dateStart && dateEnd) {
     dateStartStr = dateStart.format(
-      'MMM' + (dateStart.get('year') !== dateEnd.get('year') ? ', YYYY' : '')
+      `MMM${dateStart.get('year') !== dateEnd.get('year') ? ', YYYY' : ''}`
     );
     dateEndStr = dateEnd.format('MMM, YYYY');
     filteredSermons = filteredSermons.filter(
-      (s: any) =>
+      (s) =>
         dateStart &&
         dateEnd &&
-        moment(s.publishedDate).isBetween(dateStart, dateEnd)
+        moment(s?.publishedDate).isBetween(dateStart, dateEnd)
     );
   }
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -194,7 +196,7 @@ export default function AllSermonsScreen({
         return <View style={{ flex: 1 }} />;
       },
     });
-  }, []);
+  }, [navigation]);
 
   return (
     <Container>
@@ -204,7 +206,7 @@ export default function AllSermonsScreen({
           searchText={searchText}
           handleTextChanged={(newStr) => setSearchText(newStr)}
           placeholderLabel="Search by name..."
-        ></SearchBar>
+        />
         <View style={style.dateSelectBar}>
           <TouchableHighlight
             style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }}
@@ -215,13 +217,9 @@ export default function AllSermonsScreen({
             underlayColor={Theme.colors.grey3}
           >
             {dateStart && dateEnd ? (
-              isSame ? (
-                <Text style={style.dateRangeItemText}>{dateEndStr}</Text>
-              ) : (
-                <Text style={style.dateRangeItemText}>
-                  {dateStartStr} - {dateEndStr}
-                </Text>
-              )
+              <Text style={style.dateRangeItemText}>
+                {isSame ? dateEndStr : `${dateStartStr} - ${dateEndStr}`}
+              </Text>
             ) : (
               <Text style={style.dateRangeItemText}>Date range</Text>
             )}
@@ -229,20 +227,19 @@ export default function AllSermonsScreen({
         </View>
         <View>
           {sermons && sermons.length > 0 ? (
-            filteredSermons.map((sermon: any, key: any) => {
+            filteredSermons.map((sermon, key: number) => {
               if (key < showCount)
                 return (
                   <TeachingListItem
-                    key={sermon.id}
+                    key={sermon?.id}
                     teaching={sermon}
                     handlePress={() =>
                       navigation.push('SermonLandingScreen', { item: sermon })
                     }
                   />
                 );
-              else {
-                return null;
-              }
+
+              return null;
             })
           ) : (
             <ActivityIndicator />
@@ -260,63 +257,3 @@ export default function AllSermonsScreen({
     </Container>
   );
 }
-
-export const getVideoByVideoType = `query GetVideoByVideoType(
-    $videoTypes: String
-    $publishedDate: ModelStringKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelVideoFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getVideoByVideoType(
-      videoTypes: $videoTypes
-      publishedDate: $publishedDate
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        episodeTitle
-        episodeNumber
-        seriesTitle
-        series {
-          id
-        }
-        publishedDate
-        description
-        length
-        viewCount
-        YoutubeIdent
-        Youtube {
-          snippet {
-            thumbnails {
-              default {
-                url
-              }
-              medium {
-                url
-              }
-              high {
-                url
-              }
-              standard {
-                url
-              }
-              maxres {
-                url
-              }
-            }
-          }
-        }
-        videoTypes
-        notesURL
-        videoURL
-        audioURL
-      }
-      nextToken
-    }
-  }
-  `;

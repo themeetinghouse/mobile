@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
 import React from 'react';
 import { Text, Thumbnail, View } from 'native-base';
 import moment from 'moment';
+import { StyleSheet, TouchableHighlight } from 'react-native';
 import { EventQueryResult } from '../../services/EventsService';
 import { Style, Theme } from '../../Theme.style';
-import { StyleSheet, TouchableHighlight } from 'react-native';
 
 const style = StyleSheet.create({
   container: {
@@ -51,7 +52,7 @@ const style = StyleSheet.create({
 
 type EventCardInput = {
   event: NonNullable<EventQueryResult>[0];
-  handlePress?(): any;
+  handlePress?(): void;
 };
 
 export default function EventCard({
@@ -59,8 +60,8 @@ export default function EventCard({
   handlePress,
 }: EventCardInput): JSX.Element {
   const formatDate = () => {
-    let startTime = '',
-      endTime = '';
+    let startTime = '';
+    let endTime = '';
     if (event?.start_time) {
       if (event?.end_time)
         if (moment(event.end_time).isSame(moment(event.start_time), 'day'))
@@ -77,8 +78,8 @@ export default function EventCard({
         endTime = moment(event.end_time).format('h:mm a');
       }
     }
-    if (endTime !== '') return startTime + ' - ' + endTime;
-    else return startTime;
+    if (endTime !== '') return `${startTime} - ${endTime}`;
+    return startTime;
   };
   return (
     <TouchableHighlight
@@ -93,10 +94,7 @@ export default function EventCard({
           <Text uppercase={false} style={style.title}>
             {event?.name}
           </Text>
-          <Thumbnail
-            style={style.icon}
-            source={Theme.icons.white.arrow}
-          ></Thumbnail>
+          <Thumbnail style={style.icon} source={Theme.icons.white.arrow} />
         </View>
         <Text style={style.descriptionContainer} numberOfLines={4}>
           {event?.description

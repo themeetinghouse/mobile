@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Clipboard, Share, Platform, Animated } from 'react-native';
 import { Button, View, Text, Thumbnail } from 'native-base';
-import { Theme } from '../../Theme.style';
 import * as Linking from 'expo-linking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import { Theme } from '../../Theme.style';
 
 interface Params {
   link: string;
@@ -61,7 +61,7 @@ export default function ShareModal({
   const share = async () => {
     const params =
       Platform.OS === 'ios'
-        ? { url: link, message: message }
+        ? { url: link, message }
         : { message: link, title: message };
 
     try {
@@ -123,7 +123,7 @@ export default function ShareModal({
             square
             source={Theme.icons.white.link}
             style={{ width: 24, height: 24 }}
-          ></Thumbnail>
+          />
           <Text
             style={{
               color: 'white',
@@ -155,7 +155,7 @@ export default function ShareModal({
               accessibilityLabel="Share to Twitter"
               source={Theme.icons.black.twitter}
               style={{ width: 24, height: 24 }}
-            ></Thumbnail>
+            />
           </Button>
           <Button
             style={{
@@ -174,7 +174,7 @@ export default function ShareModal({
               accessibilityLabel="Share"
               source={Theme.icons.black.share}
               style={{ width: 24, height: 24 }}
-            ></Thumbnail>
+            />
           </Button>
         </View>
       </Animated.View>

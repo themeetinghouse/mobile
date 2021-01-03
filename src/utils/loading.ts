@@ -10,7 +10,7 @@ const appendLoaded = (
   };
 };
 
-export const loadSomeAsync = async (
+const loadSomeAsync = async (
   loaderFn: (count: number, nextToken?: any) => Promise<any>,
   stateObj: any,
   setterFn: (data: any) => any,
@@ -19,5 +19,7 @@ export const loadSomeAsync = async (
   if (stateObj.nextToken === 'END') return;
   setterFn({ ...stateObj, loading: true });
   const loadedItems = await loaderFn(count, stateObj.nextToken);
-  setterFn(appendLoaded(loadedItems, stateObj, count === 99999 ? true : false));
+  setterFn(appendLoaded(loadedItems, stateObj, count === 99999));
 };
+
+export default loadSomeAsync;

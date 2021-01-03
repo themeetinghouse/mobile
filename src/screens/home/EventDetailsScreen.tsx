@@ -1,5 +1,5 @@
+/* eslint-disable camelcase */
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { Theme, Style } from '../../Theme.style';
 import {
   Container,
   Text,
@@ -10,8 +10,6 @@ import {
   Left,
   Right,
 } from 'native-base';
-import IconButton from '../../components/buttons/IconButton';
-import WhiteButton from '../../components/buttons/WhiteButton';
 import moment from 'moment';
 import {
   Alert,
@@ -23,16 +21,20 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import ShareModal from '../../components/modals/Share';
 import openMap from 'react-native-open-maps';
 import * as Linking from 'expo-linking';
-import Calendar from '../../services/CalendarService';
 import { Picker } from '@react-native-community/picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import Calendar from '../../services/CalendarService';
+import ShareModal from '../../components/modals/Share';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import WhiteButton from '../../components/buttons/WhiteButton';
+import IconButton from '../../components/buttons/IconButton';
+import { Theme, Style } from '../../Theme.style';
 import Header from '../../components/Header';
+
 const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
@@ -134,6 +136,7 @@ export default function EventDetailsScreen({
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [alerts, setAlerts]: any = useState({ message: '' });
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -184,59 +187,39 @@ export default function EventDetailsScreen({
 
   const directionsType = () => {
     if (eventItem.place) {
-      if (eventItem?.place?.location !== null) {
-        //console.log("Location is not null!")
+      if (eventItem?.place?.location) {
         if (
           eventItem?.place?.location?.latitude &&
           eventItem?.place?.location.longitude
         ) {
-          //console.log("Latitude and longitude found")
-          //console.log("returning gps")
           return 'gps';
-        } else {
-          //console.log("There is no longitude or latitude.")
-          if (eventItem?.place?.name) {
-            //console.log("place.name is found.")
-            if (
-              eventItem.place?.name === 'online' ||
-              eventItem.place?.name === 'Online'
-            )
-              return 'none';
-            else {
-              if (eventItem.place?.name.contains('.com'))
-                console.log('has .com');
-              console.log('returning name');
-              return 'name';
-            }
-          } else {
-            //console.log("Name not found. NOT RENDERING BUTTON")
-            console.log('returning none');
-            return 'none';
-          }
         }
-      } else {
-        //console.log("Location is null. Reading from eventItem.place.name")
         if (eventItem?.place?.name) {
-          //console.log("place name is found opening with eventItem.place.name")
           if (
             eventItem.place?.name === 'online' ||
             eventItem.place?.name === 'Online'
           )
             return 'none';
-          else {
-            if (eventItem.place?.name.includes('.com')) return 'none';
-            return 'name';
-          }
-        } else {
-          //console.log("Name not found. NOT RENDERING BUTTON")
-          return 'none';
+
+          if (eventItem.place?.name.contains('.com')) return 'name';
         }
+        return 'none';
       }
-    } else {
-      //console.log("eventItem.place is null")
+      if (eventItem?.place?.name) {
+        if (
+          eventItem.place?.name === 'online' ||
+          eventItem.place?.name === 'Online'
+        )
+          return 'none';
+
+        if (eventItem.place?.name.includes('.com')) return 'none';
+        return 'name';
+      }
       return 'none';
     }
+    return 'none';
   };
+
   const [openMethod] = useState<OpeningMethod>(directionsType());
   const addEventToCalendar = async () => {
     try {
@@ -244,70 +227,58 @@ export default function EventDetailsScreen({
         const success = await Calendar.createEvent(eventItem, options);
         if (success?.start_time && Platform.OS === 'android')
           setAlerts({ message: success?.start_time });
-      } else {
-        if (eventItem.event_times) {
-          // more than one event instance
-          if (eventItem.event_times.length === 1) {
-            const success = await Calendar.createEvent(
-              eventItem,
-              eventItem?.event_times[0]
-            );
-            if (success?.options)
-              setAlerts({ message: success?.options?.start_time });
-          } else {
-            if (Platform.OS === 'ios') {
-              if (eventItem.event_times?.length > 1) {
-                // always true at this point?
-                const arr: string[] = ['Cancel'];
-                for (let x = 0; x < eventItem.event_times.length; x++) {
-                  if (eventItem.event_times[x].start_time > moment().format())
-                    arr.push(
-                      `${moment(eventItem.event_times[x].start_time).format(
-                        'MMM Do YYYY, h:mm a'
-                      )} - ${moment(eventItem.event_times[x].end_time).format(
-                        'h:mm a'
-                      )}`
-                    );
-                }
-                ActionSheetIOS.showActionSheetWithOptions(
-                  { options: arr, cancelButtonIndex: 0 },
-                  (buttonIndex) => {
-                    if (buttonIndex === 0) console.log('Date must be selected');
-                    else
-                      Calendar.createEvent(
-                        eventItem,
-                        eventItem.event_times[buttonIndex - 1]
-                      ); //-1 to ignore cancel button
-                  }
+      } else if (eventItem.event_times) {
+        // more than one event instance
+        if (eventItem.event_times.length === 1) {
+          const success = await Calendar.createEvent(
+            eventItem,
+            eventItem?.event_times[0]
+          );
+          if (success?.options)
+            setAlerts({ message: success?.options?.start_time });
+        } else if (Platform.OS === 'ios') {
+          if (eventItem.event_times?.length > 1) {
+            // always true at this point?
+            const arr: string[] = ['Cancel'];
+            for (let x = 0; x < eventItem.event_times.length; x++) {
+              if (eventItem.event_times[x].start_time > moment().format())
+                arr.push(
+                  `${moment(eventItem.event_times[x].start_time).format(
+                    'MMM Do YYYY, h:mm a'
+                  )} - ${moment(eventItem.event_times[x].end_time).format(
+                    'h:mm a'
+                  )}`
                 );
-              }
-            } else {
-              Alert.alert(
-                'Error',
-                'Date must be selected',
-                [{ text: 'Dismiss' }],
-                { cancelable: false }
-              );
             }
+            ActionSheetIOS.showActionSheetWithOptions(
+              { options: arr, cancelButtonIndex: 0 },
+              (buttonIndex) => {
+                if (buttonIndex === 0) console.log('Date must be selected');
+                else
+                  Calendar.createEvent(
+                    eventItem,
+                    eventItem.event_times[buttonIndex - 1]
+                  ); // -1 to ignore cancel button
+              }
+            );
           }
         } else {
-          // only one event instance
-          if (eventItem.start_time && eventItem.end_time) {
-            try {
-              const success = await Calendar.createEvent(eventItem, {
-                start_time: eventItem?.start_time,
-                end_time: eventItem?.end_time,
-              });
-              if (Platform.OS === 'android' && success?.start_time) {
-                console.log('login success');
-                console.log(success);
-                setAlerts({ message: success?.start_time });
-              }
-            } catch (error) {
-              console.log('caught here');
-              console.log(error);
-            }
+          Alert.alert('Error', 'Date must be selected', [{ text: 'Dismiss' }], {
+            cancelable: false,
+          });
+        }
+      } else if (eventItem.start_time && eventItem.end_time) {
+        // only one event instance
+        try {
+          const success = await Calendar.createEvent(eventItem, {
+            start_time: eventItem?.start_time,
+            end_time: eventItem?.end_time,
+          });
+          if (Platform.OS === 'android' && success?.start_time) {
+            setAlerts({ message: success?.start_time });
           }
+        } catch (error) {
+          console.log(error);
         }
       }
     } catch (error) {
@@ -338,19 +309,19 @@ export default function EventDetailsScreen({
     }
     return linkAddress;
   };
-  const _handleAppStateChange = (nextAppState: any) => {
+  const handleAppStateChange = (nextAppState: any) => {
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
   };
-  /* This handles checking if app is in background or active*/
+  /* This handles checking if app is in background or active */
   useEffect(() => {
-    AppState.addEventListener('change', _handleAppStateChange);
+    AppState.addEventListener('change', handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener('change', _handleAppStateChange);
+      AppState.removeEventListener('change', handleAppStateChange);
     };
   }, []);
-  /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground.*/
+  /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground. */
   useEffect(() => {
     if (appState.current === 'active') {
       if (alerts.message !== '') {
@@ -364,6 +335,7 @@ export default function EventDetailsScreen({
       }
     }
   }, [appState.current]);
+
   return (
     <Container>
       <Content style={style.content}>
@@ -373,16 +345,16 @@ export default function EventDetailsScreen({
               <LinearGradient
                 colors={['#000', 'transparent']}
                 style={style.toplinearGradient}
-              ></LinearGradient>
+              />
               <Image
                 style={style.eventImage}
                 source={{ uri: eventItem.cover.source }}
-              ></Image>
+              />
               <View style={{ top: 125 }}>
                 <LinearGradient
                   colors={['transparent', '#000']}
                   style={style.bottomlinearGradient}
-                ></LinearGradient>
+                />
               </View>
             </View>
           </>
@@ -423,16 +395,16 @@ export default function EventDetailsScreen({
           {eventItem.event_times && eventItem.event_times.length !== 0 ? (
             <>
               <Text style={style.subtitle}>Event Times</Text>
-              {eventItem.event_times.map((event: any, key: any) => {
+              {eventItem.event_times.map((event: any) => {
                 if (event.start_time > moment().format())
                   return (
-                    <Text key={key} style={style.body}>
+                    <Text key={event.start_time.format()} style={style.body}>
                       {moment(event.start_time).format('ddd, MMM D, YYYY')},{' '}
                       {moment(event.start_time).format('h:mm a')} -{' '}
                       {moment(eventItem.end_time).format('h:mm')}
                     </Text>
                   );
-                else return null;
+                return null;
               })}
             </>
           ) : (
@@ -442,7 +414,7 @@ export default function EventDetailsScreen({
                 {moment(eventItem.start_time).format('ddd, MMM D, YYYY')},{' '}
                 {moment(eventItem.start_time).format('h:mm a')}{' '}
                 {eventItem.end_time
-                  ? '- ' + moment(eventItem.end_time).format('h:mm a')
+                  ? `- ${moment(eventItem.end_time).format('h:mm a')}`
                   : null}
               </Text>
             </>
@@ -456,7 +428,7 @@ export default function EventDetailsScreen({
               style={style.actionButton}
               icon={Theme.icons.white.calendarAdd}
               label="Add to calendar"
-            ></IconButton>
+            />
           ) : null}
           {eventItem.event_times &&
           eventItem.event_times?.length > 1 &&
@@ -471,8 +443,8 @@ export default function EventDetailsScreen({
                 setOptions(itemValue as string);
               }}
             >
-              <Picker.Item label="Select a Date" value=""></Picker.Item>
-              {eventItem.event_times?.map((value: any, key: any) => {
+              <Picker.Item label="Select a Date" value="" />
+              {eventItem.event_times?.map((value: any, key: number) => {
                 if (value.start_time > moment().format())
                   return (
                     <Picker.Item
@@ -481,9 +453,9 @@ export default function EventDetailsScreen({
                         'MMM Do YYYY, h:mm a'
                       )} - ${moment(value.end_time).format('h:mm a')}`}
                       value={value}
-                    ></Picker.Item>
+                    />
                   );
-                else return null;
+                return null;
               })}
             </Picker>
           ) : null}
@@ -500,7 +472,7 @@ export default function EventDetailsScreen({
                   style={style.actionButton}
                   icon={Theme.icons.white.mapLocation}
                   label="Get directions"
-                ></IconButton>
+                />
               ) : null}
             </>
           ) : null}
@@ -514,7 +486,7 @@ export default function EventDetailsScreen({
                 onPress={() => {
                   Linking.openURL(eventItem.event_times[0].ticket_uri);
                 }}
-              ></WhiteButton>
+              />
             ) : null}
 
             {parseDescription() !== '' ? (
@@ -524,7 +496,7 @@ export default function EventDetailsScreen({
                 onPress={() => {
                   Linking.openURL(parseDescription());
                 }}
-              ></WhiteButton>
+              />
             ) : null}
           </View>
         </View>

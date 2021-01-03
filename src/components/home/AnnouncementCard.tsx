@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, Thumbnail } from 'native-base';
-import Theme, { Style } from '../../Theme.style';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { Announcement } from '../../services/AnnouncementService';
 import { StyleSheet } from 'react-native';
+import Theme, { Style } from '../../Theme.style';
+import { Announcement } from '../../services/AnnouncementService';
 
 const style = StyleSheet.create({
   cardContainer: {
@@ -28,21 +28,18 @@ const style = StyleSheet.create({
   },
 });
 
-type AnnouncementCardInput = {
+interface Props {
   announcement: Announcement;
-  handlePress(): any;
-};
+  handlePress(): void;
+}
 
 export default function AnnouncementCard({
   announcement,
   handlePress,
-}: AnnouncementCardInput): JSX.Element {
+}: Props): JSX.Element {
   return (
     <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
-      <Thumbnail
-        style={style.icon}
-        source={Theme.icons.white.announcement}
-      ></Thumbnail>
+      <Thumbnail style={style.icon} source={Theme.icons.white.announcement} />
       <Text style={style.title}>{announcement.title}</Text>
       <Text style={style.body}>{announcement.description}</Text>
     </TouchableWithoutFeedback>

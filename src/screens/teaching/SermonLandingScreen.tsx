@@ -3,32 +3,31 @@ import React, {
   useContext,
   useRef,
   useEffect,
-  Fragment,
   useLayoutEffect,
 } from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Text, Button, Content, View, Thumbnail } from 'native-base';
 import moment from 'moment';
 import { Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
+import { Audio, AVPlaybackStatus } from 'expo-av';
+import Slider from '@react-native-community/slider';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import IconButton from '../../components/buttons/IconButton';
 import TeachingButton from '../../components/buttons/TeachingButton';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
-import { Audio, AVPlaybackStatus } from 'expo-av';
 import MediaContext from '../../contexts/MediaContext';
-import { getCustomPlaylist } from '../../services/SeriesService';
-import Slider from '@react-native-community/slider';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import ShareModal from '../../components/modals/Share';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetSeriesQuery } from '../../services/API';
-import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
 import NotesService from '../../services/NotesService';
+import { getSeries, getCustomPlaylist } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   content: {
@@ -36,21 +35,6 @@ const style = StyleSheet.create({
     ...{
       backgroundColor: Theme.colors.black,
     },
-  },
-  header: Style.header,
-  headerLeft: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
-  },
-  headerBody: {
-    flexGrow: 3,
-    justifyContent: 'center',
-  },
-  headerRight: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
   },
   headerTitle: {
     ...HeaderStyle.title,
@@ -164,46 +148,6 @@ export default function SermonLandingScreen({
 
   const deviceWidth = Dimensions.get('window').width;
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const notesExist = await NotesService.checkIfNotesExist(sermon.publishedDate);
-        setNotesExist(notesExist)
-      } catch (e) {
-        console.debug(e)
-      }
-    })();
-  });
-
-  useEffect(() => {
-    const loadSermonsInSeriesAsync = async () => {
-      if (route?.params?.customPlaylist) {
-        const json = (await API.graphql(
-          graphqlOperation(getCustomPlaylist, { id: route?.params?.seriesId })
-        )) as any;
-        const videos = json.data?.getCustomPlaylist?.videos?.items;
-        setVideosInPlaylist(videos);
-      } else {
-        const json = (await API.graphql(
-          graphqlOperation(getSeries, { id: sermon.seriesTitle })
-        )) as GraphQLResult<GetSeriesQuery>;
-        setSermonsInSeries(json.data?.getSeries?.videos?.items);
-      }
-    };
-    loadSermonsInSeriesAsync();
-  }, []);
-
-  useEffect(() => {
-    const unsub = navigation.addListener('blur', async () => {
-      if (mediaContext.media.playerType === 'audio') {
-        await closeAudio();
-      } else if (mediaContext.media.playerType === 'video') {
-        mediaContext.closeVideo();
-      }
-    });
-    return unsub;
-  }, [mediaContext]);
-
   const closeAudio = async () => {
     try {
       await mediaContext.media.audio?.sound.unloadAsync();
@@ -271,33 +215,18 @@ export default function SermonLandingScreen({
     }
   };
 
-  const seekTo = async (time: number) => {
+  const seekTo = async (t: number) => {
     if (mediaContext?.media.audio?.status.isLoaded) {
       try {
-        await mediaContext?.media.audio.sound.setPositionAsync(time);
+        await mediaContext?.media.audio.sound.setPositionAsync(t);
         await mediaContext?.media.audio.sound.playAsync();
         mediaContext.setMedia({ ...mediaContext.media, playing: true });
-        setAudioPosition(time);
+        setAudioPosition(t);
       } catch (e) {
         console.debug(e);
       }
     }
   };
-
-  function updateAudioPosition(e: AVPlaybackStatus) {
-    if (e.isLoaded) {
-      setAudioPosition(Math.round(e.positionMillis));
-      if (e.durationMillis) {
-        const time = {
-          remaining: secondsToHms(e.durationMillis - e.positionMillis),
-          elapsed: secondsToHms(e.positionMillis),
-        };
-        setTime(time);
-      }
-      if (e.durationMillis && audioDuration !== Math.round(e.durationMillis))
-        setAudioDuration(Math.round(e.durationMillis));
-    }
-  }
 
   function secondsToHms(data: number) {
     const d = Math.round(data / 1000);
@@ -308,11 +237,25 @@ export default function SermonLandingScreen({
     return `${m}:${s}`;
   }
 
+  function updateAudioPosition(e: AVPlaybackStatus) {
+    if (e.isLoaded) {
+      setAudioPosition(Math.round(e.positionMillis));
+      if (e.durationMillis) {
+        const timeObj = {
+          remaining: secondsToHms(e.durationMillis - e.positionMillis),
+          elapsed: secondsToHms(e.positionMillis),
+        };
+        setTime(timeObj);
+      }
+      if (e.durationMillis && audioDuration !== Math.round(e.durationMillis))
+        setAudioDuration(Math.round(e.durationMillis));
+    }
+  }
+
   const loadAndNavigateToSeries = () => {
     if (route?.params?.customPlaylist) {
       console.log(
-        'logging sermonTitle from SermonLandingScreen.tsx: ' +
-        sermon.seriesTitle
+        `logging sermonTitle from SermonLandingScreen.tsx: ${sermon.seriesTitle}`
       );
       navigation.replace('SeriesLandingScreen', {
         seriesId: sermon.seriesTitle,
@@ -378,6 +321,7 @@ export default function SermonLandingScreen({
       } catch (e) {
         console.debug(e);
       }
+
       try {
         const sound = await Audio.Sound.createAsync(
           { uri: sermon.audioURL },
@@ -434,6 +378,71 @@ export default function SermonLandingScreen({
     });
   };
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const isNote = await NotesService.checkIfNotesExist(
+          sermon.publishedDate
+        );
+        setNotesExist(isNote);
+      } catch (e) {
+        console.debug(e);
+      }
+    })();
+  }, [sermon.publishedDate]);
+
+  useEffect(() => {
+    const loadSermonsInSeriesAsync = async () => {
+      if (route?.params?.customPlaylist) {
+        const json = (await API.graphql(
+          graphqlOperation(getCustomPlaylist, { id: route?.params?.seriesId })
+        )) as GraphQLResult<GetCustomPlaylistQuery>;
+        const videos = json.data?.getCustomPlaylist?.videos?.items;
+        setVideosInPlaylist(videos);
+      } else {
+        const json = (await API.graphql(
+          graphqlOperation(getSeries, { id: sermon.seriesTitle })
+        )) as GraphQLResult<GetSeriesQuery>;
+        setSermonsInSeries(json.data?.getSeries?.videos?.items);
+      }
+    };
+    loadSermonsInSeriesAsync();
+  }, [route, sermon.seriesTitle]);
+
+  useEffect(() => {
+    const closeAudioPlayer = async () => {
+      try {
+        await mediaContext.media.audio?.sound.unloadAsync();
+        mediaContext.closeAudio();
+      } catch (e) {
+        console.debug(e);
+      }
+    };
+
+    const unsub = navigation.addListener('blur', async () => {
+      if (mediaContext.media.playerType === 'audio') {
+        await closeAudioPlayer();
+      } else if (mediaContext.media.playerType === 'video') {
+        mediaContext.closeVideo();
+      }
+    });
+    return unsub;
+  }, []);
+
+  const handleMinimize = () => {
+    switch (mediaContext.media.playerType) {
+      case 'audio':
+        minimizeAudio();
+        break;
+      case 'video':
+        minimizeVideo();
+        break;
+      default:
+        navigation.goBack();
+        break;
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -442,22 +451,13 @@ export default function SermonLandingScreen({
       safeAreaInsets: { top: safeArea.top },
       headerLeft: function render() {
         return (
-          <Button
-            transparent
-            onPress={
-              mediaContext.media.playerType === 'audio'
-                ? minimizeAudio
-                : mediaContext.media.playerType === 'video'
-                  ? minimizeVideo
-                  : () => navigation.goBack()
-            }
-          >
+          <Button transparent onPress={handleMinimize}>
             <Thumbnail
               square
               accessibilityLabel="Close Mini-player"
               source={
                 mediaContext.media.playerType === 'audio' ||
-                  mediaContext.media.playerType === 'video'
+                mediaContext.media.playerType === 'video'
                   ? Theme.icons.white.mini
                   : Theme.icons.white.closeCancel
               }
@@ -487,20 +487,20 @@ export default function SermonLandingScreen({
     <View style={{ flex: 1 }}>
       <Content>
         {justOpened &&
-          mediaContext.media.playerType !== 'video' &&
-          mediaContext.media.playerType !== 'audio' ? (
-            <TouchableWithoutFeedback onPress={loadVideo}>
-              <Image
-                source={{
-                  uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
-                }}
-                style={{
-                  height: Math.round(deviceWidth * (9 / 16)),
-                  width: Math.round(deviceWidth),
-                }}
-              />
-            </TouchableWithoutFeedback>
-          ) : null}
+        mediaContext.media.playerType !== 'video' &&
+        mediaContext.media.playerType !== 'audio' ? (
+          <TouchableWithoutFeedback onPress={loadVideo}>
+            <Image
+              source={{
+                uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
+              }}
+              style={{
+                height: Math.round(deviceWidth * (9 / 16)),
+                width: Math.round(deviceWidth),
+              }}
+            />
+          </TouchableWithoutFeedback>
+        ) : null}
 
         {mediaContext.media.playerType === 'video' ? (
           <View
@@ -577,7 +577,7 @@ export default function SermonLandingScreen({
                   source={Theme.icons.grey.skipBack}
                   style={{ width: 24, height: 24, marginTop: 14 }}
                   square
-                ></Thumbnail>
+                />
                 <Text style={style.skipText}>15s</Text>
               </TouchableOpacity>
               <View
@@ -614,7 +614,7 @@ export default function SermonLandingScreen({
                   source={Theme.icons.grey.skipForward}
                   style={{ width: 24, height: 24, marginTop: 14 }}
                   square
-                ></Thumbnail>
+                />
                 <Text style={style.skipText}>30s</Text>
               </TouchableOpacity>
             </View>
@@ -632,7 +632,7 @@ export default function SermonLandingScreen({
                   marginRight: sermon.audioURL ? 16 : 0,
                 }}
                 active={mediaContext.media.playerType === 'video'}
-                label={'Watch'}
+                label="Watch"
                 iconActive={Theme.icons.black.watch}
                 iconInactive={Theme.icons.white.watch}
                 onPress={
@@ -646,7 +646,7 @@ export default function SermonLandingScreen({
               <TeachingButton
                 wrapperStyle={{ flex: 1, height: 56 }}
                 active={mediaContext.media.playerType === 'audio'}
-                label={'Listen'}
+                label="Listen"
                 iconActive={Theme.icons.black.audio}
                 iconInactive={Theme.icons.white.audio}
                 onPress={
@@ -668,14 +668,14 @@ export default function SermonLandingScreen({
                   style={{
                     paddingTop: 0,
                     paddingBottom: 0,
-                    label: {
-                      marginLeft: 8,
-                      paddingTop: 0,
-                      fontSize: Theme.fonts.smallMedium,
-                    },
+                  }}
+                  labelStyle={{
+                    marginLeft: 8,
+                    paddingTop: 0,
+                    fontSize: Theme.fonts.smallMedium,
                   }}
                   label={sermon.seriesTitle}
-                ></IconButton>
+                />
               </View>
             </View>
             <View style={style.detailsContainerItem}>
@@ -688,13 +688,15 @@ export default function SermonLandingScreen({
           <View style={style.detailsDescription}>
             <Text style={style.body}>{sermon.description}</Text>
           </View>
-          {notesExist && <IconButton
-            rightArrow
-            icon={Theme.icons.white.notes}
-            label="Notes"
-            onPress={navigateToNotes}
-            data-testID="notes-button"
-          />}
+          {notesExist && (
+            <IconButton
+              rightArrow
+              icon={Theme.icons.white.notes}
+              label="Notes"
+              onPress={navigateToNotes}
+              data-testID="notes-button"
+            />
+          )}
         </View>
 
         <View style={style.categorySection}>
@@ -702,59 +704,59 @@ export default function SermonLandingScreen({
             <ActivityIndicator />
           ) : videosInPlaylist?.length > 1 ||
             (sermonsInSeries && sermonsInSeries?.length > 1) ? (
-                <Fragment>
-                  <Text style={style.categoryTitle}>
-                    {route?.params?.customPlaylist
-                      ? 'More from this playlist'
-                      : 'More from this Series'}
-                  </Text>
-                  <View style={style.listContentContainer}>
-                    {route?.params?.customPlaylist
-                      ? videosInPlaylist
-                        ?.sort((a: any, b: any) => {
-                          return b.video.publishedDate.localeCompare(
-                            a.video.publishedDate
-                          );
-                        })
-                        .map((video: any) => {
-                          if (video.video.episodeTitle !== sermon.episodeTitle)
-                            return (
-                              <TeachingListItem
-                                key={video?.video?.id}
-                                teaching={video.video}
-                                handlePress={() =>
-                                  navigation.push('SermonLandingScreen', {
-                                    customPlaylist: true,
-                                    seriesId: route?.params?.seriesId,
-                                    item: video.video,
-                                  })
-                                }
-                              />
-                            );
-                          else return null;
-                        })
-                      : sermonsInSeries
-                        ?.sort((a, b) => {
-                          const aNum = a?.episodeNumber ?? 0;
-                          const bNum = b?.episodeNumber ?? 0;
-                          return bNum - aNum;
-                        })
-                        .map((seriesSermon: any) =>
-                          seriesSermon?.id !== sermon.id ? (
+            <>
+              <Text style={style.categoryTitle}>
+                {route?.params?.customPlaylist
+                  ? 'More from this playlist'
+                  : 'More from this Series'}
+              </Text>
+              <View style={style.listContentContainer}>
+                {route?.params?.customPlaylist
+                  ? videosInPlaylist
+                      ?.sort((a: any, b: any) => {
+                        return b.video.publishedDate.localeCompare(
+                          a.video.publishedDate
+                        );
+                      })
+                      .map((video: any) => {
+                        if (video.video.episodeTitle !== sermon.episodeTitle)
+                          return (
                             <TeachingListItem
-                              key={seriesSermon?.id}
-                              teaching={seriesSermon}
+                              key={video?.video?.id}
+                              teaching={video.video}
                               handlePress={() =>
                                 navigation.push('SermonLandingScreen', {
-                                  item: seriesSermon,
+                                  customPlaylist: true,
+                                  seriesId: route?.params?.seriesId,
+                                  item: video.video,
                                 })
                               }
                             />
-                          ) : null
-                        )}
-                  </View>
-                </Fragment>
-              ) : null}
+                          );
+                        return null;
+                      })
+                  : sermonsInSeries
+                      ?.sort((a, b) => {
+                        const aNum = a?.episodeNumber ?? 0;
+                        const bNum = b?.episodeNumber ?? 0;
+                        return bNum - aNum;
+                      })
+                      .map((seriesSermon: any) =>
+                        seriesSermon?.id !== sermon.id ? (
+                          <TeachingListItem
+                            key={seriesSermon?.id}
+                            teaching={seriesSermon}
+                            handlePress={() =>
+                              navigation.push('SermonLandingScreen', {
+                                item: seriesSermon,
+                              })
+                            }
+                          />
+                        ) : null
+                      )}
+              </View>
+            </>
+          ) : null}
         </View>
       </Content>
       {share ? (
@@ -773,63 +775,3 @@ export default function SermonLandingScreen({
     </View>
   );
 }
-
-const getSeries = `
-  query GetSeries($id: ID!) {
-    getSeries(id: $id) {
-      id
-      seriesType
-      title
-      description
-      image
-      startDate
-      endDate
-      videos {
-        items {
-          id
-          episodeTitle
-          episodeNumber
-          seriesTitle
-          series {
-            id
-          }
-          publishedDate
-          description
-          length
-          notesURL
-          videoURL
-          audioURL
-          YoutubeIdent
-          videoTypes
-          Youtube {
-            snippet {
-              thumbnails {
-                default {
-                  url
-                }
-                medium {
-                  url
-                }
-                high {
-                  url
-                }
-                standard {
-                  url
-                }
-                maxres {
-                  url
-                }
-              }
-              channelTitle
-              localized {
-                title
-                description
-              }
-            }
-          }
-        }
-        nextToken
-      }
-    }
-  }
-`;

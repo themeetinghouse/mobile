@@ -1,9 +1,10 @@
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import {
   GetInstagramByLocationQuery,
   GetInstagramByLocationQueryVariables,
   ModelSortDirection,
 } from './API';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { getInstagramByLocation } from './queries';
 
 const locationsToUsername: { [loc: string]: string } = {
   alliston: 'themeetinghousealliston',
@@ -43,9 +44,8 @@ export default class InstagramService {
     if (username) {
       const data = await InstagramService.getInstagram(username);
       return data;
-    } else {
-      return { images: [], username: '' };
     }
+    return { images: [], username: '' };
   }
 
   static mapLocationToInstagram(loc: string): string | undefined {
@@ -68,7 +68,8 @@ export default class InstagramService {
 
       if (images && images.length > 0) {
         return { images, username };
-      } else if (username !== 'themeetinghouse') {
+      }
+      if (username !== 'themeetinghouse') {
         const query2: GetInstagramByLocationQueryVariables = {
           locationId: 'themeetinghouse',
           limit: 8,
@@ -88,38 +89,3 @@ export default class InstagramService {
     return { images: [], username: '' };
   }
 }
-
-export const getInstagramByLocation = /* GraphQL */ `
-  query GetInstagramByLocation(
-    $locationId: String
-    $timestamp: ModelIntKeyConditionInput
-    $sortDirection: ModelSortDirection
-    $filter: ModelInstagramFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    getInstagramByLocation(
-      locationId: $locationId
-      timestamp: $timestamp
-      sortDirection: $sortDirection
-      filter: $filter
-      limit: $limit
-      nextToken: $nextToken
-    ) {
-      items {
-        id
-        locationId
-        thumbnails {
-          src
-          config_width
-          config_height
-        }
-        altText
-        timestamp
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;

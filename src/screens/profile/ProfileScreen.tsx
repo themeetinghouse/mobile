@@ -1,5 +1,4 @@
 import React, { useContext, useLayoutEffect } from 'react';
-import UserContext from '../../contexts/UserContext';
 import {
   Content,
   Text,
@@ -10,19 +9,19 @@ import {
   ListItem,
   Container,
 } from 'native-base';
-import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
-
 import { StackNavigationProp } from '@react-navigation/stack';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator';
-import { MainStackParamList } from '../../navigation/AppNavigator';
 import {
   CompositeNavigationProp,
   CommonActions,
 } from '@react-navigation/native';
-import LocationContext from '../../contexts/LocationContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+import LocationContext from '../../contexts/LocationContext';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import UserContext from '../../contexts/UserContext';
 
 const style = StyleSheet.create({
   content: {
@@ -136,7 +135,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
       },
       headerRightContainerStyle: { right: 16 },
     });
-  });
+  }, [navigation]);
 
   const signOut = async () => {
     await Auth.signOut().then(() => {
@@ -181,11 +180,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                 onPress={item.action}
               >
                 <Left>
-                  <Thumbnail
-                    style={style.listIcon}
-                    source={item.icon}
-                    square
-                  ></Thumbnail>
+                  <Thumbnail style={style.listIcon} source={item.icon} square />
                   <View>
                     <Text style={style.listText}>{item.text}</Text>
                     <Text style={style.listSubtext}>{item.subtext}</Text>
@@ -196,7 +191,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                     style={style.listArrowIcon}
                     source={Theme.icons.white.arrow}
                     square
-                  ></Thumbnail>
+                  />
                 </View>
               </ListItem>
             ))}
@@ -213,7 +208,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                   style={style.listIcon}
                   source={Theme.icons.white.signOut}
                   square
-                ></Thumbnail>
+                />
                 <View>
                   <Text style={style.listText}>Sign Out</Text>
                 </View>
@@ -252,11 +247,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                 onPress={item.action}
               >
                 <Left>
-                  <Thumbnail
-                    style={style.listIcon}
-                    source={item.icon}
-                    square
-                  ></Thumbnail>
+                  <Thumbnail style={style.listIcon} source={item.icon} square />
                   <View>
                     <Text style={style.listText}>{item.text}</Text>
                     <Text style={style.listSubtext}>{item.subtext}</Text>
@@ -267,7 +258,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
                     style={style.listArrowIcon}
                     source={Theme.icons.white.arrow}
                     square
-                  ></Thumbnail>
+                  />
                 </View>
               </ListItem>
             ))}
@@ -283,6 +274,7 @@ export default function Profile({ navigation }: Params): JSX.Element {
         paddingBottom: safeArea.bottom,
       }}
     >
+      {/* eslint-disable-next-line camelcase */}
       {user?.userData?.email_verified ? loggedIn() : notLoggedIn()}
     </Container>
   );

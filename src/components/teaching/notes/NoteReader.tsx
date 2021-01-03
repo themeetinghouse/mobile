@@ -83,20 +83,20 @@ export default function NoteReader({
   const color = mode === 'dark' ? 'white' : 'black';
   const styles = StyleSheet.create({
     text: {
-      color: color,
+      color,
       fontSize: 16 * fontScale,
       lineHeight: 24 * fontScale,
       paddingLeft: 16,
       marginRight: 56,
     },
     textSmall: {
-      color: color,
+      color,
       fontSize: 12 * fontScale,
       lineHeight: 18 * fontScale,
       paddingHorizontal: 8,
     },
     header: {
-      color: color,
+      color,
       fontSize: 24 * fontScale,
       lineHeight: 32 * fontScale,
       paddingLeft: 16,
@@ -159,7 +159,7 @@ export default function NoteReader({
 
   let numberOfImages = 0;
 
-  for (const block of blocks) {
+  blocks.forEach((block) => {
     if (block.entityRanges.length > 0) {
       const links: Array<{
         text: string;
@@ -169,40 +169,37 @@ export default function NoteReader({
       }> = [];
       block.entityRanges.forEach((entity: any) => {
         const data = entityMap[entity.key];
-        switch (data.type) {
-          case 'IMAGE':
-            if (numberOfImages === 0) {
-              if (!fromLiveStream) {
-                //this removes the first header image when coming from livestreamscreen.
-                markupArray.push(
-                  <HeaderImage data={data.data} key={'header image 0'} />
-                );
-              }
-            } else
+        if (data.type === 'IMAGE') {
+          if (numberOfImages === 0) {
+            // this removes the first header image
+            if (!fromLiveStream)
               markupArray.push(
-                <CustomImage
-                  styles={styles}
-                  noteId={noteId}
-                  block={block}
-                  mode={mode}
-                  data={data.data}
-                  key={block.key + type}
-                  type={type}
-                />
+                <HeaderImage data={data.data} key={data.data?.src} />
               );
-            numberOfImages++;
-            break;
-          case 'LINK':
-            links.push({
-              text: block.text.slice(
-                entity.offset,
-                entity.offset + entity.length
-              ),
-              offset: entity.offset,
-              length: entity.length,
-              uri: data.data.url,
-            });
-            break;
+          } else {
+            markupArray.push(
+              <CustomImage
+                styles={styles}
+                noteId={noteId}
+                block={block}
+                mode={mode}
+                data={data.data}
+                key={block.key + type}
+                type={type}
+              />
+            );
+          }
+          numberOfImages += 1;
+        } else if (data.type === 'LINK') {
+          links.push({
+            text: block.text.slice(
+              entity.offset,
+              entity.offset + entity.length
+            ),
+            offset: entity.offset,
+            length: entity.length,
+            uri: data.data.url,
+          });
         }
       });
 
@@ -233,22 +230,22 @@ export default function NoteReader({
       if (filteredStyles.length > 0)
         processedStyles = addStyles(filteredStyles);
 
-      const props = {
-        mode: mode,
-        key: block.key + type,
-        block: block,
-        processedStyles: processedStyles,
-        styles: styles,
-        type: type,
-        noteId: noteId,
-      };
-
       switch (block.type) {
         case 'unstyled':
         case 'paragraph':
         case 'blockquote':
         case 'code-block':
-          markupArray.push(<CustomText {...props} />);
+          markupArray.push(
+            <CustomText
+              key={block.key + type}
+              processedStyles={processedStyles}
+              block={block}
+              styles={styles}
+              mode={mode}
+              type={type}
+              noteId={noteId}
+            />
+          );
           break;
 
         case 'header-one':
@@ -257,18 +254,35 @@ export default function NoteReader({
         case 'header-four':
         case 'header-five':
         case 'header-six':
-          markupArray.push(<CustomHeading {...props} />);
+          markupArray.push(
+            <CustomHeading
+              key={block.key + type}
+              block={block}
+              styles={styles}
+            />
+          );
           break;
 
         case 'unordered-list-item':
         case 'ordered-list-item':
-          markupArray.push(<CustomListItem {...props} />);
+          markupArray.push(
+            <CustomListItem
+              key={block.key + type}
+              processedStyles={processedStyles}
+              block={block}
+              styles={styles}
+              mode={mode}
+              type={type}
+              noteId={noteId}
+            />
+          );
           break;
-        case 'atomic':
+
+        default:
           break;
       }
     }
-  }
+  });
 
   return (
     <View

@@ -1,11 +1,11 @@
 import React from 'react';
-import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { Container, Text, Button, Icon, Content, View } from 'native-base';
-import WhiteButton from '../../components/buttons/WhiteButton';
 import { StyleSheet } from 'react-native';
-import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { HomeStackParamList } from '../../navigation/MainTabNavigator';
+import WhiteButton from '../../components/buttons/WhiteButton';
+import { Theme, Style, HeaderStyle } from '../../Theme.style';
 
 const style = StyleSheet.create({
   content: {
@@ -56,17 +56,20 @@ interface Props {
   route: RouteProp<HomeStackParamList, 'AnnouncementDetailsScreen'>;
 }
 
-export default function AnnouncementDetailScreen(props: Props): JSX.Element {
-  const announcementItem = props.route.params?.item;
+export default function AnnouncementDetailScreen({
+  navigation,
+  route,
+}: Props): JSX.Element {
+  const announcementItem = route.params?.item;
 
-  props.navigation.setOptions({
+  navigation.setOptions({
     headerShown: true,
     title: 'Announcement',
     headerTitleStyle: style.headerTitle,
     headerStyle: { backgroundColor: Theme.colors.background },
     headerLeft: function render() {
       return (
-        <Button transparent onPress={() => props.navigation.goBack()}>
+        <Button transparent onPress={() => navigation.goBack()}>
           <Icon name="close" />
         </Button>
       );
@@ -82,7 +85,7 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
       <Content style={style.content}>
         <Text style={style.title}>{announcementItem.title}</Text>
         <Text style={style.body}>{announcementItem.description}</Text>
-        <WhiteButton label="Call to action"></WhiteButton>
+        <WhiteButton label="Call to action" />
       </Content>
     </Container>
   );

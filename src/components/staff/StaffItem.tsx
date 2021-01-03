@@ -1,11 +1,15 @@
 import { Thumbnail } from 'native-base';
 import React, { useState, memo } from 'react';
 import { View, StyleSheet, Text, Image, Platform } from 'react-native';
-import { Theme, Style } from '../../Theme.style';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Linking from 'expo-linking';
 import CachedImage from 'react-native-expo-cached-image';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { MoreStackParamList } from 'src/navigation/MainTabNavigator';
+import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
+
 const style = StyleSheet.create({
   container: {
     marginTop: 6,
@@ -76,8 +80,8 @@ const style = StyleSheet.create({
     padding: 16,
   },
 });
+
 interface Props {
-  navigation: any;
   staff: {
     FirstName: string;
     LastName: string;
@@ -92,12 +96,49 @@ interface Props {
   };
 }
 
-function StaffItem({ navigation, staff }: Props): JSX.Element {
+function StaffItem({ staff }: Props): JSX.Element {
+  const navigation = useNavigation<StackNavigationProp<MoreStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
+  const [uri, setUri] = useState(staff.uri);
   const uriError = () => {
     setUri(Theme.icons.white.user);
   };
-  const [uri, setUri] = useState(staff.uri);
+
+  const renderStaffImage = () => {
+    if (uri && uri !== Theme.icons.white.user) {
+      if (Platform.OS === 'android') {
+        return (
+          <CachedImage
+            onLoadEnd={() => setIsLoading(false)}
+            style={style.picture}
+            onError={() => {
+              setIsLoading(false);
+              uriError();
+            }}
+            source={{ uri }}
+          />
+        );
+      }
+      return (
+        <Image
+          onLoadEnd={() => setIsLoading(false)}
+          style={style.picture}
+          onError={() => {
+            setIsLoading(false);
+            uriError();
+          }}
+          source={{ uri, cache: 'default' }}
+        />
+      );
+    }
+
+    return (
+      <View style={style.fallbackPictureContainer}>
+        <Image style={style.fallBackPicture} source={Theme.icons.white.user} />
+      </View>
+    );
+  };
+
   return (
     <View style={style.container}>
       <View style={style.pictureContainer}>
@@ -105,45 +146,9 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
           <ActivityIndicator
             style={style.pictureIndicator}
             animating={isLoading}
-          ></ActivityIndicator>
-        ) : null}
-        {Platform.OS === 'android' ? (
-          uri && uri !== Theme.icons.white.user ? (
-            <CachedImage
-              onLoadEnd={() => setIsLoading(false)}
-              style={style.picture}
-              onError={() => {
-                setIsLoading(false);
-                uriError();
-              }}
-              source={{ uri }}
-            />
-          ) : (
-            <View style={style.fallbackPictureContainer}>
-              <Image
-                style={style.fallBackPicture}
-                source={Theme.icons.white.user}
-              ></Image>
-            </View>
-          )
-        ) : uri && uri !== Theme.icons.white.user ? (
-          <Image
-            onLoadEnd={() => setIsLoading(false)}
-            style={style.picture}
-            onError={() => {
-              setIsLoading(false);
-              uriError();
-            }}
-            source={{ uri: uri, cache: 'default' }}
           />
-        ) : (
-          <View style={style.fallbackPictureContainer}>
-            <Image
-              style={style.fallBackPicture}
-              source={Theme.icons.white.user}
-            ></Image>
-          </View>
-        )}
+        ) : null}
+        {renderStaffImage()}
       </View>
       <View style={{ flexDirection: 'column' }}>
         {staff.FirstName && staff.LastName ? (
@@ -177,7 +182,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 style={style.icon}
                 source={Theme.icons.white.phone}
                 square
-              ></Thumbnail>
+              />
             </TouchableOpacity>
           ) : null}
           {staff.Email ? (
@@ -189,7 +194,7 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
                 style={style.icon}
                 source={Theme.icons.white.contact}
                 square
-              ></Thumbnail>
+              />
             </TouchableOpacity>
           ) : null}
         </View>
@@ -197,4 +202,5 @@ function StaffItem({ navigation, staff }: Props): JSX.Element {
     </View>
   );
 }
+
 export default memo(StaffItem);

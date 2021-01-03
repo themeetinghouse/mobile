@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import WhiteButton from '../buttons/WhiteButton';
 import { View, Text } from 'native-base';
 import { Modal } from 'react-native';
-import Theme from '../../Theme.style';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import Theme from '../../Theme.style';
+import WhiteButton from '../buttons/WhiteButton';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 
 interface Params {
@@ -48,7 +48,7 @@ export default function NeedsSignUpModal({ initState }: Params): JSX.Element {
                 setVisible(false);
                 navigation.goBack();
               }}
-            ></WhiteButton>
+            />
           </View>
           <View style={{ height: 56, marginBottom: 8 }}>
             <WhiteButton
@@ -58,7 +58,7 @@ export default function NeedsSignUpModal({ initState }: Params): JSX.Element {
                 setVisible(false);
                 navigation.push('Auth', { screen: 'SignUpScreen' });
               }}
-            ></WhiteButton>
+            />
           </View>
         </View>
       </View>

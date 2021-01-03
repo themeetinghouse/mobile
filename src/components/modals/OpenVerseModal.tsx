@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
-import WhiteButton from '../buttons/WhiteButton';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
 import { View, Thumbnail, Text, Button } from 'native-base';
+import WhiteButton from '../buttons/WhiteButton';
 import Theme from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 
@@ -28,11 +28,14 @@ export default function OpenVerseModal({
     if (openIn !== '') openPassageCallback(openIn, rememberChoice);
   };
 
+  // eslint-disable-next-line camelcase
+  const emailVerified = user?.userData?.email_verified;
+
   return (
     <View
       style={{
         bottom: 0,
-        height: 386 - (user?.userData?.email_verified ? 0 : 80),
+        height: 386 - (emailVerified ? 0 : 80),
         backgroundColor: 'white',
         padding: 16,
       }}
@@ -60,7 +63,7 @@ export default function OpenVerseModal({
             source={Theme.icons.black.closeCancel}
             square
             style={{ width: 24, height: 24 }}
-          ></Thumbnail>
+          />
         </Button>
       </View>
       <TouchableOpacity
@@ -123,7 +126,7 @@ export default function OpenVerseModal({
           />
         ) : null}
       </TouchableOpacity>
-      {user?.userData?.email_verified ? (
+      {emailVerified ? (
         <View
           style={{
             height: 80,
@@ -169,7 +172,7 @@ export default function OpenVerseModal({
           solidBlack
           label="Open Passage"
           onPress={handleOpenPassage}
-        ></WhiteButton>
+        />
       </View>
     </View>
   );

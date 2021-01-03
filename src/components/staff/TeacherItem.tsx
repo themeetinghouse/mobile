@@ -8,11 +8,15 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { Theme, Style } from '../../Theme.style';
 
 import * as Linking from 'expo-linking';
 import CachedImage from 'react-native-expo-cached-image';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { useNavigation } from '@react-navigation/native';
+import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
+
 const style = StyleSheet.create({
   container: {
     marginTop: 6,
@@ -84,16 +88,51 @@ const style = StyleSheet.create({
   },
 });
 interface Props {
-  navigation: any;
   teacher: any;
 }
 
-function TeacherItem({ navigation, teacher }: Props): JSX.Element {
+function TeacherItem({ teacher }: Props): JSX.Element {
+  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
+  const [uri, setUri] = useState(teacher.image);
   const uriError = () => {
     setUri(Theme.icons.white.user);
   };
-  const [uri, setUri] = useState(teacher.image);
+
+  const renderTeacherImage = () => {
+    if (uri && uri !== Theme.icons.white.user) {
+      if (Platform.OS === 'android') {
+        return (
+          <CachedImage
+            onLoadEnd={() => setIsLoading(false)}
+            style={style.picture}
+            onError={() => {
+              setIsLoading(false);
+              uriError();
+            }}
+            source={{ uri }}
+          />
+        );
+      }
+      return (
+        <Image
+          onLoadEnd={() => setIsLoading(false)}
+          style={style.picture}
+          onError={() => {
+            setIsLoading(false);
+            uriError();
+          }}
+          source={{ uri, cache: 'default' }}
+        />
+      );
+    }
+    return (
+      <View style={style.fallbackPictureContainer}>
+        <Image style={style.fallBackPicture} source={Theme.icons.white.user} />
+      </View>
+    );
+  };
+
   return (
     <TouchableOpacity
       onPress={() => {
@@ -112,45 +151,9 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
             <ActivityIndicator
               style={style.pictureIndicator}
               animating={isLoading}
-            ></ActivityIndicator>
-          ) : null}
-          {Platform.OS === 'android' ? (
-            uri && uri !== Theme.icons.white.user ? (
-              <CachedImage
-                onLoadEnd={() => setIsLoading(false)}
-                style={style.picture}
-                onError={() => {
-                  setIsLoading(false);
-                  uriError();
-                }}
-                source={{ uri }}
-              />
-            ) : (
-              <View style={style.fallbackPictureContainer}>
-                <Image
-                  style={style.fallBackPicture}
-                  source={Theme.icons.white.user}
-                ></Image>
-              </View>
-            )
-          ) : uri && uri !== Theme.icons.white.user ? (
-            <Image
-              onLoadEnd={() => setIsLoading(false)}
-              style={style.picture}
-              onError={() => {
-                setIsLoading(false);
-                uriError();
-              }}
-              source={{ uri: uri, cache: 'default' }}
             />
-          ) : (
-            <View style={style.fallbackPictureContainer}>
-              <Image
-                style={style.fallBackPicture}
-                source={Theme.icons.white.user}
-              ></Image>
-            </View>
-          )}
+          ) : null}
+          {renderTeacherImage()}
         </View>
         <View style={{ flexDirection: 'column' }}>
           {teacher.name ? <Text style={style.Name}>{teacher.name}</Text> : null}
@@ -169,7 +172,7 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
                   style={style.icon}
                   source={Theme.icons.white.phone}
                   square
-                ></Thumbnail>
+                />
               </TouchableOpacity>
             ) : null}
             {teacher.Email ? (
@@ -181,7 +184,7 @@ function TeacherItem({ navigation, teacher }: Props): JSX.Element {
                   style={style.icon}
                   source={Theme.icons.white.contact}
                   square
-                ></Thumbnail>
+                />
               </TouchableOpacity>
             ) : null}
           </View>

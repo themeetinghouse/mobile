@@ -42,8 +42,8 @@ export default class LocationsService {
   static async getLocationById(
     locationId: string
   ): Promise<Location | undefined> {
-    const allLocations: Location[] = await LocationsService.loadLocations();
-    return allLocations.find((location) => location.id === locationId);
+    const allLocations = await LocationsService.loadLocations();
+    return allLocations?.find((location) => location.id === locationId);
   }
 
   static mapLocationIdToName(id: string): string {
@@ -140,16 +140,15 @@ export default class LocationsService {
     ];
   }
 
-  static async loadLocations(): Promise<Location[]> {
-    return await fetch(
-      'https://www.themeetinghouse.com/static/data/locations.json'
-    )
-      .then((response) => response.json())
-      .then((locations) => {
-        return locations;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  static async loadLocations(): Promise<Location[] | undefined> {
+    try {
+      const res = await fetch(
+        'https://www.themeetinghouse.com/static/data/locations.json'
+      );
+      const locationData = await res.json();
+      return locationData;
+    } catch {
+      return undefined;
+    }
   }
 }
