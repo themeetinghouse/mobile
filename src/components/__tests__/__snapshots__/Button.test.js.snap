@@ -1,0 +1,682 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Snapshot and functional tests for button components All button, default props 1`] = `
+<View
+  accessible={true}
+  focusable={true}
+  forwardedRef={[Function]}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    Object {
+      "alignItems": "center",
+      "alignSelf": "stretch",
+      "backgroundColor": "#000000",
+      "borderBottomWidth": 1,
+      "borderColor": "#1a1a1a",
+      "borderLeftWidth": 0,
+      "borderRadius": 0,
+      "borderRightWidth": 0,
+      "borderTopWidth": 1,
+      "borderWidth": undefined,
+      "elevation": 2,
+      "flexDirection": "row",
+      "height": 63,
+      "justifyContent": "center",
+      "opacity": 1,
+      "paddingBottom": 6,
+      "paddingTop": 6,
+      "shadowColor": undefined,
+      "shadowOffset": undefined,
+      "shadowOpacity": undefined,
+      "shadowRadius": undefined,
+    }
+  }
+>
+  <Text
+    style={
+      Array [
+        Object {
+          "backgroundColor": "transparent",
+          "color": "#fff",
+          "fontFamily": "System",
+          "fontSize": 16.5,
+          "marginLeft": 0,
+          "marginRight": 0,
+          "paddingLeft": 16,
+          "paddingRight": 16,
+        },
+        Object {
+          "fontFamily": "Graphik-Regular-App",
+          "fontSize": 16,
+        },
+      ]
+    }
+    uppercase={false}
+  >
+    Test
+  </Text>
+  <View
+    style={
+      Object {
+        "alignItems": "flex-end",
+        "alignSelf": "center",
+        "flex": 1,
+      }
+    }
+  >
+    <Image
+      source={1}
+      square={true}
+      style={
+        Array [
+          Object {
+            "borderRadius": 0,
+            "height": 56,
+            "width": 56,
+          },
+          Object {
+            "height": 24,
+            "marginRight": 15,
+            "width": 24,
+          },
+        ]
+      }
+    />
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Async white button, outlined, loading 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={true}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "transparent",
+        "borderBottomWidth": null,
+        "borderColor": "white",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": 3,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <ActivityIndicator
+      animating={true}
+      color="black"
+      hidesWhenStopped={true}
+      size="small"
+    />
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Async white button, solidBlack, not loading 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={false}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "black",
+        "borderBottomWidth": null,
+        "borderColor": "#007aff",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": undefined,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#fff",
+            "fontFamily": "System",
+            "fontSize": 16.5,
+            "marginLeft": 0,
+            "marginRight": 0,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+          },
+          Object {
+            "color": "white",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 16,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      TMH
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Icon button, default props 1`] = `
+<View
+  style={
+    Array [
+      Object {},
+      Object {
+        "paddingBottom": 10,
+        "paddingTop": 10,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    accessible={true}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "transparent",
+        "display": "flex",
+        "flexDirection": "row",
+        "justifyContent": "flex-start",
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={Object {}}
+    >
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "#000",
+              "fontFamily": "System",
+              "fontSize": 16,
+            },
+            Object {
+              "borderBottomColor": "#ffffff",
+              "borderBottomWidth": 1,
+              "color": "#ffffff",
+              "marginLeft": 15,
+              "marginRight": 15,
+              "paddingBottom": 3,
+              "paddingTop": 3,
+            },
+            Object {},
+          ]
+        }
+        uppercase={false}
+      >
+        Testing
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Icon button, test rightArrow prop 1`] = `
+<View
+  style={
+    Array [
+      Object {},
+      Object {
+        "paddingBottom": 10,
+        "paddingTop": 10,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    accessible={true}
+    focusable={true}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "transparent",
+        "display": "flex",
+        "flexDirection": "row",
+        "justifyContent": "flex-start",
+        "opacity": 1,
+      }
+    }
+  >
+    <View
+      style={Object {}}
+    >
+      <Text
+        style={
+          Array [
+            Object {
+              "color": "#000",
+              "fontFamily": "System",
+              "fontSize": 16,
+            },
+            Object {
+              "borderBottomColor": "#ffffff",
+              "borderBottomWidth": 1,
+              "color": "#ffffff",
+              "marginLeft": 15,
+              "marginRight": 15,
+              "paddingBottom": 3,
+              "paddingTop": 3,
+            },
+            Object {},
+          ]
+        }
+        uppercase={false}
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "alignItems": "flex-end",
+          "alignSelf": "center",
+          "flex": 1,
+        }
+      }
+    >
+      <Image
+        source={1}
+        style={
+          Array [
+            Object {
+              "borderRadius": 28,
+              "height": 56,
+              "width": 56,
+            },
+            Object {
+              "height": 24,
+              "marginRight": 15,
+              "width": 24,
+            },
+          ]
+        }
+      />
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Teaching button, active 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={true}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "#ffffff",
+        "borderBottomWidth": null,
+        "borderColor": "#007aff",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": undefined,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <Image
+      square={true}
+      style={
+        Array [
+          Object {
+            "borderRadius": 0,
+            "height": 56,
+            "width": 56,
+          },
+          Object {
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+    />
+    <Text
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#fff",
+            "fontFamily": "System",
+            "fontSize": 16.5,
+            "marginLeft": 0,
+            "marginRight": 0,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+          },
+          Object {
+            "color": "#000000",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 16,
+            "paddingRight": 0,
+            "paddingTop": 4,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      TMH
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Teaching button, inactive 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={true}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "#1a1a1a",
+        "borderBottomWidth": null,
+        "borderColor": "#007aff",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": undefined,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <Image
+      square={true}
+      style={
+        Array [
+          Object {
+            "borderRadius": 0,
+            "height": 56,
+            "width": 56,
+          },
+          Object {
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+    />
+    <Text
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#fff",
+            "fontFamily": "System",
+            "fontSize": 16.5,
+            "marginLeft": 0,
+            "marginRight": 0,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+          },
+          Object {
+            "color": "white",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 16,
+            "paddingRight": 0,
+            "paddingTop": 4,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      TMH
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components White button, outlined 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={true}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "transparent",
+        "borderBottomWidth": null,
+        "borderColor": "white",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": 3,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#fff",
+            "fontFamily": "System",
+            "fontSize": 16.5,
+            "marginLeft": 0,
+            "marginRight": 0,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+          },
+          Object {
+            "color": "white",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 16,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      TMH
+    </Text>
+  </View>
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components White button, solidBlack 1`] = `
+<View
+  style={Object {}}
+>
+  <View
+    accessible={true}
+    focusable={false}
+    forwardedRef={[Function]}
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "alignSelf": "stretch",
+        "backgroundColor": "black",
+        "borderBottomWidth": null,
+        "borderColor": "#007aff",
+        "borderLeftWidth": null,
+        "borderRadius": 0,
+        "borderRightWidth": null,
+        "borderTopWidth": null,
+        "borderWidth": undefined,
+        "elevation": 2,
+        "flexDirection": "row",
+        "height": "100%",
+        "justifyContent": "center",
+        "opacity": 1,
+        "paddingBottom": 6,
+        "paddingTop": 6,
+        "shadowColor": undefined,
+        "shadowOffset": undefined,
+        "shadowOpacity": undefined,
+        "shadowRadius": undefined,
+      }
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "backgroundColor": "transparent",
+            "color": "#fff",
+            "fontFamily": "System",
+            "fontSize": 16.5,
+            "marginLeft": 0,
+            "marginRight": 0,
+            "paddingLeft": 16,
+            "paddingRight": 16,
+          },
+          Object {
+            "color": "white",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 16,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      TMH
+    </Text>
+  </View>
+</View>
+`;

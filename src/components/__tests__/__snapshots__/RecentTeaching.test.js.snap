@@ -1,0 +1,219 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Recent Teaching component on Home Screen Snapshot using data from Sunday Dec 27 1`] = `
+<View
+  style={
+    Array [
+      Object {},
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "#000000",
+      },
+    ]
+  }
+  testID="teaching-notes"
+>
+  <Image
+    onError={[Function]}
+    source={
+      Object {
+        "uri": "https://themeetinghouse.com/static/photos/series/adult-sunday-000.jpg",
+      }
+    }
+    style={
+      Object {
+        "alignSelf": "center",
+        "height": 192,
+        "marginBottom": 24,
+        "width": 159.975,
+      }
+    }
+    testID="fallback-image"
+  />
+  <View
+    style={
+      Array [
+        Object {},
+        Object {
+          "alignItems": "center",
+          "marginHorizontal": 16,
+        },
+      ]
+    }
+  >
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#000",
+            "fontFamily": "System",
+            "fontSize": 16,
+          },
+          Object {
+            "color": "#ffffff",
+            "fontFamily": "Graphik-Bold-App",
+            "fontSize": 32,
+            "marginBottom": 8,
+            "textAlign": "center",
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      Tired Feet. Hopeful Hearts.
+    </Text>
+    <Text
+      style={
+        Array [
+          Object {
+            "color": "#000",
+            "fontFamily": "System",
+            "fontSize": 16,
+          },
+          Object {
+            "color": "#c8c8c8",
+            "fontSize": 12,
+            "marginBottom": 14,
+          },
+        ]
+      }
+      uppercase={false}
+    >
+      December 27, 2020
+    </Text>
+    <Text
+      ellipsizeMode="tail"
+      numberOfLines={2}
+      onPress={[Function]}
+      style={
+        Array [
+          Object {
+            "color": "#000",
+            "fontFamily": "System",
+            "fontSize": 16,
+          },
+          Object {
+            "color": "#c8c8c8",
+            "fontSize": 16,
+            "lineHeight": 24,
+            "marginBottom": 32,
+            "textAlign": "center",
+          },
+        ]
+      }
+      testID="description"
+      uppercase={false}
+    >
+      As Jesus people, we aren't the ones with all the answers - we're the ones with hope. We partner, wait, labour, and celebrate with the One who doesn't grow tired or weary as He ushers in his kingdom.
+    </Text>
+  </View>
+  <View
+    style={Object {}}
+    testID="notes-button"
+  >
+    <View
+      style={
+        Array [
+          Object {},
+          Object {
+            "paddingBottom": 10,
+            "paddingTop": 10,
+          },
+          undefined,
+        ]
+      }
+    >
+      <View
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "alignItems": "center",
+            "backgroundColor": "transparent",
+            "display": "flex",
+            "flexDirection": "row",
+            "justifyContent": "flex-start",
+            "opacity": 1,
+          }
+        }
+      >
+        <Image
+          source={1}
+          square={true}
+          style={
+            Array [
+              Object {
+                "borderRadius": 0,
+                "height": 56,
+                "width": 56,
+              },
+              Object {
+                "height": 24,
+                "width": 24,
+              },
+              Object {
+                "marginLeft": 0,
+              },
+            ]
+          }
+        />
+        <View
+          style={Object {}}
+        >
+          <Text
+            style={
+              Array [
+                Object {
+                  "color": "#000",
+                  "fontFamily": "System",
+                  "fontSize": 16,
+                },
+                Object {
+                  "borderBottomColor": "#ffffff",
+                  "borderBottomWidth": 1,
+                  "color": "#ffffff",
+                  "marginLeft": 15,
+                  "marginRight": 15,
+                  "paddingBottom": 3,
+                  "paddingTop": 3,
+                },
+                Object {},
+              ]
+            }
+            uppercase={false}
+          >
+            Notes
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Recent Teaching component on Home Screen Snapshot using null data 1`] = `
+<View
+  style={
+    Array [
+      Object {
+        "padding": 15,
+      },
+      undefined,
+    ]
+  }
+>
+  <ActivityIndicator
+    animating={true}
+    color="#ffffff"
+    hidesWhenStopped={true}
+    size="large"
+  />
+</View>
+`;
