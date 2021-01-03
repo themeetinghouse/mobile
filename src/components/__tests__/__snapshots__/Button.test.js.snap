@@ -57,6 +57,7 @@ exports[`Snapshot and functional tests for button components All button, default
         },
       ]
     }
+    uppercase={false}
   >
     Test
   </Text>
@@ -203,6 +204,7 @@ exports[`Snapshot and functional tests for button components Async white button,
           },
         ]
       }
+      uppercase={false}
     >
       TMH
     </Text>
@@ -267,6 +269,7 @@ exports[`Snapshot and functional tests for button components Icon button, defaul
             Object {},
           ]
         }
+        uppercase={false}
       >
         Testing
       </Text>
@@ -332,6 +335,7 @@ exports[`Snapshot and functional tests for button components Icon button, test r
             Object {},
           ]
         }
+        uppercase={false}
       />
     </View>
     <View
@@ -444,6 +448,7 @@ exports[`Snapshot and functional tests for button components Teaching button, ac
           },
         ]
       }
+      uppercase={false}
     >
       TMH
     </Text>
@@ -530,6 +535,7 @@ exports[`Snapshot and functional tests for button components Teaching button, in
           },
         ]
       }
+      uppercase={false}
     >
       TMH
     </Text>
@@ -598,6 +604,7 @@ exports[`Snapshot and functional tests for button components White button, outli
           },
         ]
       }
+      uppercase={false}
     >
       TMH
     </Text>
@@ -666,6 +673,7 @@ exports[`Snapshot and functional tests for button components White button, solid
           },
         ]
       }
+      uppercase={false}
     >
       TMH
     </Text>

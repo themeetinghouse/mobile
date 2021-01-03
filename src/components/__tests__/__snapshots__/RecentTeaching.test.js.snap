@@ -58,6 +58,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
           },
         ]
       }
+      uppercase={false}
     >
       Tired Feet. Hopeful Hearts.
     </Text>
@@ -76,6 +77,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
           },
         ]
       }
+      uppercase={false}
     >
       December 27, 2020
     </Text>
@@ -100,6 +102,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
         ]
       }
       testID="description"
+      uppercase={false}
     >
       As Jesus people, we aren't the ones with all the answers - we're the ones with hope. We partner, wait, labour, and celebrate with the One who doesn't grow tired or weary as He ushers in his kingdom.
     </Text>
@@ -184,6 +187,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
                 Object {},
               ]
             }
+            uppercase={false}
           >
             Notes
           </Text>
