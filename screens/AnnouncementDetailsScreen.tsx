@@ -97,19 +97,22 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
     }
     return (
         <>
-            <Image style={{ top: 0, position: "absolute", height: 200, width: Dimensions.get('window').width }} source={{ uri: announcementItem.image }}>
-            </Image>
-            <LinearGradient
-                colors={["rgba(0,0,0, 0.05)", "rgba(0,0,0, 0.9)"]}
-                style={{
-                    position: 'absolute',
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    height: 200
-                }}
-            />
-
+            {announcementItem.image && announcementItem.image !== "" ?
+                <>
+                    <Image style={{ top: 0, position: "absolute", height: 200, width: Dimensions.get('window').width }} source={{ uri: announcementItem.image }}>
+                    </Image>
+                    <LinearGradient
+                        colors={["rgba(0,0,0, 0.05)", "rgba(0,0,0, 0.9)"]}
+                        style={{
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            top: 0,
+                            height: 200
+                        }}
+                    />
+                </>
+                : null}
             <Content style={style.content}>
                 <Text style={style.title}>{announcementItem.title}</Text>
                 <Text style={style.body}>{announcementItem.description}</Text>

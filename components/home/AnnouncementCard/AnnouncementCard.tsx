@@ -27,6 +27,7 @@ const style = StyleSheet.create({
         paddingBottom: 40,
         paddingTop: 40,
         marginBottom: 16,
+
     },
     title: { ...Style.title, ...{ marginBottom: 8 } },
     body: Style.body,
@@ -47,9 +48,9 @@ type AnnouncementCardInput = {
 
 export default function AnnouncementCard({ announcement, handlePress }: AnnouncementCardInput): JSX.Element {
     return (
-        announcement?.image ?
+        announcement?.image && announcement?.image !== "" ?
             <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black, }}>
-                <ImageBackground style={{ flex: 1, backgroundColor: Theme.colors.gray1, borderBottomWidth: 1, borderBottomColor: "#313131", }} source={{ uri: announcement.image }}>
+                <ImageBackground style={{ flex: 1, backgroundColor: Theme.colors.gray1, borderBottomWidth: 1, borderBottomColor: "#313131", }} source={{ uri: announcement.image ?? "" }}>
                     <LinearGradient
                         colors={["rgba(0,0,0, 0.2)", "rgba(0,0,0, 0.9)"]}
                         style={{
