@@ -23,7 +23,7 @@ export default class AnnouncementService {
       currentLocation = "Cross-Regional"
     }
     else {
-      currentLocation = locations?.filter((loc: any) => {
+      currentLocation = locations?.filter((loc: Location) => {
         return loc.id === location?.id;
       })?.[0]?.name
     }
