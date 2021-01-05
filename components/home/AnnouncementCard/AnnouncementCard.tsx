@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, Thumbnail } from 'native-base';
 import Theme, { Style } from '../../../Theme.style';
 //import WhiteButton from '../../buttons/WhiteButton';
@@ -48,7 +48,7 @@ type AnnouncementCardInput = {
 
 export default function AnnouncementCard({ announcement, handlePress }: AnnouncementCardInput): JSX.Element {
     return (
-        announcement?.image && announcement?.image !== "" ?
+        announcement?.image && announcement.image !== "false" ?
             <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black, }}>
                 <ImageBackground style={{ flex: 1, backgroundColor: Theme.colors.gray1, borderBottomWidth: 1, borderBottomColor: "#313131", }} source={{ uri: announcement.image ?? "" }}>
                     <LinearGradient
@@ -71,8 +71,8 @@ export default function AnnouncementCard({ announcement, handlePress }: Announce
             :
             <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
                 <Thumbnail style={style.icon} source={Theme.icons.white.announcement}></Thumbnail>
-                <Text style={style.title}>{announcement.title}</Text>
-                <Text style={style.body}>{announcement.description.slice(0, 100).trim() + "..."}</Text>
+                <Text style={style.title}>{announcement?.title}</Text>
+                <Text style={style.body}>{announcement?.description.slice(0, 100).trim()} {announcement?.description?.length > 100 ? "..." : ""}</Text>
             </TouchableWithoutFeedback>
     )
 }
