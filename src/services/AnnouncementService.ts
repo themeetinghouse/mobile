@@ -1,24 +1,54 @@
-export interface Announcement {
-  id: string;
+import moment from 'moment';
+import { runGraphQLQuery } from './ApiService';
+import LocationService, { Location } from './LocationsService';
+import { listAnnouncements } from './queries';
+
+export type Announcement = {
+  id?: string;
   title: string;
   description: string;
-}
+  publishedDate: string;
+  expirationDate: string;
+  image?: string;
+  parish?: string;
+  crossRegional?: string;
+  callToAction?: string;
+};
 
 export default class AnnouncementService {
-  static loadAnnouncements = async (): Promise<Announcement[]> => {
-    return [
-      {
-        id: 'announcement1',
-        title: 'November Weekly Outreach',
-        description:
-          "We'll be meeting weekly on Thursday evenings at the clock downtown Oakville @ 5:30 pm for community outreach",
+  static loadAnnouncements = async (
+    location: Location | null
+  ): Promise<Announcement[]> => {
+    const locations = await LocationService.loadLocations();
+    let currentLocation;
+    if (location?.id === 'unknown') {
+      currentLocation = 'Cross-Regional';
+    } else {
+      currentLocation = locations?.filter((loc: Location) => {
+        return loc.id === location?.id;
+      })?.[0]?.name;
+    }
+
+    const today = moment()
+      .utcOffset(moment().isDST() ? '-0400' : '-0500')
+      .format('YYYY-MM-DD');
+    const queryResult = await runGraphQLQuery({
+      query: listAnnouncements,
+      variables: {
+        filter: {
+          publishedDate: { le: today },
+          expirationDate: { gt: today },
+          or: [
+            { parish: { eq: currentLocation ?? 'Cross-Regional' } },
+            { parish: { eq: 'Cross-Regional' } },
+          ],
+        },
       },
-      {
-        id: 'announcement2',
-        title: '21 Day New Year Corporate Fast',
-        description:
-          "We're going to kick off 2020 with some intentional time to seek the Lord.  What you fast is up to you.  We'll be talking more about it in the coming weeks.",
-      },
-    ];
+    });
+    const announcements = await queryResult?.listAnnouncements?.items?.sort(
+      (a: Announcement, b: Announcement) =>
+        b.publishedDate.localeCompare(a.publishedDate)
+    );
+    return announcements;
   };
 }
