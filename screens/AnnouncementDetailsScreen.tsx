@@ -97,7 +97,7 @@ export default function AnnouncementDetailScreen(props: Props): JSX.Element {
     }
     return (
         <>
-            {announcementItem.image && announcementItem.image !== "" ?
+            {announcementItem.image ?
                 <>
                     <Image style={{ top: 0, position: "absolute", height: 200, width: Dimensions.get('window').width }} source={{ uri: announcementItem.image }}>
                     </Image>

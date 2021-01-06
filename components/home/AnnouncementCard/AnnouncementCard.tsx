@@ -48,7 +48,7 @@ type AnnouncementCardInput = {
 
 export default function AnnouncementCard({ announcement, handlePress }: AnnouncementCardInput): JSX.Element {
     return (
-        announcement?.image && announcement.image !== "false" ?
+        announcement?.image ?
             <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black, }}>
                 <ImageBackground style={{ flex: 1, backgroundColor: Theme.colors.gray1, borderBottomWidth: 1, borderBottomColor: "#313131", }} source={{ uri: announcement.image ?? "" }}>
                     <LinearGradient
