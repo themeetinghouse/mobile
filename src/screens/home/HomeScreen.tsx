@@ -254,7 +254,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       }, 2000);
       return () => clearInterval(interval);
     }
-  }, [appStateVisible, liveEvents]);
+  }, [appStateVisible, liveEvents, navigation]);
 
   const handleAppStateChange = (nextAppState: any) => {
     appState.current = nextAppState;

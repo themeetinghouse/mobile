@@ -123,7 +123,8 @@ export default function AllSeriesScreen({
     } else {
       loadAllSeriesAsync();
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [route?.params?.customPlaylists]);
 
   const getSeriesDate = (series: any) => {
     return moment(series.startDate || moment()).format('YYYY');

@@ -29,7 +29,7 @@ export default function OpenVerseModal({
   };
 
   // eslint-disable-next-line camelcase
-  const emailVerified = user?.userData?.email_verified;
+  const emailVerified = user.userData?.email_verified;
 
   return (
     <View

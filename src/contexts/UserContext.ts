@@ -13,7 +13,7 @@ export type UserData = {
 type UserContext = {
   userData: UserData;
   setUserData: (data: UserData) => void;
-} | null;
+};
 
 const UserContext = createContext<UserContext>({
   userData: null,

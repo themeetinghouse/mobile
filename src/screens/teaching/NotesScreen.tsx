@@ -181,18 +181,21 @@ export default function NotesScreen({
   const miniPlayerStyle = useContext(MiniPlayerStyleContext);
   const userContext = useContext(UserContext);
 
+  const { setComments } = commentContext;
+  const { setDisplay } = miniPlayerStyle;
+
   useEffect(() => {
     setUserPreference(userContext?.userData?.['custom:preference_openBible']);
-  }, []);
+  }, [userContext?.userData]);
 
   useLayoutEffect(() => {
     const handleOpenTextOptions = () => {
       if (!textOptions) {
-        miniPlayerStyle.setDisplay('none');
+        setDisplay('none');
         setOpenVerse(false);
         setTextOptions(true);
       } else {
-        miniPlayerStyle.setDisplay('flex');
+        setDisplay('flex');
         setTextOptions(false);
       }
     };
@@ -250,7 +253,7 @@ export default function NotesScreen({
         );
       },
     });
-  }, []);
+  }, [setDisplay, navigation, notesMode, ref, textOptions]);
 
   async function handleFontScale(data: number) {
     try {
@@ -335,13 +338,13 @@ export default function NotesScreen({
           })) as GraphQLResult<GetCommentsByOwnerQuery>;
 
           if (json.data?.getCommentsByOwner?.items)
-            commentContext.setComments(json.data?.getCommentsByOwner?.items);
+            setComments(json.data?.getCommentsByOwner?.items);
         } catch (e) {
           console.debug(e);
         }
     };
     getComments();
-  }, [noteId]);
+  }, [noteId, setComments]);
 
   const handleOpenPassage = async (
     openIn: 'app' | 'web',

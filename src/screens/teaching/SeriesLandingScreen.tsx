@@ -138,7 +138,7 @@ export default function SeriesLandingScreen({
   route,
 }: Params): JSX.Element {
   const seriesParam = route.params?.item;
-  const seriesId = route.params?.seriesId;
+  const { seriesId, customPlaylist } = route.params;
   const safeArea = useSafeAreaInsets();
 
   const [series, setSeries] = useState(seriesParam);
@@ -216,7 +216,14 @@ export default function SeriesLandingScreen({
       headerLeftContainerStyle: { left: 16 },
       headerRightContainerStyle: { right: 16 },
     });
-  }, [headerOpacity]);
+  }, [
+    colors.border,
+    contentFills,
+    headerOpacity,
+    navigation,
+    safeArea.top,
+    share,
+  ]);
 
   useEffect(() => {
     const loadSermonsInSeriesAsync = async () => {
@@ -229,7 +236,7 @@ export default function SeriesLandingScreen({
         )}.jpg`;
         setSeries({ ...loadedSeries, image640px: uri });
       }
-      if (!route?.params?.customPlaylist) {
+      if (!customPlaylist) {
         const json = (await API.graphql(
           graphqlOperation(getSeries, { id: seriesId ?? series.id })
         )) as GraphQLResult<GetSeriesQuery>;
@@ -246,7 +253,8 @@ export default function SeriesLandingScreen({
       }
     };
     loadSermonsInSeriesAsync();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customPlaylist, seriesId]);
 
   function handleOnLayout(height: number) {
     if (height > Dimensions.get('screen').height) {

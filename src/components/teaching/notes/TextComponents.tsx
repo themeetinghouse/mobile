@@ -190,7 +190,7 @@ export function CustomText({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [block.key, type, allComments.comments]);
+  }, [block.key, type, allComments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
@@ -334,7 +334,7 @@ export function CustomListItem({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [block.key, type, allComments.comments]);
+  }, [block.key, type, allComments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
@@ -507,7 +507,7 @@ export function CustomImage({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [block.key, type, allComments.comments]);
+  }, [block.key, type, allComments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {
@@ -634,7 +634,7 @@ export function HyperLink({
         (comment) => comment?.key === block.key && comment?.noteType === type
       )
     );
-  }, [block.key, type, allComments.comments]);
+  }, [block.key, type, allComments]);
 
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const openComment = () => {

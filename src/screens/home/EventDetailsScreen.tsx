@@ -135,7 +135,7 @@ export default function EventDetailsScreen({
   // Needed to check if app is in the background or foreground.
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [alerts, setAlerts]: any = useState({ message: '' });
+  const [alerts, setAlerts] = useState<any>({ message: '' });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -183,7 +183,7 @@ export default function EventDetailsScreen({
         );
       },
     });
-  }, [navigation]);
+  }, [navigation, share]);
 
   const directionsType = () => {
     if (eventItem.place) {
