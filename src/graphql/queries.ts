@@ -126,6 +126,14 @@ export const getVideoByVideoType = `query GetVideoByVideoType(
   }
   `;
 
+export const askQuestion = /* GraphQL */ `
+  query AskQuestion($email: String, $body: String) {
+    askQuestion(email: $email, body: $body) {
+      err
+      data
+    }
+  }
+`;
 export const allSermonsQuery = `query GetVideoByVideoType(
     $videoTypes: String
     $publishedDate: ModelStringKeyConditionInput

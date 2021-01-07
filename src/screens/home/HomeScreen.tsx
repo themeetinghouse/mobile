@@ -38,6 +38,7 @@ import LiveEventService from '../../services/LiveEventService';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import Header from '../../components/Header';
+import QuestionSuccessModal from "../../components/modals/QuestionSuccessModal";
 import {
   GetNotesQuery,
   GetVideoByVideoTypeQueryVariables,
@@ -99,6 +100,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [teaching, setTeaching] = useState<VideoData>(null);
   const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
   const user = useContext(UserContext);
+  const [showQuestionModal, setShowQuestionModal] = useState(true);
 
   const locationName = location?.locationData?.locationName;
   const locationId = location?.locationData?.locationId;
@@ -196,9 +198,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     if (locationId !== 'unknown' || locationName !== 'unknown') loadEvents();
   }, [locationId, locationName]);
-
+  
   const sendQuestion = () => {
-    navigation.navigate('AskAQuestion');
+    navigation.navigate('AskAQuestion')
   };
 
   useEffect(() => {
@@ -303,7 +305,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
         />
       ) : null}
-
+      <QuestionSuccessModal show={showQuestionModal} setShow={setShowQuestionModal}></QuestionSuccessModal>
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching teaching={teaching} note={note} />

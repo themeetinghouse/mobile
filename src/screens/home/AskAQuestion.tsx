@@ -1,11 +1,14 @@
 /* eslint-disable camelcase */
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { Container, Content, Thumbnail} from 'native-base';
 import { StyleSheet, TouchableOpacity, Text, View, TextInput} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
+import {askQuestion} from "../../graphql/queries";
 import WhiteButton from '../../components/buttons/WhiteButton';
+import { API, graphqlOperation } from 'aws-amplify';
+import { useNavigation } from '@react-navigation/native';
 const style = StyleSheet.create({
     content: {
         ...Style.cardContainer,       
@@ -47,13 +50,14 @@ const style = StyleSheet.create({
 });
 
 interface Params {
-    navigation: StackNavigationProp<MainStackParamList, 'AskAQuestion'>;
+    navigation?: StackNavigationProp<MainStackParamList, 'AskAQuestion'>;
 }
 
-
-export default function AskAQuestion({
-  navigation,
-}: Params): JSX.Element {
+export default function AskAQuestion({}: Params): JSX.Element {
+    const navigation = useNavigation()
+    useEffect(()=>{
+        //console.log(navigation.dangerouslyGetState()?.routes)
+    },[navigation])
     useLayoutEffect(() => {
         navigation.setOptions({
           headerShown: true,
@@ -77,7 +81,15 @@ export default function AskAQuestion({
         });
       }, [navigation]);
     const [question, setQuestion] = useState("");
+     const submitQuestion = async () =>{
+        console.log("Question has been submitted")
 
+        //const variables = {email:"ask@themeetinghouse.com", body:question}
+        //const data = await API.graphql(graphqlOperation(askQuestion, variables))
+        //console.log(data)
+        navigation.navigate("Main", {screen:"HomeScreen",froma:true});
+
+      } 
   return (
     <Container>
       <Content style={style.content}>
@@ -103,6 +115,7 @@ export default function AskAQuestion({
           <WhiteButton
             style={{ height: 56, marginVertical:40 }}
             label="Submit a Question"
+            onPress={submitQuestion}
           />
           </View>
       </Content>
