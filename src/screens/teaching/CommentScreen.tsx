@@ -132,8 +132,11 @@ export default function CommentScreen({
           const index = commentContext.comments.findIndex(
             (item) => item?.id === commentId
           );
-          if (index !== -1 && json.data?.updateComment)
-            commentContext.comments[index] = json.data.updateComment;
+          if (index !== -1 && json.data?.updateComment) {
+            const temp = commentContext.comments;
+            temp[index] = json.data.updateComment;
+            commentContext.setComments(temp);
+          }
 
           navigation.goBack();
         } catch (e) {
@@ -167,9 +170,11 @@ export default function CommentScreen({
             authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
           })) as GraphQLResult<CreateCommentMutation>;
 
-          if (json.data?.createComment)
-            commentContext.comments.push(json.data.createComment);
-
+          if (json.data?.createComment) {
+            const temp = commentContext.comments;
+            temp.push(json.data.createComment);
+            commentContext.setComments(temp);
+          }
           setEdit(true);
           setCommentId(nanoId);
           navigation.goBack();
@@ -214,7 +219,7 @@ export default function CommentScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, []);
+  });
 
   useEffect(() => {
     setDisplay('none');
@@ -245,19 +250,19 @@ export default function CommentScreen({
           authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
         })) as GraphQLResult<GetCommentsByOwnerQuery>;
 
+        const oldTags: string[] = [];
+
         if (json.data?.getCommentsByOwner?.items) {
           json.data.getCommentsByOwner.items.forEach((item) => {
-            const temp: string[] = [];
             item?.tags?.forEach((tag) => {
-              if (typeof tag === 'string' && !prevTags.includes(tag)) {
-                temp.push(tag);
+              if (tag && !oldTags.includes(tag)) {
+                oldTags.push(tag);
               }
-            });
-            setPrevTags((prevState) => {
-              return prevState.concat(temp);
             });
           });
         }
+
+        setPrevTags(oldTags);
       } catch (e) {
         console.debug(e);
       }

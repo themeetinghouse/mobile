@@ -231,7 +231,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     items: [],
     nextToken: null,
   });
-  const [customPlaylists, setcustomPlaylists] = useState<PlaylistData>({
+  const [customPlaylists, setCustomPlaylists] = useState<PlaylistData>({
     loading: true,
     items: [],
     nextToken: null,
@@ -302,7 +302,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loadSomeAsync(
       SeriesService.loadCustomPlaylists,
       customPlaylists,
-      setcustomPlaylists,
+      setCustomPlaylists,
       10
     );
   };
@@ -352,6 +352,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loadSpeakers();
     loadCustomPlaylists();
     getPopularTeaching();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const contentOffset =

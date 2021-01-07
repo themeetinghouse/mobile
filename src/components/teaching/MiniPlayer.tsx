@@ -24,6 +24,8 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
   const safeArea = useSafeAreaInsets();
   const display = useContext(MiniPlayerStyleContext);
 
+  const { setVideoTime } = mediaContext;
+
   const style = StyleSheet.create({
     containerVideo: {
       height: 56,
@@ -106,13 +108,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
   useEffect(() => {
     async function updateTime() {
       const videoTime = await playerRef?.current?.getCurrentTime();
-      if (videoTime) mediaContext.setVideoTime(videoTime);
+      if (videoTime) setVideoTime(videoTime);
     }
     const interval = setInterval(() => {
       updateTime();
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [setVideoTime]);
 
   function updateAudioPosition(e: AVPlaybackStatus) {
     if (e.isLoaded) {

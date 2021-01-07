@@ -129,10 +129,12 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
   const [error, setError] = useState('');
   const safeArea = useSafeAreaInsets();
 
+  const { setUserData } = userContext;
+
   useLayoutEffect(() => {
     const signOut = async () => {
       await Auth.signOut().then(() => {
-        userContext?.setUserData(null);
+        setUserData(null);
         navigation.dispatch(
           CommonActions.reset({
             index: 1,
@@ -197,7 +199,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, []);
+  }, [currentPass, navigation, newPass, setUserData]);
 
   function forgotPass(): void {
     setCurrentPass('');

@@ -225,7 +225,12 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
     };
     loadSpeakerVideos();
     loadSpeakerData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    route.params?.staff.FirstName,
+    route.params?.staff.LastName,
+    route.params?.staff.idFromTeaching,
+  ]);
 
   const renderImage = () => {
     if (uri && uri !== Theme.icons.white.user) {

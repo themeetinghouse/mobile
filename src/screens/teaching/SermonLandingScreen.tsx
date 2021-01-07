@@ -427,6 +427,7 @@ export default function SermonLandingScreen({
       }
     });
     return unsub;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMinimize = () => {
@@ -482,6 +483,74 @@ export default function SermonLandingScreen({
       headerRightContainerStyle: { right: 16 },
     });
   });
+
+  const renderMoreVideos = () => {
+    if (!sermonsInSeries && !videosInPlaylist) {
+      return <ActivityIndicator />;
+    }
+
+    if (
+      videosInPlaylist?.length > 1 ||
+      (sermonsInSeries && sermonsInSeries?.length > 1)
+    ) {
+      return (
+        <>
+          <Text style={style.categoryTitle}>
+            {route.params?.customPlaylist
+              ? 'More from this playlist'
+              : 'More from this Series'}
+          </Text>
+          <View style={style.listContentContainer}>
+            {route.params?.customPlaylist
+              ? videosInPlaylist
+                  ?.sort((a: any, b: any) => {
+                    return b.video.publishedDate.localeCompare(
+                      a.video.publishedDate
+                    );
+                  })
+                  .map((video: any) => {
+                    if (video.video.episodeTitle !== sermon.episodeTitle)
+                      return (
+                        <TeachingListItem
+                          key={video?.video?.id}
+                          teaching={video.video}
+                          handlePress={() =>
+                            navigation.push('SermonLandingScreen', {
+                              customPlaylist: true,
+                              seriesId: route.params?.seriesId,
+                              item: video.video,
+                            })
+                          }
+                        />
+                      );
+                    return null;
+                  })
+              : sermonsInSeries
+                  ?.sort((a, b) => {
+                    const aNum = a?.episodeNumber ?? 0;
+                    const bNum = b?.episodeNumber ?? 0;
+                    return bNum - aNum;
+                  })
+                  .map((seriesSermon: any) =>
+                    seriesSermon?.id !== sermon.id ? (
+                      <TeachingListItem
+                        key={seriesSermon?.id}
+                        teaching={seriesSermon}
+                        handlePress={() =>
+                          navigation.push('SermonLandingScreen', {
+                            item: seriesSermon,
+                          })
+                        }
+                      />
+                    ) : null
+                  )}
+          </View>
+        </>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -699,65 +768,7 @@ export default function SermonLandingScreen({
           )}
         </View>
 
-        <View style={style.categorySection}>
-          {!sermonsInSeries && !videosInPlaylist ? (
-            <ActivityIndicator />
-          ) : videosInPlaylist?.length > 1 ||
-            (sermonsInSeries && sermonsInSeries?.length > 1) ? (
-            <>
-              <Text style={style.categoryTitle}>
-                {route?.params?.customPlaylist
-                  ? 'More from this playlist'
-                  : 'More from this Series'}
-              </Text>
-              <View style={style.listContentContainer}>
-                {route?.params?.customPlaylist
-                  ? videosInPlaylist
-                      ?.sort((a: any, b: any) => {
-                        return b.video.publishedDate.localeCompare(
-                          a.video.publishedDate
-                        );
-                      })
-                      .map((video: any) => {
-                        if (video.video.episodeTitle !== sermon.episodeTitle)
-                          return (
-                            <TeachingListItem
-                              key={video?.video?.id}
-                              teaching={video.video}
-                              handlePress={() =>
-                                navigation.push('SermonLandingScreen', {
-                                  customPlaylist: true,
-                                  seriesId: route?.params?.seriesId,
-                                  item: video.video,
-                                })
-                              }
-                            />
-                          );
-                        return null;
-                      })
-                  : sermonsInSeries
-                      ?.sort((a, b) => {
-                        const aNum = a?.episodeNumber ?? 0;
-                        const bNum = b?.episodeNumber ?? 0;
-                        return bNum - aNum;
-                      })
-                      .map((seriesSermon: any) =>
-                        seriesSermon?.id !== sermon.id ? (
-                          <TeachingListItem
-                            key={seriesSermon?.id}
-                            teaching={seriesSermon}
-                            handlePress={() =>
-                              navigation.push('SermonLandingScreen', {
-                                item: seriesSermon,
-                              })
-                            }
-                          />
-                        ) : null
-                      )}
-              </View>
-            </>
-          ) : null}
-        </View>
+        <View style={style.categorySection}>{renderMoreVideos()}</View>
       </Content>
       {share ? (
         <ShareModal
