@@ -198,7 +198,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   }, [locationId, locationName]);
 
   const sendQuestion = () => {
-    Linking.openURL('mailto:ask@themeetinghouse.com');
+    navigation.navigate('AskAQuestion');
   };
 
   useEffect(() => {
