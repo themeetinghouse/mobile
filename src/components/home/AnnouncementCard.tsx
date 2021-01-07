@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, Thumbnail } from 'native-base';
+import { Thumbnail } from 'native-base';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { StyleSheet, ImageBackground, View } from 'react-native';
+import { StyleSheet, ImageBackground, View, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Theme, { Style } from '../../Theme.style';
 import { Announcement } from '../../services/AnnouncementService';
@@ -27,8 +27,8 @@ const style = StyleSheet.create({
     paddingTop: 40,
     marginBottom: 16,
   },
-  title: { ...Style.title, ...{ marginBottom: 8 } },
-  body: Style.body,
+  title: { ...Style.title, marginBottom: 8, fontSize: 24, lineHeight: 32 },
+  body: { ...Style.body, fontSize: 16 },
   icon: {
     ...Style.icon,
     ...{
@@ -78,8 +78,8 @@ export default function AnnouncementCard({
             source={Theme.icons.white.announcement}
           />
           <Text style={style.title}>{announcement.title}</Text>
-          <Text style={style.body}>
-            {`${announcement.description.slice(0, 100).trim()}...`}
+          <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
+            {`${announcement.description}`}
           </Text>
         </TouchableWithoutFeedback>
       </ImageBackground>
@@ -88,9 +88,8 @@ export default function AnnouncementCard({
     <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
       <Thumbnail style={style.icon} source={Theme.icons.white.announcement} />
       <Text style={style.title}>{announcement?.title}</Text>
-      <Text style={style.body}>
-        {announcement?.description.slice(0, 100).trim()}{' '}
-        {announcement?.description?.length > 100 ? '...' : ''}
+      <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
+        {`${announcement.description}`}
       </Text>
     </TouchableWithoutFeedback>
   );
