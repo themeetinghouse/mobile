@@ -89,7 +89,7 @@ export default function AnnouncementCard({
       <Thumbnail style={style.icon} source={Theme.icons.white.announcement} />
       <Text style={style.title}>{announcement?.title}</Text>
       <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
-        {`${announcement.description}`}
+        {`${announcement?.description}`}
       </Text>
     </TouchableWithoutFeedback>
   );

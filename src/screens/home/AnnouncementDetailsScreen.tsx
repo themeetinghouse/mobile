@@ -95,9 +95,9 @@ export default function AnnouncementDetailScreen({
 
   const announcementItem: Announcement = route.params?.item;
   const parseUrl = () => {
-    if (announcementItem.callToAction) {
-      if (announcementItem.callToAction.includes('https://')) {
-        return announcementItem.callToAction;
+    if (announcementItem?.callToAction) {
+      if (announcementItem?.callToAction.includes('https://')) {
+        return announcementItem?.callToAction;
       }
       return `https://${announcementItem.callToAction}`;
     }
@@ -105,7 +105,7 @@ export default function AnnouncementDetailScreen({
   };
   return (
     <>
-      {announcementItem.image ? (
+      {announcementItem?.image ? (
         <>
           <Image
             style={{
@@ -114,7 +114,7 @@ export default function AnnouncementDetailScreen({
               height: 200,
               width: Dimensions.get('window').width,
             }}
-            source={{ uri: announcementItem.image }}
+            source={{ uri: announcementItem?.image }}
           />
           <LinearGradient
             colors={['rgba(0,0,0, 0.05)', 'rgba(0,0,0, 0.9)']}
@@ -129,14 +129,14 @@ export default function AnnouncementDetailScreen({
         </>
       ) : null}
       <Content style={style.content}>
-        <Text style={style.title}>{announcementItem.title}</Text>
-        <Text style={style.body}>{announcementItem.description}</Text>
-        {announcementItem.callToAction ? (
+        <Text style={style.title}>{announcementItem?.title}</Text>
+        <Text style={style.body}>{announcementItem?.description}</Text>
+        {announcementItem?.callToAction ? (
           <WhiteButton
             style={{ height: 56, marginBottom: 40, marginTop: 40 }}
             label="Call to Action"
             onPress={() => {
-              Linking.openURL(parseUrl() ?? '');
+              Linking.openURL(parseUrl());
             }}
           />
         ) : null}

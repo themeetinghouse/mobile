@@ -1,19 +1,12 @@
 import moment from 'moment';
-import { runGraphQLQuery } from './ApiService';
+import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import LocationService, { Location } from './LocationsService';
+import { ListAnnouncementsQuery } from './API';
 import { listAnnouncements } from './queries';
 
-export type Announcement = {
-  id?: string;
-  title: string;
-  description: string;
-  publishedDate: string;
-  expirationDate: string;
-  image?: string;
-  parish?: string;
-  crossRegional?: string;
-  callToAction?: string;
-};
+export type Announcement = NonNullable<
+  NonNullable<ListAnnouncementsQuery['listAnnouncements']>['items']
+>[0];
 
 export default class AnnouncementService {
   static loadAnnouncements = async (
@@ -32,23 +25,25 @@ export default class AnnouncementService {
     const today = moment()
       .utcOffset(moment().isDST() ? '-0400' : '-0500')
       .format('YYYY-MM-DD');
-    const queryResult = await runGraphQLQuery({
-      query: listAnnouncements,
-      variables: {
-        filter: {
-          publishedDate: { le: today },
-          expirationDate: { gt: today },
-          or: [
-            { parish: { eq: currentLocation ?? 'Cross-Regional' } },
-            { parish: { eq: 'Cross-Regional' } },
-          ],
-        },
+    const variables = {
+      filter: {
+        publishedDate: { le: today },
+        expirationDate: { gt: today },
+        or: [
+          { parish: { eq: currentLocation ?? 'Cross-Regional' } },
+          { parish: { eq: 'Cross-Regional' } },
+        ],
       },
-    });
-    const announcements = await queryResult?.listAnnouncements?.items?.sort(
-      (a: Announcement, b: Announcement) =>
-        b.publishedDate.localeCompare(a.publishedDate)
-    );
-    return announcements;
+    };
+    const json = (await API.graphql(
+      graphqlOperation(listAnnouncements, variables)
+    )) as GraphQLResult<ListAnnouncementsQuery>;
+    let announcements = json?.data?.listAnnouncements?.items;
+    if (announcements) {
+      announcements = announcements.sort((a, b) =>
+        b && a ? b.publishedDate.localeCompare(a.publishedDate) : 0
+      );
+    }
+    return announcements ?? [];
   };
 }
