@@ -111,13 +111,17 @@ export default function LocationSelectionScreen({
   );
   const [searchText, setSearchText] = useState('');
 
+  const { setUserData } = userContext;
+  const { persist } = route.params;
+  // eslint-disable-next-line camelcase
+  const emailVerified = userContext?.userData?.email_verified;
+
   useLayoutEffect(() => {
     async function updateUser(locationId: string | undefined) {
-      // eslint-disable-next-line camelcase
-      if (locationId && userContext?.userData?.email_verified) {
+      if (locationId && emailVerified) {
         try {
           const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-          userContext.setUserData({
+          setUserData({
             ...user.attributes,
             'custom:home_location': locationId,
           } as UserData);
@@ -134,8 +138,6 @@ export default function LocationSelectionScreen({
         } catch (e) {
           console.debug(e);
         }
-      } else {
-        console.debug('locationId is undefined');
       }
     }
 
@@ -157,8 +159,7 @@ export default function LocationSelectionScreen({
           <TouchableOpacity
             onPress={() => {
               location?.setLocationData(selectedLocation);
-              if (route.params.persist)
-                updateUser(selectedLocation?.locationId);
+              if (persist) updateUser(selectedLocation?.locationId);
               navigation.goBack();
             }}
           >
@@ -168,7 +169,14 @@ export default function LocationSelectionScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, []);
+  }, [
+    location,
+    navigation,
+    persist,
+    emailVerified,
+    selectedLocation,
+    setUserData,
+  ]);
 
   useEffect(() => {
     const loadLocations = () => {
