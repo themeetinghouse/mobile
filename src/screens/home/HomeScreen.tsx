@@ -22,6 +22,8 @@ import * as Linking from 'expo-linking';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
+import AnnouncementCard from "../../components/home/AnnouncementCard";
+import AnnouncementService, { Announcement } from "../../services/AnnouncementService";
 import EventCard from '../../components/home/EventCard';
 import RecentTeaching from '../../components/home/RecentTeaching';
 import EventsService from '../../services/EventsService';
@@ -89,6 +91,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [events, setEvents] = useState<any>([]);
@@ -170,6 +173,17 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       }
     };
     loadLiveStreams();
+
+    const loadAnnouncements = async () => {
+      const announcementsResult = await AnnouncementService.loadAnnouncements({
+        id: location?.locationData?.locationId,
+        name: location?.locationData?.locationName,
+      } as Location);
+      if (announcementsResult)
+        setAnnouncements(announcementsResult)
+
+    }
+    loadAnnouncements();
 
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(
@@ -305,7 +319,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
       ) : null}
 
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
-        <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
+        <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]}>
             <WhiteButton
@@ -315,6 +329,16 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
               onPress={sendQuestion}
             />
           </View>
+        </View>
+        <View style={style.categoryContainer}>
+          {announcements.length > 0 ? announcements.map((announcement: Announcement) => (
+            <AnnouncementCard
+              key={announcement.id}
+              announcement={announcement}
+              handlePress={() =>
+                navigation.push('AnnouncementDetailsScreen', { item: announcement as Announcement })
+              } />
+          )) : announcements.length === 0 ? null : <View><ActivityIndicator></ActivityIndicator></View>}
         </View>
         {locationId !== 'unknown' || locationName !== 'unknown' ? (
           <View style={style.categoryContainer}>
