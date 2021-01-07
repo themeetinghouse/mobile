@@ -133,7 +133,7 @@ export default function AnnouncementDetailScreen({
         <Text style={style.body}>{announcementItem.description}</Text>
         {announcementItem.callToAction ? (
           <WhiteButton
-            style={{ height: 56, marginBottom: 20, marginTop: 20 }}
+            style={{ height: 56, marginBottom: 40, marginTop: 40 }}
             label="Call to Action"
             onPress={() => {
               Linking.openURL(parseUrl() ?? '');
