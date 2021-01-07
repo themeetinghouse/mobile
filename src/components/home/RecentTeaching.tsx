@@ -116,14 +116,14 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
                 ...style.seriesImageWithTeachingImage,
               }}
               uri={seriesImageUri}
-              catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png"
+              catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
             />
           </View>
         ) : (
           <FallbackImage
             style={style.seriesImage}
             uri={seriesImageUri}
-            catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png"
+            catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
           />
         )}
         <View style={{ marginHorizontal: 16, alignItems: 'center' }}>
@@ -195,7 +195,7 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
         <FallbackImage
           style={style.seriesImage}
           uri={seriesImageUri}
-          catchUri="https://www.themeetinghouse.com/static/NoCompassionLogo.png"
+          catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
         />
         <View style={{ marginHorizontal: 16, alignItems: 'center' }}>
           <Text style={style.title}>{note.title}</Text>

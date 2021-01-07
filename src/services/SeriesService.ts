@@ -148,9 +148,9 @@ export default class SeriesService {
       )}.jpg`;
     } else {
       series.image =
-        'https://www.themeetinghouse.com/static/NoCompassionLogo.png';
+        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
       series.heroImage =
-        'https://www.themeetinghouse.com/static/NoCompassionLogo.png';
+        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
     }
   };
 
@@ -176,9 +176,9 @@ export default class SeriesService {
       )}.png`;
     } else {
       series.image =
-        'https://www.themeetinghouse.com/static/NoCompassionLogo.png';
+        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
       series.heroImage =
-        'https://www.themeetinghouse.com/static/NoCompassionLogo.png';
+        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
     }
   };
 }
