@@ -19,7 +19,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
 import { StyleSheet, AppState } from 'react-native';
 import * as Linking from 'expo-linking';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import EventCard from '../../components/home/EventCard';
@@ -84,9 +84,10 @@ interface Params {
     StackNavigationProp<HomeStackParamList>,
     StackNavigationProp<MainStackParamList>
   >;
+  route: RouteProp<HomeStackParamList, 'HomeScreen'>;
 }
 
-export default function HomeScreen({ navigation }: Params): JSX.Element {
+export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
@@ -297,7 +298,11 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     load();
   }, []);
-
+  useEffect(()=>{
+    console.log("Logging route")
+    console.log(route.params)
+    console.log("============================================")
+  })
   return (
     <Container>
       {preLive || live ? (
@@ -305,7 +310,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
         />
       ) : null}
-      <QuestionSuccessModal show={showQuestionModal} setShow={setShowQuestionModal}></QuestionSuccessModal>
+      {route.params?.questionResult ? <QuestionSuccessModal show={showQuestionModal} setShow={setShowQuestionModal}></QuestionSuccessModal> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching teaching={teaching} note={note} />

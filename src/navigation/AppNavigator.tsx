@@ -23,7 +23,7 @@ import TeacherList from '../screens/staff/TeacherList';
 import AskAQuestion from "../screens/home/AskAQuestion";
 export type MainStackParamList = {
   Main:
-   | undefined
+    any | undefined
     | {
         screen: keyof TabNavigatorParamList;
         params?: {

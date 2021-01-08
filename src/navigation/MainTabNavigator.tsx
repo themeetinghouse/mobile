@@ -27,7 +27,7 @@ import ParishTeam from '../screens/staff/ParishTeam';
 import TeacherProfile from '../screens/staff/TeacherProfile';
 
 export type HomeStackParamList = {
-  HomeScreen: undefined;
+  HomeScreen: any;
   EventDetailsScreen: { item: any };
   AnnouncementDetailsScreen: { item: any };
   LiveStreamScreen: undefined;
