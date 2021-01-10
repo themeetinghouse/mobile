@@ -4,11 +4,7 @@
     "description": "When’s the last time someone asked you what you believe? You know—about the big things in life. We’re a church that loves to ask questions, and loves people with questions. We don’t have all the answers, but exploring together is pretty much our favourite thing.",
     "slug": "tmh-mobile",
     "privacy": "public",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#000000"
@@ -25,20 +21,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "notification":{
-        "icon":"./assets/icons/icon.png",
-        "color":"#000000",
-        "iosDisplayInForeground":true,
-        "androidMode":"default"
-
+    "assetBundlePatterns": ["**/*"],
+    "notification": {
+      "icon": "./assets/icons/icon.png",
+      "color": "#000000",
+      "iosDisplayInForeground": true,
+      "androidMode": "default"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -48,15 +41,13 @@
         "applinks:localhost:3006?mode=developer"
       ],
       "infoPlist": {
-        "UIBackgroundModes": [
-          "audio"
-        ]
+        "UIBackgroundModes": ["audio"]
       }
     },
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20084,
+      "versionCode": 20085,
       "intentFilters": [
         {
           "action": "VIEW",
@@ -67,10 +58,7 @@
               "pathPrefix": "/videos"
             }
           ],
-          "category": [
-            "BROWSABLE",
-            "DEFAULT"
-          ]
+          "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
     }
