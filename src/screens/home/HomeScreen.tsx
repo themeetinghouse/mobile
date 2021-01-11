@@ -333,7 +333,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
         <View style={style.categoryContainer}>
           {announcements.length > 0 ? announcements.map((announcement: Announcement) => (
             <AnnouncementCard
-              key={announcement.id}
+              key={announcement?.id}
               announcement={announcement}
               handlePress={() =>
                 navigation.push('AnnouncementDetailsScreen', { item: announcement as Announcement })
