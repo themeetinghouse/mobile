@@ -186,7 +186,7 @@ export default function EventDetailsScreen({
   }, [navigation, share]);
 
   const directionsType = () => {
-    if (eventItem.place) {
+    if (eventItem?.place) {
       if (eventItem?.place?.location) {
         if (
           eventItem?.place?.location?.latitude &&
@@ -200,8 +200,8 @@ export default function EventDetailsScreen({
             eventItem.place?.name === 'Online'
           )
             return 'none';
-
-          if (eventItem.place?.name.contains('.com')) return 'name';
+          
+          if (eventItem?.place?.name && eventItem?.place?.name?.includes('.com')) return 'name';
         }
         return 'none';
       }
@@ -227,9 +227,9 @@ export default function EventDetailsScreen({
         const success = await Calendar.createEvent(eventItem, options);
         if (success?.start_time && Platform.OS === 'android')
           setAlerts({ message: success?.start_time });
-      } else if (eventItem.event_times) {
+      } else if (eventItem?.event_times) {
         // more than one event instance
-        if (eventItem.event_times.length === 1) {
+        if (eventItem?.event_times.length === 1) {
           const success = await Calendar.createEvent(
             eventItem,
             eventItem?.event_times[0]
@@ -241,11 +241,11 @@ export default function EventDetailsScreen({
             // always true at this point?
             const arr: string[] = ['Cancel'];
             for (let x = 0; x < eventItem.event_times.length; x++) {
-              if (eventItem.event_times[x].start_time > moment().format())
+              if (eventItem?.event_times[x]?.start_time ?? "" > moment().format())
                 arr.push(
-                  `${moment(eventItem.event_times[x].start_time).format(
+                  `${moment(eventItem?.event_times[x]?.start_time ?? "").format(
                     'MMM Do YYYY, h:mm a'
-                  )} - ${moment(eventItem.event_times[x].end_time).format(
+                  )} - ${moment(eventItem?.event_times[x]?.end_time).format(
                     'h:mm a'
                   )}`
                 );
@@ -257,8 +257,9 @@ export default function EventDetailsScreen({
                 else
                   Calendar.createEvent(
                     eventItem,
-                    eventItem.event_times[buttonIndex - 1]
+                    eventItem?.event_times?.[buttonIndex - 1]
                   ); // -1 to ignore cancel button
+                
               }
             );
           }
@@ -267,7 +268,7 @@ export default function EventDetailsScreen({
             cancelable: false,
           });
         }
-      } else if (eventItem.start_time && eventItem.end_time) {
+      } else if (eventItem?.start_time && eventItem?.end_time) {
         // only one event instance
         try {
           const success = await Calendar.createEvent(eventItem, {
@@ -290,11 +291,11 @@ export default function EventDetailsScreen({
     switch (openMethod) {
       case 'gps':
         openMap({
-          end: `${eventItem?.place.location.latitude}, ${eventItem?.place.location.longitude}`,
+          end: `${eventItem?.place?.location?.latitude}, ${eventItem?.place?.location?.longitude}`,
         });
         break;
       case 'name':
-        openMap({ end: eventItem.place.name });
+        openMap({ end: eventItem?.place?.name ?? "" });
         break;
       case 'none':
         break;
@@ -304,8 +305,8 @@ export default function EventDetailsScreen({
   };
   const parseDescription = (): string => {
     let linkAddress = '';
-    if (eventItem?.description.includes('https://')) {
-      linkAddress = eventItem?.description.match(/(https?:\/\/[^ ]*)/)[1];
+    if (eventItem?.description?.includes('https://')) {
+      linkAddress = eventItem?.description?.match(/(https?:\/\/[^ ]*)/)?.[1] ?? "";
     }
     return linkAddress;
   };
@@ -374,10 +375,10 @@ export default function EventDetailsScreen({
             }
           >
             <Text style={style.dateBoxText}>
-              {moment(eventItem.start_time).format('MMM')}
+              {moment(eventItem?.start_time).format('MMM')}
             </Text>
             <Text style={style.dateBoxNumber}>
-              {moment(eventItem.start_time).format('D')}
+              {moment(eventItem?.start_time).format('D')}
             </Text>
           </View>
         </View>
@@ -389,13 +390,13 @@ export default function EventDetailsScreen({
               : style.detailsContainer
           }
         >
-          <Text style={style.title}>{eventItem.name}</Text>
-          <Text style={style.body}>{eventItem.description}</Text>
+          <Text style={style.title}>{eventItem?.name}</Text>
+          <Text style={style.body}>{eventItem?.description}</Text>
 
-          {eventItem.event_times && eventItem.event_times.length !== 0 ? (
+          {eventItem?.event_times && eventItem?.event_times.length !== 0 ? (
             <>
               <Text style={style.subtitle}>Event Times</Text>
-              {eventItem.event_times.map((event: any) => {
+              {eventItem?.event_times.map((event: any) => {
                 if (event.start_time > moment().format())
                   return (
                     <Text key={event.start_time.format()} style={style.body}>
@@ -411,16 +412,16 @@ export default function EventDetailsScreen({
             <>
               <Text style={style.subtitle}>Date &amp; Time</Text>
               <Text style={style.body}>
-                {moment(eventItem.start_time).format('ddd, MMM D, YYYY')},{' '}
-                {moment(eventItem.start_time).format('h:mm a')}{' '}
-                {eventItem.end_time
-                  ? `- ${moment(eventItem.end_time).format('h:mm a')}`
+                {moment(eventItem?.start_time).format('ddd, MMM D, YYYY')},{' '}
+                {moment(eventItem?.start_time).format('h:mm a')}{' '}
+                {eventItem?.end_time
+                  ? `- ${moment(eventItem?.end_time).format('h:mm a')}`
                   : null}
               </Text>
             </>
           )}
-          {(eventItem.event_times && eventItem.event_times.length !== 0) ||
-          (eventItem.start_time && eventItem.end_time) ? (
+          {(eventItem?.event_times && eventItem?.event_times.length !== 0) ||
+          (eventItem?.start_time && eventItem?.end_time) ? (
             <IconButton
               onPress={() => {
                 addEventToCalendar();
@@ -430,8 +431,8 @@ export default function EventDetailsScreen({
               label="Add to calendar"
             />
           ) : null}
-          {eventItem.event_times &&
-          eventItem.event_times?.length > 1 &&
+          {eventItem?.event_times &&
+          eventItem?.event_times?.length > 1 &&
           Platform.OS === 'android' ? (
             <Picker
               mode="dropdown"
@@ -459,12 +460,12 @@ export default function EventDetailsScreen({
               })}
             </Picker>
           ) : null}
-          {eventItem.place ? (
+          {eventItem?.place ? (
             <>
               <Text style={style.subtitle}>Location</Text>
-              <Text style={style.body}>{eventItem.place?.name}</Text>
+              <Text style={style.body}>{eventItem?.place?.name}</Text>
               <Text style={style.body}>
-                {eventItem.place?.location?.street}
+                {eventItem?.place?.location?.street}
               </Text>
               {openMethod !== 'none' ? (
                 <IconButton
@@ -484,7 +485,7 @@ export default function EventDetailsScreen({
                 style={{ height: 56, marginBottom: 20, marginTop: 20 }}
                 label="Register"
                 onPress={() => {
-                  Linking.openURL(eventItem.event_times[0].ticket_uri);
+                  Linking.openURL(eventItem?.event_times?.[0]?.ticket_uri ?? "");
                 }}
               />
             ) : null}
@@ -505,7 +506,7 @@ export default function EventDetailsScreen({
         <ShareModal
           noBottomPadding
           closeCallback={() => setShare(false)}
-          link={`https://www.facebook.com/events/${eventItem.id}`}
+          link={`https://www.facebook.com/events/${eventItem?.id}`}
           message={
             eventItem !== null
               ? `Check out this event: \n${eventItem?.name}\n${eventItem?.place?.name}`

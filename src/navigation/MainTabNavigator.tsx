@@ -25,10 +25,11 @@ import LiveStreamScreen from '../screens/LiveStreamScreen';
 import StaffList from '../screens/staff/StaffList';
 import ParishTeam from '../screens/staff/ParishTeam';
 import TeacherProfile from '../screens/staff/TeacherProfile';
+import {EventQueryResult} from "../services/EventsService";
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
-  EventDetailsScreen: { item: any };
+  EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
   AnnouncementDetailsScreen: { item: any };
   LiveStreamScreen: undefined;
 };
