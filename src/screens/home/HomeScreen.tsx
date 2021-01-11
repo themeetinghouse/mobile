@@ -101,7 +101,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const [teaching, setTeaching] = useState<VideoData>(null);
   const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
   const user = useContext(UserContext);
-  const [showQuestionModal, setShowQuestionModal] = useState(true);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   const locationName = location?.locationData?.locationName;
   const locationId = location?.locationData?.locationId;
@@ -299,10 +299,11 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
     load();
   }, []);
   useEffect(()=>{
-    console.log("Logging route")
-    console.log(route.params)
-    console.log("============================================")
-  })
+      if(route.params?.questionResult){
+        setShowQuestionModal(route.params?.questionResult)
+        navigation.setParams({questionResult:false})
+      }
+  },[route.params?.questionResult, navigation])
   return (
     <Container>
       {preLive || live ? (
@@ -310,7 +311,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
         />
       ) : null}
-      {route.params?.questionResult ? <QuestionSuccessModal show={showQuestionModal} setShow={setShowQuestionModal}></QuestionSuccessModal> : null}
+      {showQuestionModal ? <QuestionSuccessModal setShow={setShowQuestionModal}></QuestionSuccessModal> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
           <RecentTeaching teaching={teaching} note={note} />

@@ -1,16 +1,17 @@
 /* eslint-disable camelcase */
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, useContext } from 'react';
 import { Container, Content, Thumbnail} from 'native-base';
-import { StyleSheet, TouchableOpacity, Text, View, TextInput} from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, TextInput, Alert} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import {askQuestion} from "../../graphql/queries";
 import WhiteButton from '../../components/buttons/WhiteButton';
 import { API, graphqlOperation } from 'aws-amplify';
+import UserContext, { TMHCognitoUser, UserData } from '../../contexts/UserContext';
 const style = StyleSheet.create({
     content: {
-        ...Style.cardContainer,       
+        ...Style.cardContainer,
         backgroundColor: Theme.colors.black
     },
     body: { 
@@ -53,6 +54,9 @@ interface Params {
 }
 
 export default function AskAQuestion({navigation}: Params): JSX.Element {
+  const userContext = useContext(UserContext);
+  const {userData} = userContext;
+  console.log(userData?.email)
     useLayoutEffect(() => {
         navigation.setOptions({
           headerShown: true,
@@ -77,12 +81,16 @@ export default function AskAQuestion({navigation}: Params): JSX.Element {
       }, [navigation]);
     const [question, setQuestion] = useState("");
      const submitQuestion = async () =>{
-        console.log("Question has been submitted")
-
-        const variables = {email:"useremailhere", body:question}
-        const data = await API.graphql(graphqlOperation(askQuestion, variables))
-        console.log(data)
-        navigation.navigate("Main", {screen:"HomeScreen", params:{ questionResult:"true"}});
+        if(userData?.email && userData?.email_verified){
+          const variables = {email:userData?.email, body:question}
+          const data = await API.graphql(graphqlOperation(askQuestion, variables))
+          console.log(data)
+          navigation.navigate("Main", {screen:"Home", params:{ screen:"HomeScreen", params:{questionResult:"true"}}});
+        }
+        else{
+          Alert.alert('You must be logged in to send a question.')
+          navigation.navigate("Main")
+        }
       } 
   return (
     <Container>

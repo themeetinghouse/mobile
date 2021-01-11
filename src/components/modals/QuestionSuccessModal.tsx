@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Thumbnail} from 'native-base';
+import React from 'react';
+import { View, Text } from 'native-base';
 import { Modal, Image} from 'react-native';
-import Theme, { Style } from '../../Theme.style';
+import Theme from '../../Theme.style';
 import WhiteButton from '../buttons/WhiteButton';
 
 interface Params {
-  show:boolean;
-  setShow:any;
+  setShow: (a:boolean) =>void;
 }
 
-export default function QuestionSuccessModal({show, setShow}:Params): JSX.Element {
+export default function QuestionSuccessModal({setShow}:Params): JSX.Element {
   return (
-    <Modal animationType="none" visible={show} transparent>
+    <Modal animationType="none" visible={true} transparent>
       <View style={{ flex: 1, justifyContent: 'center' }}>
         
         <View
@@ -48,7 +47,7 @@ export default function QuestionSuccessModal({show, setShow}:Params): JSX.Elemen
               marginBottom: 16,
             }}
           >
-            Thanks for entrusting us with your questions. We'll do our best to answer it this week!
+            Thanks for entrusting us with your questions. We&apos;ll do our best to answer it this week!
           </Text>
           <View style={{ height: 56, marginBottom: 16 }}>
             <WhiteButton
