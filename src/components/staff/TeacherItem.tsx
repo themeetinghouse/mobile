@@ -67,8 +67,8 @@ const style = StyleSheet.create({
   },
   Position: {
     marginTop: 2,
-    maxWidth: '70%',
-    minWidth: '70%',
+    maxWidth: '65%',
+    minWidth: '65%',
     color: 'white',
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: 12,
