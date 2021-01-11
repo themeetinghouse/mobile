@@ -49,7 +49,7 @@ function AllEvents({ navigation, route }: Props): JSX.Element {
               >
                 <Thumbnail
                   square
-                  source={Theme.icons.white.closeCancel}
+                  source={Theme.icons.white.back}
                   style={{ width: 24, height: 24 }}
                 />
               </TouchableOpacity>

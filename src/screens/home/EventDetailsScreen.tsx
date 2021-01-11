@@ -157,15 +157,6 @@ export default function EventDetailsScreen({
                   source={Theme.icons.white.back}
                   style={{ width: 24, height: 24 }}
                 />
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 16,
-                    transform: [{ translateX: -4 }],
-                  }}
-                >
-                  Home
-                </Text>
               </TouchableOpacity>
             </Left>
 
