@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
-import { Linking } from 'react-native';
+import * as Linking from 'expo-linking';
 import InstagramFeed from '../home/InstagramFeed';
 
 const instaData = {
