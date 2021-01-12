@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Clipboard, Share, Platform, Animated } from 'react-native';
+import { Share, Platform, Animated } from 'react-native';
+import Clipboard from 'expo-clipboard';
 import { Button, View, Text, Thumbnail } from 'native-base';
 import * as Linking from 'expo-linking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -77,6 +78,7 @@ export default function ShareModal({
       onHandlerStateChange={(e) => handleGestureEnd(e)}
     >
       <Animated.View
+        testID="test"
         style={{
           position: 'absolute',
           width: '100%',
@@ -138,6 +140,7 @@ export default function ShareModal({
         </Button>
         <View style={{ display: 'flex', flexDirection: 'row', marginTop: 16 }}>
           <Button
+            testID="twitter"
             style={{
               flexGrow: 1,
               height: 56,
@@ -158,6 +161,7 @@ export default function ShareModal({
             />
           </Button>
           <Button
+            testID="share"
             style={{
               flexGrow: 1,
               height: 56,
