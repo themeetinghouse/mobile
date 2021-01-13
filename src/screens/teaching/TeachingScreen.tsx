@@ -37,6 +37,7 @@ import {
 import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
 import { popularTeachingQuery } from '../../graphql/queries';
+import TeacherListPicture from '../../components/teaching/TeacherListPicture';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -173,15 +174,6 @@ const style = StyleSheet.create({
     borderColor: Theme.colors.gray3,
     backgroundColor: Theme.colors.gray3,
     borderWidth: 1,
-  },
-  teacherThumbnail: {
-    position: 'absolute',
-    top: -1,
-    left: -1,
-    width: 96,
-    height: 96,
-    borderRadius: 96,
-    overflow: 'hidden',
   },
   teacherDetail1: {
     fontFamily: Theme.fonts.fontFamilyRegular,
@@ -630,19 +622,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                             },
                           ]}
                         >
-                          <Image
-                            style={{ width: 30, height: 30 }}
-                            source={Theme.icons.white.user}
-                          />
-                          <Image
-                            style={[
-                              style.teacherThumbnail,
-                              index === speakers.items.length - 1
-                                ? style.lastHorizontalListItem
-                                : {},
-                            ]}
-                            source={{ uri: item.image }}
-                          />
+                          <TeacherListPicture item={item} />
                         </View>
                         <Text style={style.teacherDetail1}>{item.name}</Text>
                       </View>
