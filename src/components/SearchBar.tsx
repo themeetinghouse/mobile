@@ -42,7 +42,10 @@ export default function SearchBar({
         />
 
         {searchText ? (
-          <TouchableOpacity onPress={() => handleTextChanged('')}>
+          <TouchableOpacity
+            onPress={() => handleTextChanged('')}
+            testID="close-search"
+          >
             <Thumbnail
               accessibilityLabel="Close Search"
               style={localStyle.searchIcon}

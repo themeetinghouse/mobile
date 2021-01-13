@@ -16,7 +16,12 @@ export default function NeedsSignUpModal({ initState }: Params): JSX.Element {
   const [visible, setVisible] = useState(true);
 
   return (
-    <Modal animationType="none" visible={initState && visible} transparent>
+    <Modal
+      testID="modal"
+      animationType="none"
+      visible={initState && visible}
+      transparent
+    >
       <View style={{ flex: 1, justifyContent: 'center' }}>
         <View
           style={{
