@@ -136,12 +136,8 @@ function TeacherItem({ teacher }: Props): JSX.Element {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.push('Main', {
-          screen: 'More',
-          params: {
-            screen: 'TeacherProfile',
-            params: { staff: { idFromTeaching: teacher.id } },
-          },
+        navigation.push('TeacherProfile', {
+          staff: { idFromTeaching: teacher.id },
         });
       }}
     >

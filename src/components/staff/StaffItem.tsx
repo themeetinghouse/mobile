@@ -6,7 +6,7 @@ import * as Linking from 'expo-linking';
 import CachedImage from 'react-native-expo-cached-image';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { MoreStackParamList } from 'src/navigation/MainTabNavigator';
+import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
 
@@ -97,7 +97,7 @@ interface Props {
 }
 
 function StaffItem({ staff }: Props): JSX.Element {
-  const navigation = useNavigation<StackNavigationProp<MoreStackParamList>>();
+  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
   const [uri, setUri] = useState(staff.uri);
   const uriError = () => {
@@ -162,7 +162,7 @@ function StaffItem({ staff }: Props): JSX.Element {
         {staff.Teacher ? (
           <TouchableOpacity
             onPress={() => {
-              navigation.push('TeacherProfile', {
+              navigation.navigate('TeacherProfile', {
                 staff: { ...staff },
               });
             }}

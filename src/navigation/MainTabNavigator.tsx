@@ -22,9 +22,6 @@ import { Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
-import StaffList from '../screens/staff/StaffList';
-import ParishTeam from '../screens/staff/ParishTeam';
-import TeacherProfile from '../screens/staff/TeacherProfile';
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
@@ -86,11 +83,7 @@ function TeachingStack() {
 }
 
 export type MoreStackParamList = {
-  // LocationSelectionScreen: any, //this is wrong (?)
   MoreScreen: undefined;
-  StaffList: undefined;
-  ParishTeam: undefined;
-  TeacherProfile: { staff: any } | undefined;
 };
 
 const More = createStackNavigator<MoreStackParamList>();
@@ -99,9 +92,6 @@ function MoreStack() {
   return (
     <More.Navigator screenOptions={{ headerShown: false }}>
       <More.Screen name="MoreScreen" component={MoreScreen} />
-      <More.Screen name="StaffList" component={StaffList} />
-      <More.Screen name="TeacherProfile" component={TeacherProfile} />
-      <More.Screen name="ParishTeam" component={ParishTeam} />
     </More.Navigator>
   );
 }

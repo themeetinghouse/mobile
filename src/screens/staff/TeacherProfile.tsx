@@ -1,5 +1,5 @@
 import { Thumbnail } from 'native-base';
-import React, { useState, memo, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -91,10 +91,13 @@ const style = StyleSheet.create({
 
 interface Props {
   navigation: StackNavigationProp<MainStackParamList>;
-  route: RouteProp<MoreStackParamList, 'TeacherProfile'>;
+  route: RouteProp<MainStackParamList, 'TeacherProfile'>;
 }
 
-function TeacherProfile({ navigation, route }: Props): JSX.Element {
+export default function TeacherProfile({
+  navigation,
+  route,
+}: Props): JSX.Element {
   const [searchText, setSearchText] = useState('');
   const [teachings, setTeachings] = useState<any>({
     items: [],
@@ -359,5 +362,3 @@ function TeacherProfile({ navigation, route }: Props): JSX.Element {
     </View>
   );
 }
-
-export default memo(TeacherProfile);

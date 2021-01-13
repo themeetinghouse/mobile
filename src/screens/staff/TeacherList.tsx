@@ -3,13 +3,13 @@ import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { MainStackParamList } from 'src/navigation/AppNavigator';
 import TeacherItem from '../../components/staff/TeacherItem';
 import SpeakersService, {
   loadSpeakersListData,
 } from '../../services/SpeakersService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
-import { MoreStackParamList } from '../../navigation/MainTabNavigator';
 import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
@@ -26,7 +26,7 @@ const style = StyleSheet.create({
 });
 
 interface Params {
-  navigation: StackNavigationProp<MoreStackParamList>;
+  navigation: StackNavigationProp<MainStackParamList>;
 }
 
 export default function TeacherList({ navigation }: Params): JSX.Element {
