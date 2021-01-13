@@ -78,7 +78,6 @@ export default function ShareModal({
       onHandlerStateChange={(e) => handleGestureEnd(e)}
     >
       <Animated.View
-        testID="test"
         style={{
           position: 'absolute',
           width: '100%',
