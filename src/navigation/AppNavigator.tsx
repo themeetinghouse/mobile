@@ -9,6 +9,7 @@ import MainTabNavigator, {
 import AuthNavigator, { AuthStackParamList } from './AuthNavigator';
 
 import NotesScreen from '../screens/teaching/NotesScreen';
+import AllEvents from "../screens/home/AllEvents";
 import CommentScreen from '../screens/teaching/CommentScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import AccountScreen from '../screens/profile/AccountScreen';
@@ -21,6 +22,8 @@ import { CommentDataType } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import TeacherList from '../screens/staff/TeacherList';
 import AskAQuestion from "../screens/home/AskAQuestion";
+import {EventQueryResult} from "../services/EventsService";
+
 export type MainStackParamList = {
   Main:
     undefined
@@ -48,6 +51,7 @@ export type MainStackParamList = {
     customPlaylist?: boolean;
     seriesId?: string;
   };
+  AllEvents: {events:NonNullable<EventQueryResult>};
   LiveStreamScreen: undefined;
   StaffList: undefined;
   ParishTeam: undefined;
@@ -87,6 +91,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="NotesScreen" component={NotesScreen} />
       <Main.Screen name="ProfileScreen" component={ProfileScreen} />
       <Main.Screen name="AccountScreen" component={AccountScreen} />
+      <Main.Screen name="AllEvents" component={AllEvents}/>
       <Main.Screen
         name="ChangePasswordScreen"
         component={ChangePasswordScreen}

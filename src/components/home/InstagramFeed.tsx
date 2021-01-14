@@ -27,8 +27,7 @@ function InstagramImage({
 }): JSX.Element | null {
   const [validImage, setValidImage] = useState(true);
 
-  if (!validImage) return null;
-  if (image?.thumbnails)
+  if (validImage && image?.thumbnails) {
     return (
       <TouchableHighlight
         accessibilityRole="imagebutton"
@@ -44,6 +43,8 @@ function InstagramImage({
         />
       </TouchableHighlight>
     );
+  }
+
   return null;
 }
 

@@ -22,9 +22,11 @@ import * as Linking from 'expo-linking';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
+import AnnouncementCard from "../../components/home/AnnouncementCard";
+import AnnouncementService, { Announcement } from "../../services/AnnouncementService";
 import EventCard from '../../components/home/EventCard';
 import RecentTeaching from '../../components/home/RecentTeaching';
-import EventsService from '../../services/EventsService';
+import EventsService, {EventQueryResult} from '../../services/EventsService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import LocationContext from '../../contexts/LocationContext';
 import { Location } from '../../services/LocationsService';
@@ -91,9 +93,10 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [events, setEvents] = useState<any>([]);
+  const [events, setEvents] = useState<EventQueryResult>([]);
   const [images, setImages] = useState<InstagramData>([]);
   const [instaUsername, setInstaUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -173,6 +176,17 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       }
     };
     loadLiveStreams();
+
+    const loadAnnouncements = async () => {
+      const announcementsResult = await AnnouncementService.loadAnnouncements({
+        id: location?.locationData?.locationId,
+        name: location?.locationData?.locationName,
+      } as Location);
+      if (announcementsResult)
+        setAnnouncements(announcementsResult)
+
+    }
+    loadAnnouncements();
 
     const loadInstagramImages = async () => {
       const data = await InstagramService.getInstagramByLocation(
@@ -313,7 +327,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       ) : null}
       {showQuestionModal ? <QuestionSuccessModal setShow={setShowQuestionModal}></QuestionSuccessModal> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
-        <View style={[style.categoryContainer, { paddingBottom: 48 }]}>
+        <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]}>
             <WhiteButton
@@ -323,6 +337,16 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
               onPress={sendQuestion}
             />
           </View>
+        </View>
+        <View style={style.categoryContainer}>
+          {announcements.length > 0 ? announcements.map((announcement: Announcement) => (
+            <AnnouncementCard
+              key={announcement?.id}
+              announcement={announcement}
+              handlePress={() =>
+                navigation.push('AnnouncementDetailsScreen', { item: announcement as Announcement })
+              } />
+          )) : announcements.length === 0 ? null : <View><ActivityIndicator></ActivityIndicator></View>}
         </View>
         {locationId !== 'unknown' || locationName !== 'unknown' ? (
           <View style={style.categoryContainer}>
@@ -335,9 +359,10 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                 {events && events.length ? (
                   <>
                     <Text style={style.categoryTitle}>Upcoming Events</Text>
-                    {events.map((event: any) => (
-                      <EventCard
-                        key={event.id}
+                    {events.map((event, index: number) => {
+                      if(index < 3) 
+                       return <EventCard
+                        key={event?.id}
                         event={event}
                         handlePress={() =>
                           navigation.navigate('EventDetailsScreen', {
@@ -345,7 +370,16 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                           })
                         }
                       />
-                    ))}
+                      else return null;
+                      })}
+                    {events.length > 3 ?
+                    <AllButton
+                      handlePress={() => {
+                      navigation.navigate('AllEvents', {events:events});
+                      }}
+                    >
+                      See All Events
+                    </AllButton> : null}
                   </>
                 ) : (
                   <Text style={style.categoryTitle}>No Upcoming Events</Text>

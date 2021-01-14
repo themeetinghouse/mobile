@@ -10,7 +10,7 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -149,6 +149,18 @@ export default function MoreScreen(): JSX.Element {
         action: () =>
           Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
       },
+      {
+        id: 'betaTest',
+        text: 'Beta Test',
+        subtext: 'Help us improve this app',
+        icon: Theme.icons.white.volunteer,
+        action: () =>
+          Platform.OS === 'ios'
+            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
+            : Linking.openURL(
+                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+              ),
+      },
     ];
   else {
     items = [
@@ -189,6 +201,18 @@ export default function MoreScreen(): JSX.Element {
         icon: Theme.icons.white.homeChurch,
         action: () =>
           Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
+      },
+      {
+        id: 'betaTest',
+        text: 'Beta Test',
+        subtext: 'Help us improve this app',
+        icon: Theme.icons.white.volunteer,
+        action: () =>
+          Platform.OS === 'ios'
+            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
+            : Linking.openURL(
+                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+              ),
       },
     ];
   }
