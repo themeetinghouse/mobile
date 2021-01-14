@@ -22,10 +22,11 @@ import { Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
+import {EventQueryResult} from "../services/EventsService";
 
 export type HomeStackParamList = {
   HomeScreen: undefined;
-  EventDetailsScreen: { item: any };
+  EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
   AnnouncementDetailsScreen: { item: any };
   LiveStreamScreen: undefined;
 };

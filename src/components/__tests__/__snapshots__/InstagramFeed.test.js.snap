@@ -316,3 +316,92 @@ exports[`Instagram grid Each image should render, check snapshot 1`] = `
   </RNGestureHandlerButton>
 </View>
 `;
+
+exports[`Instagram grid Missing fields in data 1`] = `
+<View
+  style={
+    Object {
+      "display": "flex",
+      "flexDirection": "row",
+      "flexWrap": "wrap",
+    }
+  }
+>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="tap to view on Instagram"
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+  <RNGestureHandlerButton
+    collapsable={false}
+    onGestureEvent={[Function]}
+    onGestureHandlerEvent={[Function]}
+    onGestureHandlerStateChange={[Function]}
+    onHandlerStateChange={[Function]}
+    rippleColor={0}
+  >
+    <View
+      accessibilityRole="imagebutton"
+      accessible={true}
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "height": 375,
+          "justifyContent": "center",
+          "width": 375,
+        }
+      }
+    >
+      <Image
+        accessibilityLabel="tap to view on Instagram"
+        onError={[Function]}
+        source={
+          Object {
+            "uri": "https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=c1248d89dcba71de38ac3a7b18d0cfa3&oe=600D0BFB",
+          }
+        }
+        style={
+          Object {
+            "height": 330,
+            "width": 330,
+          }
+        }
+      />
+    </View>
+  </RNGestureHandlerButton>
+</View>
+`;

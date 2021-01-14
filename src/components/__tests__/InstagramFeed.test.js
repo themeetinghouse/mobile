@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, act } from '@testing-library/react-native';
-import { Linking } from 'react-native';
+import * as Linking from 'expo-linking';
 import InstagramFeed from '../home/InstagramFeed';
 
 const instaData = {
@@ -342,6 +342,96 @@ const instaData = {
   },
 };
 
+const instaDataMissingFields = {
+  data: {
+    getInstagramByLocation: {
+      items: [
+        {
+          id: 'CJGmwEvlVri',
+          locationId: 'themeetinghouse',
+          thumbnails: [
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s150x150/132051851_741777823429247_843297535879666640_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=v6U7hx-q_L0AX-7AZQt&tp=1&oh=7e82ab10ea2ecf3c91e1c552cc6b906c&oe=600CCF56',
+              config_width: 150,
+              config_height: 150,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s240x240/132051851_741777823429247_843297535879666640_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=v6U7hx-q_L0AX-7AZQt&tp=1&oh=ce799575810eaf3a69ae2852b8183664&oe=600CAC20',
+              config_width: 240,
+              config_height: 240,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s320x320/132051851_741777823429247_843297535879666640_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=v6U7hx-q_L0AX-7AZQt&tp=1&oh=06da3fcbea192303937f803b1e9e8cdc&oe=600B0726',
+              config_width: 320,
+              config_height: 320,
+            },
+            {
+              src: null,
+              config_width: 480,
+              config_height: 480,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s640x640/132051851_741777823429247_843297535879666640_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=111&_nc_ohc=v6U7hx-q_L0AX-7AZQt&tp=1&oh=cb6ed1ea81bc138d807db49fd67602a9&oe=600DB173',
+              config_width: 640,
+              config_height: 640,
+            },
+          ],
+          altText: null,
+          timestamp: 1608646924,
+          createdAt: '2020-12-22T22:01:14.547Z',
+          updatedAt: '2020-12-23T14:01:19.194Z',
+        },
+        {
+          id: 'CJFLHM0lHp4',
+          locationId: 'themeetinghouse',
+          thumbnails: [
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s150x150/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=db4c419e98c9bacdb898c8edc08a5db1&oe=600BD5C6',
+              config_width: 150,
+              config_height: 150,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s240x240/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=c2649588c30f0fdb6b0835569b6d36b0&oe=600CBA44',
+              config_width: 240,
+              config_height: 240,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s320x320/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=89d30ec7b624c0c8cf91b255e8ee5e1a&oe=600D28BE',
+              config_width: 320,
+              config_height: 320,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/e35/s480x480/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=c1248d89dcba71de38ac3a7b18d0cfa3&oe=600D0BFB',
+              config_width: 480,
+              config_height: 480,
+            },
+            {
+              src:
+                'https://scontent-yyz1-1.cdninstagram.com/v/t51.2885-15/sh0.08/e35/s640x640/131416756_861339737952168_3081219852457107335_n.jpg?_nc_ht=scontent-yyz1-1.cdninstagram.com&_nc_cat=100&_nc_ohc=qbisne7qvrgAX8y36aV&tp=1&oh=77ccbe5589033d70ef2c25ec8e2be63e&oe=600AF9C1',
+              config_width: 640,
+              config_height: 640,
+            },
+          ],
+          altText: null,
+          timestamp: 1608598907,
+          createdAt: '2020-12-22T14:01:16.541Z',
+          updatedAt: '2020-12-23T14:01:19.409Z',
+        },
+      ],
+      nextToken:
+        'eyJ2ZXJzaW9uIjoyLCJ0b2tlbiI6IkFRSUNBSGg5OUIvN3BjWU41eE96NDZJMW5GeGM4WUNGeG1acmFOMUpqajZLWkFDQ25BRW1Cd25VOVdES3NTZ1VsbEpTbUFabEFBQURTekNDQTBjR0NTcUdTSWIzRFFFSEJxQ0NBemd3Z2dNMEFnRUFNSUlETFFZSktvWklodmNOQVFjQk1CNEdDV0NHU0FGbEF3UUJMakFSQkF3VEtLdzNTVFBCc3Jza2lRSUNBUkNBZ2dMK3V1czFWT1lZY2YwSUQvVmE5cWlib2Z3eU5vYjJzUU1Kb3haektQVGh3Y0lLblFHSzVrUlNhL29iQTBsRFhodHZYU0tCQlZwc3VWVDl1SDRwVi9qdGlsckdkRFUyY0FSclA1NThsR2U5RktzK3JOWkoyKzRadzZyVjNaYTE2RGFkeGJiNVNhb1luZXgxN0NxTjRremFranJ5bVYwV2pKTzFOL3BLeVUyOERlMG1XTXMyVW1LUGJwcnNWc0NIVlNkN0NzUXZSSnltcG9SdDlUMk11dXhsY2Q2MEJXUlpzekozRm9ReERRMWpENnZIdU9WY0Zsc1pMQTRRZFA4YnNrekE2ak92LzA4Y1M0clFiSXJVRHhzK3pGYTY0SFFValRQb0h2dVdGUTNqSFYwdXlTVHEra1dKK2RCMlIwMlExY3ZIdkFoYytFeWxqbG5yaDFPeXluZlFXcDZCRHZSU2trTmNqVkpmdzNWY0RGdDNNNnpyMTY2K28xaEtaRDd4VGpqNk1RYU4wRWlncy9pSjNaeTFGclRmbXVJV21wUHhtQll3NTVnQWJFL1ZZVDRJbVJpZ0dnWkZ0cnpPay9nQk14TE8yWGllb01Jb0swdE9RZWZsNjFpeHk5QlZWOFBpa2V5RGxkaklNeThBYTdSZjZQaVFmckhwRmJSb01GN1hqR0tPZFFidWk5T1h1ZGZ0WFpHOHRqOGMrd0wzd1lmYUxVTDlsQjdmU3BCNmZKVlZ5ZzFJc3NwOVd1ME1EUlRrdlZhYVo3SjlRTjVWaVJiTXVOMDFjYXk1Nkg2NU9rWnMrNC92Unl5MkRJOGtmcU5NdWUxdkl2Z0MvaHVmKzJkakJyaFMxZXo2YW5MRGxmbjk2SzYxTFJBWEwvSGkvY3VHM2h5SE5KQy9CTW01Y01FbnRkd0NaSEIwWm5VbjhSUkpkZHh4S0ZXY1ZzT0dna1FMa1hMVytMTWR5YS90aEErUFkwSEJtbFVyL2UyVWJjZElkWHc4WUkwSm1uK2RxM25wTDhlS1dyTWcybnJxR3JKYTFuYzE5UnBuVnd5VEtxK1EzS3BrWjJXVDZ3a0VZa3FMWTl5NnM3T2R3VU1qeVJCYnRyS1ZhK21jVDdCUFFmbSsycWtXcHNxbGlJTk9pWW5oTllPc1RrZHpXK2FCUGRhWm4xbnZ1RGp1bzlaRjAxNlJXblgzZjlWUnRKSGdzWkdyVEtKRFJBbjREbFNkbXRremlZTzVtdFlkdFhzVUcrOUFvNjUwemY5N2Nzek02aU8xeUo2RmZ0MytOc1RxNVNTRzFyQWVLRmpPOEFWdTBSU2VhT2F1SzVocnVlMkNyNEZMMlNUYnpKMllROHZVa08xV1lBPT0ifQ==',
+    },
+  },
+};
+
 const dataLength = instaData.data.getInstagramByLocation.items.length;
 
 describe('Instagram grid', () => {
@@ -401,5 +491,37 @@ describe('Instagram grid', () => {
 
     // n-2 images render
     expect(queryAllByRole('imagebutton').length).toEqual(dataLength - 2);
+  });
+
+  test('Missing fields in data', () => {
+    const { toJSON, queryAllByRole } = render(
+      <InstagramFeed
+        images={instaDataMissingFields.data.getInstagramByLocation.items}
+      />
+    );
+
+    expect(
+      queryAllByRole('imagebutton')[0].props.children.props.accessibilityLabel
+    ).toBe('tap to view on Instagram');
+
+    expect(
+      queryAllByRole('imagebutton')[0].props.children.props.source
+    ).toStrictEqual({
+      uri: '',
+    });
+
+    expect(
+      queryAllByRole('imagebutton')[1].props.children.props.accessibilityLabel
+    ).toBe('tap to view on Instagram');
+
+    expect(
+      queryAllByRole('imagebutton')[1].props.children.props.source
+    ).toStrictEqual({
+      uri:
+        instaDataMissingFields.data.getInstagramByLocation.items[1]
+          .thumbnails[3].src,
+    });
+
+    expect(toJSON()).toMatchSnapshot();
   });
 });

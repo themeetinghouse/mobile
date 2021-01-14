@@ -431,10 +431,13 @@ export default function CommentScreen({
               </Text>
             )}
             <TextInput
+              accessibilityLabel="Comment Description"
               value={comment}
               onChange={(e) => setComment(e.nativeEvent.text)}
               keyboardAppearance="dark"
               placeholder="Write a comment"
+              autoCapitalize="sentences"
+              multiline
               placeholderTextColor={Theme.colors.grey4}
               style={style.input}
             />

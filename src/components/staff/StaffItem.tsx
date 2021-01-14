@@ -60,8 +60,8 @@ const style = StyleSheet.create({
   },
   Position: {
     marginTop: 2,
-    maxWidth: '70%',
-    minWidth: '70%',
+    maxWidth: '65%',
+    minWidth: '65%',
     color: 'white',
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: 12,
@@ -109,6 +109,7 @@ function StaffItem({ staff }: Props): JSX.Element {
       if (Platform.OS === 'android') {
         return (
           <CachedImage
+            testID="android-image"
             onLoadEnd={() => setIsLoading(false)}
             style={style.picture}
             onError={() => {
@@ -121,6 +122,7 @@ function StaffItem({ staff }: Props): JSX.Element {
       }
       return (
         <Image
+          testID="ios-image"
           onLoadEnd={() => setIsLoading(false)}
           style={style.picture}
           onError={() => {
@@ -134,7 +136,11 @@ function StaffItem({ staff }: Props): JSX.Element {
 
     return (
       <View style={style.fallbackPictureContainer}>
-        <Image style={style.fallBackPicture} source={Theme.icons.white.user} />
+        <Image
+          style={style.fallBackPicture}
+          source={Theme.icons.white.user}
+          testID="fallback-image"
+        />
       </View>
     );
   };
@@ -152,12 +158,14 @@ function StaffItem({ staff }: Props): JSX.Element {
       </View>
       <View style={{ flexDirection: 'column' }}>
         {staff.FirstName && staff.LastName ? (
-          <Text style={style.Name}>
+          <Text testID="staff-name" style={style.Name}>
             {staff.FirstName} {staff.LastName}
           </Text>
         ) : null}
         {staff.Position ? (
-          <Text style={style.Position}>{staff.Position}</Text>
+          <Text testID="staff-position" style={style.Position}>
+            {staff.Position}
+          </Text>
         ) : null}
         {staff.Teacher ? (
           <TouchableOpacity
@@ -175,6 +183,7 @@ function StaffItem({ staff }: Props): JSX.Element {
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
           {staff.Phone ? (
             <TouchableOpacity
+              testID="tel-btn"
               onPress={() => Linking.openURL(`tel:${staff.Phone}`)}
               style={style.iconContainer}
             >
@@ -187,6 +196,7 @@ function StaffItem({ staff }: Props): JSX.Element {
           ) : null}
           {staff.Email ? (
             <TouchableOpacity
+              testID="email-btn"
               onPress={() => Linking.openURL(`mailto:${staff.Email}`)}
               style={style.iconContainer}
             >
