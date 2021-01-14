@@ -469,14 +469,12 @@ export default function EventDetailsScreen({
             </>
           ) : null}
           <View>
-            {eventItem?.event_times &&
-            eventItem?.event_times.length > 0 &&
-            eventItem?.event_times[0]?.ticket_uri ? (
+          {eventItem?.ticket_uri || eventItem?.event_times?.[0]?.ticket_uri ? (
               <WhiteButton
                 style={{ height: 56, marginBottom: 20, marginTop: 20 }}
                 label="Register"
                 onPress={() => {
-                  Linking.openURL(eventItem?.event_times?.[0]?.ticket_uri ?? "");
+                  Linking.openURL(eventItem.ticket_uri ?? eventItem?.event_times?.[0]?.ticket_uri ?? "");
                 }}
               />
             ) : null}
