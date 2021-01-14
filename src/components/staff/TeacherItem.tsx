@@ -143,7 +143,7 @@ function TeacherItem({ teacher }: Props): JSX.Element {
     <TouchableOpacity
       testID="go-to-teacher"
       onPress={() => {
-        navigation.push('TeacherProfile', {
+        navigation.navigate('TeacherProfile', {
           staff: { idFromTeaching: teacher.id },
         });
       }}
