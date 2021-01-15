@@ -224,6 +224,7 @@ export const getFbEvents = `
           offset_y
           source
         }
+        ticket_uri
         online_event_format
         online_event_third_party_url
         place {
