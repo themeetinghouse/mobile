@@ -19,7 +19,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
 import { StyleSheet, AppState } from 'react-native';
 import * as Linking from 'expo-linking';
-import { CompositeNavigationProp } from '@react-navigation/native';
+import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AnnouncementCard from "../../components/home/AnnouncementCard";
@@ -40,6 +40,7 @@ import LiveEventService from '../../services/LiveEventService';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import Header from '../../components/Header';
+import QuestionSuccessModal from "../../components/modals/QuestionSuccessModal";
 import {
   GetNotesQuery,
   GetVideoByVideoTypeQueryVariables,
@@ -85,9 +86,10 @@ interface Params {
     StackNavigationProp<HomeStackParamList>,
     StackNavigationProp<MainStackParamList>
   >;
+  route: RouteProp<HomeStackParamList, 'HomeScreen'>;
 }
 
-export default function HomeScreen({ navigation }: Params): JSX.Element {
+export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
@@ -102,6 +104,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
   const [teaching, setTeaching] = useState<VideoData>(null);
   const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
   const user = useContext(UserContext);
+  const [showQuestionModal, setShowQuestionModal] = useState(false);
 
   const locationName = location?.locationData?.locationName;
   const locationId = location?.locationData?.locationId;
@@ -210,9 +213,9 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     if (locationId !== 'unknown' || locationName !== 'unknown') loadEvents();
   }, [locationId, locationName]);
-
+  
   const sendQuestion = () => {
-    Linking.openURL('mailto:ask@themeetinghouse.com');
+    navigation.navigate('AskAQuestion')
   };
 
   useEffect(() => {
@@ -309,7 +312,12 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
     };
     load();
   }, []);
-
+  useEffect(()=>{
+      if(route.params?.questionResult){
+        setShowQuestionModal(route.params?.questionResult)
+        navigation.setParams({questionResult:false})
+      }
+  },[route.params?.questionResult, navigation])
   return (
     <Container>
       {preLive || live ? (
@@ -317,7 +325,7 @@ export default function HomeScreen({ navigation }: Params): JSX.Element {
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
         />
       ) : null}
-
+      {showQuestionModal ? <QuestionSuccessModal setShow={setShowQuestionModal}></QuestionSuccessModal> : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />

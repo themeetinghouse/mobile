@@ -25,7 +25,7 @@ import LiveStreamScreen from '../screens/LiveStreamScreen';
 import {EventQueryResult} from "../services/EventsService";
 
 export type HomeStackParamList = {
-  HomeScreen: undefined;
+  HomeScreen: {questionResult?:boolean};
   EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
   AnnouncementDetailsScreen: { item: any };
   LiveStreamScreen: undefined;
