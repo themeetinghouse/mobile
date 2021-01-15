@@ -21,6 +21,9 @@ import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
 import { CommentDataType } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import TeacherList from '../screens/staff/TeacherList';
+import StaffList from '../screens/staff/StaffList';
+import ParishTeam from '../screens/staff/ParishTeam';
+import TeacherProfile from '../screens/staff/TeacherProfile';
 import AskAQuestion from "../screens/home/AskAQuestion";
 import {EventQueryResult} from "../services/EventsService";
 
@@ -37,6 +40,9 @@ export type MainStackParamList = {
           params: any;
         };
       };
+  TeacherProfile: { staff: any } | undefined;
+  StaffList: undefined;
+  ParishTeam: undefined;
   Auth: undefined | { screen: keyof AuthStackParamList };
   AskAQuestion: any;
   NotesScreen: { date: string };
@@ -53,8 +59,6 @@ export type MainStackParamList = {
   };
   AllEvents: {events:NonNullable<EventQueryResult>};
   LiveStreamScreen: undefined;
-  StaffList: undefined;
-  ParishTeam: undefined;
   TeacherList: undefined;
   CommentScreen:
     | {
@@ -106,6 +110,9 @@ export default function NavigationRoot(): JSX.Element {
         component={DateRangeSelectScreen}
       />
       <Main.Screen name="SermonLandingScreen" component={SermonLandingScreen} />
+      <Main.Screen name="TeacherProfile" component={TeacherProfile} />
+      <Main.Screen name="StaffList" component={StaffList} />
+      <Main.Screen name="ParishTeam" component={ParishTeam} />
       <Main.Screen name="CommentScreen" component={CommentScreen} />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />

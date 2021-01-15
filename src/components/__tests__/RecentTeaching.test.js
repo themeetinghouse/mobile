@@ -408,11 +408,10 @@ describe('Recent Teaching component on Home Screen', () => {
 
     fireEvent.press(goToTeachingBtn);
     expect(mockNavigate).toBeCalledTimes(2);
+    mockNavigate.mockClear();
 
     fireEvent.press(goToTeacherBtn);
-    expect(mockPush).toBeCalledTimes(1);
-
-    mockPush.mockClear();
+    expect(mockNavigate).toBeCalledTimes(1);
 
     fireEvent.press(goToNotesBtn);
     expect(mockPush).toBeCalledTimes(1);

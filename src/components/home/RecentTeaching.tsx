@@ -137,16 +137,9 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
               testID="go-to-teacher"
               style={style.subtitle}
               onPress={() =>
-                navigation.push('Main', {
-                  screen: 'More',
-                  params: {
-                    screen: 'TeacherProfile',
-                    params: {
-                      staff: {
-                        idFromTeaching:
-                          teaching?.speakers?.items?.[0]?.speaker?.id,
-                      },
-                    },
+                navigation.navigate('TeacherProfile', {
+                  staff: {
+                    idFromTeaching: teaching?.speakers?.items?.[0]?.speaker?.id,
                   },
                 })
               }

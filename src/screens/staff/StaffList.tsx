@@ -3,11 +3,11 @@ import { FlatList, StyleSheet, View, Text } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { MainStackParamList } from 'src/navigation/AppNavigator';
 import StaffItem from '../../components/staff/StaffItem';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
-import { MoreStackParamList } from '../../navigation/MainTabNavigator';
 import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
@@ -24,7 +24,7 @@ const style = StyleSheet.create({
 });
 
 interface Params {
-  navigation: StackNavigationProp<MoreStackParamList>;
+  navigation: StackNavigationProp<MainStackParamList>;
 }
 export type Staff = {
   FirstName: string;

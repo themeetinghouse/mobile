@@ -60,19 +60,19 @@ const teacherMissingData = {
   image: '',
 };
 
-const mockPush = jest.fn();
+const mockNavigate = jest.fn();
 
 jest.mock('@react-navigation/native', () => {
   return {
     ...jest.requireActual('@react-navigation/native'),
     useNavigation: () => ({
-      push: mockPush,
+      navigate: mockNavigate,
     }),
   };
 });
 
 beforeEach(() => {
-  mockPush.mockReset();
+  mockNavigate.mockReset();
 });
 
 describe('staff item', () => {
@@ -141,7 +141,7 @@ describe('staff item', () => {
 
     fireEvent.press(button);
 
-    expect(mockPush).toHaveBeenCalledWith('TeacherProfile', {
+    expect(mockNavigate).toHaveBeenCalledWith('TeacherProfile', {
       staff: staffIsTeacher,
     });
   });
@@ -270,13 +270,9 @@ describe('teacher item', () => {
     const touchable = queryByTestId('go-to-teacher');
     fireEvent.press(touchable);
 
-    expect(mockPush).toHaveBeenCalledTimes(1);
-    expect(mockPush).toHaveBeenCalledWith('Main', {
-      screen: 'More',
-      params: {
-        screen: 'TeacherProfile',
-        params: { staff: { idFromTeaching: teacher.id } },
-      },
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
+    expect(mockNavigate).toHaveBeenCalledWith('TeacherProfile', {
+      staff: { idFromTeaching: teacher.id },
     });
   });
 });

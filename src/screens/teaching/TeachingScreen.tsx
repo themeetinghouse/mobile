@@ -597,17 +597,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   !item.hidden ? (
                     <TouchableOpacity
                       onPress={() =>
-                        navigation.push('Main', {
-                          screen: 'More',
-                          params: {
-                            screen: 'TeacherProfile',
-                            params: {
-                              staff: {
-                                ...item,
-                                uri: item.image,
-                                idFromTeaching: item.name,
-                              },
-                            },
+                        navigation.navigate('TeacherProfile', {
+                          staff: {
+                            ...item,
+                            uri: item.image,
+                            idFromTeaching: item.name,
                           },
                         })
                       }
