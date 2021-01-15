@@ -21,10 +21,12 @@ import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
 import { CommentDataType } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import TeacherList from '../screens/staff/TeacherList';
+import AskAQuestion from "../screens/home/AskAQuestion";
 import {EventQueryResult} from "../services/EventsService";
+
 export type MainStackParamList = {
   Main:
-    | undefined
+    undefined
     | {
         screen: keyof TabNavigatorParamList;
         params?: {
@@ -36,6 +38,7 @@ export type MainStackParamList = {
         };
       };
   Auth: undefined | { screen: keyof AuthStackParamList };
+  AskAQuestion: any;
   NotesScreen: { date: string };
   ProfileScreen: undefined;
   AccountScreen: undefined;
@@ -84,6 +87,7 @@ export default function NavigationRoot(): JSX.Element {
     >
       <Main.Screen name="Main" component={MainTabNavigator} />
       <Main.Screen name="Auth" component={AuthNavigator} />
+      <Main.Screen name="AskAQuestion" component={AskAQuestion} />
       <Main.Screen name="NotesScreen" component={NotesScreen} />
       <Main.Screen name="ProfileScreen" component={ProfileScreen} />
       <Main.Screen name="AccountScreen" component={AccountScreen} />
