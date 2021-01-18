@@ -9,6 +9,7 @@ import {
   listCustomPlaylists,
   getCustomPlaylist,
   getSeriesBySeriesType,
+  getVideoByVideoType,
   getSeries,
 } from './queries';
 
@@ -48,6 +49,30 @@ interface SeriesDataWithHeroImage extends SeriesData {
 }
 
 export default class SeriesService {
+  static loadHighlightsList = async (
+    count: number,
+    seriesTitle:string,
+    nextToken?: string,
+    
+  ): Promise<any> => {
+    const query = {
+      query: getVideoByVideoType,
+      variables: {
+        sortDirection: 'DESC',
+        limit: count,
+        filter:{seriesTitle:{eq:seriesTitle}},
+        videoTypes: 'adult-sunday-shortcut',
+        publishedDate: { lt: 'a' },
+        nextToken,
+      },
+    };
+    const queryResult = await runGraphQLQuery(query);
+    return {
+      items: queryResult.getVideoByVideoType.items.filter((a:any,index:number) =>  a.seriesTitle === seriesTitle),
+      nextToken: queryResult.getVideoByVideoType.nextToken,
+    };
+  };
+
   static loadCustomPlaylists = async (
     limit: number,
     nextToken?: string

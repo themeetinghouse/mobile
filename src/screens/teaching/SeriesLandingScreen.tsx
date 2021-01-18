@@ -12,6 +12,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
+  FlatList, Image
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';
@@ -78,7 +79,37 @@ const style = StyleSheet.create({
     height:
       (isTablet ? 1024 / 1280 : 1061 / 848) * Dimensions.get('screen').width,
   },
-
+  highlightsText: {
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    fontSize: Theme.fonts.medium,
+    color: Theme.colors.gray5,
+    marginLeft: 16,
+    marginTop: -10,
+  },
+  categoryTitle: {
+    ...Style.categoryTitle,
+    ...{
+      marginTop: 16,
+    },
+  },
+  categorySection: {
+    backgroundColor: Theme.colors.black,
+    paddingTop: 16,
+    marginBottom: 16,
+  },
+  lastHorizontalListItem: {
+    marginRight: 16,
+  },
+  highlightsThumbnail: {
+    width: 80 * (16 / 9),
+    height: 80,
+    marginLeft: 16,
+  },
+  horizontalListContentContainer: {
+    marginTop: 16,
+    alignItems: 'center',
+    marginBottom: 24,
+  },
   detailsTitle: {
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilyBold,
@@ -146,9 +177,18 @@ export default function SeriesLandingScreen({
   const [videos, setVideos] = useState<VideoData>();
 
   const [share, setShare] = useState(false);
-
+  const [seriesHighlights, setSeriesHighlights] = useState({
+    loading: true,
+    items: [],
+    nextToken: undefined,
+  });
   const { colors } = useTheme();
-
+  const loadHighlights = async () =>{
+    if(series?.title){
+      const highlightsResult = await SeriesService.loadHighlightsList(200,series?.title, seriesHighlights.nextToken);
+      setSeriesHighlights(highlightsResult);
+    }
+  }
   const yOffset = useRef(new Animated.Value(0)).current;
   const headerOpacity = yOffset.interpolate({
     inputRange: [0, 75],
@@ -253,6 +293,7 @@ export default function SeriesLandingScreen({
       }
     };
     loadSermonsInSeriesAsync();
+    loadHighlights();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customPlaylist, seriesId]);
 
@@ -261,7 +302,12 @@ export default function SeriesLandingScreen({
       setContentFills(true);
     }
   }
+  const getTeachingImage = (teaching: any) => {
+    const { thumbnails } = teaching?.Youtube?.snippet;
 
+    if (thumbnails?.standard) return thumbnails?.standard?.url;
+    return thumbnails?.maxres?.url;
+  };
   return (
     <>
       <Animated.ScrollView
@@ -370,6 +416,38 @@ export default function SeriesLandingScreen({
             </View>
           </View>
         ) : null}
+        {seriesHighlights.items.length > 0 ? 
+        <View style={[style.categorySection, {marginBottom:56}]}>
+          <Text style={style.categoryTitle}>Highlights</Text>
+          <Text style={style.highlightsText}>Short snippets of teaching</Text>
+          <FlatList
+            contentContainerStyle={style.horizontalListContentContainer}
+            getItemLayout={(data, index) => {
+              return {
+                length: 80 * (16 / 9),
+                offset: 80 * (16 / 9) + 16,
+                index,
+              };
+            }}
+            horizontal
+            data={seriesHighlights.items}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.push('HighlightScreen', {
+                    highlights: seriesHighlights.items.slice(index),
+                    nextToken: seriesHighlights.nextToken,
+                  })
+                }
+              >
+                <Image
+                  style={style.highlightsThumbnail}
+                  source={{ uri: getTeachingImage(item) }}
+                />
+              </TouchableOpacity>
+            )}
+          />
+        </View> : null}
       </Animated.ScrollView>
       {share ? (
         <ShareModal
