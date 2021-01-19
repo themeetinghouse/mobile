@@ -194,7 +194,7 @@ export default function HighlightPlayer({
           <FlatList
             horizontal
             data={allHighlights}
-            initialScrollIndex={1}
+            initialScrollIndex={0}
             getItemLayout={(data, index) => {
               return {
                 length: 80 * (16 / 9),

@@ -3,6 +3,7 @@ import { runGraphQLQuery } from './ApiService';
 import {
   GetSeriesBySeriesTypeQuery,
   GetSeriesQuery,
+  GetVideoByVideoTypeQuery,
   ListCustomPlaylistsQuery,
 } from './API';
 import {
@@ -55,21 +56,18 @@ export default class SeriesService {
     nextToken?: string,
     
   ): Promise<any> => {
-    const query = {
-      query: getVideoByVideoType,
-      variables: {
+    const variables= {
         sortDirection: 'DESC',
         limit: count,
         filter:{seriesTitle:{eq:seriesTitle}},
         videoTypes: 'adult-sunday-shortcut',
         publishedDate: { lt: 'a' },
         nextToken,
-      },
-    };
-    const queryResult = await runGraphQLQuery(query);
+    }
+    const queryResult = (await API.graphql(graphqlOperation(getVideoByVideoType, variables))) as GraphQLResult<GetVideoByVideoTypeQuery>
     return {
-      items: queryResult.getVideoByVideoType.items.filter((a:any,index:number) =>  a.seriesTitle === seriesTitle),
-      nextToken: queryResult.getVideoByVideoType.nextToken,
+      items: queryResult?.data?.getVideoByVideoType?.items?.filter((a) =>  a?.seriesTitle === seriesTitle),
+      nextToken: queryResult?.data?.getVideoByVideoType?.nextToken,
     };
   };
 

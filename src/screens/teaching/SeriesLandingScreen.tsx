@@ -436,7 +436,7 @@ export default function SeriesLandingScreen({
               renderItem={({ item, index }) => (
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.push('HighlightScreen', {
+                    navigation.navigate('HighlightScreen', {
                       highlights: seriesHighlights.items.slice(index),
                       nextToken: seriesHighlights.nextToken,
                     })
