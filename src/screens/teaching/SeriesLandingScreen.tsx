@@ -12,7 +12,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  FlatList, Image
+  FlatList,
+  Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';
@@ -183,12 +184,16 @@ export default function SeriesLandingScreen({
     nextToken: undefined,
   });
   const { colors } = useTheme();
-  const loadHighlights = async () =>{
-    if(series?.title){
-      const highlightsResult = await SeriesService.loadHighlightsList(200,series?.title, seriesHighlights.nextToken);
+  const loadHighlights = async () => {
+    if (series?.title) {
+      const highlightsResult = await SeriesService.loadHighlightsList(
+        200,
+        series?.title,
+        seriesHighlights.nextToken
+      );
       setSeriesHighlights(highlightsResult);
     }
-  }
+  };
   const yOffset = useRef(new Animated.Value(0)).current;
   const headerOpacity = yOffset.interpolate({
     inputRange: [0, 75],
@@ -327,10 +332,7 @@ export default function SeriesLandingScreen({
         scrollEventThrottle={16}
       >
         {series ? (
-          <View
-            style={{ paddingBottom: 48 }}
-            onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}
-          >
+          <View onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}>
             <FallbackImageBackground
               style={style.seriesImage}
               uri={isTablet ? series.heroImage : series.image640px}
@@ -416,38 +418,39 @@ export default function SeriesLandingScreen({
             </View>
           </View>
         ) : null}
-        {seriesHighlights.items.length > 0 ? 
-        <View style={[style.categorySection, {marginBottom:56}]}>
-          <Text style={style.categoryTitle}>Highlights</Text>
-          <Text style={style.highlightsText}>Short snippets of teaching</Text>
-          <FlatList
-            contentContainerStyle={style.horizontalListContentContainer}
-            getItemLayout={(data, index) => {
-              return {
-                length: 80 * (16 / 9),
-                offset: 80 * (16 / 9) + 16,
-                index,
-              };
-            }}
-            horizontal
-            data={seriesHighlights.items}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.push('HighlightScreen', {
-                    highlights: seriesHighlights.items.slice(index),
-                    nextToken: seriesHighlights.nextToken,
-                  })
-                }
-              >
-                <Image
-                  style={style.highlightsThumbnail}
-                  source={{ uri: getTeachingImage(item) }}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        </View> : null}
+        {seriesHighlights.items.length > 0 ? (
+          <View style={[style.categorySection, { marginBottom: 32 }]}>
+            <Text style={style.categoryTitle}>Highlights</Text>
+            <Text style={style.highlightsText}>Short snippets of teaching</Text>
+            <FlatList
+              contentContainerStyle={style.horizontalListContentContainer}
+              getItemLayout={(data, index) => {
+                return {
+                  length: 80 * (16 / 9),
+                  offset: 80 * (16 / 9) + 16,
+                  index,
+                };
+              }}
+              horizontal
+              data={seriesHighlights.items}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.push('HighlightScreen', {
+                      highlights: seriesHighlights.items.slice(index),
+                      nextToken: seriesHighlights.nextToken,
+                    })
+                  }
+                >
+                  <Image
+                    style={style.highlightsThumbnail}
+                    source={{ uri: getTeachingImage(item) }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        ) : null}
       </Animated.ScrollView>
       {share ? (
         <ShareModal
