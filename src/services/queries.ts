@@ -15,6 +15,7 @@ export const listAnnouncements = /* GraphQL */ `
         title
         description
         callToAction
+        callToActionTitle
         createdAt
         updatedAt
       }
