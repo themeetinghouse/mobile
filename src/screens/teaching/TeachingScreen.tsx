@@ -493,7 +493,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() =>
-                  navigation.navigate('HighlightScreen', {
+                  navigation.push('HighlightScreen', {
                     highlights: highlights.items.slice(index),
                     nextToken: highlights.nextToken,
                   })

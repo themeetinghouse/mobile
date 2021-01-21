@@ -84,13 +84,6 @@ export default function HighlightPlayer({
   const [duration, setDuration] = useState(1);
   const [nextToken, setNextToken] = useState(route.params.nextToken);
 
-  const getMoreHighlights = async () => {
-    const data = await SermonsService.loadHighlightsList(20, nextToken);
-    setAllHighlights((prev) => {
-      return prev.concat(data.items);
-    });
-    setNextToken(data.nextToken ?? undefined);
-  };
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
@@ -200,7 +193,7 @@ export default function HighlightPlayer({
           <FlatList
             horizontal
             data={allHighlights}
-            initialScrollIndex={0}
+            initialScrollIndex={allHighlights?.length === 1 ? 0 : 1}
             getItemLayout={(data, index) => {
               return {
                 length: 80 * (16 / 9),
