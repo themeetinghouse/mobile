@@ -511,7 +511,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               </TouchableOpacity>
             )}
             onEndReached={loadHighlights}
-            onEndReachedThreshold={0.8}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={() => <ActivityIndicator />}
           />
         </View>

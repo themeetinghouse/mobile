@@ -91,18 +91,25 @@ export default function HighlightPlayer({
     });
     setNextToken(data.nextToken ?? undefined);
   };
-
   useEffect(() => {
     const interval = setInterval(async () => {
-      const data = await playerRef.current?.getCurrentTime();
-      if (data) setElapsed(data);
+      try {
+        const data = await playerRef.current?.getCurrentTime();
+        if (data) setElapsed(data);
+      } catch (error) {
+        console.log(error);
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   const getDuration = async () => {
-    const data = await playerRef.current?.getDuration();
-    if (data) setDuration(data);
+    try {
+      const data = await playerRef.current?.getDuration();
+      if (data) setDuration(data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   function handleStateChange(event: string) {
@@ -168,7 +175,6 @@ export default function HighlightPlayer({
             ref={playerRef}
             onReady={getDuration}
             onChangeState={(e) => handleStateChange(e as string)}
-            forceAndroidAutoplay
             height={(9 / 16) * screenWidth}
             width={screenWidth}
             videoId={highlight.id}
@@ -216,9 +222,6 @@ export default function HighlightPlayer({
                 />
               </TouchableOpacity>
             )}
-            onEndReached={getMoreHighlights}
-            onEndReachedThreshold={0.8}
-            ListFooterComponent={() => <ActivityIndicator />}
           />
         </View>
       </Container>
