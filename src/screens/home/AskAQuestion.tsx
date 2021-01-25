@@ -58,7 +58,6 @@ const style = StyleSheet.create({
     fontSize: 16,
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 0,
   },
 });
 
