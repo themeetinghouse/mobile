@@ -8,6 +8,7 @@ import {
   View,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { API, graphqlOperation } from 'aws-amplify';
@@ -45,7 +46,7 @@ const style = StyleSheet.create({
   headerTitle: {
     ...HeaderStyle.title,
     fontSize: 16,
-    marginLeft: -40,
+    marginLeft: Platform.OS === 'ios' ? 0 : -56,
   },
   input: {
     backgroundColor: Theme.colors.gray1,
@@ -56,6 +57,8 @@ const style = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 0,
   },
 });
 
@@ -128,6 +131,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
             keyboardType="default"
             value={question}
             multiline
+            textAlignVertical="top"
             onChange={(e) => setQuestion(e.nativeEvent.text)}
             maxLength={1500}
             autoCapitalize="sentences"
