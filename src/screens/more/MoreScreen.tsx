@@ -150,6 +150,14 @@ export default function MoreScreen(): JSX.Element {
           Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
       },
       {
+        id: 'volunteer',
+        text: 'Volunteer',
+        subtext: 'Get involved!',
+        icon: Theme.icons.white.volunteer,
+        action: () =>
+          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
+      },
+      {
         id: 'betaTest',
         text: 'Beta Test',
         subtext: 'Help us improve this app',
@@ -201,6 +209,14 @@ export default function MoreScreen(): JSX.Element {
         icon: Theme.icons.white.homeChurch,
         action: () =>
           Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
+      },
+      {
+        id: 'volunteer',
+        text: 'Volunteer',
+        subtext: 'Get involved!',
+        icon: Theme.icons.white.volunteer,
+        action: () =>
+          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
       },
       {
         id: 'betaTest',
