@@ -27,19 +27,18 @@ function InstagramImage({
 }): JSX.Element | null {
   const [validImage, setValidImage] = useState(true);
 
-  if (validImage && image?.thumbnails) {
+  if (validImage && image) {
     return (
       <TouchableHighlight
         accessibilityRole="imagebutton"
         style={style.imageContainer}
-        key={image?.id}
-        onPress={() => Linking.openURL(`https://instagram.com/p/${image?.id}`)}
+        onPress={() => Linking.openURL(image.permalink ?? '')}
       >
         <Image
           onError={() => setValidImage(false)}
           style={style.image}
-          source={{ uri: image?.thumbnails[3]?.src ?? '' }}
-          accessibilityLabel={image?.altText ?? 'tap to view on Instagram'}
+          source={{ uri: image.media_url ?? '' }}
+          accessibilityLabel={image.caption ?? 'tap to view on Instagram'}
         />
       </TouchableHighlight>
     );
@@ -55,7 +54,7 @@ interface Params {
 export default function InstagramFeed({ images }: Params): JSX.Element {
   return (
     <View style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-      {images?.map((image) => {
+      {images?.slice(0, 8).map((image) => {
         return <InstagramImage image={image} key={image?.id} />;
       })}
     </View>
