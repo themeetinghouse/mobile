@@ -584,3 +584,28 @@ export const listSpeakersQuery = `
     }
   }
   `;
+
+export const getInstaPhotos = /* GraphQL */ `
+  query GetInstaPhotos($pageId: String) {
+    getInstaPhotos(pageId: $pageId) {
+      data {
+        id
+        media_url
+        caption
+        comments_count
+        like_count
+        media_type
+        thumbnail_url
+        timestamp
+        permalink
+        shortcode
+      }
+      paging {
+        cursors {
+          before
+          after
+        }
+      }
+    }
+  }
+`;
