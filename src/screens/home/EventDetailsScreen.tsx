@@ -25,7 +25,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import openMap from 'react-native-open-maps';
 import * as Linking from 'expo-linking';
-import { Picker } from '@react-native-community/picker';
+import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import Calendar from '../../services/CalendarService';
 import ShareModal from '../../components/modals/Share';
@@ -191,8 +191,12 @@ export default function EventDetailsScreen({
             eventItem.place?.name === 'Online'
           )
             return 'none';
-          
-          if (eventItem?.place?.name && eventItem?.place?.name?.includes('.com')) return 'name';
+
+          if (
+            eventItem?.place?.name &&
+            eventItem?.place?.name?.includes('.com')
+          )
+            return 'name';
         }
         return 'none';
       }
@@ -232,9 +236,12 @@ export default function EventDetailsScreen({
             // always true at this point?
             const arr: string[] = ['Cancel'];
             for (let x = 0; x < eventItem.event_times.length; x++) {
-              if (eventItem?.event_times[x]?.start_time ?? "" > moment().format())
+              if (
+                eventItem?.event_times[x]?.start_time ??
+                moment().format() < ''
+              )
                 arr.push(
-                  `${moment(eventItem?.event_times[x]?.start_time ?? "").format(
+                  `${moment(eventItem?.event_times[x]?.start_time ?? '').format(
                     'MMM Do YYYY, h:mm a'
                   )} - ${moment(eventItem?.event_times[x]?.end_time).format(
                     'h:mm a'
@@ -250,7 +257,6 @@ export default function EventDetailsScreen({
                     eventItem,
                     eventItem?.event_times?.[buttonIndex - 1]
                   ); // -1 to ignore cancel button
-                
               }
             );
           }
@@ -286,7 +292,7 @@ export default function EventDetailsScreen({
         });
         break;
       case 'name':
-        openMap({ end: eventItem?.place?.name ?? "" });
+        openMap({ end: eventItem?.place?.name ?? '' });
         break;
       case 'none':
         break;
@@ -297,7 +303,8 @@ export default function EventDetailsScreen({
   const parseDescription = (): string => {
     let linkAddress = '';
     if (eventItem?.description?.includes('https://')) {
-      linkAddress = eventItem?.description?.match(/(https?:\/\/[^ ]*)/)?.[1] ?? "";
+      linkAddress =
+        eventItem?.description?.match(/(https?:\/\/[^ ]*)/)?.[1] ?? '';
     }
     return linkAddress;
   };
@@ -326,7 +333,7 @@ export default function EventDetailsScreen({
         setAlerts({ name: '', message: '' });
       }
     }
-  }, [appState.current]);
+  }, [alerts.message]);
 
   return (
     <Container>
@@ -436,11 +443,11 @@ export default function EventDetailsScreen({
               }}
             >
               <Picker.Item label="Select a Date" value="" />
-              {eventItem.event_times?.map((value: any, key: number) => {
+              {eventItem.event_times?.map((value: any) => {
                 if (value.start_time > moment().format())
                   return (
                     <Picker.Item
-                      key={key}
+                      key={value.id}
                       label={`${moment(value.start_time).format(
                         'MMM Do YYYY, h:mm a'
                       )} - ${moment(value.end_time).format('h:mm a')}`}
@@ -469,12 +476,17 @@ export default function EventDetailsScreen({
             </>
           ) : null}
           <View>
-          {eventItem?.ticket_uri || eventItem?.event_times?.[0]?.ticket_uri ? (
+            {eventItem?.ticket_uri ||
+            eventItem?.event_times?.[0]?.ticket_uri ? (
               <WhiteButton
                 style={{ height: 56, marginBottom: 20, marginTop: 20 }}
                 label="Register"
                 onPress={() => {
-                  Linking.openURL(eventItem.ticket_uri ?? eventItem?.event_times?.[0]?.ticket_uri ?? "");
+                  Linking.openURL(
+                    eventItem.ticket_uri ??
+                      eventItem?.event_times?.[0]?.ticket_uri ??
+                      ''
+                  );
                 }}
               />
             ) : null}

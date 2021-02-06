@@ -106,7 +106,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
       }
     } else {
       Alert.alert(
-        'An errror occurred',
+        'An error occurred',
         'You must be logged in to send a question.'
       );
       navigation.navigate('Main');
@@ -138,7 +138,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
           />
           <Text style={style.minorText}>
             We do our best to answer as many questions as possible, but we
-            cannot gaurantee that we’ll be able to get to yours.
+            cannot guarantee that we’ll be able to get to yours.
           </Text>
           <WhiteButton
             style={{ height: 56, marginVertical: 40 }}

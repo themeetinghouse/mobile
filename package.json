@@ -12,7 +12,7 @@
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!(jest-)?react-native|@codler/react-native-keyboard-aware-scroll-view|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+      "node_modules/(?!(jest-)?react-native|@codler/react-native-keyboard-aware-scroll-view|react-clone-referenced-element|@react-native-community|@react-native-picker|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
     ],
     "coveragePathIgnorePatterns": [
       "/node_modules/",
@@ -28,7 +28,7 @@
     "@expo/vector-icons": "^12.0.0",
     "@react-native-community/masked-view": "0.1.10",
     "@react-native-community/netinfo": "5.9.7",
-    "@react-native-community/picker": "1.6.6",
+    "@react-native-picker/picker": "1.9.10",
     "@react-native-community/slider": "3.0.3",
     "@react-navigation/bottom-tabs": "^5.8.0",
     "@react-navigation/native": "^5.7.3",
@@ -54,7 +54,7 @@
     "native-base": "^2.13.8",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.0.tar.gz",
+    "react-native": "https://github.com/expo/react-native/archive/sdk-40.0.1.tar.gz",
     "react-native-expo-cached-image": "^1.3.1",
     "react-native-gesture-handler": "~1.8.0",
     "react-native-open-maps": "^0.3.5",
@@ -70,15 +70,15 @@
     "sentry-expo": "^3.0.4"
   },
   "devDependencies": {
-    "@babel/core": "~7.9.0",
+    "@babel/core": "^7.12.13",
     "@testing-library/react-native": "^7.1.0",
     "@types/jest": "^26.0.7",
     "@types/nanoid": "^2.1.0",
     "@types/react": "~16.9.35",
     "@types/react-native": "~0.63.2",
     "@types/react-test-renderer": "^16.9.2",
-    "@typescript-eslint/eslint-plugin": "^3.10.1",
-    "@typescript-eslint/parser": "^3.10.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.2",
+    "@typescript-eslint/parser": "^4.14.2",
     "babel-preset-expo": "8.3.0",
     "eslint": "^7.2.0",
     "eslint-config-airbnb": "^18.2.1",
