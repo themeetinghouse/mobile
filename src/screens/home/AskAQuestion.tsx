@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useLayoutEffect, useState, useContext } from 'react';
+import React, { useLayoutEffect, useState, useContext, useEffect } from 'react';
 import { Container, Content, Thumbnail } from 'native-base';
 import {
   StyleSheet,
@@ -59,6 +59,16 @@ const style = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
+  emailInput: {
+    backgroundColor: Theme.colors.gray1,
+    borderColor: Theme.colors.white,
+    borderWidth: 3,
+    marginTop: 8,
+    paddingHorizontal: 20,
+    color: 'white',
+    height: 56,
+    fontSize: 16,
+  },
 });
 
 interface Params {
@@ -89,9 +99,19 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
     });
   }, [navigation]);
   const [question, setQuestion] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    if (userData?.email) {
+      setEmail(userData.email);
+    }
+  }, [userData?.email]);
+
   const submitQuestion = async () => {
-    if (userData?.email && userData?.email_verified) {
-      const variables = { email: userData?.email, body: question };
+    const regex = /\S+@\S+\.\S+/;
+
+    if (email && regex.test(email)) {
+      const variables = { email, body: question };
       const response = (await API.graphql(
         graphqlOperation(askQuestion, variables)
       )) as GraphQLResult<AskQuestionQuery>;
@@ -99,19 +119,16 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
       if (!failure) {
         navigation.navigate('Main', {
           screen: 'Home',
-          params: { screen: 'HomeScreen', params: { questionResult: 'true' } },
+          params: { screen: 'HomeScreen', params: { questionResult: true } },
         });
       } else {
         Alert.alert('An error occurred', 'Please try again later.');
       }
     } else {
-      Alert.alert(
-        'An error occurred',
-        'You must be logged in to send a question.'
-      );
-      navigation.navigate('Main');
+      Alert.alert('An error occurred', 'Please enter a valid email address');
     }
   };
+
   return (
     <Container>
       <Content style={style.content}>
@@ -135,6 +152,17 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
             maxLength={1500}
             autoCapitalize="sentences"
             style={style.input}
+          />
+          <TextInput
+            accessibilityLabel="Email Address"
+            keyboardAppearance="dark"
+            placeholder="Email"
+            placeholderTextColor="#646469"
+            textContentType="emailAddress"
+            keyboardType="email-address"
+            value={email}
+            onChange={(e) => setEmail(e.nativeEvent.text.toLowerCase())}
+            style={style.emailInput}
           />
           <Text style={style.minorText}>
             We do our best to answer as many questions as possible, but we
