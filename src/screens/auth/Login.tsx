@@ -113,7 +113,11 @@ export default function Login({ navigation }: Params): JSX.Element {
     if (route.params?.newUser) {
       setError(accountVerifiedMessage);
     }
-  }, [route.params?.newUser]);
+
+    if (route.params?.email) {
+      setUser(route.params.email);
+    }
+  }, [route.params?.newUser, route.params?.email]);
 
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
     setUser('');

@@ -20,6 +20,7 @@ import UserContext from '../../contexts/UserContext';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import NoMedia from '../../components/NoMedia';
+import PasswordRequirements from '../../components/auth/PasswordRequirements';
 
 const style = StyleSheet.create({
   title: {
@@ -90,12 +91,11 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
   }
 
   function toLogin(): void {
-    setUser('');
     setPass('');
     setCode('');
     setError('');
     setCodeSent(false);
-    navigation.push('LoginScreen');
+    navigation.push('LoginScreen', { email: user });
   }
 
   function toHome(): void {
@@ -245,6 +245,7 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
                 secureTextEntry
                 style={style.input}
               />
+              <PasswordRequirements password={pass} />
               <View style={{ marginTop: 12 }}>
                 <Text
                   style={{

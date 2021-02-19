@@ -84,11 +84,10 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
   }, [email]);
 
   function toLogin(isNewUser: boolean): void {
-    setUser('');
     setCode('');
     setError('');
     setNeedsNewCode(false);
-    navigation.navigate('LoginScreen', { newUser: isNewUser });
+    navigation.navigate('LoginScreen', { newUser: isNewUser, email: user });
   }
 
   const confirm = async () => {

@@ -24,6 +24,7 @@ import {
   CompositeNavigationProp,
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import UserContext, { TMHCognitoUser } from '../../contexts/UserContext';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -291,6 +292,10 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                 </Text>
               </View>
             </List>
+            <PasswordRequirements
+              password={newPass}
+              style={{ marginHorizontal: '5%' }}
+            />
           </View>
         </Content>
       </Container>

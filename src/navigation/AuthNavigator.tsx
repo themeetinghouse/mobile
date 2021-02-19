@@ -7,7 +7,7 @@ import LocationSelectionScreen from '../screens/auth/LocationSelectionScreen';
 import SignUp from '../screens/auth/SignUp';
 
 export type AuthStackParamList = {
-  LoginScreen: undefined | { newUser: boolean };
+  LoginScreen: undefined | { newUser?: boolean; email?: string };
   SignUpScreen: undefined | { locationName: string; locationId: string };
   LocationSelectionScreen: undefined;
   ForgotPasswordScreen: undefined;
