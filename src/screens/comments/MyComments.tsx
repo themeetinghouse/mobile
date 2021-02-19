@@ -96,7 +96,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const [searchText, setSearchText] = useState('');
   const [filterToggle, setFilterToggle] = useState(false);
   // TODO: Fetch user comments here, currently context is not set until user navigates to Notes(?)
-  // TODO: Sort by date on "By Date" view
+  // TODO: Sort by date on "Most Recent" view
   //         - Must first implement fetch user comments query here
   // TODO: SectionList for "By Series" filtering
   // TODO: Bottom of flatlist is being clipped
@@ -107,7 +107,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         style={{ marginHorizontal: 16, marginBottom: 18.5 }}
         handleTextChanged={(newStr) => setSearchText(newStr)}
         searchText={searchText}
-        placeholderLabel="Search by name"
+        placeholderLabel="Search"
       />
       <ToggleButton
         toggle={(current: boolean) => setFilterToggle(current)}
@@ -118,7 +118,10 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       {!filterToggle ? (
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
-          data={commentContext.comments}
+          data={commentContext.comments.filter(
+            (comment) => comment?.comment.includes(searchText)
+            // TODO: Missing tag search
+          )}
           renderItem={({ item }) => {
             return (
               <View style={style.commentItem}>
