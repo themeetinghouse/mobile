@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Text, View } from 'native-base';
-import { StyleSheet, TouchableHighlight, Dimensions } from 'react-native';
-
+import { StyleSheet, TouchableHighlight } from 'react-native';
 import { Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
@@ -10,14 +9,13 @@ const style = StyleSheet.create({
     flex: 1,
     marginVertical: 2,
     marginHorizontal: 3,
-    color: '#C8C8C8',
     backgroundColor: '#1A1A1A',
   },
   selectedButton: {
-    marginHorizontal: 3,
     borderRadius: 50,
     flex: 1,
     marginVertical: 2,
+    marginHorizontal: 3,
     backgroundColor: '#646469',
   },
   buttonText: {
