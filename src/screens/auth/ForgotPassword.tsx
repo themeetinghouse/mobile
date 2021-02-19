@@ -5,8 +5,6 @@ import {
   View,
   TextInput,
   Text,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableWithoutFeedback,
   SafeAreaView,
   Keyboard,
@@ -111,13 +109,6 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
     });
   }
 
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
-  }
-
   const sendCode = async () => {
     setSending(true);
     try {
@@ -175,7 +166,7 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
               <Text style={style.title}>Email</Text>
               <TextInput
                 accessibilityLabel="Email Address"
-                onKeyPress={(e) => handleEnter(e, sendCode)}
+                onSubmitEditing={sendCode}
                 keyboardAppearance="dark"
                 autoCompleteType="email"
                 textContentType="emailAddress"
@@ -248,7 +239,7 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
                 textContentType="newPassword"
                 passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
                 keyboardAppearance="dark"
-                onKeyPress={(e) => handleEnter(e, reset)}
+                onSubmitEditing={reset}
                 value={pass}
                 onChange={(e) => setPass(e.nativeEvent.text)}
                 secureTextEntry

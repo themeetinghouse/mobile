@@ -4,8 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableOpacity,
   Dimensions,
   StatusBar,
@@ -133,13 +131,6 @@ export default function Login({ navigation }: Params): JSX.Element {
     });
   }
 
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
-  }
-
   const mapObj = (f: any) => (obj: any) =>
     Object.keys(obj).reduce((acc, key) => ({ ...acc, [key]: f(obj[key]) }), {});
   const toArrayOfStrings = (value: any) => [`${value}`];
@@ -257,7 +248,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             keyboardAppearance="dark"
             autoCompleteType="password"
             textContentType="password"
-            onKeyPress={(e) => handleEnter(e, signIn)}
+            onSubmitEditing={signIn}
             value={pass}
             onChange={(e) => setPass(e.nativeEvent.text)}
             secureTextEntry

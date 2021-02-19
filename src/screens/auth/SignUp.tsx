@@ -4,8 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableOpacity,
   ScrollView,
   Dimensions,
@@ -199,13 +197,6 @@ export default function SignUp({ navigation }: Params): JSX.Element {
     });
   }
 
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
-  }
-
   const signUp = async () => {
     const regex = /\S+@\S+\.\S+/;
     if (!regex.test(user)) {
@@ -301,7 +292,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             textContentType="newPassword"
             passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
             keyboardAppearance="dark"
-            onKeyPress={(e) => handleEnter(e, signUp)}
+            onSubmitEditing={signUp}
             value={pass}
             onChange={(e) => setPass(e.nativeEvent.text)}
             secureTextEntry
