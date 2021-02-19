@@ -119,8 +119,15 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
           data={commentContext.comments.filter(
-            (comment) => comment?.comment.includes(searchText)
-            // TODO: Missing tag search
+            (comment) =>
+              comment?.comment
+                .toLocaleLowerCase()
+                .includes(searchText.toLocaleLowerCase()) ||
+              comment?.tags?.find((tag) =>
+                tag
+                  ?.toLocaleLowerCase()
+                  ?.includes(searchText.toLocaleLowerCase())
+              )
           )}
           renderItem={({ item }) => {
             return (
