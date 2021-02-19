@@ -203,6 +203,13 @@ export default function MoreScreen(): JSX.Element {
         action: () => navigation.navigate('ParishTeam'),
       },
       {
+        id: 'mycomments',
+        text: 'My Comments',
+        subtext: 'All your comments in one place',
+        icon: Theme.icons.white.comments,
+        action: () => navigation.navigate('MyComments'),
+      },
+      {
         id: 'homeChurch',
         text: 'Home Church',
         subtext: 'Find a home church near you',
@@ -238,7 +245,7 @@ export default function MoreScreen(): JSX.Element {
       <Content style={style.content}>
         <View>
           <List>
-            {items.slice(0, 4).map((item) => {
+            {items.slice(0, 5).map((item) => {
               return (
                 <ListItem
                   key={item.id}
@@ -275,7 +282,7 @@ export default function MoreScreen(): JSX.Element {
               }}
             />
 
-            {items.slice(4).map((item) => {
+            {items.slice(5).map((item) => {
               return (
                 <ListItem
                   key={item.id}

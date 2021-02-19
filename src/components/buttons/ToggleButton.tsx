@@ -1,29 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'native-base';
-import { StyleSheet } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleSheet, TouchableHighlight, Dimensions } from 'react-native';
+
 import { Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
   button: {
-    minWidth: '50%',
-    flexGrow: 1,
-    padding: 16,
-    margin: 2,
     borderRadius: 50,
+    flex: 1,
+    marginVertical: 2,
+    marginHorizontal: 3,
     color: '#C8C8C8',
     backgroundColor: '#1A1A1A',
   },
   selectedButton: {
-    minWidth: '50%',
-    padding: 16,
-    flexGrow: 1,
-    margin: 2,
+    marginHorizontal: 3,
     borderRadius: 50,
-    color: '#FFF',
+    flex: 1,
+    marginVertical: 2,
     backgroundColor: '#646469',
   },
   buttonText: {
+    flex: 1,
+    textAlignVertical: 'center',
     color: '#C8C8C8',
     textAlign: 'center',
     fontFamily: Theme.fonts.fontFamilyBold,
@@ -33,62 +32,58 @@ const style = StyleSheet.create({
     color: 'white',
   },
   buttonContainer: {
-    height: 38,
-    borderRadius: 50,
-    marginHorizontal: 10,
-    flex: 1,
+    marginHorizontal: 16,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    height: 40,
+    borderRadius: 50,
     backgroundColor: '#1A1A1A',
   },
 });
-interface Props {
+interface Params {
+  currentToggle: boolean;
+  toggle: (current: boolean) => void;
   btnTextOne: string;
   btnTextTwo: string;
-  setSortByName: any;
-  sortByName: any;
 }
 
 export default function ToggleButton({
+  currentToggle,
+  toggle,
   btnTextOne,
   btnTextTwo,
-  setSortByName,
-  sortByName,
-}: Props): JSX.Element {
+}: Params): JSX.Element {
   return (
     <View style={style.buttonContainer}>
-      <TouchableOpacity
-        onPress={() => setSortByName(false)}
-        style={!sortByName ? style.selectedButton : style.button}
+      <TouchableHighlight
+        underlayColor="#646469"
+        onPress={() => toggle(false)}
+        style={!currentToggle ? style.selectedButton : style.button}
       >
-        <View style={{ justifyContent: 'center', flex: 1 }}>
-          <Text
-            style={
-              !sortByName
-                ? [style.buttonText, style.selectedButtonText]
-                : style.buttonText
-            }
-          >
-            {btnTextOne}
-          </Text>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => setSortByName(true)}
-        style={sortByName ? style.selectedButton : style.button}
+        <Text
+          style={
+            !currentToggle
+              ? [style.buttonText, style.selectedButtonText]
+              : style.buttonText
+          }
+        >
+          {btnTextOne}
+        </Text>
+      </TouchableHighlight>
+      <TouchableHighlight
+        underlayColor="#646469"
+        onPress={() => toggle(true)}
+        style={currentToggle ? style.selectedButton : style.button}
       >
-        <View style={{ justifyContent: 'center', flex: 1 }}>
-          <Text
-            style={
-              sortByName
-                ? [style.buttonText, style.selectedButtonText]
-                : style.buttonText
-            }
-          >
-            {btnTextTwo}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        <Text
+          style={
+            currentToggle
+              ? [style.buttonText, style.selectedButtonText]
+              : style.buttonText
+          }
+        >
+          {btnTextTwo}
+        </Text>
+      </TouchableHighlight>
     </View>
   );
 }
