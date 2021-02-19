@@ -1,4 +1,6 @@
 import React, { useLayoutEffect, useState, useContext, useEffect } from 'react';
+import { Auth } from 'aws-amplify';
+import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,6 +10,8 @@ import ToggleButton from '../../components/buttons/ToggleButton';
 import CommentContext from '../../contexts/CommentContext';
 import SearchBar from '../../components/SearchBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
+import { getCommentsByOwner } from '../../../src/graphql/queries';
+import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 
 const style = StyleSheet.create({
   content: {
@@ -93,6 +97,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     });
   }, [navigation]);
   const commentContext = useContext(CommentContext);
+  const [comments, setComments] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filterToggle, setFilterToggle] = useState(false);
   // TODO: Fetch user comments here, currently context is not set until user navigates to Notes(?)
@@ -101,6 +106,36 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   // TODO: SectionList for "By Series" filtering
   // TODO: Bottom of flatlist is being clipped
   // TODO: Implement search (the proper way?)
+  useEffect(() => {
+    const loadComments = async () => {
+      try {
+        const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+        const input: GetCommentsByOwnerQueryVariables = {
+          owner: cognitoUser.username,
+          sortDirection: 'DESC',
+        };
+        const json = (await API.graphql({
+          query: getCommentsByOwner,
+          variables: input,
+          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+        })) as GraphQLResult<GetCommentsByOwnerQuery>;
+
+        if (json.data?.getCommentsByOwner?.items) {
+          const sorted = json.data?.getCommentsByOwner?.items.sort((a, b) =>
+            a.time.localeCompare(b.time)
+          );
+
+          setComments(sorted);
+        }
+      } catch (e) {
+        console.debug(e);
+      }
+    };
+    loadComments();
+  }, []);
+  useEffect(() => {
+    console.log(comments);
+  }, [comments]);
   return (
     <View style={{ marginTop: 12 }}>
       <SearchBar
@@ -118,7 +153,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       {!filterToggle ? (
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
-          data={commentContext.comments.filter(
+          data={comments.filter(
             (comment) =>
               comment?.comment
                 .toLocaleLowerCase()
