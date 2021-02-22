@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useContext, useEffect } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import { StyleSheet, View, Text, FlatList } from 'react-native';
@@ -7,11 +7,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import ToggleButton from '../../components/buttons/ToggleButton';
-import CommentContext from '../../contexts/CommentContext';
 import SearchBar from '../../components/SearchBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
-import { getCommentsByOwner } from '../../../src/graphql/queries';
+import { getCommentsByOwner } from '../../graphql/queries';
 import { TMHCognitoUser } from '../../../src/contexts/UserContext';
+import NotesService from '../../services/NotesService';
+import { GetCommentsByOwnerQuery } from '../../services/API';
 
 const style = StyleSheet.create({
   content: {
@@ -53,7 +54,9 @@ const style = StyleSheet.create({
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
-
+type CommentData = NonNullable<
+  NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
+>['items'];
 export default function MyComments({ navigation }: Params): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -96,36 +99,32 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       },
     });
   }, [navigation]);
-  const commentContext = useContext(CommentContext);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState<CommentData>([]);
   const [searchText, setSearchText] = useState('');
   const [filterToggle, setFilterToggle] = useState(false);
-  // TODO: Fetch user comments here, currently context is not set until user navigates to Notes(?)
-  // TODO: Sort by date on "Most Recent" view
-  //         - Must first implement fetch user comments query here
   // TODO: SectionList for "By Series" filtering
   // TODO: Bottom of flatlist is being clipped
   // TODO: Implement search (the proper way?)
   useEffect(() => {
+    const fetchNotes = async () => {
+      const notes = await NotesService.loadNotesNoContent('2021-02-14');
+    };
+    fetchNotes();
     const loadComments = async () => {
       try {
         const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        const input: GetCommentsByOwnerQueryVariables = {
-          owner: cognitoUser.username,
-          sortDirection: 'DESC',
-        };
         const json = (await API.graphql({
           query: getCommentsByOwner,
-          variables: input,
+          variables: { owner: cognitoUser.username, sortDirection: 'DESC' },
           authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
         })) as GraphQLResult<GetCommentsByOwnerQuery>;
 
         if (json.data?.getCommentsByOwner?.items) {
-          const sorted = json.data?.getCommentsByOwner?.items.sort((a, b) =>
-            a.time.localeCompare(b.time)
+          // TODO: Fix types here
+          const sorted = json.data?.getCommentsByOwner?.items.sort(
+            (a: any, b: any) => b?.createdAt.localeCompare(a?.createdAt)
           );
-
-          setComments(sorted);
+          if (sorted) setComments(sorted);
         }
       } catch (e) {
         console.debug(e);
@@ -133,9 +132,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     };
     loadComments();
   }, []);
-  useEffect(() => {
-    console.log(comments);
-  }, [comments]);
   return (
     <View style={{ marginTop: 12 }}>
       <SearchBar
@@ -153,15 +149,13 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       {!filterToggle ? (
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
-          data={comments.filter(
+          data={comments?.filter(
             (comment) =>
               comment?.comment
-                .toLocaleLowerCase()
-                .includes(searchText.toLocaleLowerCase()) ||
+                .toLowerCase()
+                .includes(searchText.toLowerCase()) ||
               comment?.tags?.find((tag) =>
-                tag
-                  ?.toLocaleLowerCase()
-                  ?.includes(searchText.toLocaleLowerCase())
+                tag?.toLocaleLowerCase()?.includes(searchText.toLowerCase())
               )
           )}
           renderItem={({ item }) => {
