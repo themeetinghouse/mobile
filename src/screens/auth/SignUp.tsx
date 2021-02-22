@@ -4,8 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableOpacity,
   ScrollView,
   Dimensions,
@@ -13,7 +11,7 @@ import {
   StatusBar,
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
-import { AntDesign, Entypo } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import {
   RouteProp,
@@ -22,6 +20,7 @@ import {
 } from '@react-navigation/native';
 import { Thumbnail, Button } from 'native-base';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import NoMedia from '../../components/NoMedia';
@@ -104,49 +103,6 @@ const style = StyleSheet.create({
   },
 });
 
-interface PasswordIconParams {
-  meetsRequirement: boolean;
-  requirement: string;
-}
-
-function PasswordRequirement({
-  meetsRequirement,
-  requirement,
-}: PasswordIconParams) {
-  return (
-    <View
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 4,
-        backgroundColor: Theme.colors.grey1,
-        paddingRight: 10,
-        paddingLeft: 6,
-        borderRadius: 40,
-        marginRight: 8,
-        paddingVertical: 4,
-      }}
-    >
-      {meetsRequirement ? (
-        <Entypo name="check" size={14} color={Theme.colors.green} />
-      ) : (
-        <Entypo name="cross" size={14} color={Theme.colors.red} />
-      )}
-      <Text
-        style={{
-          color: 'white',
-          fontFamily: Theme.fonts.fontFamilyRegular,
-          fontSize: 14,
-          marginLeft: 4,
-        }}
-      >
-        {requirement}
-      </Text>
-    </View>
-  );
-}
-
 interface Params {
   navigation: CompositeNavigationProp<
     StackNavigationProp<AuthStackParamList>,
@@ -157,7 +113,10 @@ interface Params {
 export default function SignUp({ navigation }: Params): JSX.Element {
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
-  const [site, setSite] = useState({ locationName: '', locationId: '' });
+  const [site, setSite] = useState({
+    locationName: 'unknown',
+    locationId: 'unknown',
+  });
   const [error, setError] = useState('');
   const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
   const safeArea = useSafeAreaInsets();
@@ -177,14 +136,14 @@ export default function SignUp({ navigation }: Params): JSX.Element {
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
     setUser('');
     setPass('');
-    setSite({ locationName: '', locationId: '' });
+    setSite({ locationName: 'unknown', locationId: 'unknown' });
     setError('');
     navigation.push(screen);
   }
 
   function confirmUser(): void {
     setPass('');
-    setSite({ locationName: '', locationId: '' });
+    setSite({ locationName: 'unknown', locationId: 'unknown' });
     setError('');
     navigation.push('ConfirmSignUpScreen', { email: user });
   }
@@ -192,18 +151,11 @@ export default function SignUp({ navigation }: Params): JSX.Element {
   function navigateHome() {
     setUser('');
     setPass('');
-    setSite({ locationName: '', locationId: '' });
+    setSite({ locationName: 'unknown', locationId: 'unknown' });
     setError('');
     navigation.push('Main', {
       screen: 'Home',
     });
-  }
-
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
 
   const signUp = async () => {
@@ -301,58 +253,22 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             textContentType="newPassword"
             passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
             keyboardAppearance="dark"
-            onKeyPress={(e) => handleEnter(e, signUp)}
+            onSubmitEditing={signUp}
             value={pass}
             onChange={(e) => setPass(e.nativeEvent.text)}
             secureTextEntry
             style={style.input}
           />
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              marginTop: 12,
-            }}
-          >
-            <Text
-              style={{
-                color: 'white',
-                fontFamily: Theme.fonts.fontFamilyBold,
-                fontSize: 14,
-                marginRight: 8,
-              }}
-            >
-              Password must contain at least:
-            </Text>
-            <PasswordRequirement
-              meetsRequirement={pass.length >= 8}
-              requirement="8 characters"
-            />
-            <PasswordRequirement
-              meetsRequirement={/(?=.*[A-Z])/.test(pass)}
-              requirement="upper &amp; lowercase letters"
-            />
-            <PasswordRequirement
-              meetsRequirement={/(?=.*[0-9])/.test(pass)}
-              requirement="1 number"
-            />
-            <PasswordRequirement
-              // eslint-disable-next-line no-useless-escape
-              meetsRequirement={/(?=.*[\=\+\$\*\.\,\?\"\!\@\#\%\&\'\:\;\[\]\{\}\(\)\/\\\>\<\|\_\~\`\^\-])/.test(
-                pass
-              )}
-              requirement="1 special character (e.g. @ ! $ ^ ?)"
-            />
-          </View>
+          <PasswordRequirements password={pass} />
           <Text style={style.title}>Choose Your Location</Text>
           <TouchableOpacity
             style={style.locationSelector}
             onPress={() => navigation.push('LocationSelectionScreen')}
           >
             <Text style={style.locationText}>
-              {site.locationName ? site.locationName : 'None Selected'}
+              {site.locationName && site.locationName !== 'unknown'
+                ? site.locationName
+                : 'None Selected'}
             </Text>
             <AntDesign name="caretdown" size={8} color="white" />
           </TouchableOpacity>

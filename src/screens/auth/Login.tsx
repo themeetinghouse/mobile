@@ -4,8 +4,6 @@ import {
   View,
   Text,
   TextInput,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableOpacity,
   Dimensions,
   StatusBar,
@@ -115,7 +113,11 @@ export default function Login({ navigation }: Params): JSX.Element {
     if (route.params?.newUser) {
       setError(accountVerifiedMessage);
     }
-  }, [route.params?.newUser]);
+
+    if (route.params?.email) {
+      setUser(route.params.email);
+    }
+  }, [route.params?.newUser, route.params?.email]);
 
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
     setUser('');
@@ -131,13 +133,6 @@ export default function Login({ navigation }: Params): JSX.Element {
     navigation.push('Main', {
       screen: 'Home',
     });
-  }
-
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
 
   const mapObj = (f: any) => (obj: any) =>
@@ -257,7 +252,7 @@ export default function Login({ navigation }: Params): JSX.Element {
             keyboardAppearance="dark"
             autoCompleteType="password"
             textContentType="password"
-            onKeyPress={(e) => handleEnter(e, signIn)}
+            onSubmitEditing={signIn}
             value={pass}
             onChange={(e) => setPass(e.nativeEvent.text)}
             secureTextEntry

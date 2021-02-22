@@ -158,6 +158,8 @@ export default function Account({ navigation }: Params): JSX.Element {
     });
   }, [navigation]);
 
+  const homeLocation = user?.userData?.['custom:home_location'];
+
   const items = [
     'Login',
     {
@@ -176,11 +178,10 @@ export default function Account({ navigation }: Params): JSX.Element {
       id: 'loc',
       text: 'Location',
       icon: Theme.icons.grey.arrow,
-      data: user?.userData?.['custom:home_location']
-        ? LocationsService.mapLocationIdToName(
-            user?.userData?.['custom:home_location']
-          )
-        : 'None Selected',
+      data:
+        homeLocation && homeLocation !== 'unknown'
+          ? LocationsService.mapLocationIdToName(homeLocation)
+          : 'None Selected',
       action: () =>
         navigation.navigate('LocationSelectionScreen', { persist: true }),
     },

@@ -35,7 +35,7 @@ const locations: { [key: string]: string } = {
   'richmond-hill': 'Richmond Hill',
   'toronto-uptown': 'Toronto - Uptown',
   waterloo: 'Waterloo',
-  unknown: '',
+  unknown: 'unknown',
 };
 
 export default class LocationsService {
