@@ -64,8 +64,6 @@ export default class SeriesService {
     if (items) {
       items.forEach((item) => {
         if (item) {
-          item.image =
-            'https://www.themeetinghouse.com/cache/640/static/photos/playlists/The%20Bible.png';
           SeriesService.updateSeriesImageFromPlaylist(item as any);
         }
       });
@@ -161,19 +159,19 @@ export default class SeriesService {
       series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
         '?',
         ''
-      )}.png`
+      )}.jpg`
         .replace(/ /g, '%20')
         .replace("'", '');
       series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
         '?',
         ''
-      )}.png`
+      )}.jpg`
         .replace(/ /g, '%20')
         .replace("'", '');
       series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(
         / /g,
         '%20'
-      )}.png`;
+      )}.jpg`;
     } else {
       series.image =
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
