@@ -1,7 +1,14 @@
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { StyleSheet, View, Text, FlatList } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  Dimensions,
+  SectionList,
+} from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -13,6 +20,7 @@ import { getCommentsByOwner } from '../../graphql/queries';
 import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
+// import AllButton from '../../components/buttons/AllButton';
 
 const style = StyleSheet.create({
   content: {
@@ -49,11 +57,21 @@ const style = StyleSheet.create({
     lineHeight: 18,
     color: '#FFFFFF',
   },
+  sectionListHeader: {
+    color: 'white',
+    fontFamily: 'Graphik-Bold-App',
+    fontSize: 24,
+    lineHeight: 32,
+  },
 });
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
+type Series = Array<{
+  title: string;
+  data: Array<CommentData>;
+}>;
 type CommentData = NonNullable<
   NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
 >['items'];
@@ -100,38 +118,114 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     });
   }, [navigation]);
   const [comments, setComments] = useState<CommentData>([]);
+  const [nextToken, setNextToken] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
+  const [sectionList, setSectionList] = useState<Series>([]);
   const [filterToggle, setFilterToggle] = useState(false);
-  // TODO: SectionList for "By Series" filtering
-  // TODO: Bottom of flatlist is being clipped
-  // TODO: Implement search (the proper way?)
-  useEffect(() => {
-    const fetchNotes = async () => {
-      const notes = await NotesService.loadNotesNoContent('2021-02-14');
-    };
-    fetchNotes();
-    const loadComments = async () => {
-      try {
-        const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-        const json = (await API.graphql({
-          query: getCommentsByOwner,
-          variables: { owner: cognitoUser.username, sortDirection: 'DESC' },
-          authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-        })) as GraphQLResult<GetCommentsByOwnerQuery>;
+  // TODO: Fix types
+  // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
+  // TODO: Implement pagination + search (the proper way?). Schema changes are required
+  //        - Data needs to be presorted in order to allow for proper pagination with nextToken
+  const loadComments = async () => {
+    try {
+      const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+      const json = (await API.graphql({
+        query: getCommentsByOwner,
+        variables: {
+          owner: cognitoUser.username,
+          sortDirection: 'DESC',
+          limit: 1000,
+          nextToken,
+        },
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+      })) as GraphQLResult<GetCommentsByOwnerQuery>;
 
-        if (json.data?.getCommentsByOwner?.items) {
-          // TODO: Fix types here
-          const sorted = json.data?.getCommentsByOwner?.items.sort(
-            (a: any, b: any) => b?.createdAt.localeCompare(a?.createdAt)
-          );
-          if (sorted) setComments(sorted);
+      if (json.data?.getCommentsByOwner?.items) {
+        // TODO: Fix types here
+        const sorted = json.data?.getCommentsByOwner?.items.sort(
+          (a: any, b: any) => b?.createdAt.localeCompare(a?.createdAt)
+        );
+        if (sorted) {
+          setComments(sorted);
+          setNextToken(json.data.getCommentsByOwner.nextToken);
         }
-      } catch (e) {
-        console.debug(e);
       }
-    };
+    } catch (e) {
+      console.debug(e);
+    }
+  };
+  const loadSeriesData = async () => {
+    const series: Series = [];
+    let doesExist;
+    // TODO: Awaiting inside for loop increases loading time. Can this be improved?
+    if (comments)
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i]?.noteId) {
+          // eslint-disable-next-line no-await-in-loop
+          const seriesData = await NotesService.loadNotesNoContent(
+            comments[i]?.noteId as string
+          );
+          doesExist = series.findIndex((a) => a.title === seriesData?.seriesId);
+          if (doesExist !== -1) {
+            series[doesExist].data.push(comments[i] as CommentData);
+          } else {
+            series.push({
+              title: seriesData?.seriesId as string,
+              data: [comments[i] as CommentData],
+            });
+          }
+        }
+      }
+    setSectionList(series);
+  };
+  useEffect(() => {
     loadComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    loadSeriesData();
+  }, [comments]);
+
+  const renderComment = (item: CommentData): JSX.Element => {
+    return (
+      <View style={style.commentItem}>
+        <Text style={style.dateText}>
+          {item?.date} • {item?.time}
+        </Text>
+        <Text style={style.commentText}>{item?.comment}</Text>
+        <View
+          style={{
+            marginBottom: 14,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            marginRight: 6,
+          }}
+        >
+          {item?.tags?.map((tag, index) => {
+            return (
+              <Text
+                key={index.toString()}
+                style={{
+                  marginBottom: 2,
+                  marginRight: 4,
+                  fontSize: 12,
+                  lineHeight: 18,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  paddingHorizontal: 8,
+                  height: 26,
+                  color: 'white',
+                  backgroundColor: '#1A1A1A',
+                }}
+              >
+                {tag}
+              </Text>
+            );
+          })}
+        </View>
+      </View>
+    );
+  };
   return (
     <View style={{ marginTop: 12 }}>
       <SearchBar
@@ -147,59 +241,48 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextTwo="By Series"
       />
       {!filterToggle ? (
-        <FlatList
-          style={{ marginTop: 18, marginLeft: 16 }}
-          data={comments?.filter(
-            (comment) =>
-              comment?.comment
-                .toLowerCase()
-                .includes(searchText.toLowerCase()) ||
-              comment?.tags?.find((tag) =>
-                tag?.toLocaleLowerCase()?.includes(searchText.toLowerCase())
-              )
-          )}
-          renderItem={({ item }) => {
-            return (
-              <View style={style.commentItem}>
-                <Text style={style.dateText}>
-                  {item?.date} • {item?.time}
-                </Text>
-                <Text style={style.commentText}>{item?.comment}</Text>
-                <View
-                  style={{
-                    marginBottom: 14,
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  {item?.tags?.map((tag, index) => {
-                    return (
-                      <Text
-                        key={index.toString()}
-                        style={{
-                          marginBottom: 2,
-                          marginRight: 4,
-                          fontSize: 12,
-                          lineHeight: 18,
-                          paddingTop: 4,
-                          paddingBottom: 4,
-                          paddingHorizontal: 8,
-                          height: 26,
-                          color: 'white',
-                          backgroundColor: '#1A1A1A',
-                        }}
-                      >
-                        {tag}
-                      </Text>
-                    );
-                  })}
-                </View>
+        <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+          <FlatList
+            /*  ListFooterComponent={
+              <View style={{ marginBottom: 10 }}>
+                <AllButton handlePress={() => loadComments()}>
+                  Load More
+                </AllButton>
               </View>
-            );
-          }}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      ) : null}
+            } */
+            style={{ marginTop: 18, marginLeft: 16 }}
+            data={comments?.filter(
+              (comment) =>
+                comment?.comment
+                  ?.toLowerCase()
+                  ?.includes(searchText.toLowerCase()) ||
+                comment?.tags?.find((tag) =>
+                  tag?.toLowerCase()?.includes(searchText.toLowerCase())
+                )
+            )}
+            renderItem={({ item }) => {
+              return renderComment(item);
+            }}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </View>
+      ) : (
+        <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+          <SectionList
+            style={{ marginTop: 18, marginLeft: 16 }}
+            sections={sectionList}
+            keyExtractor={(item: CommentData) => {
+              return item?.id;
+            }}
+            renderItem={({ item }: any) => {
+              return renderComment(item);
+            }}
+            renderSectionHeader={({ section: { title } }) => (
+              <Text style={style.sectionListHeader}>{title}</Text>
+            )}
+          />
+        </View>
+      )}
     </View>
   );
 }
