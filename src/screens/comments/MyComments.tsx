@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -11,7 +12,10 @@ import {
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {
+  TouchableHighlight,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import ToggleButton from '../../components/buttons/ToggleButton';
 import SearchBar from '../../components/SearchBar';
@@ -20,7 +24,7 @@ import { getCommentsByOwner } from '../../graphql/queries';
 import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
-import { getSeries } from 'src/services/queries';
+import ActivityIndicator from '../../components/ActivityIndicator';
 // import AllButton from '../../components/buttons/AllButton';
 
 const style = StyleSheet.create({
@@ -66,16 +70,29 @@ const style = StyleSheet.create({
   },
 });
 
+type SeriesInfo = {
+  year: string;
+  episodeNumber: number;
+  episodeTitle: string;
+};
+type RecentComments = Array<Comment & SeriesInfo>;
+
+type Comment = NonNullable<
+  NonNullable<
+    NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
+  >['items']
+>[0];
+
+type BySeriesComments = Array<{
+  title: string;
+  data: RecentComments;
+  seriesInfo: SeriesInfo;
+}>;
+
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
-type Series = Array<{
-  title: string;
-  data: Array<CommentData>;
-}>;
-type CommentData = NonNullable<
-  NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
->['items'];
+
 export default function MyComments({ navigation }: Params): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -118,15 +135,18 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       },
     });
   }, [navigation]);
-  const [comments, setComments] = useState<CommentData>([]);
+  // TODO: Implement seriesInfo for FlatList comments array
+  const [comments, setComments] = useState<RecentComments>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [sectionList, setSectionList] = useState<Series>([]);
+  const [sectionList, setSectionList] = useState<BySeriesComments>([]);
   const [filterToggle, setFilterToggle] = useState(false);
   // TODO: Fix types
   // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
   // TODO: Implement pagination + search (the proper way?). Schema changes are required
   //        - Data needs to be presorted in order to allow for proper pagination with nextToken
+  // TODO: Implement ActivityIndicator for each view instead of waiting
   const loadComments = async () => {
     try {
       const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
@@ -142,17 +162,15 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       })) as GraphQLResult<GetCommentsByOwnerQuery>;
 
       if (json.data?.getCommentsByOwner?.items) {
-        // TODO: Fix types here
-        const sorted = json.data?.getCommentsByOwner?.items.sort(
-          (a: any, b: any) => b?.createdAt.localeCompare(a?.createdAt)
-        );
-        if (sorted) {
-          setComments(sorted);
+        const commentData = json.data?.getCommentsByOwner?.items;
+        if (commentData) {
+          // TODO: Sort by createdAt
+          setComments(commentData);
           setNextToken(json.data.getCommentsByOwner.nextToken);
         }
       }
     } catch (e) {
-      console.debug(e);
+      // TODO: Sentry
     }
   };
   const getSeriesImage = (title: string) => {
@@ -170,7 +188,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     )}.jpg`; */
   };
   const loadSeriesData = async () => {
-    const series: Series = [];
+    setIsLoading(true);
+    const series: BySeriesComments = [];
+    const tempComments = [...comments];
     let doesExist;
     // TODO: Awaiting inside for loop increases loading time. Can this be improved?
     if (comments)
@@ -181,37 +201,73 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           const seriesData = await NotesService.loadNotesNoContent(
             comments[i]?.noteId as string
           );
+          tempComments[i] = {
+            ...tempComments[i],
+            seriesInfo: {
+              year: seriesData?.id,
+              episodeNumber: seriesData?.episodeNumber,
+              episodeTitle: seriesData?.title,
+            },
+          };
           doesExist = series.findIndex((a) => a.title === seriesData?.seriesId);
           if (doesExist !== -1) {
-            series[doesExist].data.push(comments[i] as CommentData);
+            series[doesExist].data.push(comments[i]);
           } else {
             series.push({
               title: seriesData?.seriesId as string,
-              data: [comments[i] as CommentData],
+              data: [comments[i]],
+              seriesInfo: {
+                year: seriesData?.id ?? '2020',
+                episodeNumber: seriesData?.episodeNumber ?? 0,
+                episodeTitle: seriesData?.title ?? '',
+              },
             });
           }
         }
       }
+    // setComments(tempComments);
     setSectionList(series);
+    setIsLoading(false);
   };
+
   useEffect(() => {
     loadComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     loadSeriesData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comments]);
 
-  const renderComment = (item: CommentData): JSX.Element => {
+  const openComment = (selectedComment: Comment) => {
+    if (selectedComment?.id && selectedComment?.comment)
+      navigation.push('CommentScreen', {
+        commentId: selectedComment.id,
+        comment: selectedComment?.comment,
+        tags: selectedComment.tags ?? [],
+        commentType: selectedComment.commentType,
+        imageUri: selectedComment.imageUri ?? undefined,
+        textSnippet: selectedComment.textSnippet ?? undefined,
+        noteId: selectedComment.noteId,
+      });
+  };
+
+  const renderComment = (
+    item: Comment,
+    seriesInfo: SeriesInfo
+  ): JSX.Element => {
     return (
-      <View style={style.commentItem}>
+      <TouchableOpacity
+        onPress={() => openComment(item)}
+        style={style.commentItem}
+      >
         <Text style={style.dateText}>
           {item?.date} • {item?.time}
         </Text>
         <Text style={style.commentText}>{item?.comment}</Text>
         <View
           style={{
-            marginBottom: 14,
+            marginBottom: 8,
             flexDirection: 'row',
             flexWrap: 'wrap',
             marginRight: 6,
@@ -239,7 +295,20 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             );
           })}
         </View>
-      </View>
+        {seriesInfo ? (
+          <Text
+            style={{
+              color: '#C8C8C8',
+              fontSize: 12,
+              fontFamily: 'Graphik-Regular-App',
+              lineHeight: 18,
+              marginBottom: 15,
+            }}
+          >
+            E{seriesInfo.episodeNumber}, {seriesInfo.episodeTitle}
+          </Text>
+        ) : null}
+      </TouchableOpacity>
     );
   };
   return (
@@ -256,7 +325,17 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextOne="Most Recent"
         btnTextTwo="By Series"
       />
-      {!filterToggle ? (
+      {isLoading ? (
+        <ActivityIndicator
+          animating={isLoading}
+          style={{
+            alignSelf: 'center',
+            marginTop: 100,
+            width: 50,
+            height: 50,
+          }}
+        />
+      ) : !filterToggle ? (
         <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
           <FlatList
             /*  ListFooterComponent={
@@ -277,7 +356,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                 )
             )}
             renderItem={({ item }) => {
-              return renderComment(item);
+              return renderComment(item, item?.seriesInfo);
             }}
             keyExtractor={(item, index) => index.toString()}
           />
@@ -287,16 +366,19 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           <SectionList
             style={{ marginTop: 18, marginLeft: 16 }}
             sections={sectionList}
-            keyExtractor={(item: CommentData) => {
+            keyExtractor={(item: any) => {
               return item?.id;
             }}
-            renderItem={({ item }: any) => {
-              return renderComment(item);
+            renderItem={({ item, section: { seriesInfo } }: any) => {
+              return <View>{renderComment(item, seriesInfo)}</View>;
             }}
-            renderSectionHeader={({ section: { title } }) => (
+            renderSectionHeader={({ section: { title, seriesInfo } }) => (
               <View style={{ flex: 1, flexDirection: 'row', marginTop: 16 }}>
                 <View style={{ flexDirection: 'column' }}>
                   <Text style={style.sectionListHeader}>{title}</Text>
+                  <Text style={[style.dateText, { color: '#646469' }]}>
+                    {seriesInfo?.year.slice(0, 4)} • # Episodes
+                  </Text>
                 </View>
 
                 <View
@@ -306,11 +388,20 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                     justifyContent: 'flex-end',
                   }}
                 >
-                  <Thumbnail
-                    square
-                    style={{ width: 80, height: 96, marginRight: 16 }}
-                    source={{ uri: getSeriesImage(title) }}
-                  />
+                  <TouchableHighlight
+                    onPress={() =>
+                      navigation.navigate('Teaching', {
+                        screen: 'SeriesLandingScreen',
+                        params: { seriesId: title },
+                      })
+                    }
+                  >
+                    <Thumbnail
+                      square
+                      style={{ width: 80, height: 96, marginRight: 16 }}
+                      source={{ uri: getSeriesImage(title) }}
+                    />
+                  </TouchableHighlight>
                 </View>
               </View>
             )}
