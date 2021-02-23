@@ -20,6 +20,7 @@ import { getCommentsByOwner } from '../../graphql/queries';
 import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
+import { getSeries } from 'src/services/queries';
 // import AllButton from '../../components/buttons/AllButton';
 
 const style = StyleSheet.create({
@@ -154,6 +155,20 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       console.debug(e);
     }
   };
+  const getSeriesImage = (title: string) => {
+    return `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${title.replace(
+      '?',
+      ''
+    )}.jpg`;
+    /*     let imageUri = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${title.replace(
+      '?',
+      ''
+    )}.jpg`;
+    let imageUri = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${title.replace(
+      / /g,
+      '%20'
+    )}.jpg`; */
+  };
   const loadSeriesData = async () => {
     const series: Series = [];
     let doesExist;
@@ -161,6 +176,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     if (comments)
       for (let i = 0; i < comments.length; i++) {
         if (comments[i]?.noteId) {
+          // TODO: Missing try/catch
           // eslint-disable-next-line no-await-in-loop
           const seriesData = await NotesService.loadNotesNoContent(
             comments[i]?.noteId as string
@@ -278,7 +294,25 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               return renderComment(item);
             }}
             renderSectionHeader={({ section: { title } }) => (
-              <Text style={style.sectionListHeader}>{title}</Text>
+              <View style={{ flex: 1, flexDirection: 'row', marginTop: 16 }}>
+                <View style={{ flexDirection: 'column' }}>
+                  <Text style={style.sectionListHeader}>{title}</Text>
+                </View>
+
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    justifyContent: 'flex-end',
+                  }}
+                >
+                  <Thumbnail
+                    square
+                    style={{ width: 80, height: 96, marginRight: 16 }}
+                    source={{ uri: getSeriesImage(title) }}
+                  />
+                </View>
+              </View>
             )}
           />
         </View>
