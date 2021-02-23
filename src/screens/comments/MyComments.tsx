@@ -366,10 +366,10 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           <SectionList
             style={{ marginTop: 18, marginLeft: 16 }}
             sections={sectionList}
-            keyExtractor={(item: any) => {
+            keyExtractor={(item) => {
               return item?.id;
             }}
-            renderItem={({ item, section: { seriesInfo } }: any) => {
+            renderItem={({ item, section: { seriesInfo } }) => {
               return <View>{renderComment(item, seriesInfo)}</View>;
             }}
             renderSectionHeader={({ section: { title, seriesInfo } }) => (
