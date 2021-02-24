@@ -9,13 +9,11 @@ import {
   FlatList,
   Dimensions,
   SectionList,
+  TouchableHighlight,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
-import {
-  TouchableHighlight,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import ToggleButton from '../../components/buttons/ToggleButton';
 import SearchBar from '../../components/SearchBar';
@@ -75,7 +73,7 @@ type SeriesInfo = {
   episodeNumber: number;
   episodeTitle: string;
 };
-type RecentComments = Array<Comment & SeriesInfo>;
+type RecentComments = Array<Comment>;
 
 type Comment = NonNullable<
   NonNullable<
@@ -135,19 +133,25 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       },
     });
   }, [navigation]);
+
+  // TODO: Variable name changes, improve clarity
+  // TODO: Implement pagination + search (the proper way?). Schema changes are required
+  //        - Data needs to be presorted in order to allow for proper pagination with nextToken
+  // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
+  // TODO: Fix types
   // TODO: Implement seriesInfo for FlatList comments array
   const [comments, setComments] = useState<RecentComments>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // TODO: Move isLoading to sectionList and comments
+  const [isLoadingFlat, setIsLoadingFlat] = useState(false);
+  const [isLoadingSection, setIsLoadingSection] = useState(false);
+
   const [searchText, setSearchText] = useState('');
   const [sectionList, setSectionList] = useState<BySeriesComments>([]);
   const [filterToggle, setFilterToggle] = useState(false);
-  // TODO: Fix types
-  // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
-  // TODO: Implement pagination + search (the proper way?). Schema changes are required
-  //        - Data needs to be presorted in order to allow for proper pagination with nextToken
-  // TODO: Implement ActivityIndicator for each view instead of waiting
+
   const loadComments = async () => {
+    setIsLoadingFlat(true);
     try {
       const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
       const json = (await API.graphql({
@@ -166,6 +170,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         if (commentData) {
           // TODO: Sort by createdAt
           setComments(commentData);
+          setIsLoadingFlat(false);
           setNextToken(json.data.getCommentsByOwner.nextToken);
         }
       }
@@ -178,17 +183,10 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       '?',
       ''
     )}.jpg`;
-    /*     let imageUri = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${title.replace(
-      '?',
-      ''
-    )}.jpg`;
-    let imageUri = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${title.replace(
-      / /g,
-      '%20'
-    )}.jpg`; */
+    // TODO: Implement fallback image
   };
   const loadSeriesData = async () => {
-    setIsLoading(true);
+    setIsLoadingSection(true);
     const series: BySeriesComments = [];
     const tempComments = [...comments];
     let doesExist;
@@ -227,7 +225,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       }
     // setComments(tempComments);
     setSectionList(series);
-    setIsLoading(false);
+    setIsLoadingSection(false);
   };
 
   useEffect(() => {
@@ -311,6 +309,90 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       </TouchableOpacity>
     );
   };
+  const renderFlatList = () => {
+    return (
+      <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+        <FlatList
+          style={{ marginTop: 18, marginLeft: 16 }}
+          data={comments?.filter(
+            (comment) =>
+              comment?.comment
+                ?.toLowerCase()
+                ?.includes(searchText.toLowerCase()) ||
+              comment?.tags?.find((tag) =>
+                tag?.toLowerCase()?.includes(searchText.toLowerCase())
+              )
+          )}
+          renderItem={({ item }) => {
+            return renderComment(item, item?.seriesInfo);
+          }}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </View>
+    );
+  };
+  const renderSectionList = () => {
+    return (
+      <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+        <SectionList
+          style={{ marginTop: 18, marginLeft: 16 }}
+          sections={sectionList}
+          keyExtractor={({ id }) => {
+            return id;
+          }}
+          renderItem={({ item, section: { seriesInfo } }) => {
+            return <View>{renderComment(item, seriesInfo)}</View>;
+          }}
+          renderSectionHeader={({ section: { title, seriesInfo } }) => (
+            <View style={{ flex: 1, flexDirection: 'row', marginTop: 16 }}>
+              <View style={{ flexDirection: 'column' }}>
+                <Text style={style.sectionListHeader}>{title}</Text>
+                <Text style={[style.dateText, { color: '#646469' }]}>
+                  {seriesInfo?.year.slice(0, 4)} • # Episodes
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <TouchableHighlight
+                  onPress={() =>
+                    navigation.navigate('Teaching', {
+                      screen: 'SeriesLandingScreen',
+                      params: { seriesId: title },
+                    })
+                  }
+                >
+                  <Thumbnail
+                    square
+                    style={{ width: 80, height: 96, marginRight: 16 }}
+                    source={{ uri: getSeriesImage(title) }}
+                  />
+                </TouchableHighlight>
+              </View>
+            </View>
+          )}
+        />
+      </View>
+    );
+  };
+  const renderActivityIndicator = () => {
+    return (
+      <ActivityIndicator
+        animating={isLoadingSection || isLoadingFlat}
+        style={{
+          alignSelf: 'center',
+          marginTop: 100,
+          width: 50,
+          height: 50,
+        }}
+      />
+    );
+  };
   return (
     <View style={{ marginTop: 12 }}>
       <SearchBar
@@ -325,89 +407,13 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextOne="Most Recent"
         btnTextTwo="By Series"
       />
-      {isLoading ? (
-        <ActivityIndicator
-          animating={isLoading}
-          style={{
-            alignSelf: 'center',
-            marginTop: 100,
-            width: 50,
-            height: 50,
-          }}
-        />
-      ) : !filterToggle ? (
-        <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
-          <FlatList
-            /*  ListFooterComponent={
-              <View style={{ marginBottom: 10 }}>
-                <AllButton handlePress={() => loadComments()}>
-                  Load More
-                </AllButton>
-              </View>
-            } */
-            style={{ marginTop: 18, marginLeft: 16 }}
-            data={comments?.filter(
-              (comment) =>
-                comment?.comment
-                  ?.toLowerCase()
-                  ?.includes(searchText.toLowerCase()) ||
-                comment?.tags?.find((tag) =>
-                  tag?.toLowerCase()?.includes(searchText.toLowerCase())
-                )
-            )}
-            renderItem={({ item }) => {
-              return renderComment(item, item?.seriesInfo);
-            }}
-            keyExtractor={(item, index) => index.toString()}
-          />
-        </View>
-      ) : (
-        <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
-          <SectionList
-            style={{ marginTop: 18, marginLeft: 16 }}
-            sections={sectionList}
-            keyExtractor={(item) => {
-              return item?.id;
-            }}
-            renderItem={({ item, section: { seriesInfo } }) => {
-              return <View>{renderComment(item, seriesInfo)}</View>;
-            }}
-            renderSectionHeader={({ section: { title, seriesInfo } }) => (
-              <View style={{ flex: 1, flexDirection: 'row', marginTop: 16 }}>
-                <View style={{ flexDirection: 'column' }}>
-                  <Text style={style.sectionListHeader}>{title}</Text>
-                  <Text style={[style.dateText, { color: '#646469' }]}>
-                    {seriesInfo?.year.slice(0, 4)} • # Episodes
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                    justifyContent: 'flex-end',
-                  }}
-                >
-                  <TouchableHighlight
-                    onPress={() =>
-                      navigation.navigate('Teaching', {
-                        screen: 'SeriesLandingScreen',
-                        params: { seriesId: title },
-                      })
-                    }
-                  >
-                    <Thumbnail
-                      square
-                      style={{ width: 80, height: 96, marginRight: 16 }}
-                      source={{ uri: getSeriesImage(title) }}
-                    />
-                  </TouchableHighlight>
-                </View>
-              </View>
-            )}
-          />
-        </View>
-      )}
+      {!filterToggle
+        ? isLoadingFlat
+          ? renderActivityIndicator()
+          : renderFlatList()
+        : isLoadingSection
+        ? renderActivityIndicator()
+        : renderSectionList()}
     </View>
   );
 }
