@@ -3,13 +3,14 @@
     "name": "The Meeting House",
     "description": "When’s the last time someone asked you what you believe? You know—about the big things in life. We’re a church that loves to ask questions, and loves people with questions. We don’t have all the answers, but exploring together is pretty much our favourite thing.",
     "slug": "tmh-mobile",
+    "owner": "georgevicbell",
     "privacy": "public",
     "platforms": ["ios", "android", "web"],
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.10",
+    "version": "6.0.11",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -47,7 +48,7 @@
     "android": {
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20101,
+      "versionCode": 20111,
       "intentFilters": [
         {
           "action": "VIEW",
