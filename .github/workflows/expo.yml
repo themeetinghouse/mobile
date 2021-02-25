@@ -17,4 +17,5 @@ jobs:
           expo-version: 4.x
           expo-token: ${{ secrets.EXPO_TOKEN }}
           expo-cache: true
+      - run: curl -sL https://sentry.io/get-cli/ | bash
       - run: npm run-script buildExpo
