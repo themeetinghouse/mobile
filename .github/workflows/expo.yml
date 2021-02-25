@@ -7,10 +7,10 @@ jobs:
   publish:
     name: Install and publish
     runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
     steps:
-      - env:
-        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
