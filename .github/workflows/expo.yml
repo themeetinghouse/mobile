@@ -8,7 +8,7 @@ jobs:
     name: Install and publish
     runs-on: ubuntu-latest
     steps:
-       env:
+      - env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
       - uses: actions/checkout@v2
