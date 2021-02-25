@@ -18,6 +18,6 @@ jobs:
           expo-token: ${{ secrets.EXPO_TOKEN }}
           expo-cache: true
       - run: curl -sL https://sentry.io/get-cli/ | bash
-             export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-             export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
-             npm run-script buildExpo
+      - run: export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      - run: export SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+      - run: npm run-script buildExpo
