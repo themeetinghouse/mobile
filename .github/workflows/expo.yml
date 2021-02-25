@@ -17,5 +17,4 @@ jobs:
           expo-version: 4.x
           expo-token: ${{ secrets.EXPO_TOKEN }}
           expo-cache: true
-      - run: npm install
-      - run: expo build:android -t apk
+      - run: npm run-script buildExpo
