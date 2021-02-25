@@ -23,7 +23,6 @@ import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
 import ActivityIndicator from '../../components/ActivityIndicator';
-// import AllButton from '../../components/buttons/AllButton';
 
 const style = StyleSheet.create({
   content: {
@@ -75,11 +74,14 @@ type SeriesInfo = {
 };
 type RecentComments = Array<Comment>;
 
-type Comment = NonNullable<
-  NonNullable<
-    NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
-  >['items']
->[0];
+type Comment = {
+  comment: NonNullable<
+    NonNullable<
+      NonNullable<GetCommentsByOwnerQuery['getCommentsByOwner']>
+    >['items']
+  >[0];
+  seriesInfo: SeriesInfo;
+};
 
 type BySeriesComments = Array<{
   title: string;
@@ -140,80 +142,43 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
   // TODO: Fix types
   // TODO: Implement seriesInfo for FlatList comments array
+  // TODO: Sort SectionList data by date within per section
   const [comments, setComments] = useState<RecentComments>([]);
-  const [nextToken, setNextToken] = useState<string | null>(null);
   // TODO: Move isLoading to sectionList and comments
-  const [isLoadingFlat, setIsLoadingFlat] = useState(false);
-  const [isLoadingSection, setIsLoadingSection] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [searchText, setSearchText] = useState('');
   const [sectionList, setSectionList] = useState<BySeriesComments>([]);
   const [filterToggle, setFilterToggle] = useState(false);
 
-  const loadComments = async () => {
-    setIsLoadingFlat(true);
-    try {
-      const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
-      const json = (await API.graphql({
-        query: getCommentsByOwner,
-        variables: {
-          owner: cognitoUser.username,
-          sortDirection: 'DESC',
-          limit: 1000,
-          nextToken,
-        },
-        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
-      })) as GraphQLResult<GetCommentsByOwnerQuery>;
-
-      if (json.data?.getCommentsByOwner?.items) {
-        const commentData = json.data?.getCommentsByOwner?.items;
-        if (commentData) {
-          // TODO: Sort by createdAt
-          setComments(commentData);
-          setIsLoadingFlat(false);
-          setNextToken(json.data.getCommentsByOwner.nextToken);
-        }
-      }
-    } catch (e) {
-      // TODO: Sentry
-    }
-  };
-  const getSeriesImage = (title: string) => {
-    return `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${title.replace(
-      '?',
-      ''
-    )}.jpg`;
-    // TODO: Implement fallback image
-  };
-  const loadSeriesData = async () => {
-    setIsLoadingSection(true);
+  const loadSeriesData = async (userComments: RecentComments) => {
     const series: BySeriesComments = [];
-    const tempComments = [...comments];
+    const tempComments = [...userComments];
     let doesExist;
     // TODO: Awaiting inside for loop increases loading time. Can this be improved?
-    if (comments)
-      for (let i = 0; i < comments.length; i++) {
-        if (comments[i]?.noteId) {
+    if (userComments)
+      for (let i = 0; i < userComments.length; i++) {
+        if (userComments[i].comment?.noteId) {
           // TODO: Missing try/catch
           // eslint-disable-next-line no-await-in-loop
           const seriesData = await NotesService.loadNotesNoContent(
-            comments[i]?.noteId as string
+            userComments[i]?.comment?.noteId as string
           );
           tempComments[i] = {
             ...tempComments[i],
             seriesInfo: {
-              year: seriesData?.id,
-              episodeNumber: seriesData?.episodeNumber,
-              episodeTitle: seriesData?.title,
+              year: seriesData?.id ?? '',
+              episodeNumber: seriesData?.episodeNumber ?? 0,
+              episodeTitle: seriesData?.title ?? '',
             },
           };
           doesExist = series.findIndex((a) => a.title === seriesData?.seriesId);
           if (doesExist !== -1) {
-            series[doesExist].data.push(comments[i]);
+            series[doesExist].data.push(userComments[i]);
           } else {
             series.push({
               title: seriesData?.seriesId as string,
-              data: [comments[i]],
+              data: [userComments[i]],
               seriesInfo: {
                 year: seriesData?.id ?? '2020',
                 episodeNumber: seriesData?.episodeNumber ?? 0,
@@ -223,30 +188,70 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           }
         }
       }
-    // setComments(tempComments);
+    setComments(tempComments);
     setSectionList(series);
-    setIsLoadingSection(false);
+    setIsLoading(false);
+  };
+
+  const loadComments = async () => {
+    setIsLoading(true);
+    try {
+      const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+      const json = (await API.graphql({
+        query: getCommentsByOwner,
+        variables: {
+          owner: cognitoUser.username,
+          sortDirection: 'DESC',
+          limit: 1000,
+        },
+        authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
+      })) as GraphQLResult<GetCommentsByOwnerQuery>;
+
+      if (json.data?.getCommentsByOwner?.items) {
+        const commentData = json.data?.getCommentsByOwner?.items;
+        const transformed = commentData.map((comm) => {
+          return {
+            comment: comm,
+            seriesInfo: {
+              year: '',
+              episodeNumber: 0,
+              episodeTitle: '',
+            },
+          } as Comment;
+        });
+        if (transformed) {
+          // TODO: Sort by createdAt
+          await loadSeriesData(transformed);
+        }
+      }
+    } catch (e) {
+      // TODO: Sentry
+      setIsLoading(false);
+    }
+  };
+  const getSeriesImage = (title: string) => {
+    return `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${title.replace(
+      '?',
+      ''
+    )}.jpg`;
+    // TODO: Implement fallback image
   };
 
   useEffect(() => {
     loadComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  useEffect(() => {
-    loadSeriesData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [comments]);
 
   const openComment = (selectedComment: Comment) => {
-    if (selectedComment?.id && selectedComment?.comment)
+    if (selectedComment?.comment?.id && selectedComment?.comment?.comment)
       navigation.push('CommentScreen', {
-        commentId: selectedComment.id,
-        comment: selectedComment?.comment,
-        tags: selectedComment.tags ?? [],
-        commentType: selectedComment.commentType,
-        imageUri: selectedComment.imageUri ?? undefined,
-        textSnippet: selectedComment.textSnippet ?? undefined,
-        noteId: selectedComment.noteId,
+        commentId: selectedComment?.comment?.id,
+        comment: selectedComment?.comment?.comment,
+        tags: selectedComment?.comment?.tags ?? [],
+        commentType: selectedComment?.comment?.commentType,
+        imageUri: selectedComment?.comment?.imageUri ?? undefined,
+        textSnippet: selectedComment?.comment?.textSnippet ?? undefined,
+        noteId: selectedComment?.comment?.noteId,
       });
   };
 
@@ -260,9 +265,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         style={style.commentItem}
       >
         <Text style={style.dateText}>
-          {item?.date} • {item?.time}
+          {item?.comment?.date} • {item?.comment?.time}
         </Text>
-        <Text style={style.commentText}>{item?.comment}</Text>
+        <Text style={style.commentText}>{item?.comment?.comment}</Text>
         <View
           style={{
             marginBottom: 8,
@@ -271,7 +276,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             marginRight: 6,
           }}
         >
-          {item?.tags?.map((tag, index) => {
+          {item?.comment?.tags?.map((tag, index) => {
             return (
               <Text
                 key={index.toString()}
@@ -309,12 +314,14 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       </TouchableOpacity>
     );
   };
+
   const renderFlatList = () => {
     return (
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
-          data={comments?.filter(
+          data={
+            comments /* ?.filter(
             (comment) =>
               comment?.comment
                 ?.toLowerCase()
@@ -322,7 +329,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               comment?.tags?.find((tag) =>
                 tag?.toLowerCase()?.includes(searchText.toLowerCase())
               )
-          )}
+          ) */
+          }
           renderItem={({ item }) => {
             return renderComment(item, item?.seriesInfo);
           }}
@@ -331,14 +339,15 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       </View>
     );
   };
+
   const renderSectionList = () => {
     return (
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <SectionList
           style={{ marginTop: 18, marginLeft: 16 }}
           sections={sectionList}
-          keyExtractor={({ id }) => {
-            return id;
+          keyExtractor={(item) => {
+            return item?.comment?.id ?? '';
           }}
           renderItem={({ item, section: { seriesInfo } }) => {
             return <View>{renderComment(item, seriesInfo)}</View>;
@@ -361,9 +370,12 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               >
                 <TouchableHighlight
                   onPress={() =>
-                    navigation.navigate('Teaching', {
-                      screen: 'SeriesLandingScreen',
-                      params: { seriesId: title },
+                    navigation.push('Main', {
+                      screen: 'Teaching',
+                      params: {
+                        screen: 'SeriesLandingScreen',
+                        params: { seriesId: title },
+                      },
                     })
                   }
                 >
@@ -380,10 +392,11 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       </View>
     );
   };
+
   const renderActivityIndicator = () => {
     return (
       <ActivityIndicator
-        animating={isLoadingSection || isLoadingFlat}
+        animating={isLoading}
         style={{
           alignSelf: 'center',
           marginTop: 100,
@@ -393,6 +406,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       />
     );
   };
+
   return (
     <View style={{ marginTop: 12 }}>
       <SearchBar
@@ -407,12 +421,10 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextOne="Most Recent"
         btnTextTwo="By Series"
       />
-      {!filterToggle
-        ? isLoadingFlat
-          ? renderActivityIndicator()
-          : renderFlatList()
-        : isLoadingSection
+      {isLoading
         ? renderActivityIndicator()
+        : !filterToggle
+        ? renderFlatList()
         : renderSectionList()}
     </View>
   );
