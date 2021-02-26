@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-nested-ternary */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
@@ -23,6 +24,7 @@ import { TMHCognitoUser } from '../../../src/contexts/UserContext';
 import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
 import ActivityIndicator from '../../components/ActivityIndicator';
+import SeriesService from '../../../src/services/SeriesService';
 
 const style = StyleSheet.create({
   content: {
@@ -71,6 +73,7 @@ type SeriesInfo = {
   year: string;
   episodeNumber: number;
   episodeTitle: string;
+  episodeCount: number;
 };
 type RecentComments = Array<Comment>;
 
@@ -154,40 +157,60 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const loadSeriesData = async (userComments: RecentComments) => {
     const series: BySeriesComments = [];
     const tempComments = [...userComments];
+    const noteIds: Array<string> = [];
     let doesExist;
-    // TODO: Awaiting inside for loop increases loading time. Can this be improved?
-    if (userComments)
-      for (let i = 0; i < userComments.length; i++) {
-        if (userComments[i].comment?.noteId) {
-          // TODO: Missing try/catch
-          // eslint-disable-next-line no-await-in-loop
-          const seriesData = await NotesService.loadNotesNoContent(
-            userComments[i]?.comment?.noteId as string
-          );
-          tempComments[i] = {
-            ...tempComments[i],
-            seriesInfo: {
-              year: seriesData?.id ?? '',
-              episodeNumber: seriesData?.episodeNumber ?? 0,
-              episodeTitle: seriesData?.title ?? '',
-            },
-          };
-          doesExist = series.findIndex((a) => a.title === seriesData?.seriesId);
-          if (doesExist !== -1) {
-            series[doesExist].data.push(userComments[i]);
-          } else {
-            series.push({
-              title: seriesData?.seriesId as string,
-              data: [userComments[i]],
-              seriesInfo: {
-                year: seriesData?.id ?? '2020',
-                episodeNumber: seriesData?.episodeNumber ?? 0,
-                episodeTitle: seriesData?.title ?? '',
-              },
-            });
-          }
+    // Finds all unique noteIds
+    for (let i = 0; i < userComments.length; i++) {
+      if (userComments[i].comment?.noteId) {
+        const noteLocation = noteIds.findIndex(
+          (id) => id === userComments[i]?.comment?.noteId
+        );
+        if (noteLocation === -1) {
+          noteIds.push(userComments[i]?.comment?.noteId ?? '');
         }
       }
+    }
+    // Iterates through noteIds to get note and series data
+    for (let x = 0; x < noteIds.length; x++) {
+      try {
+        const noteData = await NotesService.loadNotesNoContentCustom(
+          noteIds[x]
+        );
+        const episodeCount = await SeriesService.getSeriesEpisodeCount(
+          noteData?.seriesId ?? ''
+        );
+        for (let z = 0; z < userComments.length; z++) {
+          if (userComments[z].comment?.noteId === noteIds[x]) {
+            tempComments[z] = {
+              ...tempComments[z],
+              seriesInfo: {
+                year: noteData?.id ?? '',
+                episodeNumber: noteData?.episodeNumber ?? 0,
+                episodeTitle: noteData?.title ?? '',
+                episodeCount,
+              },
+            };
+            doesExist = series.findIndex((a) => a.title === noteData?.seriesId);
+            if (doesExist !== -1) {
+              series[doesExist].data.push(userComments[z]);
+            } else {
+              series.push({
+                title: noteData?.seriesId as string,
+                data: [userComments[z]],
+                seriesInfo: {
+                  year: noteData?.id ?? '',
+                  episodeCount,
+                  episodeNumber: noteData?.episodeNumber ?? 0,
+                  episodeTitle: noteData?.title ?? '',
+                },
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
     setComments(tempComments);
     setSectionList(series);
     setIsLoading(false);
@@ -320,17 +343,15 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <FlatList
           style={{ marginTop: 18, marginLeft: 16 }}
-          data={
-            comments /* ?.filter(
+          data={comments?.filter(
             (comment) =>
-              comment?.comment
+              comment?.comment?.comment
                 ?.toLowerCase()
                 ?.includes(searchText.toLowerCase()) ||
-              comment?.tags?.find((tag) =>
+              comment?.comment?.tags?.find((tag) =>
                 tag?.toLowerCase()?.includes(searchText.toLowerCase())
               )
-          ) */
-          }
+          )}
           renderItem={({ item }) => {
             return renderComment(item, item?.seriesInfo);
           }}
@@ -357,7 +378,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               <View style={{ flexDirection: 'column' }}>
                 <Text style={style.sectionListHeader}>{title}</Text>
                 <Text style={[style.dateText, { color: '#646469' }]}>
-                  {seriesInfo?.year.slice(0, 4)} • # Episodes
+                  {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
+                  Episodes
                 </Text>
               </View>
 
