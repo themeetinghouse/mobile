@@ -25,6 +25,7 @@ import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import SeriesService from '../../../src/services/SeriesService';
+import AllButton from '../../../src/components/buttons/AllButton';
 
 const style = StyleSheet.create({
   content: {
@@ -40,6 +41,7 @@ const style = StyleSheet.create({
     marginBottom: 16,
   },
   commentItem: {
+    marginLeft: 18,
     borderBottomLeftRadius: 0,
     borderBottomWidth: 0.2,
     borderBottomColor: 'grey',
@@ -66,6 +68,7 @@ const style = StyleSheet.create({
     fontFamily: 'Graphik-Bold-App',
     fontSize: 24,
     lineHeight: 32,
+    marginRight: 8,
   },
 });
 
@@ -338,11 +341,21 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     );
   };
 
-  const renderFlatList = () => {
+  const CommentListByDate = () => {
+    const [showCount, setShowCount] = useState(20);
     return (
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <FlatList
-          style={{ marginTop: 18, marginLeft: 16 }}
+          style={{ marginTop: 18 }}
+          ListFooterComponent={
+            comments.length > showCount ? (
+              <View style={{ marginBottom: 10 }}>
+                <AllButton handlePress={() => setShowCount(showCount + 20)}>
+                  Load More
+                </AllButton>
+              </View>
+            ) : null
+          }
           data={comments?.filter(
             (comment) =>
               comment?.comment?.comment
@@ -352,8 +365,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                 tag?.toLowerCase()?.includes(searchText.toLowerCase())
               )
           )}
-          renderItem={({ item }) => {
-            return renderComment(item, item?.seriesInfo);
+          renderItem={({ item, index }) => {
+            if (index < showCount) return renderComment(item, item?.seriesInfo);
+            return null;
           }}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -361,55 +375,79 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     );
   };
 
-  const renderSectionList = () => {
+  const CommentListBySeries = () => {
+    const [showCount, setShowCount] = useState(3);
     return (
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <SectionList
-          style={{ marginTop: 18, marginLeft: 16 }}
-          sections={sectionList}
+          style={{ marginTop: 18 }}
+          sections={[...sectionList]}
+          ListFooterComponent={
+            sectionList.length > showCount ? (
+              <View style={{ marginBottom: 10 }}>
+                <AllButton handlePress={() => setShowCount(showCount + 3)}>
+                  Load More
+                </AllButton>
+              </View>
+            ) : null
+          }
           keyExtractor={(item) => {
             return item?.comment?.id ?? '';
           }}
-          renderItem={({ item, section: { seriesInfo } }) => {
+          renderItem={({ item, index, section: { seriesInfo } }) => {
             return <View>{renderComment(item, seriesInfo)}</View>;
           }}
-          renderSectionHeader={({ section: { title, seriesInfo } }) => (
-            <View style={{ flex: 1, flexDirection: 'row', marginTop: 16 }}>
-              <View style={{ flexDirection: 'column' }}>
-                <Text style={style.sectionListHeader}>{title}</Text>
-                <Text style={[style.dateText, { color: '#646469' }]}>
-                  {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
-                  Episodes
-                </Text>
-              </View>
-
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <TouchableHighlight
-                  onPress={() =>
-                    navigation.push('Main', {
-                      screen: 'Teaching',
-                      params: {
-                        screen: 'SeriesLandingScreen',
-                        params: { seriesId: title },
-                      },
-                    })
-                  }
+          renderSectionHeader={({ section: { title, data, seriesInfo } }) => {
+            if (data.length > 0)
+              return (
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                    marginTop: 16,
+                    marginLeft: 18,
+                  }}
                 >
-                  <Thumbnail
-                    square
-                    style={{ width: 80, height: 96, marginRight: 16 }}
-                    source={{ uri: getSeriesImage(title) }}
-                  />
-                </TouchableHighlight>
-              </View>
-            </View>
-          )}
+                  <View style={{ flexDirection: 'column', flex: 1 }}>
+                    <Text style={style.sectionListHeader}>{title}</Text>
+                    <Text style={[style.dateText, { color: '#646469' }]}>
+                      {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
+                      Episodes
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-end',
+                    }}
+                  >
+                    <TouchableHighlight
+                      onPress={() =>
+                        navigation.push('Main', {
+                          screen: 'Teaching',
+                          params: {
+                            screen: 'SeriesLandingScreen',
+                            params: { seriesId: title },
+                          },
+                        })
+                      }
+                    >
+                      <Thumbnail
+                        square
+                        style={{
+                          width: 80,
+                          height: 96,
+                          marginRight: 16,
+                        }}
+                        source={{ uri: getSeriesImage(title) }}
+                      />
+                    </TouchableHighlight>
+                  </View>
+                </View>
+              );
+            return null;
+          }}
         />
       </View>
     );
@@ -443,11 +481,13 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextOne="Most Recent"
         btnTextTwo="By Series"
       />
-      {isLoading
-        ? renderActivityIndicator()
-        : !filterToggle
-        ? renderFlatList()
-        : renderSectionList()}
+      {isLoading ? (
+        renderActivityIndicator()
+      ) : !filterToggle ? (
+        <CommentListByDate />
+      ) : (
+        <CommentListBySeries />
+      )}
     </View>
   );
 }
