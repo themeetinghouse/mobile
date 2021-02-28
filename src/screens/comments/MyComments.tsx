@@ -142,17 +142,12 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     });
   }, [navigation]);
 
-  // TODO: Variable name changes, improve clarity
   // TODO: Implement pagination + search (the proper way?). Schema changes are required
   //        - Data needs to be presorted in order to allow for proper pagination with nextToken
   // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
-  // TODO: Fix types
-  // TODO: Implement seriesInfo for FlatList comments array
-  // TODO: Sort SectionList data by date within per section
+  // TODO: [Is this needed?] Sort SectionList data by date within per section
   const [comments, setComments] = useState<RecentComments>([]);
-  // TODO: Move isLoading to sectionList and comments
   const [isLoading, setIsLoading] = useState(false);
-
   const [searchText, setSearchText] = useState('');
   const [sectionList, setSectionList] = useState<BySeriesComments>([]);
   const [filterToggle, setFilterToggle] = useState(false);
