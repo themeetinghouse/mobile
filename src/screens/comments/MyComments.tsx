@@ -146,7 +146,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   // TODO: Implement pagination + search (the proper way?). Schema changes are required
   //        - Data needs to be presorted in order to allow for proper pagination with nextToken
   // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
-  // TODO: [Is this needed?] Sort SectionList data by date within per section
   const [comments, setComments] = useState<RecentComments>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -207,8 +206,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           }
         }
       } catch (err) {
-        // TODO: Sentry
-        console.log(err);
+        console.debug(err);
       }
     }
     setComments(tempComments);
@@ -253,9 +251,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           await loadSeriesData(transformed);
         }
       }
-    } catch (e) {
-      // TODO: Sentry
+    } catch (err) {
       setIsLoading(false);
+      console.debug(err);
     }
   };
   const getSeriesImage = (title: string) => {
@@ -263,7 +261,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       '?',
       ''
     )}.jpg`;
-    // TODO: Implement fallback image
   };
 
   useEffect(() => {
@@ -383,8 +380,10 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     return (
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <SectionList
+          removeClippedSubviews
           style={{ marginTop: 18 }}
           sections={sectionList}
+          stickySectionHeadersEnabled={false}
           ListFooterComponent={
             sectionList.length > showCount ? (
               <View style={{ marginBottom: 10 }}>
@@ -406,8 +405,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                 <View
                   style={{
                     flex: 1,
+                    backgroundColor: 'black',
                     flexDirection: 'row',
-                    marginTop: 16,
+                    marginTop: 18,
                     marginLeft: 18,
                   }}
                 >
