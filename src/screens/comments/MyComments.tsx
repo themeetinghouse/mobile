@@ -44,31 +44,84 @@ const style = StyleSheet.create({
     marginLeft: 18,
     borderBottomLeftRadius: 0,
     borderBottomWidth: 0.2,
-    borderBottomColor: 'grey',
+    borderBottomColor: Theme.colors.gray3,
   },
   commentText: {
     paddingTop: 8,
-    color: '#FFFFFF',
-    fontFamily: 'Graphik-Regular-App',
-    fontWeight: '400',
+    color: Theme.colors.white,
+    fontFamily: Theme.fonts.fontFamilyRegular,
     lineHeight: 24,
     paddingRight: 16,
-    fontSize: 16,
+    fontSize: Theme.fonts.medium,
     paddingBottom: 8,
   },
   dateText: {
     marginTop: 16,
-    fontFamily: 'Graphik-Regular-App',
-    fontSize: 12,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    fontSize: Theme.fonts.small,
     lineHeight: 18,
-    color: '#FFFFFF',
+    color: Theme.colors.white,
   },
-  sectionListHeader: {
-    color: 'white',
-    fontFamily: 'Graphik-Bold-App',
+  sectionListHeaderContainer: {
+    flex: 1,
+    backgroundColor: Theme.colors.black,
+    flexDirection: 'row',
+    marginTop: 18,
+    marginLeft: 18,
+  },
+  sectionListHeaderText: {
+    color: Theme.colors.white,
+    fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: 24,
     lineHeight: 32,
     marginRight: 8,
+  },
+  tagContainer: {
+    marginBottom: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginRight: 6,
+  },
+  tagText: {
+    marginBottom: 2,
+    marginRight: 4,
+    fontSize: Theme.fonts.small,
+    lineHeight: 18,
+    paddingTop: 4,
+    paddingBottom: 4,
+    paddingHorizontal: 8,
+    height: 26,
+    color: Theme.colors.white,
+    backgroundColor: Theme.colors.gray1,
+  },
+  seriesInfoText: {
+    color: Theme.colors.gray5,
+    fontSize: Theme.fonts.small,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    lineHeight: 18,
+    marginBottom: 15,
+  },
+  emptyListText: {
+    marginLeft: 18,
+    color: Theme.colors.white,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    lineHeight: 24,
+    fontSize: Theme.fonts.medium,
+  },
+  seriesImage: {
+    width: 80,
+    height: 96,
+    marginRight: 16,
+  },
+  listWrapper: {
+    flex: 1,
+    marginTop: 18,
+  },
+  spinnerStyle: {
+    alignSelf: 'center',
+    marginTop: 100,
+    width: 50,
+    height: 50,
   },
 });
 
@@ -265,16 +318,16 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     loadComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const openComment = (selectedComment: Comment) => {
-    if (selectedComment?.comment?.id && selectedComment?.comment?.comment)
+  const openComment = ({ comment }: Comment) => {
+    if (comment?.id && comment?.comment)
       navigation.push('CommentScreen', {
-        commentId: selectedComment?.comment?.id,
-        comment: selectedComment?.comment?.comment,
-        tags: selectedComment?.comment?.tags ?? [],
-        commentType: selectedComment?.comment?.commentType,
-        imageUri: selectedComment?.comment?.imageUri ?? undefined,
-        textSnippet: selectedComment?.comment?.textSnippet ?? undefined,
-        noteId: selectedComment?.comment?.noteId,
+        commentId: comment?.id,
+        comment: comment?.comment,
+        tags: comment?.tags ?? [],
+        commentType: comment?.commentType,
+        imageUri: comment?.imageUri ?? undefined,
+        textSnippet: comment?.textSnippet ?? undefined,
+        noteId: comment?.noteId,
       });
   };
 
@@ -291,46 +344,17 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           {item?.comment?.date} • {item?.comment?.time}
         </Text>
         <Text style={style.commentText}>{item?.comment?.comment}</Text>
-        <View
-          style={{
-            marginBottom: 8,
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            marginRight: 6,
-          }}
-        >
+        <View style={style.tagContainer}>
           {item?.comment?.tags?.map((tag, index) => {
             return (
-              <Text
-                key={index.toString()}
-                style={{
-                  marginBottom: 2,
-                  marginRight: 4,
-                  fontSize: 12,
-                  lineHeight: 18,
-                  paddingTop: 4,
-                  paddingBottom: 4,
-                  paddingHorizontal: 8,
-                  height: 26,
-                  color: 'white',
-                  backgroundColor: '#1A1A1A',
-                }}
-              >
+              <Text key={index.toString()} style={style.tagText}>
                 {tag}
               </Text>
             );
           })}
         </View>
         {seriesInfo ? (
-          <Text
-            style={{
-              color: '#C8C8C8',
-              fontSize: 12,
-              fontFamily: 'Graphik-Regular-App',
-              lineHeight: 18,
-              marginBottom: 15,
-            }}
-          >
+          <Text style={style.seriesInfoText}>
             E{seriesInfo.episodeNumber}, {seriesInfo.episodeTitle}
           </Text>
         ) : null}
@@ -341,25 +365,13 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const CommentListByDate = () => {
     const [showCount, setShowCount] = useState(20);
     return (
-      <View style={{ flex: 1 }}>
+      <View style={style.listWrapper}>
         <FlatList
           ListEmptyComponent={
             <View>
-              <Text
-                style={{
-                  marginLeft: 18,
-                  color: '#FFFFFF',
-                  fontFamily: 'Graphik-Regular-App',
-                  fontWeight: '400',
-                  lineHeight: 24,
-                  fontSize: 16,
-                }}
-              >
-                No comments found
-              </Text>
+              <Text style={style.emptyListText}>No comments found</Text>
             </View>
           }
-          style={{ marginTop: 18 }}
           ListFooterComponent={
             comments.length > showCount ? (
               <View style={{ marginBottom: 10 }}>
@@ -370,11 +382,11 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             ) : null
           }
           data={comments?.filter(
-            (comment) =>
-              comment?.comment?.comment
+            ({ comment }) =>
+              comment?.comment
                 ?.toLowerCase()
                 ?.includes(searchText.toLowerCase()) ||
-              comment?.comment?.tags?.find((tag) =>
+              comment?.tags?.find((tag) =>
                 tag?.toLowerCase()?.includes(searchText.toLowerCase())
               )
           )}
@@ -382,7 +394,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             if (index < showCount) return renderComment(item, item?.seriesInfo);
             return null;
           }}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => {
+            return item.comment?.id ?? index.toString();
+          }}
         />
       </View>
     );
@@ -391,34 +405,22 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const CommentListBySeries = () => {
     const [showCount, setShowCount] = useState(3);
     return (
-      <View style={{ flex: 1 }}>
+      <View style={style.listWrapper}>
         <SectionList
           ListEmptyComponent={
             <View>
-              <Text
-                style={{
-                  marginLeft: 18,
-                  color: '#FFFFFF',
-                  fontFamily: 'Graphik-Regular-App',
-                  fontWeight: '400',
-                  lineHeight: 24,
-                  fontSize: 16,
-                }}
-              >
-                No comments found
-              </Text>
+              <Text style={style.emptyListText}>No comments found</Text>
             </View>
           }
-          style={{ marginTop: 18 }}
           sections={
             sectionList
               .map((section) => {
                 const filtered = section.data.filter(
-                  (comment) =>
-                    comment.comment?.comment
+                  ({ comment }) =>
+                    comment?.comment
                       ?.toLowerCase()
                       .includes(searchText.toLowerCase()) ||
-                    comment?.comment?.tags?.find((tag) =>
+                    comment?.tags?.find((tag) =>
                       tag?.toLowerCase()?.includes(searchText.toLowerCase())
                     )
                 );
@@ -441,28 +443,19 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               </View>
             ) : null
           }
-          keyExtractor={(item) => {
-            return item?.comment?.id ?? '';
+          keyExtractor={(item, index) => {
+            return item?.comment?.id ?? index.toString();
           }}
           extraData={searchText}
           renderItem={({ item, section: { seriesInfo } }) => {
             return <View>{renderComment(item, seriesInfo)}</View>;
           }}
-          renderSectionHeader={({ section: { title, data, seriesInfo } }) => {
+          renderSectionHeader={({ section: { title, seriesInfo } }) => {
             return (
-              <View
-                style={{
-                  display: data.length === 0 ? 'none' : 'flex',
-                  flex: 1,
-                  backgroundColor: 'black',
-                  flexDirection: 'row',
-                  marginTop: 18,
-                  marginLeft: 18,
-                }}
-              >
+              <View style={style.sectionListHeaderContainer}>
                 <View style={{ flexDirection: 'column', flex: 1 }}>
-                  <Text style={style.sectionListHeader}>{title}</Text>
-                  <Text style={[style.dateText, { color: '#646469' }]}>
+                  <Text style={style.sectionListHeaderText}>{title}</Text>
+                  <Text style={[style.dateText, { color: Theme.colors.gray4 }]}>
                     {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
                     Episodes
                   </Text>
@@ -486,11 +479,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                     }
                   >
                     <FallbackImage
-                      style={{
-                        width: 80,
-                        height: 96,
-                        marginRight: 16,
-                      }}
+                      style={style.seriesImage}
                       uri={getSeriesImage(title)}
                       catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
                     />
@@ -504,22 +493,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     );
   };
 
-  const renderActivityIndicator = () => {
-    return (
-      <ActivityIndicator
-        animating={isLoading}
-        style={{
-          alignSelf: 'center',
-          marginTop: 100,
-          width: 50,
-          height: 50,
-        }}
-      />
-    );
-  };
-
   return (
-    <View style={{ marginTop: 12, flex: 1 }}>
+    <View style={{ flex: 1, marginTop: 12 }}>
       <SearchBar
         style={{ marginHorizontal: 16, marginBottom: 18.5 }}
         handleTextChanged={(newStr) => setSearchText(newStr)}
@@ -533,7 +508,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         btnTextTwo="By Series"
       />
       {isLoading ? (
-        renderActivityIndicator()
+        <ActivityIndicator animating={isLoading} style={style.spinnerStyle} />
       ) : !filterToggle ? (
         <CommentListByDate />
       ) : (
