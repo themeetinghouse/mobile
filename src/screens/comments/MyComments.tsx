@@ -1,5 +1,3 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-nested-ternary */
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -222,9 +220,11 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     // Iterates through noteIds to get note and series data
     for (let x = 0; x < noteIds.length; x++) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         const noteData = await NotesService.loadNotesNoContentCustom(
           noteIds[x]
         );
+        // eslint-disable-next-line no-await-in-loop
         const episodeCount = await SeriesService.getSeriesEpisodeCount(
           noteData?.seriesId ?? ''
         );
@@ -396,8 +396,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             if (index < showCount) return renderComment(item, item?.seriesInfo);
             return null;
           }}
-          keyExtractor={(item, index) => {
-            return item.comment?.id ?? index.toString();
+          keyExtractor={(item) => {
+            return item.comment?.id as string;
           }}
         />
       </View>
@@ -445,8 +445,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
               </View>
             ) : null
           }
-          keyExtractor={(item, index) => {
-            return item?.comment?.id ?? index.toString();
+          keyExtractor={(item) => {
+            return item?.comment?.id as string;
           }}
           extraData={searchText}
           renderItem={({ item, section: { seriesInfo } }) => {
