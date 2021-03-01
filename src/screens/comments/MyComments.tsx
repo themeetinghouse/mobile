@@ -8,7 +8,6 @@ import {
   View,
   Text,
   FlatList,
-  Dimensions,
   SectionList,
   TouchableHighlight,
 } from 'react-native';
@@ -145,7 +144,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
 
   // TODO: Implement pagination + search (the proper way?). Schema changes are required
   //        - Data needs to be presorted in order to allow for proper pagination with nextToken
-  // TODO: [Temporary fix has been applied] Bottom of flatlist is being clipped **
   const [comments, setComments] = useState<RecentComments>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -267,7 +265,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     loadComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const openComment = (selectedComment: Comment) => {
     if (selectedComment?.comment?.id && selectedComment?.comment?.comment)
       navigation.push('CommentScreen', {
@@ -344,8 +341,24 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const CommentListByDate = () => {
     const [showCount, setShowCount] = useState(20);
     return (
-      <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+      <View style={{ flex: 1 }}>
         <FlatList
+          ListEmptyComponent={
+            <View>
+              <Text
+                style={{
+                  marginLeft: 18,
+                  color: '#FFFFFF',
+                  fontFamily: 'Graphik-Regular-App',
+                  fontWeight: '400',
+                  lineHeight: 24,
+                  fontSize: 16,
+                }}
+              >
+                No comments found
+              </Text>
+            </View>
+          }
           style={{ marginTop: 18 }}
           ListFooterComponent={
             comments.length > showCount ? (
@@ -378,11 +391,46 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const CommentListBySeries = () => {
     const [showCount, setShowCount] = useState(3);
     return (
-      <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
+      <View style={{ flex: 1 }}>
         <SectionList
-          removeClippedSubviews
+          ListEmptyComponent={
+            <View>
+              <Text
+                style={{
+                  marginLeft: 18,
+                  color: '#FFFFFF',
+                  fontFamily: 'Graphik-Regular-App',
+                  fontWeight: '400',
+                  lineHeight: 24,
+                  fontSize: 16,
+                }}
+              >
+                No comments found
+              </Text>
+            </View>
+          }
           style={{ marginTop: 18 }}
-          sections={sectionList}
+          sections={
+            sectionList
+              .map((section) => {
+                const filtered = section.data.filter(
+                  (comment) =>
+                    comment.comment?.comment
+                      ?.toLowerCase()
+                      .includes(searchText.toLowerCase()) ||
+                    comment?.comment?.tags?.find((tag) =>
+                      tag?.toLowerCase()?.includes(searchText.toLowerCase())
+                    )
+                );
+                if (filtered.length > 0)
+                  return {
+                    ...section,
+                    data: filtered,
+                  };
+                return null;
+              })
+              .filter((section) => section !== null) as BySeriesComments
+          }
           stickySectionHeadersEnabled={false}
           ListFooterComponent={
             sectionList.length > showCount ? (
@@ -396,60 +444,60 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           keyExtractor={(item) => {
             return item?.comment?.id ?? '';
           }}
-          renderItem={({ item, index, section: { seriesInfo } }) => {
+          extraData={searchText}
+          renderItem={({ item, section: { seriesInfo } }) => {
             return <View>{renderComment(item, seriesInfo)}</View>;
           }}
           renderSectionHeader={({ section: { title, data, seriesInfo } }) => {
-            if (data.length > 0)
-              return (
+            return (
+              <View
+                style={{
+                  display: data.length === 0 ? 'none' : 'flex',
+                  flex: 1,
+                  backgroundColor: 'black',
+                  flexDirection: 'row',
+                  marginTop: 18,
+                  marginLeft: 18,
+                }}
+              >
+                <View style={{ flexDirection: 'column', flex: 1 }}>
+                  <Text style={style.sectionListHeader}>{title}</Text>
+                  <Text style={[style.dateText, { color: '#646469' }]}>
+                    {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
+                    Episodes
+                  </Text>
+                </View>
+
                 <View
                   style={{
-                    flex: 1,
-                    backgroundColor: 'black',
                     flexDirection: 'row',
-                    marginTop: 18,
-                    marginLeft: 18,
+                    justifyContent: 'flex-end',
                   }}
                 >
-                  <View style={{ flexDirection: 'column', flex: 1 }}>
-                    <Text style={style.sectionListHeader}>{title}</Text>
-                    <Text style={[style.dateText, { color: '#646469' }]}>
-                      {seriesInfo?.year.slice(0, 4)} • {seriesInfo.episodeCount}{' '}
-                      Episodes
-                    </Text>
-                  </View>
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'flex-end',
-                    }}
+                  <TouchableHighlight
+                    onPress={() =>
+                      navigation.push('Main', {
+                        screen: 'Teaching',
+                        params: {
+                          screen: 'SeriesLandingScreen',
+                          params: { seriesId: title },
+                        },
+                      })
+                    }
                   >
-                    <TouchableHighlight
-                      onPress={() =>
-                        navigation.push('Main', {
-                          screen: 'Teaching',
-                          params: {
-                            screen: 'SeriesLandingScreen',
-                            params: { seriesId: title },
-                          },
-                        })
-                      }
-                    >
-                      <FallbackImage
-                        style={{
-                          width: 80,
-                          height: 96,
-                          marginRight: 16,
-                        }}
-                        uri={getSeriesImage(title)}
-                        catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
-                      />
-                    </TouchableHighlight>
-                  </View>
+                    <FallbackImage
+                      style={{
+                        width: 80,
+                        height: 96,
+                        marginRight: 16,
+                      }}
+                      uri={getSeriesImage(title)}
+                      catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+                    />
+                  </TouchableHighlight>
                 </View>
-              );
-            return null;
+              </View>
+            );
           }}
         />
       </View>
@@ -471,7 +519,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   };
 
   return (
-    <View style={{ marginTop: 12 }}>
+    <View style={{ marginTop: 12, flex: 1 }}>
       <SearchBar
         style={{ marginHorizontal: 16, marginBottom: 18.5 }}
         handleTextChanged={(newStr) => setSearchText(newStr)}
