@@ -206,6 +206,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           }
         }
       } catch (err) {
+        // TODO: Sentry
         console.log(err);
       }
     }
@@ -242,6 +243,13 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         });
         if (transformed) {
           // TODO: Sort by createdAt
+          transformed.sort((a, b) => {
+            if (a?.comment?.createdAt && b.comment?.createdAt)
+              return b?.comment?.createdAt?.localeCompare(
+                a?.comment?.createdAt
+              );
+            return 0;
+          });
           await loadSeriesData(transformed);
         }
       }
@@ -376,7 +384,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       <View style={{ maxHeight: Dimensions.get('window').height - 200 }}>
         <SectionList
           style={{ marginTop: 18 }}
-          sections={[...sectionList]}
+          sections={sectionList}
           ListFooterComponent={
             sectionList.length > showCount ? (
               <View style={{ marginBottom: 10 }}>
