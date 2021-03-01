@@ -228,6 +228,8 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         const episodeCount = await SeriesService.getSeriesEpisodeCount(
           noteData?.seriesId ?? ''
         );
+
+        // Iterates through comments to set matching series data
         for (let z = 0; z < userComments.length; z++) {
           if (userComments[z].comment?.noteId === noteIds[x]) {
             tempComments[z] = {
@@ -274,7 +276,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         variables: {
           owner: cognitoUser.username,
           sortDirection: 'DESC',
-          limit: 1000,
+          limit: 2000,
         },
         authMode: GRAPHQL_AUTH_MODE.AMAZON_COGNITO_USER_POOLS,
       })) as GraphQLResult<GetCommentsByOwnerQuery>;
