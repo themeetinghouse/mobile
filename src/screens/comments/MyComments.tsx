@@ -16,6 +16,7 @@ import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
+import FallbackImage from '../../../src/components/FallbackImage';
 import ToggleButton from '../../components/buttons/ToggleButton';
 import SearchBar from '../../components/SearchBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
@@ -242,7 +243,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           } as Comment;
         });
         if (transformed) {
-          // TODO: Sort by createdAt
           transformed.sort((a, b) => {
             if (a?.comment?.createdAt && b.comment?.createdAt)
               return b?.comment?.createdAt?.localeCompare(
@@ -436,14 +436,14 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                         })
                       }
                     >
-                      <Thumbnail
-                        square
+                      <FallbackImage
                         style={{
                           width: 80,
                           height: 96,
                           marginRight: 16,
                         }}
-                        source={{ uri: getSeriesImage(title) }}
+                        uri={getSeriesImage(title)}
+                        catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
                       />
                     </TouchableHighlight>
                   </View>
