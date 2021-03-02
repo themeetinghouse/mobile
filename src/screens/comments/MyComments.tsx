@@ -181,7 +181,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                 transform: [{ translateX: -4 }],
               }}
             >
-              More
+              Profile
             </Text>
           </TouchableOpacity>
         );
