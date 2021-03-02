@@ -202,6 +202,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const [filterToggle, setFilterToggle] = useState(false);
 
   const loadSeriesData = async (userComments: RecentComments) => {
+    setIsLoading(true);
     const series: BySeriesComments = [];
     const tempComments = [...userComments];
     const noteIds: Array<string> = [];
@@ -283,9 +284,9 @@ export default function MyComments({ navigation }: Params): JSX.Element {
 
       if (json.data?.getCommentsByOwner?.items) {
         const commentData = json.data?.getCommentsByOwner?.items;
-        const transformed = commentData.map((comm) => {
+        const commentWithSeriesInfo = commentData.map((comment) => {
           return {
-            comment: comm,
+            comment,
             seriesInfo: {
               year: '',
               episodeNumber: 0,
@@ -293,20 +294,21 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             },
           } as Comment;
         });
-        if (transformed) {
-          transformed.sort((a, b) => {
+        if (commentWithSeriesInfo) {
+          commentWithSeriesInfo.sort((a, b) => {
             if (a?.comment?.createdAt && b.comment?.createdAt)
               return b?.comment?.createdAt?.localeCompare(
                 a?.comment?.createdAt
               );
             return 0;
           });
-          await loadSeriesData(transformed);
+          await loadSeriesData(commentWithSeriesInfo);
         }
       }
     } catch (err) {
-      setIsLoading(false);
       console.debug(err);
+    } finally {
+      setIsLoading(false);
     }
   };
   const getSeriesImage = (title: string) => {
