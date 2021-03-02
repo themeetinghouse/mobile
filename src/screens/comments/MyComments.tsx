@@ -202,7 +202,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
   const [filterToggle, setFilterToggle] = useState(false);
 
   const loadSeriesData = async (userComments: RecentComments) => {
-    setIsLoading(true);
     const series: BySeriesComments = [];
     const tempComments = [...userComments];
     const noteIds: Array<string> = [];
@@ -265,7 +264,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     }
     setComments(tempComments);
     setSectionList(series);
-    setIsLoading(false);
   };
 
   const loadComments = async () => {
