@@ -9,7 +9,7 @@ import MainTabNavigator, {
 import AuthNavigator, { AuthStackParamList } from './AuthNavigator';
 
 import NotesScreen from '../screens/teaching/NotesScreen';
-import AllEvents from "../screens/home/AllEvents";
+import AllEvents from '../screens/home/AllEvents';
 import CommentScreen from '../screens/teaching/CommentScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import AccountScreen from '../screens/profile/AccountScreen';
@@ -24,12 +24,13 @@ import TeacherList from '../screens/staff/TeacherList';
 import StaffList from '../screens/staff/StaffList';
 import ParishTeam from '../screens/staff/ParishTeam';
 import TeacherProfile from '../screens/staff/TeacherProfile';
-import AskAQuestion from "../screens/home/AskAQuestion";
-import {EventQueryResult} from "../services/EventsService";
+import AskAQuestion from '../screens/home/AskAQuestion';
+import { EventQueryResult } from '../services/EventsService';
+import MyComments from '../screens/comments/MyComments';
 
 export type MainStackParamList = {
   Main:
-    undefined
+    | undefined
     | {
         screen: keyof TabNavigatorParamList;
         params?: {
@@ -43,6 +44,7 @@ export type MainStackParamList = {
   TeacherProfile: { staff: any } | undefined;
   StaffList: undefined;
   ParishTeam: undefined;
+  MyComments: undefined;
   Auth: undefined | { screen: keyof AuthStackParamList };
   AskAQuestion: any;
   NotesScreen: { date: string };
@@ -57,7 +59,7 @@ export type MainStackParamList = {
     customPlaylist?: boolean;
     seriesId?: string;
   };
-  AllEvents: {events:NonNullable<EventQueryResult>};
+  AllEvents: { events: NonNullable<EventQueryResult> };
   LiveStreamScreen: undefined;
   TeacherList: undefined;
   CommentScreen:
@@ -95,7 +97,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="NotesScreen" component={NotesScreen} />
       <Main.Screen name="ProfileScreen" component={ProfileScreen} />
       <Main.Screen name="AccountScreen" component={AccountScreen} />
-      <Main.Screen name="AllEvents" component={AllEvents}/>
+      <Main.Screen name="AllEvents" component={AllEvents} />
       <Main.Screen
         name="ChangePasswordScreen"
         component={ChangePasswordScreen}
@@ -114,6 +116,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="StaffList" component={StaffList} />
       <Main.Screen name="ParishTeam" component={ParishTeam} />
       <Main.Screen name="CommentScreen" component={CommentScreen} />
+      <Main.Screen name="MyComments" component={MyComments} />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />
     </Main.Navigator>

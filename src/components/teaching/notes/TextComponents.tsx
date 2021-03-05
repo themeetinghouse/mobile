@@ -204,11 +204,13 @@ export function CustomText({
     });
   };
 
+  const hasText = /\w/g.test(block.text);
+
   if (processedStyles.length === 0) {
     return (
       <>
         <Text
-          onPress={() => setSelected(!selected)}
+          onPress={hasText ? () => setSelected(!selected) : undefined}
           onLayout={(e) => setPos(e.nativeEvent.layout.y)}
           style={{
             ...styles.text,
@@ -244,9 +246,8 @@ export function CustomText({
   return (
     <>
       <Text
-        selectable
         onLayout={(e) => setPos(e.nativeEvent.layout.y)}
-        onPress={() => setSelected(!selected)}
+        onPress={hasText ? () => setSelected(!selected) : undefined}
         style={{ ...styles.text, marginVertical: 12 }}
       >
         <Text

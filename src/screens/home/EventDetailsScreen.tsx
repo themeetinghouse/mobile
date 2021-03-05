@@ -304,7 +304,7 @@ export default function EventDetailsScreen({
     let linkAddress = '';
     if (eventItem?.description?.includes('https://')) {
       linkAddress =
-        eventItem?.description?.match(/(https?:\/\/[^ ]*)/)?.[1] ?? '';
+        eventItem?.description?.match(/(https?:\/\/[^\\w\s]*)/)?.[0] ?? '';
     }
     return linkAddress;
   };
