@@ -9,6 +9,7 @@ import {
   listCustomPlaylists,
   getCustomPlaylist,
   getSeriesBySeriesType,
+  getSeriesEpisodeCount,
   getSeries,
 } from './queries';
 
@@ -126,6 +127,15 @@ export default class SeriesService {
     });
     const series = queryResult.getSeries;
     return series;
+  };
+
+  static getSeriesEpisodeCount = async (seriesId: string): Promise<number> => {
+    const queryResult = await runGraphQLQuery({
+      query: getSeriesEpisodeCount,
+      variables: { id: seriesId },
+    });
+    const episodeCount = queryResult.getSeries?.videos?.items?.length ?? 0;
+    return episodeCount;
   };
 
   static updateSeriesImage = async (

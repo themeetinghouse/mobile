@@ -102,6 +102,20 @@ export const getSeries = `
   }
 `;
 
+export const getSeriesEpisodeCount = `
+  query GetSeries($id: ID!) {
+    getSeries(id: $id) {
+      id
+      videos {
+        items {
+          id
+        }
+        nextToken
+      }
+    }
+  }
+`;
+
 export const listCustomPlaylists = /* GraphQL */ `
   query ListCustomPlaylists(
     $filter: ModelCustomPlaylistFilterInput
@@ -320,6 +334,17 @@ export const checkIfNotesExistQuery = /* GraphQL */ `
   query GetNotes($id: ID!) {
     getNotes(id: $id) {
       id
+    }
+  }
+`;
+
+export const getNotesNoContentCustom = /* GraphQL */ `
+  query GetNotes($id: ID!) {
+    getNotes(id: $id) {
+      id
+      title
+      episodeNumber
+      seriesId
     }
   }
 `;

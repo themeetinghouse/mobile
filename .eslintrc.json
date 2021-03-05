@@ -39,6 +39,7 @@
     "react/prop-types": 0,
     "react/require-default-props": 0,
     "no-plusplus": [2, { "allowForLoopAfterthoughts": true }],
-    "no-unused-expressions": "off"
+    "no-unused-expressions": "off",
+    "no-nested-ternary": "off"
   }
 }
