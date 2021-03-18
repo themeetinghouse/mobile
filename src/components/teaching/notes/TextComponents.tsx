@@ -708,26 +708,39 @@ export function HyperLink({
     return '\n \n';
   };
 
+  const passageHeader = (text: string) => {
+    return (
+      <Text
+        key={text}
+        style={{
+          ...styles.header,
+          fontFamily: Theme.fonts.fontFamilyBold,
+        }}
+      >
+        {text}
+      </Text>
+    );
+  };
+
   const parseBibleJSON = (data: any, index: number, length: number) => {
     if (data?.attrs?.style === 's1') {
       return (
         <Text style={styles.header} key={index}>
           {data.items.map((item: any) => {
             if (item.text) {
-              return (
-                <Text
-                  key={item.text}
-                  style={{
-                    ...styles.header,
-                    fontFamily: Theme.fonts.fontFamilyBold,
-                  }}
-                >
-                  {`${item.text}\n`}
-                </Text>
-              );
+              return passageHeader(item.text);
+            }
+            if (item?.attrs?.style === 'nd') {
+              return item.items.map((subItem: any) => {
+                if (subItem.text) {
+                  return passageHeader(subItem.text);
+                }
+                return null;
+              });
             }
             return null;
           })}
+          {'\n'}
         </Text>
       );
     }
