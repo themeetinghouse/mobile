@@ -20,6 +20,7 @@ import StaffWhite from '../assets/images/white/Staff.png';
 import HomeChurchWhite from '../assets/images/white/HomeChurch.png';
 import TextOptionsWhite from '../assets/images/white/TextOptions.png';
 import NewWindowWhite from '../assets/images/white/New-Window.png';
+import FamilyFriendly from '../assets/images/black/FamilyFriendly.png';
 import UserWhiteLoggedIn from '../assets/images/white/UserLoggedIn.png';
 import SignOutWhite from '../assets/images/white/SignOut.png';
 import AccountWhite from '../assets/images/white/Account.png';
@@ -142,6 +143,7 @@ export const Theme = {
       comment: CommentSmall,
     },
     black: {
+      familyFriendly: FamilyFriendly,
       arrow: Arrow,
       audio: AudioBlack,
       watch: WatchBlack,

@@ -207,8 +207,7 @@ export default function MoreScreen(): JSX.Element {
         text: 'Home Church',
         subtext: 'Find a home church near you',
         icon: Theme.icons.white.homeChurch,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
+        action: () => navigation.navigate('HomeChurchScreen'),
       },
       {
         id: 'volunteer',

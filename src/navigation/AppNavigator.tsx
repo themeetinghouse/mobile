@@ -27,6 +27,7 @@ import TeacherProfile from '../screens/staff/TeacherProfile';
 import AskAQuestion from '../screens/home/AskAQuestion';
 import { EventQueryResult } from '../services/EventsService';
 import MyComments from '../screens/comments/MyComments';
+import HomeChurchScreen from '../screens/homechurch/HomeChurchScreen';
 
 export type MainStackParamList = {
   Main:
@@ -62,6 +63,7 @@ export type MainStackParamList = {
   AllEvents: { events: NonNullable<EventQueryResult> };
   LiveStreamScreen: undefined;
   TeacherList: undefined;
+  HomeChurchScreen: undefined;
   CommentScreen:
     | {
         key: string;
@@ -117,6 +119,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="ParishTeam" component={ParishTeam} />
       <Main.Screen name="CommentScreen" component={CommentScreen} />
       <Main.Screen name="MyComments" component={MyComments} />
+      <Main.Screen name="HomeChurchScreen" component={HomeChurchScreen} />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />
     </Main.Navigator>
