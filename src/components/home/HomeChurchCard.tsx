@@ -1,5 +1,8 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
+import { MainStackParamList } from 'src/navigation/AppNavigator';
 import Theme, { Style } from '../../Theme.style';
 import AllButton from '../buttons/AllButton';
 
@@ -40,6 +43,7 @@ const style = StyleSheet.create({
 });
 
 export default function HomeChurchCard(): JSX.Element {
+  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   return (
     <View style={style.homeChurchContainer}>
       <Text style={style.categoryTitle}>Home Church</Text>
@@ -51,7 +55,7 @@ export default function HomeChurchCard(): JSX.Element {
           source={{
             uri:
               'https://www.themeetinghouse.com/cached/640/static/images/homechurch-1-1.jpg',
-            cache: 'reload',
+            cache: 'default',
           }}
         />
       </View>
@@ -61,7 +65,7 @@ export default function HomeChurchCard(): JSX.Element {
         relationships, and find ways to love and serve our local communities, as
         we learn to follow Jesus.
       </Text>
-      <AllButton handlePress={() => console.log('navigate')}>
+      <AllButton handlePress={() => navigation.navigate('HomeChurchScreen')}>
         Find a Home Church
       </AllButton>
     </View>

@@ -7,6 +7,7 @@ import UserWhite from '../assets/images/white/User.png';
 import NotesWhite from '../assets/images/white/Notes.png';
 import CalendarAddWhite from '../assets/images/white/Calendar-Add.png';
 import MapLocationWhite from '../assets/images/white/Map-Location.png';
+import Location from '../assets/images/white/Location.png';
 import AnnouncementWhite from '../assets/images/white/Announcement.png';
 import SearchWhite from '../assets/images/white/Search.png';
 import CheckWhite from '../assets/images/white/Check.png';
@@ -102,6 +103,7 @@ export const Theme = {
       notes: NotesWhite,
       calendarAdd: CalendarAddWhite,
       mapLocation: MapLocationWhite,
+      location: Location,
       announcement: AnnouncementWhite,
       search: SearchWhite,
       check: CheckWhite,
