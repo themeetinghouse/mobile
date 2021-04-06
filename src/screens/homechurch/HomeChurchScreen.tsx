@@ -17,6 +17,7 @@ import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
 import HomeChurchItem from './HomeChurchItem';
 import HomeChurchLocationSelect from './HomeChurchLocationSelect';
+import IconButton from '../../components/buttons/IconButton';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
@@ -35,7 +36,7 @@ const style = StyleSheet.create({
   },
 });
 
-type HomeChurchData = NonNullable<
+export type HomeChurchData = NonNullable<
   NonNullable<NonNullable<ListF1ListGroup2sQuery>['listF1ListGroup2s']>['items']
 >;
 export type HomeChurch = HomeChurchData[0];
@@ -89,12 +90,13 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
             limit: 500,
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
-        setHomeChurches(json?.data?.listF1ListGroup2s?.items ?? []);
-        /*          json?.data?.listF1ListGroup2s?.items?.filter(
+        setHomeChurches(
+          json?.data?.listF1ListGroup2s?.items?.filter(
             (a) =>
               a?.location?.address?.city ===
                 location?.locationData?.locationName ?? 'Oakville'
-          ) ?? [] */
+          ) ?? []
+        );
       } catch (err) {
         console.log(err);
       } finally {
@@ -110,7 +112,7 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
       {isLoading ? (
         <View
           style={{
-            // TODO: fix this
+            // TODO: fix this centering
             flex: 1,
             justifyContent: 'center',
             position: 'absolute',
@@ -137,22 +139,33 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
         }}
         ListHeaderComponent={
           <View>
-            <HomeChurchLocationSelect navigation={navigation} loc={location} />
+            <HomeChurchLocationSelect
+              navigation={navigation}
+              loc={location?.locationData}
+            />
             <Text
               style={style.resultsCount}
             >{`${homeChurches.length} Results`}</Text>
+            <IconButton
+              labelStyle={{
+                color: 'black',
+                fontFamily: Theme.fonts.fontFamilyBold,
+              }}
+              icon={Theme.icons.black.map}
+              label="Map"
+              style={{
+                marginLeft: 12,
+                height: 50,
+                width: 100,
+                backgroundColor: '#fff',
+              }}
+              onPress={() =>
+                navigation.navigate('HomeChurchMapScreen', {
+                  items: homeChurches,
+                })
+              }
+            />
           </View>
-        }
-        ListFooterComponent={
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate('HomeChurchMapScreen', {
-                items: homeChurches,
-              });
-            }}
-          >
-            <Text style={{ color: 'white' }}>GO TO MAP</Text>
-          </TouchableOpacity>
         }
       />
     </View>

@@ -11,15 +11,32 @@ import { Thumbnail } from 'native-base';
 import { Theme } from '../../Theme.style';
 import { HomeChurch } from './HomeChurchScreen';
 
-const HomeChurchItem = ({ item }: HomeChurch): JSX.Element => {
+interface Params {
+  item: HomeChurch;
+  card?: boolean;
+}
+const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
   const style = StyleSheet.create({
-    homeChurchCard: {
-      borderColor: '#1A1A1A',
-      borderWidth: 1,
-      backgroundColor: Theme.colors.gray1,
-      padding: 16,
-      width: Dimensions.get('window').width,
-    },
+    homeChurchCard: card
+      ? {
+          margin: 16,
+          borderColor: '#1A1A1A',
+          borderWidth: 1,
+          backgroundColor: Theme.colors.gray1,
+          padding: 16,
+          borderTopWidth: 2,
+          borderTopColor: '#FFF',
+          width: Dimensions.get('window').width - 32,
+          overflow: 'scroll',
+          flex: 1,
+        }
+      : {
+          borderColor: '#1A1A1A',
+          borderWidth: 1,
+          backgroundColor: Theme.colors.gray1,
+          padding: 16,
+          width: Dimensions.get('window').width,
+        },
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
       fontSize: 16,
@@ -68,35 +85,58 @@ const HomeChurchItem = ({ item }: HomeChurch): JSX.Element => {
       fontFamily: Theme.fonts.fontFamilyRegular,
     },
   });
-  const getDayOfWeek = (homechurch: any) => {
+  const getDayOfWeek = (homechurch: HomeChurch) => {
     // TODO: Fix
-    if (homechurch?.recurrences?.recurrence?.recurrenceWeekly)
-      if (item.recurrences.recurrence.recurrenceWeekly.occurOnSunday)
+    if (homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly)
+      if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnSunday
+      )
         return 'Sunday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnMonday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnMonday
+      )
         return 'Monday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnTuesday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnTuesday
+      )
         return 'Tuesday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnWednesday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnWednesday
+      )
         return 'Wednesday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnThursday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnThursday
+      )
         return 'Thursday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnFriday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnFriday
+      )
         return 'Friday';
-      else if (item.recurrences.recurrence.recurrenceWeekly.occurOnSaturday)
+      else if (
+        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+          ?.occurOnSaturday
+      )
         return 'Saturday';
-      else return moment(item.startDate).format('dddd');
-    else return moment(item?.startDate).format('dddd');
+      else return moment(homechurch.startDate).format('dddd');
+    else return moment(homechurch?.startDate).format('dddd');
   };
   return (
     <View style={style.homeChurchCard}>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-          <Text style={style.hmName}>{item.name}</Text>
-          <Text style={style.hmAddress}>{item.location.address.address1}</Text>
+          <Text style={style.hmName}>{item?.name}</Text>
+          <Text style={style.hmAddress}>
+            {item?.location?.address?.address1}
+          </Text>
           <Text style={style.hmDate}>
             {getDayOfWeek(item)}s{'\n'}
-            {moment(item.schedule?.startTime).format('h:mm a')}
+            {moment(item?.schedule?.startTime).format('h:mm a')}
           </Text>
         </View>
         <View>
@@ -141,14 +181,14 @@ const HomeChurchItem = ({ item }: HomeChurch): JSX.Element => {
         </View>
       </View>
 
-      <Text style={style.hmDescription}>{item.description}</Text>
+      <Text style={style.hmDescription}>{item?.description}</Text>
       <View style={style.badgesContainer}>
         <View style={style.locationBadge}>
           <Text style={style.locationBadgeText}>
-            {item.location.address.city}
+            {item?.location?.address?.city}
           </Text>
         </View>
-        {item.name.includes('Family Friendly') && (
+        {item?.name?.includes('Family Friendly') && (
           <View
             style={[
               style.locationBadge,

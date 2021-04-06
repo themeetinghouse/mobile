@@ -7,6 +7,7 @@ import UserWhite from '../assets/images/white/User.png';
 import NotesWhite from '../assets/images/white/Notes.png';
 import CalendarAddWhite from '../assets/images/white/Calendar-Add.png';
 import MapLocationWhite from '../assets/images/white/Map-Location.png';
+import MapIconBlack from '../assets/images/black/Map.png';
 import Location from '../assets/images/white/Location.png';
 import AnnouncementWhite from '../assets/images/white/Announcement.png';
 import SearchWhite from '../assets/images/white/Search.png';
@@ -149,6 +150,7 @@ export const Theme = {
       arrow: Arrow,
       audio: AudioBlack,
       watch: WatchBlack,
+      map: MapIconBlack,
       twitter: Twitter,
       facebook: Facebook,
       share: ShareBlack,

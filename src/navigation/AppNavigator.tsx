@@ -27,7 +27,9 @@ import TeacherProfile from '../screens/staff/TeacherProfile';
 import AskAQuestion from '../screens/home/AskAQuestion';
 import { EventQueryResult } from '../services/EventsService';
 import MyComments from '../screens/comments/MyComments';
-import HomeChurchScreen from '../screens/homechurch/HomeChurchScreen';
+import HomeChurchScreen, {
+  HomeChurchData,
+} from '../screens/homechurch/HomeChurchScreen';
 import HomeChurchMapScreen from '../screens/homechurch/HomeChurchMapScreen';
 
 export type MainStackParamList = {
@@ -83,7 +85,7 @@ export type MainStackParamList = {
         commentType: CommentDataType;
         noteId: string;
       };
-  HomeChurchMapScreen: any;
+  HomeChurchMapScreen: { items: HomeChurchData };
 };
 
 const Main = createStackNavigator<MainStackParamList>();

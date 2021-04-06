@@ -10,17 +10,17 @@ import {
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { LocationData } from 'src/contexts/LocationContext';
 import { Theme, Style } from '../../Theme.style';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
-  loc: any;
+  loc: LocationData;
 }
-
+// TODO: Add missing type
+// TODO: white bottom border missing on postal code
 const HomeChurchLocationSelect = ({ loc, navigation }: Params): JSX.Element => {
-  const [selectedLocation, setSelectedLocation] = useState(
-    loc.locationData.locationName
-  );
+  const [selectedLocation, setSelectedLocation] = useState(loc?.locationName);
   const [postalCode, setPostalCode] = useState('');
   const style = StyleSheet.create({
     locationIcon: { ...Style.icon, marginRight: 20, alignSelf: 'center' },
