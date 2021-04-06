@@ -28,6 +28,7 @@ import AskAQuestion from '../screens/home/AskAQuestion';
 import { EventQueryResult } from '../services/EventsService';
 import MyComments from '../screens/comments/MyComments';
 import HomeChurchScreen from '../screens/homechurch/HomeChurchScreen';
+import HomeChurchMapScreen from '../screens/homechurch/HomeChurchMapScreen';
 
 export type MainStackParamList = {
   Main:
@@ -82,6 +83,7 @@ export type MainStackParamList = {
         commentType: CommentDataType;
         noteId: string;
       };
+  HomeChurchMapScreen: any;
 };
 
 const Main = createStackNavigator<MainStackParamList>();
@@ -122,6 +124,7 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="HomeChurchScreen" component={HomeChurchScreen} />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />
+      <Main.Screen name="HomeChurchMapScreen" component={HomeChurchMapScreen} />
     </Main.Navigator>
   );
 }
