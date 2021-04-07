@@ -20,6 +20,7 @@ import VolunteerWhite from '../assets/images/white/Volunteer.png';
 import ConnectWhite from '../assets/images/white/Connect.png';
 import StaffWhite from '../assets/images/white/Staff.png';
 import HomeChurchWhite from '../assets/images/white/HomeChurch.png';
+import HomeChurchBlack from '../assets/images/black/HomeChurch.png';
 import TextOptionsWhite from '../assets/images/white/TextOptions.png';
 import NewWindowWhite from '../assets/images/white/New-Window.png';
 import FamilyFriendly from '../assets/images/black/FamilyFriendly.png';
@@ -150,6 +151,7 @@ export const Theme = {
       arrow: Arrow,
       audio: AudioBlack,
       watch: WatchBlack,
+      homeChurch: HomeChurchBlack,
       map: MapIconBlack,
       twitter: Twitter,
       facebook: Facebook,

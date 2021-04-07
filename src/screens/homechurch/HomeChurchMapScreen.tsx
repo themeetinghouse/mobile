@@ -16,7 +16,12 @@ const styles = StyleSheet.create({
   },
   map: {
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height / 1.5,
+    height: Dimensions.get('window').height * 0.7, // TODO: Increase map size
+  },
+  list: {
+    height: Dimensions.get('window').height * 0.3,
+    backgroundColor: '#000',
+    padding: 16,
   },
 });
 interface Params {
@@ -25,11 +30,15 @@ interface Params {
 
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const homeChurches: HomeChurchData = route?.params?.items;
-  const listRef = useRef(null);
+  const listRef = useRef<any>(null); // TODO: fix type
   const [selected, setSelected] = useState(0);
   useEffect(() => {
     if (listRef && listRef?.current) {
-      listRef?.current?.scrollToIndex({ animated: true, index: selected });
+      listRef.current.scrollToIndex({
+        animated: true,
+        index: selected,
+        viewOffset: Dimensions.get('window').width * 0.8, // TODO: fix offset
+      });
     }
   }, [selected]);
   return (
@@ -55,7 +64,6 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
                   <Marker
                     onPress={() => setSelected(index)}
                     key={church?.id}
-                    style={{ zIndex: 10000 }}
                     coordinate={{
                       latitude: parseFloat(
                         church?.location?.address?.latitude ?? '43.6532'
@@ -67,17 +75,20 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
                   >
                     <View
                       style={{
-                        marginLeft: 16,
-                        marginTop: 30,
                         padding: 12,
-                        backgroundColor: 'black',
+                        backgroundColor: selected === index ? 'black' : 'white',
                         borderRadius: 50,
+                        borderWidth: 2,
                       }}
                     >
                       <Thumbnail
                         square
                         style={{ width: 18, height: 18 }}
-                        source={Theme.icons.white.homeChurch}
+                        source={
+                          selected === index
+                            ? Theme.icons.white.homeChurch
+                            : Theme.icons.black.homeChurch
+                        }
                       />
                     </View>
                   </Marker>
@@ -88,9 +99,10 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       <FlatList
         pagingEnabled
         ref={listRef}
-        style={{ backgroundColor: '#000' }}
+        style={styles.list}
         getItemLayout={(data, index) => ({
-          length: Dimensions.get('window').width,
+          // TODO: FIX OFFSET
+          length: Dimensions.get('window').width * 0.8,
           offset: Dimensions.get('window').width * index,
           index,
         })} /* The data fed to the flatlist needs to match data fed to markers. Indexes must match */

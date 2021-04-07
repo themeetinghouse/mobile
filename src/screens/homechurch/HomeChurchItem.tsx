@@ -19,16 +19,17 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
-          margin: 16,
+          // TODO: FIX Card height, width
           borderColor: '#1A1A1A',
           borderWidth: 1,
           backgroundColor: Theme.colors.gray1,
+          marginRight: 16,
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: '#FFF',
-          width: Dimensions.get('window').width - 32,
-          overflow: 'scroll',
+          width: Dimensions.get('window').width * 0.8,
           flex: 1,
+          flexWrap: 'nowrap',
         }
       : {
           borderColor: '#1A1A1A',
@@ -181,7 +182,9 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
         </View>
       </View>
 
-      <Text style={style.hmDescription}>{item?.description}</Text>
+      <Text ellipsizeMode="tail" numberOfLines={2} style={style.hmDescription}>
+        {item?.description}
+      </Text>
       <View style={style.badgesContainer}>
         <View style={style.locationBadge}>
           <Text style={style.locationBadgeText}>
