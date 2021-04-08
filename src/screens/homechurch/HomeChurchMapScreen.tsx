@@ -1,55 +1,64 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions, FlatList } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList, Text } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
+import mapstyle from '../../../assets/mapstyle'; // TODO: FIX, and add for IOS
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurchData } from './HomeChurchScreen';
 
+const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
   },
   map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height * 0.7, // TODO: Increase map size
+    width,
+    height: height * 0.6, // TODO: Increase map size
   },
   list: {
-    height: Dimensions.get('window').height * 0.3,
+    height: height * 0.4,
     backgroundColor: '#000',
-    padding: 16,
+    width,
   },
 });
 interface Params {
   route: RouteProp<MainStackParamList, 'HomeChurchMapScreen'>;
 }
-
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const homeChurches: HomeChurchData = route?.params?.items;
   const listRef = useRef<any>(null); // TODO: fix type
+  const mapRef = useRef<any>(null);
   const [selected, setSelected] = useState(0);
   useEffect(() => {
     if (listRef && listRef?.current) {
       listRef.current.scrollToIndex({
         animated: true,
         index: selected,
-        viewOffset: Dimensions.get('window').width * 0.8, // TODO: fix offset
       });
     }
   }, [selected]);
+  const handleScroll = (event) => {
+    // TODO: FIX offset calculation
+    const xOffset = event.nativeEvent.contentOffset.x;
+    setSelected(Math.round(xOffset / width));
+  };
   return (
     <View style={styles.container}>
       <MapView
+        customMapStyle={mapstyle}
         initialRegion={{
           latitude: 43.4675,
           longitude: -79.6877,
           latitudeDelta: 0.122,
           longitudeDelta: 0.1521,
         }}
+        ref={mapRef}
         style={styles.map}
       >
         {homeChurches?.length
@@ -62,6 +71,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
               .map((church, index) => {
                 return (
                   <Marker
+                    identifier={church?.id ?? ''}
                     onPress={() => setSelected(index)}
                     key={church?.id}
                     coordinate={{
@@ -97,16 +107,22 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
           : null}
       </MapView>
       <FlatList
-        pagingEnabled
         ref={listRef}
+        onMomentumScrollEnd={(e) => handleScroll(e)}
+        showsHorizontalScrollIndicator
+        pagingEnabled
+        ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
+        contentContainerStyle={{ padding: 16 }}
         style={styles.list}
-        getItemLayout={(data, index) => ({
-          // TODO: FIX OFFSET
-          length: Dimensions.get('window').width * 0.8,
-          offset: Dimensions.get('window').width * index,
-          index,
-        })} /* The data fed to the flatlist needs to match data fed to markers. Indexes must match */
-        ItemSeparatorComponent={() => <View style={{ borderColor: 'white' }} />}
+        getItemLayout={(data, index) => {
+          const cardWidth = width;
+          return {
+            // TODO: FIX OFFSET
+            length: cardWidth,
+            offset: cardWidth * index,
+            index,
+          };
+        }} /* The data fed to the flatlist needs to match data fed to markers. Indexes must match */
         data={homeChurches.filter(
           (church) =>
             church?.location?.address?.latitude &&

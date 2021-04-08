@@ -23,12 +23,10 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
           borderColor: '#1A1A1A',
           borderWidth: 1,
           backgroundColor: Theme.colors.gray1,
-          marginRight: 16,
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: '#FFF',
-          width: Dimensions.get('window').width * 0.8,
-          flex: 1,
+          width: Dimensions.get('window').width,
           flexWrap: 'nowrap',
         }
       : {
@@ -45,7 +43,7 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
       color: 'white',
     },
     hmAddress: {
-      fontSize: 16,
+      fontSize: card ? 12 : 16,
       lineHeight: 24,
       fontFamily: Theme.fonts.fontFamilyRegular,
       fontWeight: '400',
@@ -82,8 +80,14 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
       color: 'white',
       fontSize: 12,
       lineHeight: 18,
-
       fontFamily: Theme.fonts.fontFamilyRegular,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      marginBottom: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
   });
   const getDayOfWeek = (homechurch: HomeChurch) => {
@@ -141,16 +145,7 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
           </Text>
         </View>
         <View>
-          <TouchableOpacity
-            style={{
-              width: 40,
-              height: 40,
-              margin: 4,
-              marginRight: 16,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <TouchableOpacity style={style.iconContainer}>
             <Thumbnail
               square
               source={Theme.icons.white.calendarAdd}
@@ -160,16 +155,7 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
               }}
             />
           </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              width: 40,
-              height: 40,
-              margin: 4,
-              marginRight: 16,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+          <TouchableOpacity style={style.iconContainer}>
             <Thumbnail
               square
               source={Theme.icons.white.contact}
@@ -201,7 +187,7 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
               },
             ]}
           >
-            <Thumbnail // is this getting cropped?
+            <Thumbnail
               square
               source={Theme.icons.black.familyFriendly}
               style={{ width: 16, height: 16 }}
