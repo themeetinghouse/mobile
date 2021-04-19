@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import {
   View,
@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Linking,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { Theme } from '../../Theme.style';
@@ -14,19 +15,24 @@ import { HomeChurch } from './HomeChurchScreen';
 interface Params {
   item: HomeChurch;
   card?: boolean;
+  active?: boolean;
 }
-const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
+const { width, height } = Dimensions.get('window');
+const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
+  const [modal, setModal] = useState(false);
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
           // TODO: FIX Card height, width
+          // TODO: description needs to show ellipsis with "See More"
           borderColor: '#1A1A1A',
           borderWidth: 1,
           backgroundColor: Theme.colors.gray1,
           padding: 16,
           borderTopWidth: 2,
-          borderTopColor: '#FFF',
-          width: Dimensions.get('window').width,
+          borderTopColor: active ? '#FFF' : 'transparent',
+          width: width - 80,
+          overflow: 'hidden',
           flexWrap: 'nowrap',
         }
       : {
@@ -34,11 +40,11 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
           borderWidth: 1,
           backgroundColor: Theme.colors.gray1,
           padding: 16,
-          width: Dimensions.get('window').width,
+          width,
         },
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
-      fontSize: 16,
+      fontSize: card ? 15 : 16,
       lineHeight: 24,
       color: 'white',
     },
@@ -65,7 +71,7 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
     badgesContainer: {
       marginTop: 24,
       flexDirection: 'row',
-      justifyContent: 'flex-start',
+      alignContent: 'center',
     },
     locationBadge: {
       backgroundColor: Theme.colors.grey3,
@@ -136,9 +142,11 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
           <Text style={style.hmName}>{item?.name}</Text>
-          <Text style={style.hmAddress}>
-            {item?.location?.address?.address1}
-          </Text>
+          {item?.location?.address?.address1 ? (
+            <Text style={style.hmAddress}>
+              {item?.location?.address?.address1}
+            </Text>
+          ) : null}
           <Text style={style.hmDate}>
             {getDayOfWeek(item)}s{'\n'}
             {moment(item?.schedule?.startTime).format('h:mm a')}
@@ -155,7 +163,10 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
               }}
             />
           </TouchableOpacity>
-          <TouchableOpacity style={style.iconContainer}>
+          <TouchableOpacity
+            onPress={() => Linking.openURL('mailto:')}
+            style={style.iconContainer}
+          >
             <Thumbnail
               square
               source={Theme.icons.white.contact}
@@ -168,33 +179,42 @@ const HomeChurchItem = ({ item, card }: Params): JSX.Element => {
         </View>
       </View>
 
-      <Text ellipsizeMode="tail" numberOfLines={2} style={style.hmDescription}>
+      <Text
+        ellipsizeMode="tail"
+        numberOfLines={card ? 1 : 8}
+        style={style.hmDescription}
+      >
         {item?.description}
       </Text>
-      <View style={style.badgesContainer}>
-        <View style={style.locationBadge}>
-          <Text style={style.locationBadgeText}>
-            {item?.location?.address?.city}
-          </Text>
+      {item?.location?.address?.city ||
+      item?.name?.includes('Family Friendly') ? (
+        <View style={style.badgesContainer}>
+          {item?.location?.address?.city ? (
+            <View style={style.locationBadge}>
+              <Text style={style.locationBadgeText}>
+                {item?.location?.address?.city}
+              </Text>
+            </View>
+          ) : null}
+          {item?.name?.includes('Family Friendly') && (
+            <View
+              style={[
+                style.locationBadge,
+                {
+                  paddingHorizontal: 12,
+                  backgroundColor: 'rgb(160, 226, 186)',
+                },
+              ]}
+            >
+              <Thumbnail
+                square
+                source={Theme.icons.black.familyFriendly}
+                style={{ width: 16, height: 16 }}
+              />
+            </View>
+          )}
         </View>
-        {item?.name?.includes('Family Friendly') && (
-          <View
-            style={[
-              style.locationBadge,
-              {
-                paddingHorizontal: 12,
-                backgroundColor: 'rgb(160, 226, 186)',
-              },
-            ]}
-          >
-            <Thumbnail
-              square
-              source={Theme.icons.black.familyFriendly}
-              style={{ width: 16, height: 16 }}
-            />
-          </View>
-        )}
-      </View>
+      ) : null}
     </View>
   );
 };
