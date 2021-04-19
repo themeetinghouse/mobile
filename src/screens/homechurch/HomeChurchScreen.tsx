@@ -78,23 +78,45 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
   }, [navigation]);
 
   const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
+
+  /*     
+  const maps = {
+      alliston: '62948',
+      ancaster: '58251',
+      brampton: '58224',
+      brantford: '58225',
+      burlington: '58248',
+      'hamilton-downtown': '58249',
+      'hamilton-mountain': '58250',
+      kitchener: '58253',
+      london: '58254',
+      newmarket: '58069',
+      oakville: '58082',
+      ottawa: '58255',
+      'owen-sound': '58252',
+      'parry-sound': '58256',
+      'richmond-hill': '58081',
+      sandbanks: '62947',
+      'toronto-downtown': '58083',
+      'toronto-east': '58258',
+      'toronto-high-park': '58257',
+      'toronto-uptown': '58259',
+      waterloo: '57909',
+    }; */
+
   useEffect(() => {
-    /*
-      TODO: Not all locations are showing. City names not matching?
-    */
     const loadHomeChurches = async () => {
       try {
         const json = (await API.graphql({
           query: listF1ListGroup2s,
           variables: {
-            limit: 500,
+            limit: 200,
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
+        setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
         setHomeChurches(
-          json?.data?.listF1ListGroup2s?.items?.filter(
-            (a) =>
-              a?.location?.address?.city ===
-                location?.locationData?.locationName ?? 'Oakville'
+          json.data?.listF1ListGroup2s?.items?.filter(
+            (church) => church?.groupType?.id === '58082'
           ) ?? []
         );
       } catch (err) {
@@ -138,10 +160,14 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
           return item?.id ?? index.toString();
         }}
         ListHeaderComponent={
-          <View>
+          <View style={{ marginBottom: 10 }}>
             <HomeChurchLocationSelect
               navigation={navigation}
-              loc={location?.locationData}
+              loc={
+                location?.locationData?.locationName.includes('Oakville')
+                  ? { ...location?.locationData, locationName: 'Oakville' }
+                  : location?.locationData
+              }
             />
             <Text
               style={style.resultsCount}
@@ -155,6 +181,7 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
               label="Map"
               style={{
                 marginLeft: 12,
+                paddingLeft: 8,
                 height: 50,
                 width: 100,
                 backgroundColor: '#fff',
