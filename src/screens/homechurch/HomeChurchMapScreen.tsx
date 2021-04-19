@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions, FlatList, Text } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
-import mapstyle from '../../../assets/mapstyle'; // TODO: FIX, and add for IOS
+import * as Location from 'expo-location';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurchData } from './HomeChurchScreen';
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width,
-    height: height * 0.6, // TODO: Increase map size
+    height: height * 0.7,
   },
   list: {
     height: height * 0.4,
@@ -32,32 +32,50 @@ interface Params {
 }
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const homeChurches: HomeChurchData = route?.params?.items;
-  const listRef = useRef<any>(null); // TODO: fix type
-  const mapRef = useRef<any>(null);
+  const [userLocation, setUserLocation] = useState<
+    Location.LocationObject['coords']
+  >();
+  const listRef = useRef<FlatList | null>(null);
+  const mapRef = useRef<MapView>(null);
   const [selected, setSelected] = useState(0);
   useEffect(() => {
     if (listRef && listRef?.current) {
-      listRef.current.scrollToIndex({
+      // TODO: this is not working right now
+      listRef.current.scrollToOffset({
         animated: true,
-        index: selected,
+        offset: selected * 296,
       });
     }
   }, [selected]);
-  const handleScroll = (event) => {
-    // TODO: FIX offset calculation
-    const xOffset = event.nativeEvent.contentOffset.x;
-    setSelected(Math.round(xOffset / width));
+  const getUserLocation = async () => {
+    const { status } = await Location.requestPermissionsAsync();
+    if (status !== 'granted') {
+      return;
+    }
+    const location = await Location.getCurrentPositionAsync({});
+    setUserLocation(location?.coords);
+    mapRef?.current?.animateCamera(
+      {
+        center: {
+          latitude: location?.coords?.latitude ?? 43.4675,
+          longitude: location?.coords?.longitude ?? -79.6877,
+        },
+        pitch: 1,
+        heading: 1,
+        zoom: 10,
+        altitude: 3,
+      },
+      { duration: 3 }
+    );
   };
+
   return (
     <View style={styles.container}>
       <MapView
-        customMapStyle={mapstyle}
-        initialRegion={{
-          latitude: 43.4675,
-          longitude: -79.6877,
-          latitudeDelta: 0.122,
-          longitudeDelta: 0.1521,
-        }}
+        mapPadding={{ top: 16, left: 16, right: 16, bottom: 16 }}
+        onMapReady={async () => getUserLocation()}
+        showsUserLocation
+        loadingEnabled
         ref={mapRef}
         style={styles.map}
       >
@@ -71,8 +89,11 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
               .map((church, index) => {
                 return (
                   <Marker
+                    zIndex={selected === index ? 10 : -10}
                     identifier={church?.id ?? ''}
-                    onPress={() => setSelected(index)}
+                    onPress={() => {
+                      setSelected(index);
+                    }}
                     key={church?.id}
                     coordinate={{
                       latitude: parseFloat(
@@ -108,27 +129,37 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       </MapView>
       <FlatList
         ref={listRef}
-        onMomentumScrollEnd={(e) => handleScroll(e)}
         showsHorizontalScrollIndicator
-        pagingEnabled
+        snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
+          const cardWidth = width - 64;
+          const a = cardWidth * index;
+          return a;
+        })}
+        decelerationRate={0.88}
+        disableIntervalMomentum
         ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
         contentContainerStyle={{ padding: 16 }}
         style={styles.list}
         getItemLayout={(data, index) => {
-          const cardWidth = width;
+          const cardWidth = width * 0.8;
           return {
             // TODO: FIX OFFSET
             length: cardWidth,
             offset: cardWidth * index,
             index,
           };
-        }} /* The data fed to the flatlist needs to match data fed to markers. Indexes must match */
+        }} /* 
+          The data fed to the flatlist needs to match data fed to markers. Indexes must match 
+          Online Home Churches will not show up on map screen (?) 
+        */
         data={homeChurches.filter(
           (church) =>
             church?.location?.address?.latitude &&
             church?.location?.address?.longitude
         )}
-        renderItem={({ item }) => <HomeChurchItem card item={item} />}
+        renderItem={({ item, index }) => (
+          <HomeChurchItem active={index === selected} card item={item} />
+        )}
         horizontal
       />
     </View>
