@@ -2,6 +2,19 @@ import * as Calendar from 'expo-calendar';
 import { Alert, Platform } from 'react-native';
 import moment from 'moment';
 
+type CalendarEvent = {
+  title: string;
+  startDate: Date;
+  endDate: Date;
+  location?: string;
+};
+
+type EventOptions = {
+  // eslint-disable-next-line camelcase
+  start_time: string;
+  // eslint-disable-next-line camelcase
+  end_time: string;
+};
 export default class CalendarService {
   static requestPermissions = async (): Promise<boolean> => {
     if (Platform.OS === 'android' || Platform.OS === 'ios') {
@@ -34,15 +47,13 @@ export default class CalendarService {
         const defaultCalendar = await Calendar.getDefaultCalendarAsync();
         return defaultCalendar.id;
       }
-      // TODO: CALENDAR TO ADD TO MUST BE DETERMINED FOR ANDROID.
-      // TODO: CREATING A CALENDAR createCalendarAsync() AND CREATING EVENTS IN IT ALLOWS EVENTS TO SHOW IN CALENDAR APP
-      return (await CalendarService.findTMHCalendar()) || '1'; // if unable to create tmh-calendar defaults to id 1.
+      return await CalendarService.findTMHCalendar(); // if unable to create tmh-calendar defaults to id 1.
     } catch (error) {
       return error;
     }
   };
 
-  static createTMHCalendar = async (): Promise<string | false> => {
+  static createTMHCalendar = async (): Promise<string> => {
     if (await CalendarService.checkPermissions()) {
       try {
         const TMHCalendarid = await Calendar.createCalendarAsync({
@@ -65,10 +76,10 @@ export default class CalendarService {
         console.warn(error);
       }
     }
-    return false;
+    return '0';
   };
 
-  static findTMHCalendar = async (): Promise<any> => {
+  static findTMHCalendar = async (): Promise<string> => {
     try {
       // console.log("Looking for TMHCalendar")
       const calendars = await Calendar.getCalendarsAsync();
@@ -84,28 +95,34 @@ export default class CalendarService {
       return tmhCalendarId;
     } catch (error) {
       console.warn(error);
+      return '1';
     }
   };
 
-  static validateEventFields = (event: any, options: any): boolean | any => {
+  static validateEventFields = (
+    event: any,
+    options: EventOptions
+  ): CalendarEvent => {
     const startDate = moment(options.start_time);
     const endDate = moment(options.end_time);
-    // console.log(`start_date ${start_date}`)
-    // console.log(`end_date ${end_date}`)
-    const eventObject: any = {
+    // console.log(`start_date ${startDate}`);
+    // console.log(`end_date ${endDate}`);
+    const eventObject: CalendarEvent = {
       title: event.name,
       startDate: new Date(startDate.toDate()),
       endDate: new Date(endDate.toDate()),
     };
-    if (event.place?.location?.street)
+    if (event.place?.location?.street) {
       eventObject.location = event.place.location.street;
-    else if (event.place?.name) eventObject.location = event.place.name;
+    } else if (event.place?.name) {
+      eventObject.location = event.place.name;
+    }
     return eventObject;
   };
 
   static eventNotExists = async (
     calendarId: string,
-    options: any,
+    options: EventOptions,
     eventItem: any
   ): Promise<boolean | undefined> => {
     try {
@@ -129,7 +146,10 @@ export default class CalendarService {
     }
   };
 
-  static createEvent = async (eventItem: any, options: any): Promise<any> => {
+  static createEvent = async (
+    eventItem: any,
+    options: EventOptions
+  ): Promise<EventOptions | undefined> => {
     const validated: boolean | any = CalendarService.validateEventFields(
       eventItem,
       options
