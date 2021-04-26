@@ -1,13 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions, FlatList } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList, Animated } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
+import {
+  PanGestureHandler,
+  PanGestureHandlerStateChangeEvent,
+  TouchableOpacity,
+} from 'react-native-gesture-handler';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
-import { HomeChurchData } from './HomeChurchScreen';
+import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -32,6 +37,8 @@ interface Params {
 }
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const homeChurches: HomeChurchData = route?.params?.items;
+
+  const [showModal, setShowModal] = useState(false);
   const [userLocation, setUserLocation] = useState<
     Location.LocationObject['coords']
   >();
@@ -68,7 +75,36 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       { duration: 3 }
     );
   };
-
+  const Modal = () => {
+    const translateY = useRef(new Animated.Value(0)).current;
+    useEffect(() => {
+      Animated.timing(translateY, {
+        toValue: 275,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }, [translateY]);
+    return (
+      <Animated.View
+        style={{
+          transform: [
+            {
+              translateY: translateY.interpolate({
+                inputRange: [0, 275],
+                outputRange: [275, 0],
+                extrapolate: 'clamp',
+              }),
+            },
+          ],
+          backgroundColor: Theme.colors.gray1,
+          bottom: 100,
+          position: 'absolute',
+        }}
+      >
+        <HomeChurchItem item={homeChurches[selected]} card modal />
+      </Animated.View>
+    );
+  };
   return (
     <View style={styles.container}>
       <MapView
@@ -127,6 +163,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
               })
           : null}
       </MapView>
+
       <FlatList
         ref={listRef}
         showsHorizontalScrollIndicator
@@ -158,10 +195,13 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
             church?.location?.address?.longitude
         )}
         renderItem={({ item, index }) => (
-          <HomeChurchItem active={index === selected} card item={item} />
+          <TouchableOpacity onPress={() => setShowModal(!showModal)}>
+            <HomeChurchItem active={index === selected} card item={item} />
+          </TouchableOpacity>
         )}
         horizontal
       />
+      <Modal />
     </View>
   );
 }
