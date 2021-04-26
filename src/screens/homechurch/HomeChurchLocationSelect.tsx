@@ -99,8 +99,8 @@ const HomeChurchLocationSelect = ({ loc, navigation }: Params): JSX.Element => {
       >
         <Text
           style={{
-            alignSelf: 'flex-end',
-            marginRight: 16,
+            alignSelf: 'flex-start',
+            marginLeft: 16,
             marginBottom: 8,
             color: Theme.colors.gray5,
             textDecorationLine: 'underline',
