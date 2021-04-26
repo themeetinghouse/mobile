@@ -11,15 +11,16 @@ import {
 import { Thumbnail } from 'native-base';
 import { Theme } from '../../Theme.style';
 import { HomeChurch } from './HomeChurchScreen';
+import Calendar from '../../services/CalendarService';
 
 interface Params {
   item: HomeChurch;
   card?: boolean;
+  modal?: boolean;
   active?: boolean;
 }
 const { width, height } = Dimensions.get('window');
-const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
-  const [modal, setModal] = useState(false);
+const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
@@ -31,7 +32,7 @@ const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: active ? '#FFF' : 'transparent',
-          width: width - 80,
+          width: modal ? width : width - 80,
           overflow: 'hidden',
           flexWrap: 'nowrap',
         }
@@ -137,11 +138,64 @@ const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
       else return moment(homechurch.startDate).format('dddd');
     else return moment(homechurch?.startDate).format('dddd');
   };
+
+  const addToCalendar = async () => {
+    let startTime;
+    if (moment() < moment().isoWeekday(getDayOfWeek(item))) {
+      startTime = moment()
+        .isoWeekday(getDayOfWeek(item))
+        .set({
+          hour: moment(item?.schedule?.startTime).get('hour'),
+          minute: moment(item?.schedule?.startTime).get('minute'),
+          second: moment(item?.schedule?.startTime).get('second'),
+        });
+    } else {
+      startTime = moment()
+        .isoWeekday(getDayOfWeek(item))
+        .add(7, 'days')
+        .set({
+          hour: moment(item?.schedule?.startTime).get('hour'),
+          minute: moment(item?.schedule?.startTime).get('minute'),
+          second: moment(item?.schedule?.startTime).get('second'),
+        });
+    }
+    const endTime = moment(startTime).add(2, 'hours');
+    /* console.log(startTime.format('YYYY-MM-DD hh:mm:ss a'));
+    console.log(endTime.format('YYYY-MM-DD hh:mm:ss a'));
+    console.log(item?.name);
+    console.log(item?.location?.address?.address1);
+ */
+    try {
+      const createEntry = await Calendar.createEvent(
+        {
+          name: item?.name,
+          event: {
+            place: {
+              location: {
+                street: item?.location?.address?.address1,
+              },
+            },
+          },
+        },
+        {
+          start_time: startTime.format(),
+          end_time: endTime.format(),
+        }
+      );
+      console.log(createEntry);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      //
+    }
+  };
   return (
     <View style={style.homeChurchCard}>
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-          <Text style={style.hmName}>{item?.name}</Text>
+          <Text numberOfLines={1} style={style.hmName}>
+            {item?.name}
+          </Text>
           {item?.location?.address?.address1 ? (
             <Text style={style.hmAddress}>
               {item?.location?.address?.address1}
@@ -153,7 +207,10 @@ const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
           </Text>
         </View>
         <View>
-          <TouchableOpacity style={style.iconContainer}>
+          <TouchableOpacity
+            onPress={() => addToCalendar()}
+            style={style.iconContainer}
+          >
             <Thumbnail
               square
               source={Theme.icons.white.calendarAdd}
@@ -164,7 +221,11 @@ const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('mailto:')}
+            onPress={() =>
+              Linking.openURL(
+                `mailto:roger.massie@themeetinghouse.com?subject=Inquiry%20About%20Home%20Church&body=Home%20Church%20ID:%20${item?.id}`
+              )
+            }
             style={style.iconContainer}
           >
             <Thumbnail
@@ -178,7 +239,6 @@ const HomeChurchItem = ({ active, item, card }: Params): JSX.Element => {
           </TouchableOpacity>
         </View>
       </View>
-
       <Text
         ellipsizeMode="tail"
         numberOfLines={card ? 1 : 8}
