@@ -27,12 +27,12 @@ const style = StyleSheet.create({
   header: Style.header,
   headerTitle: HeaderStyle.title,
   resultsCount: {
+    flex: 1,
+    alignSelf: 'flex-end',
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: 16,
-    lineHeight: 18,
     color: Theme.colors.grey5,
     marginHorizontal: 16,
-    marginVertical: 8,
   },
 });
 
@@ -113,7 +113,7 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
             limit: 200,
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
-        setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
+        // setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
         setHomeChurches(
           json.data?.listF1ListGroup2s?.items?.filter(
             (church) => church?.groupType?.id === '58082'
@@ -169,29 +169,32 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
                   : location?.locationData
               }
             />
-            <Text
-              style={style.resultsCount}
-            >{`${homeChurches.length} Results`}</Text>
-            <IconButton
-              labelStyle={{
-                color: 'black',
-                fontFamily: Theme.fonts.fontFamilyBold,
-              }}
-              icon={Theme.icons.black.map}
-              label="Map"
-              style={{
-                marginLeft: 12,
-                paddingLeft: 8,
-                height: 50,
-                width: 100,
-                backgroundColor: '#fff',
-              }}
-              onPress={() =>
-                navigation.navigate('HomeChurchMapScreen', {
-                  items: homeChurches,
-                })
-              }
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <Text
+                style={style.resultsCount}
+              >{`${homeChurches.length} Results`}</Text>
+              <IconButton
+                labelStyle={{
+                  color: 'black',
+                  fontFamily: Theme.fonts.fontFamilyBold,
+                }}
+                icon={Theme.icons.black.map}
+                label="Map"
+                style={{
+                  alignSelf: 'flex-end',
+                  paddingLeft: 12,
+                  height: 50,
+                  marginRight: 16,
+                  width: 100,
+                  backgroundColor: '#fff',
+                }}
+                onPress={() =>
+                  navigation.navigate('HomeChurchMapScreen', {
+                    items: homeChurches,
+                  })
+                }
+              />
+            </View>
           </View>
         }
       />
