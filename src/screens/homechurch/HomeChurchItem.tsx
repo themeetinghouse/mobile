@@ -32,7 +32,7 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: active ? '#FFF' : 'transparent',
-          width: modal ? width : width - 80,
+          width: width - 80,
           overflow: 'hidden',
           flexWrap: 'nowrap',
         }

@@ -14,6 +14,7 @@ import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 
+
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
@@ -37,8 +38,6 @@ interface Params {
 }
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const homeChurches: HomeChurchData = route?.params?.items;
-
-  const [showModal, setShowModal] = useState(false);
   const [userLocation, setUserLocation] = useState<
     Location.LocationObject['coords']
   >();
@@ -48,12 +47,37 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   useEffect(() => {
     if (listRef && listRef?.current) {
       // TODO: this is not working right now
+      const cardWidth = width - 64;
+      const a = cardWidth * selected;
       listRef.current.scrollToOffset({
         animated: true,
-        offset: selected * 296,
+        offset: a -24
       });
     }
+    mapRef?.current?.animateCamera(
+      {
+        center: {
+          latitude: parseFloat(homeChurches[selected]?.location?.address?.latitude ?? "43.4675" ) ,
+          longitude:parseFloat(homeChurches[selected]?.location?.address?.longitude ?? "-79.6877") ,
+        },
+        pitch: 1,
+        heading: 1,
+        zoom: 12,
+        altitude: 3,
+      },
+      { duration: 400 }
+    );
+
   }, [selected]);
+  const handleScroll = (e) => {
+    console.log(e.nativeEvent)
+    let xOffset = e.nativeEvent.contentOffset.x
+    let contentWidth = e.nativeEvent.contentSize.width
+/*  console.log(`Home Church Qty: ${homeChurches.length}`)
+    console.log(`xOffset: ${Math.round(xOffset/296)}`) //this number needs be relative to display
+    console.log(`contentWidth: ${contentWidth}`) */
+    setSelected(Math.round(xOffset/296))
+  }
   const getUserLocation = async () => {
     const { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -69,40 +93,10 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         },
         pitch: 1,
         heading: 1,
-        zoom: 10,
+        zoom: 12,
         altitude: 3,
       },
       { duration: 3 }
-    );
-  };
-  const Modal = () => {
-    const translateY = useRef(new Animated.Value(0)).current;
-    useEffect(() => {
-      Animated.timing(translateY, {
-        toValue: 275,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }, [translateY]);
-    return (
-      <Animated.View
-        style={{
-          transform: [
-            {
-              translateY: translateY.interpolate({
-                inputRange: [0, 275],
-                outputRange: [275, 0],
-                extrapolate: 'clamp',
-              }),
-            },
-          ],
-          backgroundColor: Theme.colors.gray1,
-          bottom: 100,
-          position: 'absolute',
-        }}
-      >
-        <HomeChurchItem item={homeChurches[selected]} card modal />
-      </Animated.View>
     );
   };
   return (
@@ -165,43 +159,34 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       </MapView>
 
       <FlatList
+        onMomentumScrollEnd={handleScroll}
         ref={listRef}
         showsHorizontalScrollIndicator
         snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
-          const cardWidth = width - 64;
+
+          const cardWidth = width - 64 ;
           const a = cardWidth * index;
-          return a;
+          return a - 24;
         })}
         decelerationRate={0.88}
         disableIntervalMomentum
         ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
         contentContainerStyle={{ padding: 16 }}
         style={styles.list}
-        getItemLayout={(data, index) => {
-          const cardWidth = width * 0.8;
-          return {
-            // TODO: FIX OFFSET
-            length: cardWidth,
-            offset: cardWidth * index,
-            index,
-          };
-        }} /* 
+ /* 
           The data fed to the flatlist needs to match data fed to markers. Indexes must match 
           Online Home Churches will not show up on map screen (?) 
         */
-        data={homeChurches.filter(
+        data={homeChurches.filter( // is this filter needed?
           (church) =>
             church?.location?.address?.latitude &&
             church?.location?.address?.longitude
         )}
         renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => setShowModal(!showModal)}>
             <HomeChurchItem active={index === selected} card item={item} />
-          </TouchableOpacity>
         )}
         horizontal
       />
-      <Modal />
     </View>
   );
 }
