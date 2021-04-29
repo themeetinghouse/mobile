@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import { LocationData } from 'src/contexts/LocationContext';
 import MainTabNavigator, {
   TabNavigatorParamList,
   HomeStackParamList,
@@ -31,6 +32,7 @@ import HomeChurchScreen, {
   HomeChurchData,
 } from '../screens/homechurch/HomeChurchScreen';
 import HomeChurchMapScreen from '../screens/homechurch/HomeChurchMapScreen';
+import HomeChurchLocationSelect from '../screens/homechurch/HomeChurchLocationSelect';
 
 export type MainStackParamList = {
   Main:
@@ -56,6 +58,7 @@ export type MainStackParamList = {
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
   LocationSelectionScreen: { persist: boolean };
+  HomeChurchLocationSelect: { loc?: LocationData };
   HighlightScreen: { highlights: any[]; nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: {
@@ -66,7 +69,7 @@ export type MainStackParamList = {
   AllEvents: { events: NonNullable<EventQueryResult> };
   LiveStreamScreen: undefined;
   TeacherList: undefined;
-  HomeChurchScreen: undefined;
+  HomeChurchScreen: { loc?: LocationData };
   CommentScreen:
     | {
         key: string;
@@ -124,6 +127,10 @@ export default function NavigationRoot(): JSX.Element {
       <Main.Screen name="CommentScreen" component={CommentScreen} />
       <Main.Screen name="MyComments" component={MyComments} />
       <Main.Screen name="HomeChurchScreen" component={HomeChurchScreen} />
+      <Main.Screen
+        name="HomeChurchLocationSelect"
+        component={HomeChurchLocationSelect}
+      />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />
       <Main.Screen name="HomeChurchMapScreen" component={HomeChurchMapScreen} />
