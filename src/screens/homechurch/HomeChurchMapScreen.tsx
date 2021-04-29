@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, SyntheticEvent } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions, FlatList, Animated } from 'react-native';
+import { StyleSheet, View, Dimensions, FlatList, Animated, ScrollResponderEvent, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
@@ -46,19 +46,21 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const [selected, setSelected] = useState(0);
   useEffect(() => {
     if (listRef && listRef?.current) {
-      // TODO: this is not working right now
       const cardWidth = width - 64;
       const a = cardWidth * selected;
       listRef.current.scrollToOffset({
         animated: true,
-        offset: a -24
+        offset: a - 24
       });
     }
+    console.log("=========================================")
+    console.log(homeChurches[selected]?.location?.address?.latitude)
+    console.log(homeChurches[selected]?.location?.address?.longitude)
     mapRef?.current?.animateCamera(
       {
         center: {
           latitude: parseFloat(homeChurches[selected]?.location?.address?.latitude ?? "43.4675" ) ,
-          longitude:parseFloat(homeChurches[selected]?.location?.address?.longitude ?? "-79.6877") ,
+          longitude: parseFloat(homeChurches[selected]?.location?.address?.longitude ?? "-79.6877") ,
         },
         pitch: 1,
         heading: 1,
@@ -67,15 +69,12 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       },
       { duration: 400 }
     );
-
   }, [selected]);
-  const handleScroll = (e) => {
-    console.log(e.nativeEvent)
-    let xOffset = e.nativeEvent.contentOffset.x
-    let contentWidth = e.nativeEvent.contentSize.width
-/*  console.log(`Home Church Qty: ${homeChurches.length}`)
-    console.log(`xOffset: ${Math.round(xOffset/296)}`) //this number needs be relative to display
-    console.log(`contentWidth: ${contentWidth}`) */
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // console.log(event.nativeEvent)
+    let xOffset = event.nativeEvent.contentOffset.x
+    let contentWidth = event.nativeEvent.contentSize.width
+    // This number needs be relative to display
     setSelected(Math.round(xOffset/296))
   }
   const getUserLocation = async () => {
@@ -88,8 +87,8 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
     mapRef?.current?.animateCamera(
       {
         center: {
-          latitude: location?.coords?.latitude ?? 43.4675,
-          longitude: location?.coords?.longitude ?? -79.6877,
+          latitude: location?.coords?.latitude ?? "43.4675",
+          longitude: location?.coords?.longitude ?? "-79.6877",
         },
         pitch: 1,
         heading: 1,
@@ -102,6 +101,9 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   return (
     <View style={styles.container}>
       <MapView
+        rotateEnabled={false}
+        pitchEnabled={false}
+        zoomControlEnabled
         mapPadding={{ top: 16, left: 16, right: 16, bottom: 16 }}
         onMapReady={async () => getUserLocation()}
         showsUserLocation
@@ -111,11 +113,6 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       >
         {homeChurches?.length
           ? homeChurches
-              .filter(
-                (church) =>
-                  church?.location?.address?.latitude &&
-                  church?.location?.address?.longitude
-              )
               .map((church, index) => {
                 return (
                   <Marker
@@ -177,11 +174,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
           The data fed to the flatlist needs to match data fed to markers. Indexes must match 
           Online Home Churches will not show up on map screen (?) 
         */
-        data={homeChurches.filter( // is this filter needed?
-          (church) =>
-            church?.location?.address?.latitude &&
-            church?.location?.address?.longitude
-        )}
+        data={homeChurches}
         renderItem={({ item, index }) => (
             <HomeChurchItem active={index === selected} card item={item} />
         )}
