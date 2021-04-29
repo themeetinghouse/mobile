@@ -20,6 +20,49 @@ interface Params {
   active?: boolean;
 }
 const { width, height } = Dimensions.get('window');
+
+export const getDayOfWeek = (homechurch: HomeChurch) => {
+  // TODO: Fix
+  if (homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly)
+    if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnSunday
+    )
+      return 'Sunday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnMonday
+    )
+      return 'Monday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnTuesday
+    )
+      return 'Tuesday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnWednesday
+    )
+      return 'Wednesday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnThursday
+    )
+      return 'Thursday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnFriday
+    )
+      return 'Friday';
+    else if (
+      homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
+        ?.occurOnSaturday
+    )
+      return 'Saturday';
+    else return moment(homechurch.startDate).format('dddd');
+  else return moment(homechurch?.startDate).format('dddd');
+};
+
 const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
@@ -97,47 +140,6 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
       alignItems: 'center',
     },
   });
-  const getDayOfWeek = (homechurch: HomeChurch) => {
-    // TODO: Fix
-    if (homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly)
-      if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnSunday
-      )
-        return 'Sunday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnMonday
-      )
-        return 'Monday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnTuesday
-      )
-        return 'Tuesday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnWednesday
-      )
-        return 'Wednesday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnThursday
-      )
-        return 'Thursday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnFriday
-      )
-        return 'Friday';
-      else if (
-        homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
-          ?.occurOnSaturday
-      )
-        return 'Saturday';
-      else return moment(homechurch.startDate).format('dddd');
-    else return moment(homechurch?.startDate).format('dddd');
-  };
 
   const addToCalendar = async () => {
     let startTime;
@@ -202,7 +204,8 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
             </Text>
           ) : null}
           <Text style={style.hmDate}>
-            {getDayOfWeek(item)}s{'\n'}
+            {getDayOfWeek(item)}
+            {'\n'}
             {moment(item?.schedule?.startTime).format('h:mm a')}
           </Text>
         </View>
