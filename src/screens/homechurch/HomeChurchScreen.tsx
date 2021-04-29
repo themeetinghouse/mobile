@@ -15,12 +15,14 @@ import { ListF1ListGroup2sQuery } from 'src/services/API';
 import { listF1ListGroup2s } from '../../services/queries';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
-import HomeChurchItem from './HomeChurchItem';
-import HomeChurchLocationSelect from './HomeChurchLocationSelect';
+import HomeChurchItem, { getDayOfWeek } from './HomeChurchItem';
 import IconButton from '../../components/buttons/IconButton';
+import HomeChurchControls from './HomeChurchControls';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
+  loc: any;
+  route: any;
 }
 
 const style = StyleSheet.create({
@@ -41,9 +43,16 @@ export type HomeChurchData = NonNullable<
 >;
 export type HomeChurch = HomeChurchData[0];
 
-export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
-  const location = useContext(LocationContext);
+export default function HomeChurchScreen({
+  navigation,
+  route,
+  loc,
+}: Params): JSX.Element {
+  const [location, setLocation] = useState(
+    useContext(LocationContext)?.locationData
+  );
   const [isLoading, setIsLoading] = useState(true);
+  const [day, setDay] = useState('All Days');
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -79,30 +88,52 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
 
   const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
 
-  /*     
-  const maps = {
-      alliston: '62948',
-      ancaster: '58251',
-      brampton: '58224',
-      brantford: '58225',
-      burlington: '58248',
-      'hamilton-downtown': '58249',
-      'hamilton-mountain': '58250',
-      kitchener: '58253',
-      london: '58254',
-      newmarket: '58069',
-      oakville: '58082',
-      ottawa: '58255',
-      'owen-sound': '58252',
-      'parry-sound': '58256',
-      'richmond-hill': '58081',
-      sandbanks: '62947',
-      'toronto-downtown': '58083',
-      'toronto-east': '58258',
-      'toronto-high-park': '58257',
-      'toronto-uptown': '58259',
-      waterloo: '57909',
-    }; */
+  const locationToGroupType = (groupId: string) => {
+    switch (groupId) {
+      case '62948':
+        return 'alliston';
+      case '58224':
+        return 'brampton';
+      case '58225':
+        return 'brantford';
+      case '58248':
+        return 'burlington';
+      case '58249':
+        return 'hamilton-downtown';
+      case '58250':
+        return 'hamilton-mountain';
+      case '58253':
+        return 'kitchener';
+      case '58254':
+        return 'london';
+      case '58069':
+        return 'newmarket';
+      case '58082':
+        return 'oakville';
+      case '58255':
+        return 'ottawa';
+      case '58252':
+        return 'owen-sound';
+      case '58256':
+        return 'parry-sound';
+      case '58081':
+        return 'richmond-hill';
+      case '62947':
+        return 'sandbanks';
+      case '58083':
+        return 'toronto-downtown';
+      case '58258':
+        return 'toronto-east';
+      case '58257':
+        return 'toronto-high-park';
+      case '58259':
+        return 'toronto-uptown';
+      case '57909':
+        return 'waterloo';
+      default:
+        return 'Unknown';
+    }
+  };
 
   useEffect(() => {
     const loadHomeChurches = async () => {
@@ -114,11 +145,7 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
         // setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
-        setHomeChurches(
-          json.data?.listF1ListGroup2s?.items?.filter(
-            (church) => church?.groupType?.id === '58082'
-          ) ?? []
-        );
+        setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
       } catch (err) {
         console.log(err);
       } finally {
@@ -126,8 +153,12 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
       }
     };
     loadHomeChurches();
+    if (route?.params?.loc) {
+      setLocation(route.params.loc);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+  }, [location, route?.params?.loc]);
 
   return (
     <View>
@@ -153,50 +184,72 @@ export default function HomeChurchScreen({ navigation }: Params): JSX.Element {
           />
         </View>
       ) : null}
+      <View style={{ marginBottom: 10 }}>
+        <HomeChurchControls
+          setDay={setDay}
+          navigation={navigation}
+          loc={location}
+        />
+        <View style={{ flexDirection: 'row', zIndex: -2 }}>
+          <Text style={style.resultsCount}>{`${
+            homeChurches.filter((a) => {
+              return (
+                (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
+                (location?.locationId === 'all' && day === 'All Days') ||
+                (locationToGroupType(a?.groupType?.id ?? '') ===
+                  location?.locationId &&
+                  getDayOfWeek(a) === day) ||
+                (locationToGroupType(a?.groupType?.id ?? '') ===
+                  location?.locationId &&
+                  day === 'All Days')
+              );
+            }).length
+          } Results`}</Text>
+          <IconButton
+            labelStyle={{
+              color: 'black',
+              fontFamily: Theme.fonts.fontFamilyBold,
+            }}
+            icon={Theme.icons.black.map}
+            label="Map"
+            style={{
+              alignSelf: 'flex-end',
+              paddingLeft: 12,
+              height: 50,
+              marginRight: 16,
+              width: 100,
+              backgroundColor: '#fff',
+            }}
+            onPress={() =>
+              navigation.navigate('HomeChurchMapScreen', {
+                items: homeChurches.filter(
+                  (church) =>
+                    church?.location?.address?.latitude &&
+                    church.location.address.longitude
+                ),
+              })
+            }
+          />
+        </View>
+      </View>
       <FlatList
-        data={homeChurches}
+        style={{ zIndex: -1 }}
+        data={homeChurches.filter((a) => {
+          return (
+            (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
+            (location?.locationId === 'all' && day === 'All Days') ||
+            (locationToGroupType(a?.groupType?.id ?? '') ===
+              location?.locationId &&
+              getDayOfWeek(a) === day) ||
+            (locationToGroupType(a?.groupType?.id ?? '') ===
+              location?.locationId &&
+              day === 'All Days')
+          );
+        })}
         renderItem={({ item }) => <HomeChurchItem item={item} />}
         keyExtractor={(item, index) => {
           return item?.id ?? index.toString();
         }}
-        ListHeaderComponent={
-          <View style={{ marginBottom: 10 }}>
-            <HomeChurchLocationSelect
-              navigation={navigation}
-              loc={
-                location?.locationData?.locationName.includes('Oakville')
-                  ? { ...location?.locationData, locationName: 'Oakville' }
-                  : location?.locationData
-              }
-            />
-            <View style={{ flexDirection: 'row' }}>
-              <Text
-                style={style.resultsCount}
-              >{`${homeChurches.length} Results`}</Text>
-              <IconButton
-                labelStyle={{
-                  color: 'black',
-                  fontFamily: Theme.fonts.fontFamilyBold,
-                }}
-                icon={Theme.icons.black.map}
-                label="Map"
-                style={{
-                  alignSelf: 'flex-end',
-                  paddingLeft: 12,
-                  height: 50,
-                  marginRight: 16,
-                  width: 100,
-                  backgroundColor: '#fff',
-                }}
-                onPress={() =>
-                  navigation.navigate('HomeChurchMapScreen', {
-                    items: homeChurches,
-                  })
-                }
-              />
-            </View>
-          </View>
-        }
       />
     </View>
   );
