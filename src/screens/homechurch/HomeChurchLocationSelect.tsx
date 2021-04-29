@@ -1,116 +1,214 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import {
-  StyleSheet,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  View,
+  Container,
+  Content,
   Text,
-  TextInput,
-} from 'react-native';
-import { Thumbnail } from 'native-base';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
-import { LocationData } from 'src/contexts/LocationContext';
-import { Theme, Style } from '../../Theme.style';
+  Left,
+  Right,
+  View,
+  Thumbnail,
+  Item,
+  Input,
+  List,
+  ListItem,
+} from 'native-base';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 
-interface Params {
+import { StackNavigationProp } from '@react-navigation/stack';
+import * as SecureStore from 'expo-secure-store';
+import { RouteProp } from '@react-navigation/native';
+import { LocationData } from '../../contexts/LocationContext';
+import LocationsService from '../../services/LocationsService';
+import Theme, { Style, HeaderStyle } from '../../Theme.style';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+
+const style = StyleSheet.create({
+  content: {
+    ...Style.cardContainer,
+    ...{
+      backgroundColor: Theme.colors.black,
+      padding: 16,
+      paddingBottom: 150,
+    },
+  },
+  header: Style.header,
+  headerLeft: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 70,
+  },
+  headerBody: {
+    flexGrow: 3,
+    justifyContent: 'center',
+  },
+  headerRight: {
+    flexGrow: 0,
+    flexShrink: 0,
+    flexBasis: 70,
+  },
+  headerTitle: {
+    ...HeaderStyle.title,
+    ...{
+      width: '100%',
+    },
+  },
+  headerButtonText: HeaderStyle.linkText,
+  title: {
+    ...Style.title,
+    ...{
+      marginTop: 130,
+      marginBottom: 16,
+    },
+  },
+  body: {
+    ...Style.body,
+    ...{
+      marginBottom: 40,
+    },
+  },
+  searchIcon: Style.icon,
+  searchInput: {
+    color: Theme.colors.grey3,
+    fontFamily: Theme.fonts.fontFamilyBold,
+    fontSize: Theme.fonts.medium,
+    marginLeft: 20,
+  },
+  searchInputActive: {
+    color: Theme.colors.white,
+    fontFamily: Theme.fonts.fontFamilyBold,
+    fontSize: Theme.fonts.medium,
+    marginLeft: 20,
+  },
+  listItem: {
+    marginLeft: 0,
+    borderColor: Theme.colors.gray3,
+  },
+  listText: {
+    fontSize: Theme.fonts.medium,
+    color: Theme.colors.white,
+    fontFamily: Theme.fonts.fontFamilySemiBold,
+  },
+  listCheckIcon: Style.icon,
+});
+
+type Params = {
   navigation: StackNavigationProp<MainStackParamList>;
-  loc: LocationData;
-}
-// TODO: Add missing type
-// TODO: white bottom border missing on postal code
-const HomeChurchLocationSelect = ({ loc, navigation }: Params): JSX.Element => {
-  const [selectedLocation, setSelectedLocation] = useState(loc?.locationName);
-  const [postalCode, setPostalCode] = useState('');
-  const style = StyleSheet.create({
-    locationIcon: { ...Style.icon, marginRight: 20, alignSelf: 'center' },
-    container: {
-      backgroundColor: '#111111',
-      margin: 16,
-    },
-    containerItem: {
-      flexDirection: 'row',
-      fontFamily: Theme.fonts.fontFamilyRegular,
-      paddingHorizontal: 20,
-      color: 'white',
-      height: 56,
-      fontSize: 16,
-      borderWidth: 1,
-      borderColor: '#1A1A1A',
-    },
-    locationSelect: {
-      alignSelf: 'center',
-      flex: 1,
-      fontFamily: Theme.fonts.fontFamilyRegular,
-      color: '#fff',
-      fontSize: 16,
-    },
-  });
-  return (
-    <>
-      <View style={style.container}>
-        <TouchableWithoutFeedback
-          onPress={() =>
-            navigation.push('LocationSelectionScreen', { persist: true })
-          }
-          style={style.containerItem}
-        >
-          <View
-            style={{
-              flexDirection: 'row',
-              flex: 1,
-              height: 56,
-              marginLeft: 16,
-            }}
+};
+
+export default function HomeChurchLocationSelect({
+  navigation,
+}: Params): JSX.Element {
+
+  const [locations, setLocations] = useState<LocationData[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState({ locationName: "", locationId: "" });
+  const [searchText, setSearchText] = useState('');
+  // eslint-disable-next-line camelcase
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: 'Site Location',
+      headerTitleStyle: style.headerTitle,
+      headerStyle: { backgroundColor: Theme.colors.background },
+      headerLeft: function render() {
+        return (
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={style.headerButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        );
+      },
+      headerLeftContainerStyle: { left: 16 },
+      headerRight: function render() {
+        return (
+          <TouchableOpacity
+            onPress={() => navigation.navigate("HomeChurchScreen", { loc: selectedLocation })}
           >
+            <Text style={style.headerButtonText}>Done</Text>
+          </TouchableOpacity>
+        );
+      },
+      headerRightContainerStyle: { right: 16 },
+    });
+  }, [selectedLocation]);
+  useEffect(() => {
+    const loadLocations = () => {
+      const locationsResult = LocationsService.loadLocationDataForContext();
+      setLocations(
+        [{ locationName: "All Locations", locationId: "all" }, ...locationsResult.sort((a, b) =>
+          (a?.locationName as string).localeCompare(b?.locationName as string)
+        )]
+      );
+    };
+    loadLocations();
+    async function getLocation() {
+      const location = await SecureStore.getItemAsync('location')
+      setSelectedLocation({ ...selectedLocation, locationId: location ?? "" })
+    }
+    getLocation()
+  }, []);
+  return (
+    <Container style={{ backgroundColor: 'black' }}>
+      <Content style={style.content}>
+        <View>
+          <Item>
             <Thumbnail
-              style={style.locationIcon}
-              source={Theme.icons.white.location}
+              style={style.searchIcon}
+              source={Theme.icons.white.search}
               square
             />
-            <Text style={style.locationSelect}>{selectedLocation}</Text>
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TextInput
-          accessibilityLabel="Add Postal Code"
-          keyboardAppearance="dark"
-          placeholder="Add postal code"
-          placeholderTextColor="#646469"
-          textContentType="none"
-          keyboardType="default"
-          multiline
-          value={postalCode}
-          onChange={(text) => {
-            if (!text.nativeEvent.text.includes(' '))
-              setPostalCode(text.nativeEvent.text);
-          }}
-          textAlignVertical="center"
-          maxLength={6}
-          autoCapitalize="characters"
-          style={style.containerItem}
-        />
-      </View>
-      <TouchableOpacity
-        onPress={() => {
-          setPostalCode('');
-          setSelectedLocation('All Locations');
-        }}
-      >
-        <Text
-          style={{
-            alignSelf: 'flex-start',
-            marginLeft: 16,
-            marginBottom: 8,
-            color: Theme.colors.gray5,
-            textDecorationLine: 'underline',
-            fontFamily: Theme.fonts.fontFamilyRegular,
-          }}
-        >
-          Clear All
-        </Text>
-      </TouchableOpacity>
-    </>
+            <Input
+              style={searchText ? style.searchInputActive : style.searchInput}
+              value={searchText}
+              onChangeText={(str) => setSearchText(str)}
+              placeholder="Search locations..."
+            />
+            {searchText ? (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchText('');
+                }}
+              >
+                <Thumbnail
+                  style={style.searchIcon}
+                  source={Theme.icons.white.closeCancel}
+                  square
+                />
+              </TouchableOpacity>
+            ) : null}
+          </Item>
+        </View>
+        <View style={{ paddingVertical: 24 }}>
+          <List>
+            {locations.map(
+              (item) =>
+                item?.locationName
+                  .toLowerCase()
+                  .includes(searchText.toLowerCase()) && (
+                  <ListItem
+                    key={item.locationId}
+                    style={style.listItem}
+                    onPress={() =>
+                      setSelectedLocation(item)
+                    }
+                  >
+                    <Left>
+                      <Text style={style.listText}>{item.locationName}</Text>
+                    </Left>
+                    <Right>
+                      {selectedLocation?.locationId === item.locationId && (
+                        <Thumbnail
+                          style={style.listCheckIcon}
+                          source={Theme.icons.white.check}
+                          square
+                        />
+                      )}
+                    </Right>
+                  </ListItem>
+                )
+            )}
+          </List>
+        </View>
+      </Content>
+    </Container>
   );
-};
-export default HomeChurchLocationSelect;
+}
