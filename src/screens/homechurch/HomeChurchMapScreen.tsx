@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect, SyntheticEvent } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { StyleSheet, View, Dimensions, FlatList, Animated, ScrollResponderEvent, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  FlatList,
+  Animated,
+  ScrollResponderEvent,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+} from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
@@ -13,7 +22,6 @@ import {
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
-
 
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -44,23 +52,21 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const listRef = useRef<FlatList | null>(null);
   const mapRef = useRef<MapView>(null);
   const [selected, setSelected] = useState(0);
-  useEffect(() => {
-    if (listRef && listRef?.current) {
-      const cardWidth = width - 64;
-      const a = cardWidth * selected;
-      listRef.current.scrollToOffset({
-        animated: true,
-        offset: a - 24
-      });
-    }
-    console.log("=========================================")
-    console.log(homeChurches[selected]?.location?.address?.latitude)
-    console.log(homeChurches[selected]?.location?.address?.longitude)
+  const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    // console.log(event.nativeEvent)
+    const xOffset = event.nativeEvent.contentOffset.x;
+    setSelected(Math.round(xOffset / 296));
     mapRef?.current?.animateCamera(
       {
         center: {
-          latitude: parseFloat(homeChurches[selected]?.location?.address?.latitude ?? "43.4675" ) ,
-          longitude: parseFloat(homeChurches[selected]?.location?.address?.longitude ?? "-79.6877") ,
+          latitude: parseFloat(
+            homeChurches[Math.round(xOffset / 296)]?.location?.address
+              ?.latitude ?? '43.4675'
+          ),
+          longitude: parseFloat(
+            homeChurches[Math.round(xOffset / 296)]?.location?.address
+              ?.longitude ?? '-79.6877'
+          ),
         },
         pitch: 1,
         heading: 1,
@@ -69,14 +75,16 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
       },
       { duration: 400 }
     );
-  }, [selected]);
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // console.log(event.nativeEvent)
-    let xOffset = event.nativeEvent.contentOffset.x
-    let contentWidth = event.nativeEvent.contentSize.width
-    // This number needs be relative to display
-    setSelected(Math.round(xOffset/296))
-  }
+  };
+  const handleMarkerPress = (index: number) => {
+    setSelected(index);
+    if (listRef && listRef?.current) {
+      listRef.current.scrollToIndex({
+        animated: true,
+        index,
+      });
+    }
+  };
   const getUserLocation = async () => {
     const { status } = await Location.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -87,8 +95,8 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
     mapRef?.current?.animateCamera(
       {
         center: {
-          latitude: location?.coords?.latitude ?? "43.4675",
-          longitude: location?.coords?.longitude ?? "-79.6877",
+          latitude: location?.coords?.latitude ?? '43.4675',
+          longitude: location?.coords?.longitude ?? '-79.6877',
         },
         pitch: 1,
         heading: 1,
@@ -112,56 +120,52 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         style={styles.map}
       >
         {homeChurches?.length
-          ? homeChurches
-              .map((church, index) => {
-                return (
-                  <Marker
-                    zIndex={selected === index ? 10 : -10}
-                    identifier={church?.id ?? ''}
-                    onPress={() => {
-                      setSelected(index);
-                    }}
-                    key={church?.id}
-                    coordinate={{
-                      latitude: parseFloat(
-                        church?.location?.address?.latitude ?? '43.6532'
-                      ),
-                      longitude: parseFloat(
-                        church?.location?.address?.longitude ?? '-79.3832'
-                      ),
+          ? homeChurches.map((church, index) => {
+              return (
+                <Marker
+                  zIndex={selected === index ? 10 : -10}
+                  identifier={church?.id ?? ''}
+                  onPress={() => handleMarkerPress(index)}
+                  key={church?.id}
+                  coordinate={{
+                    latitude: parseFloat(
+                      church?.location?.address?.latitude ?? '43.6532'
+                    ),
+                    longitude: parseFloat(
+                      church?.location?.address?.longitude ?? '-79.3832'
+                    ),
+                  }}
+                >
+                  <View
+                    style={{
+                      padding: 12,
+                      backgroundColor: selected === index ? 'black' : 'white',
+                      borderRadius: 50,
+                      borderWidth: 2,
                     }}
                   >
-                    <View
-                      style={{
-                        padding: 12,
-                        backgroundColor: selected === index ? 'black' : 'white',
-                        borderRadius: 50,
-                        borderWidth: 2,
-                      }}
-                    >
-                      <Thumbnail
-                        square
-                        style={{ width: 18, height: 18 }}
-                        source={
-                          selected === index
-                            ? Theme.icons.white.homeChurch
-                            : Theme.icons.black.homeChurch
-                        }
-                      />
-                    </View>
-                  </Marker>
-                );
-              })
+                    <Thumbnail
+                      square
+                      style={{ width: 18, height: 18 }}
+                      source={
+                        selected === index
+                          ? Theme.icons.white.homeChurch
+                          : Theme.icons.black.homeChurch
+                      }
+                    />
+                  </View>
+                </Marker>
+              );
+            })
           : null}
       </MapView>
 
       <FlatList
-        onMomentumScrollEnd={handleScroll}
+        onMomentumScrollEnd={handleListScroll}
         ref={listRef}
         showsHorizontalScrollIndicator
         snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
-
-          const cardWidth = width - 64 ;
+          const cardWidth = width - 64;
           const a = cardWidth * index;
           return a - 24;
         })}
@@ -169,14 +173,17 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         disableIntervalMomentum
         ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
         contentContainerStyle={{ padding: 16 }}
+        getItemLayout={(data, index) => {
+          return { length: 296, offset: 296 * index - 24, index };
+        }}
         style={styles.list}
- /* 
+        /* 
           The data fed to the flatlist needs to match data fed to markers. Indexes must match 
           Online Home Churches will not show up on map screen (?) 
         */
         data={homeChurches}
         renderItem={({ item, index }) => (
-            <HomeChurchItem active={index === selected} card item={item} />
+          <HomeChurchItem active={index === selected} card item={item} />
         )}
         horizontal
       />
