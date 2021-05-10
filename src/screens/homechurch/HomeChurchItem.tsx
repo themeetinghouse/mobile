@@ -171,11 +171,10 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
       const createEntry = await Calendar.createEvent(
         {
           name: item?.name,
-          event: {
-            place: {
-              location: {
-                street: item?.location?.address?.address1,
-              },
+
+          place: {
+            location: {
+              street: item?.location?.address?.address1,
             },
           },
         },
