@@ -224,11 +224,17 @@ export default function HomeChurchScreen({
               }}
               onPress={() =>
                 navigation.navigate('HomeChurchMapScreen', {
-                  items: homeChurches.filter(
-                    (church) =>
-                      church?.location?.address?.latitude !== '' &&
-                      church?.location?.address?.longitude !== ''
-                  ),
+                  items: homeChurches
+                    .sort((a, b) =>
+                      a?.groupType?.id && b?.groupType?.id
+                        ? a?.groupType?.id?.localeCompare(b?.groupType?.id)
+                        : 0
+                    )
+                    .filter(
+                      (church) =>
+                        church?.location?.address?.latitude !== '' &&
+                        church?.location?.address?.longitude !== ''
+                    ),
                 })
               }
             />
