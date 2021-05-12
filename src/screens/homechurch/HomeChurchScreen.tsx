@@ -5,10 +5,12 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import API, { GraphQLResult } from '@aws-amplify/api';
 import { ListF1ListGroup2sQuery } from 'src/services/API';
@@ -144,7 +146,6 @@ export default function HomeChurchScreen({
             limit: 200,
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
-        // setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
         setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
       } catch (err) {
         console.log(err);
@@ -184,15 +185,63 @@ export default function HomeChurchScreen({
           />
         </View>
       ) : null}
-      <View style={{ marginBottom: 10 }}>
-        <HomeChurchControls
-          setDay={setDay}
-          navigation={navigation}
-          loc={location}
-        />
-        <View style={{ flexDirection: 'row', zIndex: -2 }}>
-          <Text style={style.resultsCount}>{`${
-            homeChurches.filter((a) => {
+      <ScrollView>
+        <View style={{ marginBottom: 10 }}>
+          <HomeChurchControls
+            setDay={setDay}
+            navigation={navigation}
+            loc={location}
+          />
+          <View style={{ flexDirection: 'row', zIndex: -2 }}>
+            <Text style={style.resultsCount}>{`${
+              homeChurches.filter((a) => {
+                return (
+                  (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
+                  (location?.locationId === 'all' && day === 'All Days') ||
+                  (locationToGroupType(a?.groupType?.id ?? '') ===
+                    location?.locationId &&
+                    getDayOfWeek(a) === day) ||
+                  (locationToGroupType(a?.groupType?.id ?? '') ===
+                    location?.locationId &&
+                    day === 'All Days')
+                );
+              }).length
+            } Results`}</Text>
+            <IconButton
+              labelStyle={{
+                color: 'black',
+                fontFamily: Theme.fonts.fontFamilyBold,
+              }}
+              icon={Theme.icons.black.map}
+              label="Map"
+              style={{
+                alignSelf: 'flex-end',
+                paddingLeft: 12,
+                height: 50,
+                marginRight: 16,
+                width: 100,
+                backgroundColor: '#fff',
+              }}
+              onPress={() =>
+                navigation.navigate('HomeChurchMapScreen', {
+                  items: homeChurches.filter(
+                    (church) =>
+                      church?.location?.address?.latitude !== '' &&
+                      church?.location?.address?.longitude !== ''
+                  ),
+                })
+              }
+            />
+          </View>
+        </View>
+        <View
+          style={{
+            zIndex: -200,
+            minHeight: Dimensions.get('window').height / 2,
+          }}
+        >
+          {homeChurches
+            .filter((a) => {
               return (
                 (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
                 (location?.locationId === 'all' && day === 'All Days') ||
@@ -203,54 +252,12 @@ export default function HomeChurchScreen({
                   location?.locationId &&
                   day === 'All Days')
               );
-            }).length
-          } Results`}</Text>
-          <IconButton
-            labelStyle={{
-              color: 'black',
-              fontFamily: Theme.fonts.fontFamilyBold,
-            }}
-            icon={Theme.icons.black.map}
-            label="Map"
-            style={{
-              alignSelf: 'flex-end',
-              paddingLeft: 12,
-              height: 50,
-              marginRight: 16,
-              width: 100,
-              backgroundColor: '#fff',
-            }}
-            onPress={() =>
-              navigation.navigate('HomeChurchMapScreen', {
-                items: homeChurches.filter(
-                  (church) =>
-                    church?.location?.address?.latitude &&
-                    church.location.address.longitude
-                ),
-              })
-            }
-          />
+            })
+            .map((a) => {
+              return <HomeChurchItem key={a?.id} item={a} />;
+            })}
         </View>
-      </View>
-      <FlatList
-        style={{ zIndex: -1 }}
-        data={homeChurches.filter((a) => {
-          return (
-            (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
-            (location?.locationId === 'all' && day === 'All Days') ||
-            (locationToGroupType(a?.groupType?.id ?? '') ===
-              location?.locationId &&
-              getDayOfWeek(a) === day) ||
-            (locationToGroupType(a?.groupType?.id ?? '') ===
-              location?.locationId &&
-              day === 'All Days')
-          );
-        })}
-        renderItem={({ item }) => <HomeChurchItem item={item} />}
-        keyExtractor={(item, index) => {
-          return item?.id ?? index.toString();
-        }}
-      />
+      </ScrollView>
     </View>
   );
 }
