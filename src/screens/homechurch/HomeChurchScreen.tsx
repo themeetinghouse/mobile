@@ -51,7 +51,12 @@ export default function HomeChurchScreen({
   loc,
 }: Params): JSX.Element {
   const [location, setLocation] = useState(
-    useContext(LocationContext)?.locationData
+    useContext(LocationContext)?.locationData?.locationId === 'unknown'
+      ? {
+          locationName: 'All Locations',
+          locationId: 'all',
+        }
+      : useContext(LocationContext)?.locationData
   );
   const [isLoading, setIsLoading] = useState(true);
   const [day, setDay] = useState('All Days');
