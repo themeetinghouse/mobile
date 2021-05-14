@@ -5,8 +5,6 @@ import {
   View,
   Dimensions,
   FlatList,
-  Animated,
-  ScrollResponderEvent,
   NativeSyntheticEvent,
   NativeScrollEvent,
 } from 'react-native';
@@ -14,11 +12,6 @@ import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import {
-  PanGestureHandler,
-  PanGestureHandlerStateChangeEvent,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
@@ -36,7 +29,6 @@ const styles = StyleSheet.create({
     height: height * 0.7,
   },
   list: {
-    height: height * 0.4,
     backgroundColor: '#000',
     width,
   },
@@ -45,6 +37,7 @@ interface Params {
   route: RouteProp<MainStackParamList, 'HomeChurchMapScreen'>;
 }
 export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
+  const cardLength = width - 80 + 16;
   const homeChurches: HomeChurchData = route?.params?.items;
   const [userLocation, setUserLocation] = useState<
     Location.LocationObject['coords']
@@ -53,25 +46,24 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   const mapRef = useRef<MapView>(null);
   const [selected, setSelected] = useState(0);
   const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    // console.log(event.nativeEvent)
     const xOffset = event.nativeEvent.contentOffset.x;
-    setSelected(Math.round(xOffset / 296));
+    setSelected(Math.round(xOffset / cardLength));
     mapRef?.current?.animateCamera(
       {
         center: {
           latitude: parseFloat(
-            homeChurches[Math.round(xOffset / 296)]?.location?.address
+            homeChurches[Math.round(xOffset / cardLength)]?.location?.address
               ?.latitude ?? '43.4675'
           ),
           longitude: parseFloat(
-            homeChurches[Math.round(xOffset / 296)]?.location?.address
+            homeChurches[Math.round(xOffset / cardLength)]?.location?.address
               ?.longitude ?? '-79.6877'
           ),
         },
         pitch: 1,
         heading: 1,
         zoom: 12,
-        altitude: 3,
+        altitude: 30000,
       },
       { duration: 400 }
     );
@@ -101,7 +93,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         pitch: 1,
         heading: 1,
         zoom: 12,
-        altitude: 3,
+        altitude: 30000,
       },
       { duration: 3 }
     );
@@ -174,7 +166,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
         contentContainerStyle={{ padding: 16 }}
         getItemLayout={(data, index) => {
-          return { length: 296, offset: 296 * index - 24, index };
+          return { length: cardLength, offset: cardLength * index - 24, index };
         }}
         style={styles.list}
         /* 
