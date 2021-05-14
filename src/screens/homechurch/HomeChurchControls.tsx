@@ -104,7 +104,26 @@ const HomeChurchControls = ({
           style={style.containerItem}
           onPress={() => setActive(!active)}
         >
-          <Text style={{ color: 'white', padding: 16 }}>{weekday}</Text>
+          <>
+            <Text
+              style={{
+                flex: 1,
+                fontFamily: Theme.fonts.fontFamilyRegular,
+                color: 'white',
+                padding: 16,
+              }}
+            >
+              {weekday}
+            </Text>
+            <Thumbnail
+              source={Theme.icons.white.caretDown}
+              style={{
+                width: 24,
+                height: 24,
+                alignSelf: 'center',
+              }}
+            />
+          </>
         </TouchableHighlight>
 
         {active ? (
@@ -117,13 +136,35 @@ const HomeChurchControls = ({
               zIndex: 1000,
             }}
           >
-            {days.map((day) => (
+            {days.map((day, index) => (
               <TouchableHighlight
                 key={day}
                 onPress={() => handleDrop(day)}
                 style={style.containerItem}
               >
-                <Text style={{ color: 'white', padding: 16 }}>{day}</Text>
+                <>
+                  <Text
+                    style={{
+                      flex: 1,
+                      fontFamily: Theme.fonts.fontFamilyRegular,
+                      color: 'white',
+                      padding: 16,
+                    }}
+                  >
+                    {day}
+                  </Text>
+                  {index === 0 ? (
+                    <Thumbnail
+                      source={Theme.icons.white.caretDown}
+                      style={{
+                        transform: [{ rotate: '180deg' }],
+                        width: 24,
+                        height: 24,
+                        alignSelf: 'center',
+                      }}
+                    />
+                  ) : null}
+                </>
               </TouchableHighlight>
             ))}
           </View>
