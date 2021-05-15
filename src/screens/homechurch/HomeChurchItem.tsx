@@ -67,11 +67,9 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
-          // TODO: FIX Card height, width
-          // TODO: description needs to show ellipsis with "See More"
-          borderColor: '#1A1A1A',
-          borderWidth: 1,
-          backgroundColor: Theme.colors.gray1,
+          // TODO: FIX Card height
+          // TODO: Description needs to show ellipsis with "See More"
+          backgroundColor: '#1A1A1A',
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: active ? '#FFF' : 'transparent',
@@ -80,11 +78,10 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
           flexWrap: 'nowrap',
         }
       : {
-          borderColor: '#1A1A1A',
-          borderWidth: 1,
-          backgroundColor: Theme.colors.gray1,
+          backgroundColor: '#1A1A1A',
           padding: 16,
           width,
+          minHeight: modal ? height * 0.4 : 0,
         },
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
@@ -162,16 +159,10 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
         });
     }
     const endTime = moment(startTime).add(2, 'hours');
-    /* console.log(startTime.format('YYYY-MM-DD hh:mm:ss a'));
-    console.log(endTime.format('YYYY-MM-DD hh:mm:ss a'));
-    console.log(item?.name);
-    console.log(item?.location?.address?.address1);
- */
     try {
       const createEntry = await Calendar.createEvent(
         {
           name: item?.name,
-
           place: {
             location: {
               street: item?.location?.address?.address1,
@@ -192,9 +183,22 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
   };
   return (
     <View style={style.homeChurchCard}>
+      {modal ? (
+        <View
+          style={{
+            marginTop: -8,
+            marginBottom: 8,
+            borderRadius: 100,
+            width: 40,
+            alignSelf: 'center',
+            height: 5,
+            backgroundColor: Theme.colors.white,
+          }}
+        />
+      ) : null}
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-          <Text numberOfLines={1} style={style.hmName}>
+          <Text numberOfLines={modal ? 2 : 1} style={style.hmName}>
             {item?.name}
           </Text>
           {item?.location?.address?.address1 ? (
@@ -243,7 +247,7 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
       </View>
       <Text
         ellipsizeMode="tail"
-        numberOfLines={card ? 1 : 8}
+        numberOfLines={card ? 2 : 8}
         style={style.hmDescription}
       >
         {item?.description}
