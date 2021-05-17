@@ -18,6 +18,7 @@ interface Params {
   card?: boolean;
   modal?: boolean;
   active?: boolean;
+  openModal?: () => void;
 }
 const { width, height } = Dimensions.get('window');
 
@@ -63,7 +64,13 @@ export const getDayOfWeek = (homechurch: HomeChurch) => {
   else return moment(homechurch?.startDate).format('dddd');
 };
 
-const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
+const HomeChurchItem = ({
+  active,
+  item,
+  card,
+  modal,
+  openModal,
+}: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
@@ -78,7 +85,12 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
           flexWrap: 'nowrap',
         }
       : {
-          backgroundColor: '#1A1A1A',
+          borderTopWidth: 2,
+          borderRadius: 2,
+          borderColor: 'grey',
+
+          shadowColor: '#ddd',
+          backgroundColor: '#1a1a1a',
           padding: 16,
           width,
           minHeight: modal ? height * 0.4 : 0,
@@ -247,11 +259,30 @@ const HomeChurchItem = ({ active, item, card, modal }: Params): JSX.Element => {
       </View>
       <Text
         ellipsizeMode="tail"
-        numberOfLines={card ? 2 : 8}
+        numberOfLines={card ? 1 : 8}
         style={style.hmDescription}
       >
         {item?.description}
       </Text>
+      {card ? (
+        <TouchableOpacity
+          onPress={() => {
+            if (openModal) openModal();
+          }}
+        >
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 12,
+              lineHeight: 18,
+              fontFamily: Theme.fonts.fontFamilyRegular,
+              textDecorationLine: 'underline',
+            }}
+          >
+            See More
+          </Text>
+        </TouchableOpacity>
+      ) : null}
       {item?.location?.address?.city ||
       item?.name?.includes('Family Friendly') ? (
         <View style={style.badgesContainer}>

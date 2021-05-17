@@ -241,9 +241,15 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         */
         data={homeChurches}
         renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => setShowModal(!showModal)}>
-            <HomeChurchItem active={index === selected} card item={item} />
-          </TouchableOpacity>
+          <HomeChurchItem
+            openModal={() => {
+              setSelected(index);
+              setShowModal(true);
+            }}
+            active={index === selected}
+            card
+            item={item}
+          />
         )}
         horizontal
       />
