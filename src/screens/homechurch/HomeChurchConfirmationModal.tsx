@@ -175,12 +175,12 @@ const HomeChurchConfirmationModal = ({
               solidBlack
               label="Yes"
               onPress={async () => {
-                if (type === 'contact')
-                  Linking.openURL(
+                if (type === 'contact') {
+                  await Linking.openURL(
                     `mailto:roger.massie@themeetinghouse.com?subject=Inquiry%20About%20Home%20Church&body=Home%20Church%20ID:%20${homeChurch?.id}`
                   );
-                else if (type === 'calendar') await addToCalendar();
-                handleClose();
+                  handleClose();
+                } else if (type === 'calendar') await addToCalendar();
               }}
             />
           </View>
