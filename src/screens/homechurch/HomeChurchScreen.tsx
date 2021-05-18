@@ -171,12 +171,11 @@ export default function HomeChurchScreen({
       {isLoading ? (
         <View
           style={{
-            // TODO: fix this centering
             flex: 1,
             justifyContent: 'center',
             position: 'absolute',
             zIndex: 200,
-            top: '100%',
+            top: '50%',
             left: '45%',
             paddingVertical: 32,
             alignItems: 'center',
@@ -193,6 +192,7 @@ export default function HomeChurchScreen({
       <ScrollView>
         <View style={{ marginBottom: 10 }}>
           <HomeChurchControls
+            isLoading={isLoading}
             setDay={setDay}
             navigation={navigation}
             loc={location}
@@ -222,9 +222,7 @@ export default function HomeChurchScreen({
               style={{
                 alignSelf: 'flex-end',
                 paddingLeft: 12,
-                height: 50,
                 marginRight: 16,
-                width: 100,
                 backgroundColor: '#fff',
               }}
               onPress={() =>
