@@ -18,6 +18,7 @@ import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
@@ -41,8 +42,12 @@ const styles = StyleSheet.create({
 });
 interface Params {
   route: RouteProp<MainStackParamList, 'HomeChurchMapScreen'>;
+  navigation: StackNavigationProp<MainStackParamList>;
 }
-export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
+export default function HomeChurchMapScreen({
+  route,
+  navigation,
+}: Params): JSX.Element {
   const cardLength = width - 80 + 16;
   const homeChurches: HomeChurchData = route?.params?.items;
   const [userLocation, setUserLocation] = useState<
@@ -152,6 +157,26 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
   };
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{
+          zIndex: 20000,
+          position: 'absolute',
+          borderRadius: 50,
+          top: 52,
+          right: 24,
+          padding: 8,
+          backgroundColor: 'rgba(0,0,0,.7)',
+        }}
+      >
+        <Thumbnail
+          style={{
+            width: 26,
+            height: 26,
+          }}
+          source={Theme.icons.white.closeCancel}
+        />
+      </TouchableOpacity>
       <MapView
         rotateEnabled={false}
         pitchEnabled={false}
