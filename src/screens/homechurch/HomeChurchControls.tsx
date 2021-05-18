@@ -18,11 +18,13 @@ interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
   loc: LocationData;
   setDay: (day: string) => void;
+  isLoading: boolean;
 }
 const HomeChurchControls = ({
   loc,
   navigation,
   setDay,
+  isLoading,
 }: Params): JSX.Element => {
   const [selectedLocation, setSelectedLocation] = useState<LocationData>(
     loc?.locationName === 'unknown' || !loc?.locationName
@@ -79,6 +81,7 @@ const HomeChurchControls = ({
     <>
       <View style={style.container}>
         <TouchableWithoutFeedback
+          disabled={isLoading}
           onPress={() => navigation.push('HomeChurchLocationSelect', {})}
           style={style.containerItem}
         >
@@ -102,6 +105,7 @@ const HomeChurchControls = ({
         <TouchableHighlight
           onBlur={() => setActive(false)}
           style={style.containerItem}
+          disabled={isLoading}
           onPress={() => setActive(!active)}
         >
           <>
@@ -171,8 +175,8 @@ const HomeChurchControls = ({
         ) : null}
       </View>
       <TouchableOpacity
-        disabled={active}
-        style={{ zIndex: -1 }}
+        disabled={active || isLoading}
+        style={{ zIndex: -1, width: 100 }}
         onPress={() => {
           handleDrop('All Days');
           setSelectedLocation({
