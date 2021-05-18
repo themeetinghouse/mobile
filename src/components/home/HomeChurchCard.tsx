@@ -20,6 +20,7 @@ const style = StyleSheet.create({
     flex: 1,
   },
   picture: {
+    marginLeft: 16,
     marginVertical: 0,
     paddingVertical: 0,
     flex: 1,
@@ -54,7 +55,7 @@ export default function HomeChurchCard(): JSX.Element {
           accessibilityLabel="Home Church Image"
           source={{
             uri:
-              'https://www.themeetinghouse.com/cached/640/static/images/homechurch-1-1.jpg',
+              'https://www.themeetinghouse.com/cached/640/static/images/homechurch-2-1.jpg',
             cache: 'default',
           }}
         />
