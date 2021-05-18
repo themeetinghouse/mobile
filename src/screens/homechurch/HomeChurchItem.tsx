@@ -6,12 +6,11 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  Linking,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { Theme } from '../../Theme.style';
 import { HomeChurch } from './HomeChurchScreen';
-import Calendar from '../../services/CalendarService';
+import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 
 interface Params {
   item: HomeChurch;
@@ -22,7 +21,7 @@ interface Params {
 }
 const { width, height } = Dimensions.get('window');
 
-export const getDayOfWeek = (homechurch: HomeChurch) => {
+export const getDayOfWeek = (homechurch: HomeChurch): string => {
   // TODO: Fix
   if (homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly)
     if (
@@ -155,49 +154,8 @@ const HomeChurchItem = ({
     },
   });
 
-  const addToCalendar = async () => {
-    let startTime;
-    if (moment() < moment().isoWeekday(getDayOfWeek(item))) {
-      startTime = moment()
-        .isoWeekday(getDayOfWeek(item))
-        .set({
-          hour: moment(item?.schedule?.startTime).get('hour'),
-          minute: moment(item?.schedule?.startTime).get('minute'),
-          second: moment(item?.schedule?.startTime).get('second'),
-        });
-    } else {
-      startTime = moment()
-        .isoWeekday(getDayOfWeek(item))
-        .add(7, 'days')
-        .set({
-          hour: moment(item?.schedule?.startTime).get('hour'),
-          minute: moment(item?.schedule?.startTime).get('minute'),
-          second: moment(item?.schedule?.startTime).get('second'),
-        });
-    }
-    const endTime = moment(startTime).add(2, 'hours');
-    try {
-      const createEntry = await Calendar.createEvent(
-        {
-          name: item?.name,
-          place: {
-            location: {
-              street: item?.location?.address?.address1,
-            },
-          },
-        },
-        {
-          start_time: startTime.format(),
-          end_time: endTime.format(),
-        }
-      );
-      console.log(createEntry);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      //
-    }
-  };
+  const [confirmationModal, setConfirmationModal] = useState(false);
+  const [type, setType] = useState<'contact' | 'calendar' | ''>('');
   return (
     <View style={style.homeChurchCard}>
       {modal ? (
@@ -211,6 +169,14 @@ const HomeChurchItem = ({
             height: 5,
             backgroundColor: Theme.colors.white,
           }}
+        />
+      ) : null}
+      {confirmationModal ? (
+        <HomeChurchConfirmationModal
+          type={type}
+          getDayOfWeek={getDayOfWeek}
+          handleClose={() => setConfirmationModal(false)}
+          homeChurch={item}
         />
       ) : null}
       <View style={{ flexDirection: 'row' }}>
@@ -231,7 +197,10 @@ const HomeChurchItem = ({
         </View>
         <View>
           <TouchableOpacity
-            onPress={() => addToCalendar()}
+            onPress={() => {
+              setType('calendar');
+              setConfirmationModal(true);
+            }}
             style={style.iconContainer}
           >
             <Thumbnail
@@ -244,11 +213,10 @@ const HomeChurchItem = ({
             />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              Linking.openURL(
-                `mailto:roger.massie@themeetinghouse.com?subject=Inquiry%20About%20Home%20Church&body=Home%20Church%20ID:%20${item?.id}`
-              )
-            }
+            onPress={() => {
+              setType('contact');
+              setConfirmationModal(true);
+            }}
             style={style.iconContainer}
           >
             <Thumbnail
