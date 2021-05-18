@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width,
-    height: height * 0.7,
+    height: height < 758 ? height * 0.63 : height * 0.66,
   },
   list: {
     backgroundColor: '#000',
@@ -69,7 +69,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         },
         pitch: 1,
         heading: 1,
-        zoom: 12,
+        zoom: 11,
         altitude: 30000,
       },
       { duration: 400 }
@@ -92,19 +92,6 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
     }
     const location = await Location.getCurrentPositionAsync({});
     setUserLocation(location?.coords);
-    mapRef?.current?.animateCamera(
-      {
-        center: {
-          latitude: location?.coords?.latitude ?? '43.4675',
-          longitude: location?.coords?.longitude ?? '-79.6877',
-        },
-        pitch: 1,
-        heading: 1,
-        zoom: 12,
-        altitude: 30000,
-      },
-      { duration: 3 }
-    );
   };
 
   const Modal = (): JSX.Element => {
@@ -121,7 +108,7 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
           useNativeDriver: true,
           toValue: height * 0.4,
         }).start();
-        setTimeout(() => setShowModal(false), 500);
+        setTimeout(() => setShowModal(false), 300);
       } else {
         Animated.timing(translateY, {
           duration: 150,
@@ -169,9 +156,24 @@ export default function HomeChurchMapScreen({ route }: Params): JSX.Element {
         rotateEnabled={false}
         pitchEnabled={false}
         zoomControlEnabled
-        mapPadding={{ top: 16, left: 16, right: 16, bottom: 16 }}
+        zoomEnabled
+        initialCamera={{
+          center: {
+            latitude: parseFloat(
+              homeChurches[0]?.location?.address?.latitude ?? '43.4675'
+            ),
+            longitude: parseFloat(
+              homeChurches[0]?.location?.address?.longitude ?? '-79.6877'
+            ),
+          },
+          pitch: 1,
+          heading: 1,
+          zoom: 11,
+          altitude: 30000,
+        }}
         onMapReady={async () => getUserLocation()}
         showsUserLocation
+        showsCompass={false}
         loadingEnabled
         ref={mapRef}
         style={styles.map}
