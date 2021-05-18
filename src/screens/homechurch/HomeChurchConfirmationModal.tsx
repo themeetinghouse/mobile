@@ -97,7 +97,7 @@ const HomeChurchConfirmationModal = ({
               }}
             >
               {type === 'contact'
-                ? `Send email to the leader of ${homeChurch?.name}`
+                ? `Send email to the leader of ${homeChurch?.name}?`
                 : type === 'calendar'
                 ? `Add ${homeChurch?.name} to your calendar?`
                 : ''}
