@@ -74,8 +74,6 @@ const HomeChurchItem = ({
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
-          // TODO: FIX Card height
-          // TODO: Description needs to show ellipsis with "See More"
           backgroundColor: '#1A1A1A',
           padding: 16,
           borderTopWidth: 2,
@@ -84,17 +82,24 @@ const HomeChurchItem = ({
           overflow: 'hidden',
           flexWrap: 'nowrap',
         }
-      : {
+      : modal
+      ? {
           borderTopWidth: 2,
-          borderRadius: 2,
+          borderRadius: 4,
           borderColor: 'grey',
-
           shadowColor: '#ddd',
           backgroundColor: '#1a1a1a',
           padding: 16,
           width,
           minHeight: modal ? height * 0.4 : 0,
+        }
+      : {
+          backgroundColor: '#1a1a1a',
+          padding: 16,
+          width,
+          minHeight: modal ? height * 0.4 : 0,
         },
+
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
       fontSize: card ? 15 : 16,
@@ -210,7 +215,7 @@ const HomeChurchItem = ({
       ) : null}
       <View style={{ flexDirection: 'row' }}>
         <View style={{ flex: 1 }}>
-          <Text numberOfLines={modal ? 2 : 1} style={style.hmName}>
+          <Text numberOfLines={modal || !card ? 2 : 1} style={style.hmName}>
             {item?.name}
           </Text>
           {item?.location?.address?.address1 ? (
@@ -259,7 +264,7 @@ const HomeChurchItem = ({
       </View>
       <Text
         ellipsizeMode="tail"
-        numberOfLines={card ? 1 : 8}
+        numberOfLines={card ? 2 : 8}
         style={style.hmDescription}
       >
         {item?.description}
