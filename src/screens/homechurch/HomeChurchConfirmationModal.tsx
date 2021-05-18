@@ -192,4 +192,4 @@ const HomeChurchConfirmationModal = ({
     </Modal>
   );
 };
-export default homeChurchConfirmationModal;
+export default HomeChurchConfirmationModal;
