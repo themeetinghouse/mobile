@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  FlatList,
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
@@ -14,17 +13,18 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import API, { GraphQLResult } from '@aws-amplify/api';
 import { ListF1ListGroup2sQuery } from 'src/services/API';
+import { RouteProp } from '@react-navigation/native';
 import { listF1ListGroup2s } from '../../services/queries';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
 import HomeChurchItem, { getDayOfWeek } from './HomeChurchItem';
 import IconButton from '../../components/buttons/IconButton';
 import HomeChurchControls from './HomeChurchControls';
+import AllButton from '../../../src/components/buttons/AllButton';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
-  loc: any;
-  route: any;
+  route: RouteProp<MainStackParamList, 'HomeChurchScreen'>;
 }
 
 const style = StyleSheet.create({
@@ -48,15 +48,16 @@ export type HomeChurch = HomeChurchData[0];
 export default function HomeChurchScreen({
   navigation,
   route,
-  loc,
 }: Params): JSX.Element {
+  const locationData = useContext(LocationContext)?.locationData;
+  const [showCount, setShowCount] = useState(10);
   const [location, setLocation] = useState(
-    useContext(LocationContext)?.locationData?.locationId === 'unknown'
+    locationData?.locationId === 'unknown'
       ? {
           locationName: 'All Locations',
           locationId: 'all',
         }
-      : useContext(LocationContext)?.locationData
+      : locationData
   );
   const [isLoading, setIsLoading] = useState(true);
   const [day, setDay] = useState('All Days');
@@ -153,7 +154,7 @@ export default function HomeChurchScreen({
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
         setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
       } catch (err) {
-        console.log(err);
+        // catch error here
       } finally {
         setIsLoading(false);
       }
@@ -250,7 +251,13 @@ export default function HomeChurchScreen({
           }}
         >
           {homeChurches
-            .filter((a) => {
+            .filter((a, index) => {
+              if (
+                location?.locationId === 'all' &&
+                day === 'All Days' &&
+                index > showCount
+              )
+                return false;
               return (
                 (location?.locationId === 'all' && getDayOfWeek(a) === day) ||
                 (location?.locationId === 'all' && day === 'All Days') ||
@@ -266,6 +273,20 @@ export default function HomeChurchScreen({
               return <HomeChurchItem key={a?.id} item={a} />;
             })}
         </View>
+        {location?.locationId === 'all' &&
+        day === 'All Days' &&
+        !isLoading &&
+        showCount !== homeChurches.length ? (
+          <AllButton
+            handlePress={() => {
+              if (showCount + 20 >= homeChurches.length)
+                setShowCount(homeChurches.length);
+              else setShowCount(showCount + 20);
+            }}
+          >
+            Load More
+          </AllButton>
+        ) : null}
       </ScrollView>
     </View>
   );
