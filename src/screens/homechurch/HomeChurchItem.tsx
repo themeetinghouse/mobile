@@ -276,6 +276,16 @@ const HomeChurchItem = ({
           )}
         </View>
       ) : null}
+      {!card && !modal ? (
+        <View
+          style={{
+            marginTop: 15,
+            borderBottomColor: 'rgba(191, 191, 191, 0.1)',
+            borderBottomWidth: 2,
+            width: '110%',
+          }}
+        />
+      ) : null}
     </View>
   );
 };
