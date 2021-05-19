@@ -44,7 +44,27 @@ const HomeChurchConfirmationModal = ({
           });
   const [open] = useState(true);
   const addToCalendar = async () => {
-    const endTime = moment(startTime).add(2, 'hours');
+    let astartTime;
+    if (moment() < moment().isoWeekday(getDayOfWeek(homeChurch))) {
+      astartTime = moment()
+        .isoWeekday(getDayOfWeek(homeChurch))
+        .set({
+          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
+          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
+          second: moment(homeChurch?.schedule?.startTime).get('second'),
+        });
+    } else {
+      astartTime = moment()
+        .isoWeekday(getDayOfWeek(homeChurch))
+        .add(7, 'days')
+        .set({
+          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
+          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
+          second: moment(homeChurch?.schedule?.startTime).get('second'),
+        });
+    }
+    const endTime = moment(astartTime).add(2, 'hours');
+    console.log(astartTime.format());
     try {
       await Calendar.createEvent(
         {
@@ -56,7 +76,7 @@ const HomeChurchConfirmationModal = ({
           },
         },
         {
-          start_time: startTime.format(),
+          start_time: astartTime.format(),
           end_time: endTime.format(),
         }
       );
