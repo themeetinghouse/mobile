@@ -64,7 +64,6 @@ const HomeChurchConfirmationModal = ({
         });
     }
     const endTime = moment(astartTime).add(2, 'hours');
-    console.log(astartTime.format());
     try {
       await Calendar.createEvent(
         {
