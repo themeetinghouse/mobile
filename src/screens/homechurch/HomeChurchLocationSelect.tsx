@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import {
   Container,
   Content,
@@ -16,7 +16,6 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as SecureStore from 'expo-secure-store';
-import { RouteProp } from '@react-navigation/native';
 import { LocationData } from '../../contexts/LocationContext';
 import LocationsService from '../../services/LocationsService';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
@@ -98,9 +97,11 @@ type Params = {
 export default function HomeChurchLocationSelect({
   navigation,
 }: Params): JSX.Element {
-
   const [locations, setLocations] = useState<LocationData[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState({ locationName: "", locationId: "" });
+  const [selectedLocation, setSelectedLocation] = useState({
+    locationName: '',
+    locationId: '',
+  });
   const [searchText, setSearchText] = useState('');
   // eslint-disable-next-line camelcase
 
@@ -121,7 +122,9 @@ export default function HomeChurchLocationSelect({
       headerRight: function render() {
         return (
           <TouchableOpacity
-            onPress={() => navigation.navigate("HomeChurchScreen", { loc: selectedLocation })}
+            onPress={() =>
+              navigation.navigate('HomeChurchScreen', { loc: selectedLocation })
+            }
           >
             <Text style={style.headerButtonText}>Done</Text>
           </TouchableOpacity>
@@ -129,22 +132,26 @@ export default function HomeChurchLocationSelect({
       },
       headerRightContainerStyle: { right: 16 },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocation]);
   useEffect(() => {
     const loadLocations = () => {
       const locationsResult = LocationsService.loadLocationDataForContext();
-      setLocations(
-        [{ locationName: "All Locations", locationId: "all" }, ...locationsResult.sort((a, b) =>
+      setLocations([
+        { locationName: 'All Locations', locationId: 'all' },
+        { locationName: 'Global', locationId: 'global' },
+        ...locationsResult.sort((a, b) =>
           (a?.locationName as string).localeCompare(b?.locationName as string)
-        )]
-      );
+        ),
+      ]);
     };
     loadLocations();
     async function getLocation() {
-      const location = await SecureStore.getItemAsync('location')
-      setSelectedLocation({ ...selectedLocation, locationId: location ?? "" })
+      const location = await SecureStore.getItemAsync('location');
+      setSelectedLocation({ ...selectedLocation, locationId: location ?? '' });
     }
-    getLocation()
+    getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <Container style={{ backgroundColor: 'black' }}>
@@ -187,9 +194,7 @@ export default function HomeChurchLocationSelect({
                   <ListItem
                     key={item.locationId}
                     style={style.listItem}
-                    onPress={() =>
-                      setSelectedLocation(item)
-                    }
+                    onPress={() => setSelectedLocation(item)}
                   >
                     <Left>
                       <Text style={style.listText}>{item.locationName}</Text>

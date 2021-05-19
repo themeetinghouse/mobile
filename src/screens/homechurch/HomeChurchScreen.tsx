@@ -138,6 +138,8 @@ export default function HomeChurchScreen({
         return 'toronto-uptown';
       case '57909':
         return 'waterloo';
+      case '65432':
+        return 'global';
       default:
         return 'Unknown';
     }
