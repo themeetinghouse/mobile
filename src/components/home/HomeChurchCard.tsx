@@ -55,7 +55,7 @@ export default function HomeChurchCard(): JSX.Element {
           accessibilityLabel="Home Church Image"
           source={{
             uri:
-              'https://www.themeetinghouse.com/cached/640/static/images/homechurch-2-1.jpg',
+              'https://www.themeetinghouse.com/static/images/homechurch-2-1.jpg',
             cache: 'default',
           }}
         />
@@ -66,7 +66,9 @@ export default function HomeChurchCard(): JSX.Element {
         relationships, and find ways to love and serve our local communities, as
         we learn to follow Jesus.
       </Text>
-      <AllButton handlePress={() => navigation.navigate('HomeChurchScreen')}>
+      <AllButton
+        handlePress={() => navigation.navigate('HomeChurchScreen', {})}
+      >
         Find a Home Church
       </AllButton>
     </View>
