@@ -22,6 +22,55 @@ import IconButton from '../../components/buttons/IconButton';
 import HomeChurchControls from './HomeChurchControls';
 import AllButton from '../../../src/components/buttons/AllButton';
 
+export const locationToGroupType = (groupId: string) => {
+  switch (groupId) {
+    case '62948':
+      return 'alliston';
+    case '58224':
+      return 'brampton';
+    case '58225':
+      return 'brantford';
+    case '58248':
+      return 'burlington';
+    case '58249':
+      return 'hamilton-downtown';
+    case '58250':
+      return 'hamilton-mountain';
+    case '58253':
+      return 'kitchener';
+    case '58254':
+      return 'london';
+    case '58069':
+      return 'newmarket';
+    case '58082':
+      return 'oakville';
+    case '58255':
+      return 'ottawa';
+    case '58252':
+      return 'owen-sound';
+    case '58256':
+      return 'parry-sound';
+    case '58081':
+      return 'richmond-hill';
+    case '62947':
+      return 'sandbanks';
+    case '58083':
+      return 'toronto-downtown';
+    case '58258':
+      return 'toronto-east';
+    case '58257':
+      return 'toronto-high-park';
+    case '58259':
+      return 'toronto-uptown';
+    case '57909':
+      return 'waterloo';
+    case '65432':
+      return 'global';
+    default:
+      return 'Unknown';
+  }
+};
+
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
   route: RouteProp<MainStackParamList, 'HomeChurchScreen'>;
@@ -95,55 +144,6 @@ export default function HomeChurchScreen({
   }, [navigation]);
 
   const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
-
-  const locationToGroupType = (groupId: string) => {
-    switch (groupId) {
-      case '62948':
-        return 'alliston';
-      case '58224':
-        return 'brampton';
-      case '58225':
-        return 'brantford';
-      case '58248':
-        return 'burlington';
-      case '58249':
-        return 'hamilton-downtown';
-      case '58250':
-        return 'hamilton-mountain';
-      case '58253':
-        return 'kitchener';
-      case '58254':
-        return 'london';
-      case '58069':
-        return 'newmarket';
-      case '58082':
-        return 'oakville';
-      case '58255':
-        return 'ottawa';
-      case '58252':
-        return 'owen-sound';
-      case '58256':
-        return 'parry-sound';
-      case '58081':
-        return 'richmond-hill';
-      case '62947':
-        return 'sandbanks';
-      case '58083':
-        return 'toronto-downtown';
-      case '58258':
-        return 'toronto-east';
-      case '58257':
-        return 'toronto-high-park';
-      case '58259':
-        return 'toronto-uptown';
-      case '57909':
-        return 'waterloo';
-      case '65432':
-        return 'global';
-      default:
-        return 'Unknown';
-    }
-  };
 
   useEffect(() => {
     const loadHomeChurches = async () => {

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { Theme, Style } from '../../Theme.style';
-import { HomeChurch } from './HomeChurchScreen';
+import { HomeChurch, locationToGroupType } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 
 interface Params {
@@ -138,6 +138,7 @@ const HomeChurchItem = ({
       paddingVertical: 4,
     },
     locationBadgeText: {
+      textTransform: 'capitalize',
       color: 'white',
       fontSize: 12,
       lineHeight: 18,
@@ -248,17 +249,14 @@ const HomeChurchItem = ({
       item?.groupType?.id === '65432' ||
       item?.name?.includes('Family Friendly') ? (
         <View style={style.badgesContainer}>
-          {(item?.location?.address?.city &&
-            item?.location?.address?.city !== '') ||
-          (item?.location?.name && item?.groupType?.id !== '65432') ? (
-            <View style={style.locationBadge}>
-              <Text style={style.locationBadgeText}>
-                {item?.location?.address?.city === ''
-                  ? item?.location?.name
-                  : item?.location?.address?.city}
-              </Text>
-            </View>
-          ) : null}
+          <View style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>
+              {locationToGroupType(item?.groupType?.id ?? '')?.replace(
+                '-',
+                ' '
+              )}
+            </Text>
+          </View>
           {item?.name?.includes('Family Friendly') && (
             <View
               style={[
@@ -276,11 +274,6 @@ const HomeChurchItem = ({
               />
             </View>
           )}
-          {item?.groupType?.id === '65432' ? (
-            <View style={style.locationBadge}>
-              <Text style={style.locationBadgeText}>Global</Text>
-            </View>
-          ) : null}
         </View>
       ) : null}
     </View>
