@@ -546,6 +546,10 @@ export const listF1ListGroup2s = /* GraphQL */ `
         name
         description
         startDate
+        timeZone {
+          name
+          id
+        }
         groupType {
           id
           name
