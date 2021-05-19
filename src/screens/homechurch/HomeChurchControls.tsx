@@ -14,6 +14,66 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import { LocationData } from '../../contexts/LocationContext';
 import { Theme, Style } from '../../Theme.style';
 
+const style = StyleSheet.create({
+  locationIcon: { ...Style.icon, marginRight: 20, alignSelf: 'center' },
+  container: {
+    backgroundColor: '#111111',
+    margin: 16,
+    width: Dimensions.get('window').width - 32,
+    position: 'relative',
+  },
+  containerItem: {
+    flexDirection: 'row',
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    paddingHorizontal: 20,
+    color: 'white',
+    minHeight: 56,
+    borderWidth: 1,
+    borderColor: '#1A1A1A',
+  },
+  locationSelectText: {
+    alignSelf: 'center',
+    flex: 1,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    color: '#fff',
+    fontSize: 16,
+  },
+  daySelectText: {
+    flex: 1,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    color: 'white',
+    padding: 16,
+  },
+  dropdownItemText: {
+    flex: 1,
+    fontFamily: Theme.fonts.fontFamilyRegular,
+    color: 'white',
+    padding: 16,
+  },
+  dropdownContainer: {
+    backgroundColor: '#111111',
+    top: 56,
+    width: '100%',
+    position: 'absolute',
+    zIndex: 1000,
+  },
+  clearText: {
+    alignSelf: 'flex-start',
+    marginLeft: 16,
+    marginBottom: 8,
+    color: Theme.colors.gray5,
+    textDecorationLine: 'underline',
+    fontFamily: Theme.fonts.fontFamilyRegular,
+  },
+  caretIcon: {
+    ...Style.icon,
+    alignSelf: 'center',
+  },
+  upsideDown: {
+    transform: [{ rotate: '180deg' }],
+  },
+});
+
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
   loc: LocationData;
@@ -43,103 +103,59 @@ const HomeChurchControls = ({
     'Sunday',
   ];
   const [active, setActive] = useState(false);
-  const style = StyleSheet.create({
-    locationIcon: { ...Style.icon, marginRight: 20, alignSelf: 'center' },
-    container: {
-      backgroundColor: '#111111',
-      margin: 16,
-      width: Dimensions.get('window').width - 32,
-      position: 'relative',
-    },
-    containerItem: {
-      flexDirection: 'row',
-      fontFamily: Theme.fonts.fontFamilyRegular,
-      paddingHorizontal: 20,
-      color: 'white',
-      minHeight: 56,
-      fontSize: 16,
-      borderWidth: 1,
-      borderColor: '#1A1A1A',
-    },
-    locationSelect: {
-      alignSelf: 'center',
-      flex: 1,
-      fontFamily: Theme.fonts.fontFamilyRegular,
-      color: '#fff',
-      fontSize: 16,
-    },
-  });
+
   const handleDrop = (day: string) => {
     setWeekDay(day);
     setDay(day);
     setActive(false);
   };
+
+  const handleClearButton = () => {
+    handleDrop('All Days');
+    setSelectedLocation({
+      locationName: 'All Locations',
+      locationId: 'all',
+    });
+  };
+
   useEffect(() => {
     setSelectedLocation(loc);
   }, [loc]);
+
   return (
     <>
       <View style={style.container}>
         <TouchableWithoutFeedback
           disabled={isLoading}
           onPress={() => navigation.push('HomeChurchLocationSelect', {})}
-          style={style.containerItem}
         >
-          <View
-            style={{
-              flexDirection: 'row',
-              height: 56,
-              marginLeft: 16,
-            }}
-          >
+          <View style={style.containerItem}>
             <Thumbnail
               style={style.locationIcon}
               source={Theme.icons.white.location}
               square
             />
-            <Text style={style.locationSelect}>
+            <Text style={style.locationSelectText}>
               {selectedLocation?.locationName}
             </Text>
           </View>
         </TouchableWithoutFeedback>
         <TouchableHighlight
           onBlur={() => setActive(false)}
-          style={style.containerItem}
           disabled={isLoading}
           onPress={() => setActive(!active)}
         >
-          <>
-            <Text
-              style={{
-                flex: 1,
-                fontFamily: Theme.fonts.fontFamilyRegular,
-                color: 'white',
-                padding: 16,
-              }}
-            >
-              {weekday}
-            </Text>
+          <View style={style.containerItem}>
+            <Text style={style.daySelectText}>{weekday}</Text>
             <Thumbnail
               source={Theme.icons.white.caretDown}
-              style={{
-                width: 24,
-                height: 24,
-                alignSelf: 'center',
-              }}
+              style={style.caretIcon}
             />
-          </>
+          </View>
         </TouchableHighlight>
 
         {active ? (
-          <View
-            style={{
-              backgroundColor: '#111111',
-              top: 56,
-              width: '100%',
-              position: 'absolute',
-              zIndex: 1000,
-            }}
-          >
+          <View style={style.dropdownContainer}>
             {days.map((day, index) => (
               <TouchableHighlight
                 key={day}
@@ -147,25 +163,11 @@ const HomeChurchControls = ({
                 style={style.containerItem}
               >
                 <>
-                  <Text
-                    style={{
-                      flex: 1,
-                      fontFamily: Theme.fonts.fontFamilyRegular,
-                      color: 'white',
-                      padding: 16,
-                    }}
-                  >
-                    {day}
-                  </Text>
+                  <Text style={style.dropdownItemText}>{day}</Text>
                   {index === 0 ? (
                     <Thumbnail
                       source={Theme.icons.white.caretDown}
-                      style={{
-                        transform: [{ rotate: '180deg' }],
-                        width: 24,
-                        height: 24,
-                        alignSelf: 'center',
-                      }}
+                      style={[style.caretIcon, style.upsideDown]}
                     />
                   ) : null}
                 </>
@@ -177,26 +179,9 @@ const HomeChurchControls = ({
       <TouchableOpacity
         disabled={active || isLoading}
         style={{ zIndex: -1, width: 100 }}
-        onPress={() => {
-          handleDrop('All Days');
-          setSelectedLocation({
-            locationName: 'All Locations',
-            locationId: 'all',
-          });
-        }}
+        onPress={handleClearButton}
       >
-        <Text
-          style={{
-            alignSelf: 'flex-start',
-            marginLeft: 16,
-            marginBottom: 8,
-            color: Theme.colors.gray5,
-            textDecorationLine: 'underline',
-            fontFamily: Theme.fonts.fontFamilyRegular,
-          }}
-        >
-          Clear All
-        </Text>
+        <Text style={style.clearText}>Clear All</Text>
       </TouchableOpacity>
     </>
   );
