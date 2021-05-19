@@ -17,7 +17,7 @@ import * as Location from 'expo-location';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
-import { HomeChurchData } from './HomeChurchScreen';
+import { HomeChurchData, locationToGroupType } from './HomeChurchScreen';
 import HomeChurchExtendedModal from './HomeChurchExtendedModal';
 
 const { width, height } = Dimensions.get('window');
@@ -191,6 +191,7 @@ export default function HomeChurchMapScreen({
 
       {showModal ? (
         <HomeChurchExtendedModal
+          locationToGroupType={locationToGroupType}
           setShowModal={() => {
             setShowModal(!showModal);
           }}
@@ -221,6 +222,7 @@ export default function HomeChurchMapScreen({
         data={homeChurches}
         renderItem={({ item, index }) => (
           <HomeChurchItem
+            locationToGroupType={locationToGroupType}
             openModal={() => {
               setSelected(index);
               setShowModal(true);

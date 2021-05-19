@@ -12,11 +12,13 @@ const { height } = Dimensions.get('window');
 interface Params {
   selected: HomeChurch;
   setShowModal: (a: boolean) => void;
+  locationToGroupType: (a: string) => string;
 }
 
 export default function HomeChurchExtendedModal({
   selected,
   setShowModal,
+  locationToGroupType,
 }: Params): JSX.Element {
   const translateY = new Animated.Value(height * 0.4);
   const handleGesture = Animated.event(
@@ -70,7 +72,11 @@ export default function HomeChurchExtendedModal({
           ],
         }}
       >
-        <HomeChurchItem modal item={selected} />
+        <HomeChurchItem
+          locationToGroupType={locationToGroupType}
+          item={selected}
+          modal
+        />
       </Animated.View>
     </PanGestureHandler>
   );

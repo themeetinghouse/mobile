@@ -36,6 +36,8 @@ export const locationToGroupType = (groupId: string) => {
       return 'hamilton-downtown';
     case '58250':
       return 'hamilton-mountain';
+    case '58251':
+      return 'hamilton-ancaster';
     case '58253':
       return 'kitchener';
     case '58254':
@@ -66,6 +68,7 @@ export const locationToGroupType = (groupId: string) => {
       return 'waterloo';
     case '65432':
       return 'global';
+
     default:
       return 'Unknown';
   }
@@ -271,7 +274,13 @@ export default function HomeChurchScreen({
               );
             })
             .map((a) => {
-              return <HomeChurchItem key={a?.id} item={a} />;
+              return (
+                <HomeChurchItem
+                  locationToGroupType={locationToGroupType}
+                  key={a?.id}
+                  item={a}
+                />
+              );
             })}
         </View>
         {location?.locationId === 'all' &&

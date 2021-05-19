@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { Theme, Style } from '../../Theme.style';
-import { HomeChurch, locationToGroupType } from './HomeChurchScreen';
+import { HomeChurch } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 
 interface Params {
@@ -18,6 +18,7 @@ interface Params {
   modal?: boolean;
   active?: boolean;
   openModal?: () => void;
+  locationToGroupType: (a: string) => string;
 }
 const { width, height } = Dimensions.get('window');
 
@@ -68,6 +69,7 @@ const HomeChurchItem = ({
   card,
   modal,
   openModal,
+  locationToGroupType,
 }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
@@ -89,13 +91,13 @@ const HomeChurchItem = ({
           backgroundColor: '#1a1a1a',
           padding: 16,
           width,
-          minHeight: modal ? height * 0.4 : 0,
+          minHeight: height * 0.4,
         }
       : {
           backgroundColor: '#1a1a1a',
           padding: 16,
           width,
-          minHeight: modal ? height * 0.4 : 0,
+          paddingBottom: 0,
         },
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
@@ -171,7 +173,6 @@ const HomeChurchItem = ({
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [type, setType] = useState<'contact' | 'calendar' | ''>('');
-
   return (
     <View style={style.homeChurchCard}>
       {modal ? <View style={style.drawerIndicator} /> : null}
