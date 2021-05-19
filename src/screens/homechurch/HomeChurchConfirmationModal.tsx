@@ -25,30 +25,28 @@ const HomeChurchConfirmationModal = ({
   getDayOfWeek,
   type,
 }: Params): JSX.Element => {
+  const startTime =
+    moment() < moment().isoWeekday(getDayOfWeek(homeChurch))
+      ? moment()
+          .isoWeekday(getDayOfWeek(homeChurch))
+          .set({
+            hour: moment(homeChurch?.schedule?.startTime).get('hour'),
+            minute: moment(homeChurch?.schedule?.startTime).get('minute'),
+            second: moment(homeChurch?.schedule?.startTime).get('second'),
+          })
+      : moment()
+          .isoWeekday(getDayOfWeek(homeChurch))
+          .add(7, 'days')
+          .set({
+            hour: moment(homeChurch?.schedule?.startTime).get('hour'),
+            minute: moment(homeChurch?.schedule?.startTime).get('minute'),
+            second: moment(homeChurch?.schedule?.startTime).get('second'),
+          });
   const [open] = useState(true);
   const addToCalendar = async () => {
-    let startTime;
-    if (moment() < moment().isoWeekday(getDayOfWeek(homeChurch))) {
-      startTime = moment()
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .set({
-          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-          second: moment(homeChurch?.schedule?.startTime).get('second'),
-        });
-    } else {
-      startTime = moment()
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .add(7, 'days')
-        .set({
-          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-          second: moment(homeChurch?.schedule?.startTime).get('second'),
-        });
-    }
     const endTime = moment(startTime).add(2, 'hours');
     try {
-      const createEntry = await Calendar.createEvent(
+      await Calendar.createEvent(
         {
           name: homeChurch?.name,
           place: {
@@ -137,33 +135,9 @@ const HomeChurchConfirmationModal = ({
               <>
                 This will add a single entry to your calendar for{' '}
                 <Text style={{ fontFamily: Theme.fonts.fontFamilyBold }}>
-                  {moment()
-                    .isoWeekday(getDayOfWeek(homeChurch))
-                    .set({
-                      hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-                      minute: moment(homeChurch?.schedule?.startTime).get(
-                        'minute'
-                      ),
-                      second: moment(homeChurch?.schedule?.startTime).get(
-                        'second'
-                      ),
-                    })
-                    .format('dddd, MMM DD h:mm a')}{' '}
-                  -{' '}
-                  {moment()
-                    .isoWeekday(getDayOfWeek(homeChurch))
-                    .set({
-                      hour: moment(homeChurch?.schedule?.startTime)
-                        .add(2, 'hours')
-                        .get('hour'),
-                      minute: moment(homeChurch?.schedule?.startTime).get(
-                        'minute'
-                      ),
-                      second: moment(homeChurch?.schedule?.startTime).get(
-                        'second'
-                      ),
-                    })
-                    .format('h:mm a')}
+                  {startTime.format('dddd, MMM DD')} from{' '}
+                  {startTime.format('hh:mm')} -{' '}
+                  {startTime.add(2, 'hours').format('h:mm a')}
                 </Text>
               </>
             ) : (
