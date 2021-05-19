@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import {
   StyleSheet,
@@ -7,21 +7,18 @@ import {
   FlatList,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  Animated,
   TouchableOpacity,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
-import {
-  PanGestureHandler,
-  PanGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
-import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
+import { HomeChurchData } from './HomeChurchScreen';
+import HomeChurchExtendedModal from './HomeChurchExtendedModal';
 
 const { width, height } = Dimensions.get('window');
 const styles = StyleSheet.create({
@@ -35,9 +32,23 @@ const styles = StyleSheet.create({
     width,
     height: height < 758 ? height * 0.63 : height * 0.66,
   },
+  marker: {
+    padding: 12,
+    borderRadius: 50,
+    borderWidth: 2,
+  },
   list: {
     backgroundColor: '#000',
     width,
+  },
+  closeButton: {
+    zIndex: 20000,
+    position: 'absolute',
+    borderRadius: 50,
+    top: 52,
+    right: 24,
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,.7)',
   },
 });
 interface Params {
@@ -50,9 +61,7 @@ export default function HomeChurchMapScreen({
 }: Params): JSX.Element {
   const cardLength = width - 80 + 16;
   const homeChurches: HomeChurchData = route?.params?.items;
-  const [userLocation, setUserLocation] = useState<
-    Location.LocationObject['coords']
-  >();
+  const [, setUserLocation] = useState<Location.LocationObject['coords']>();
   const listRef = useRef<FlatList | null>(null);
   const mapRef = useRef<MapView>(null);
   const [selected, setSelected] = useState(0);
@@ -99,75 +108,11 @@ export default function HomeChurchMapScreen({
     setUserLocation(location?.coords);
   };
 
-  const Modal = (): JSX.Element => {
-    const translateY = new Animated.Value(height * 0.4);
-    const handleGesture = Animated.event(
-      [{ nativeEvent: { translationY: translateY } }],
-      { useNativeDriver: true }
-    );
-
-    function handleGestureEnd(e: PanGestureHandlerStateChangeEvent) {
-      if (e.nativeEvent.translationY > 60) {
-        Animated.timing(translateY, {
-          duration: 150,
-          useNativeDriver: true,
-          toValue: height * 0.4,
-        }).start();
-        setTimeout(() => setShowModal(false), 300);
-      } else {
-        Animated.timing(translateY, {
-          duration: 150,
-          useNativeDriver: true,
-          toValue: 0,
-        }).start();
-      }
-    }
-    useEffect(() => {
-      Animated.timing(translateY, {
-        duration: 150,
-        useNativeDriver: true,
-        toValue: 0,
-      }).start();
-    });
-    return (
-      <PanGestureHandler
-        onGestureEvent={handleGesture}
-        onHandlerStateChange={(e) => handleGestureEnd(e)}
-      >
-        <Animated.View
-          style={{
-            bottom: 0,
-            position: 'absolute',
-            zIndex: 200,
-            transform: [
-              {
-                translateY: translateY.interpolate({
-                  inputRange: [0, height * 0.4],
-                  outputRange: [0, height * 0.4],
-                  extrapolate: 'clamp',
-                }),
-              },
-            ],
-          }}
-        >
-          <HomeChurchItem modal item={homeChurches[selected]} />
-        </Animated.View>
-      </PanGestureHandler>
-    );
-  };
   return (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => navigation.goBack()}
-        style={{
-          zIndex: 20000,
-          position: 'absolute',
-          borderRadius: 50,
-          top: 52,
-          right: 24,
-          padding: 8,
-          backgroundColor: 'rgba(0,0,0,.7)',
-        }}
+        style={styles.closeButton}
       >
         <Thumbnail
           style={{
@@ -221,12 +166,12 @@ export default function HomeChurchMapScreen({
                   }}
                 >
                   <View
-                    style={{
-                      padding: 12,
-                      backgroundColor: selected === index ? 'black' : 'white',
-                      borderRadius: 50,
-                      borderWidth: 2,
-                    }}
+                    style={[
+                      styles.marker,
+                      {
+                        backgroundColor: selected === index ? 'black' : 'white',
+                      },
+                    ]}
                   >
                     <Thumbnail
                       square
@@ -244,7 +189,14 @@ export default function HomeChurchMapScreen({
           : null}
       </MapView>
 
-      {showModal ? <Modal /> : null}
+      {showModal ? (
+        <HomeChurchExtendedModal
+          setShowModal={() => {
+            setShowModal(!showModal);
+          }}
+          selected={homeChurches[selected]}
+        />
+      ) : null}
       <FlatList
         onMomentumScrollEnd={handleListScroll}
         ref={listRef}
