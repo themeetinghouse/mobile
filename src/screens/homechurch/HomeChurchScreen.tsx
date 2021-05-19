@@ -251,6 +251,7 @@ export default function HomeChurchScreen({
         </View>
         <View
           style={{
+            zIndex: -1,
             minHeight: Dimensions.get('window').height / 2,
           }}
         >
