@@ -248,6 +248,7 @@ export default function HomeChurchScreen({
         </View>
         <View
           style={{
+            backgroundColor: '#1a1a1a',
             zIndex: -200,
             minHeight: Dimensions.get('window').height / 2,
           }}
@@ -272,7 +273,18 @@ export default function HomeChurchScreen({
               );
             })
             .map((a) => {
-              return <HomeChurchItem key={a?.id} item={a} />;
+              return (
+                <React.Fragment key={a?.id}>
+                  <HomeChurchItem item={a} />
+                  <View
+                    style={{
+                      borderBottomColor: 'rgba(191, 191, 191, 0.1)',
+                      marginLeft: 16,
+                      borderBottomWidth: 1,
+                    }}
+                  />
+                </React.Fragment>
+              );
             })}
         </View>
         {location?.locationId === 'all' &&
