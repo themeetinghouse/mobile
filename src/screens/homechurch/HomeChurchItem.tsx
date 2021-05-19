@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
-import { Theme } from '../../Theme.style';
+import { Theme, Style } from '../../Theme.style';
 import { HomeChurch } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 
@@ -22,7 +22,6 @@ interface Params {
 const { width, height } = Dimensions.get('window');
 
 export const getDayOfWeek = (homechurch: HomeChurch): string => {
-  // TODO: Fix
   if (homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly)
     if (
       homechurch?.schedule?.recurrences?.recurrence?.recurrenceWeekly
@@ -98,7 +97,6 @@ const HomeChurchItem = ({
           width,
           minHeight: modal ? height * 0.4 : 0,
         },
-
     hmName: {
       fontFamily: Theme.fonts.fontFamilyBold,
       fontSize: card ? 15 : 16,
@@ -152,25 +150,30 @@ const HomeChurchItem = ({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    drawerIndicator: {
+      marginTop: -8,
+      marginBottom: 8,
+      borderRadius: 100,
+      width: 40,
+      alignSelf: 'center',
+      height: 5,
+      backgroundColor: Theme.colors.white,
+    },
+    openDrawerModalText: {
+      color: 'white',
+      fontSize: 12,
+      lineHeight: 18,
+      fontFamily: Theme.fonts.fontFamilyRegular,
+      textDecorationLine: 'underline',
+    },
   });
 
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [type, setType] = useState<'contact' | 'calendar' | ''>('');
+
   return (
     <View style={style.homeChurchCard}>
-      {modal ? (
-        <View
-          style={{
-            marginTop: -8,
-            marginBottom: 8,
-            borderRadius: 100,
-            width: 40,
-            alignSelf: 'center',
-            height: 5,
-            backgroundColor: Theme.colors.white,
-          }}
-        />
-      ) : null}
+      {modal ? <View style={style.drawerIndicator} /> : null}
       {confirmationModal ? (
         <HomeChurchConfirmationModal
           type={type}
@@ -206,10 +209,7 @@ const HomeChurchItem = ({
             <Thumbnail
               square
               source={Theme.icons.white.calendarAdd}
-              style={{
-                width: 24,
-                height: 24,
-              }}
+              style={Style.icon}
             />
           </TouchableOpacity>
           <TouchableOpacity
@@ -222,10 +222,7 @@ const HomeChurchItem = ({
             <Thumbnail
               square
               source={Theme.icons.white.contact}
-              style={{
-                width: 24,
-                height: 24,
-              }}
+              style={Style.icon}
             />
           </TouchableOpacity>
         </View>
@@ -243,17 +240,7 @@ const HomeChurchItem = ({
             if (openModal) openModal();
           }}
         >
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 12,
-              lineHeight: 18,
-              fontFamily: Theme.fonts.fontFamilyRegular,
-              textDecorationLine: 'underline',
-            }}
-          >
-            See More
-          </Text>
+          <Text style={style.openDrawerModalText}>See More</Text>
         </TouchableOpacity>
       ) : null}
       {item?.location?.address?.city ||
