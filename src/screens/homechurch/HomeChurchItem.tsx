@@ -257,6 +257,7 @@ const HomeChurchItem = ({
         </TouchableOpacity>
       ) : null}
       {item?.location?.address?.city ||
+      item?.groupType?.id === '65432' ||
       item?.name?.includes('Family Friendly') ? (
         <View style={style.badgesContainer}>
           {item?.location?.address?.city ? (
@@ -283,6 +284,11 @@ const HomeChurchItem = ({
               />
             </View>
           )}
+          {item?.groupType?.id === '65432' ? (
+            <View style={style.locationBadge}>
+              <Text style={style.locationBadgeText}>Global</Text>
+            </View>
+          ) : null}
         </View>
       ) : null}
     </View>
