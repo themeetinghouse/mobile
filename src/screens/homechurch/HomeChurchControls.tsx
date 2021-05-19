@@ -127,7 +127,7 @@ const HomeChurchControls = ({
       <View style={style.container}>
         <TouchableWithoutFeedback
           disabled={isLoading}
-          onPress={() => navigation.push('HomeChurchLocationSelect', {})}
+          onPress={() => navigation.navigate('HomeChurchLocationSelect', {})}
         >
           <View style={style.containerItem}>
             <Thumbnail
