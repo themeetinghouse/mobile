@@ -192,7 +192,7 @@ const HomeChurchItem = ({
           <Text style={style.hmDate}>
             {getDayOfWeek(item)}
             {'\n'}
-            {moment(item?.schedule?.startTime).format('h:mm a')}
+            {moment(item?.schedule?.startTime).format('h:mm a')} EDT
           </Text>
         </View>
         <View>
@@ -257,13 +257,18 @@ const HomeChurchItem = ({
         </TouchableOpacity>
       ) : null}
       {item?.location?.address?.city ||
+      item?.location?.name ||
       item?.groupType?.id === '65432' ||
       item?.name?.includes('Family Friendly') ? (
         <View style={style.badgesContainer}>
-          {item?.location?.address?.city ? (
+          {(item?.location?.address?.city &&
+            item?.location?.address?.city !== '') ||
+          (item?.location?.name && item?.groupType?.id !== '65432') ? (
             <View style={style.locationBadge}>
               <Text style={style.locationBadgeText}>
-                {item?.location?.address?.city}
+                {item?.location?.address?.city === ''
+                  ? item?.location?.name
+                  : item?.location?.address?.city}
               </Text>
             </View>
           ) : null}
