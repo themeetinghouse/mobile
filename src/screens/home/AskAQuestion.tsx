@@ -86,7 +86,10 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
       headerStyle: { backgroundColor: Theme.colors.black },
       headerLeft: function render() {
         return (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={{ padding: 16, marginLeft: -16, zIndex: 1 }}
+            onPress={() => navigation.goBack()}
+          >
             <Thumbnail
               square
               source={Theme.icons.white.closeCancel}
