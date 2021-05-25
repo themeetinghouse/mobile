@@ -163,6 +163,7 @@ export default function HighlightPlayer({
         </Header>
         <View
           style={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}
+          renderToHardwareTextureAndroid
         >
           <YoutubePlayer
             ref={playerRef}
