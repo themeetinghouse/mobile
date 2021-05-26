@@ -41,6 +41,7 @@ export interface LoadPlaylistData {
 type PlaylistData = NonNullable<
   NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>['items']
 >;
+type SeriesHighlights = NonNullable<GetSeriesQuery['getSeries']>['videos'];
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>;
 
@@ -73,6 +74,22 @@ export default class SeriesService {
       ),
       nextToken: queryResult?.data?.getVideoByVideoType?.nextToken,
     };
+  };
+
+  static loadSeriesHighlights = async (
+    count = 20,
+    seriesTitle: string,
+    nextToken?: string
+  ): Promise<SeriesHighlights> => {
+    const variables = {
+      limit: count,
+      id: `adult-sunday-shortcut-${seriesTitle}`,
+      nextToken,
+    };
+    const queryResult = (await API.graphql(
+      graphqlOperation(getSeries, variables)
+    )) as GraphQLResult<GetSeriesQuery>;
+    return queryResult.data?.getSeries?.videos ?? null;
   };
 
   static loadCustomPlaylists = async (

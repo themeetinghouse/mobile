@@ -25,12 +25,14 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import SermonsService from '../../services/SermonsService';
+import SeriesService from '../../services/SeriesService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import NoMedia from '../../components/NoMedia';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
   route: RouteProp<MainStackParamList, 'HighlightScreen'>;
+  fromSeries: boolean;
 }
 
 const style = StyleSheet.create({
@@ -72,6 +74,7 @@ const style = StyleSheet.create({
 export default function HighlightPlayer({
   navigation,
   route,
+  fromSeries,
 }: Params): JSX.Element {
   const screenWidth = Dimensions.get('screen').width;
   const playerRef = useRef<YoutubeIframeRef>(null);
@@ -94,8 +97,16 @@ export default function HighlightPlayer({
     setNextToken(data.nextToken ?? undefined);
     setIsLoading(false);
   };
-
+  const getSeriesHighlights = async () => {
+    const fetchSeriesHighlights = await SeriesService.loadSeriesHighlights(
+      100,
+      'Origins',
+      nextToken
+    );
+    console.log(fetchSeriesHighlights?.items?.length);
+  };
   useEffect(() => {
+    if (fromSeries) getSeriesHighlights();
     const interval = setInterval(async () => {
       try {
         const data = await playerRef.current?.getCurrentTime();
