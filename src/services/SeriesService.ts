@@ -52,21 +52,25 @@ interface SeriesDataWithHeroImage extends SeriesData {
 export default class SeriesService {
   static loadHighlightsList = async (
     count: number,
-    seriesTitle:string,
-    nextToken?: string,
-    
+    seriesTitle: string,
+    nextToken?: string
   ): Promise<any> => {
-    const variables= {
-        sortDirection: 'DESC',
-        limit: count,
-        filter:{seriesTitle:{eq:seriesTitle}},
-        videoTypes: 'adult-sunday-shortcut',
-        publishedDate: { lt: 'a' },
-        nextToken,
-    }
-    const queryResult = (await API.graphql(graphqlOperation(getVideoByVideoType, variables))) as GraphQLResult<GetVideoByVideoTypeQuery>
+    const variables = {
+      sortDirection: 'DESC',
+      limit: count,
+      filter: { seriesTitle: { eq: seriesTitle } },
+      videoTypes: 'adult-sunday-shortcut',
+      publishedDate: { lt: 'a' },
+      nextToken,
+    };
+    // use getSeriesQuery, { id: 'adult-sunday-shortcut-SeriesNameHere' }
+    const queryResult = (await API.graphql(
+      graphqlOperation(getVideoByVideoType, variables)
+    )) as GraphQLResult<GetVideoByVideoTypeQuery>;
     return {
-      items: queryResult?.data?.getVideoByVideoType?.items?.filter((a) =>  a?.seriesTitle === seriesTitle),
+      items: queryResult?.data?.getVideoByVideoType?.items?.filter(
+        (a) => a?.seriesTitle === seriesTitle
+      ),
       nextToken: queryResult?.data?.getVideoByVideoType?.nextToken,
     };
   };
