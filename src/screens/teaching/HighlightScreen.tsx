@@ -79,10 +79,21 @@ export default function HighlightPlayer({
 
   const [highlight, setHighlight] = useState(route.params?.highlights[0]);
   const [allHighlights, setAllHighlights] = useState(route.params?.highlights);
+  const [isLoading, setIsLoading] = useState(false);
   const [videoIndex, setVideoIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(1);
   const [nextToken, setNextToken] = useState(route.params.nextToken);
+
+  const getMoreHighlights = async () => {
+    setIsLoading(true);
+    const data = await SermonsService.loadHighlightsList(20, nextToken);
+    setAllHighlights((prev) => {
+      return prev.concat(data.items);
+    });
+    setNextToken(data.nextToken ?? undefined);
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -201,6 +212,11 @@ export default function HighlightPlayer({
                 index,
               };
             }}
+            onEndReachedThreshold={0.8}
+            onEndReached={getMoreHighlights}
+            ListFooterComponent={() =>
+              isLoading ? <ActivityIndicator /> : null
+            }
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => {
