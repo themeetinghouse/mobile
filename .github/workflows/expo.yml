@@ -1,0 +1,25 @@
+name: Expo Publish
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  publish:
+    name: Install and publish
+    runs-on: ubuntu-latest
+    env:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - uses: expo/expo-github-action@v5
+        with:
+          expo-version: 4.x
+          expo-token: ${{ secrets.EXPO_TOKEN }}
+          expo-cache: true
+      - run: curl -sL https://sentry.io/get-cli/ | bash
+      - run: npm install
+      - run: npm run-script buildExpo

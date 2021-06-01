@@ -204,11 +204,13 @@ export function CustomText({
     });
   };
 
+  const hasText = /\w/g.test(block.text);
+
   if (processedStyles.length === 0) {
     return (
       <>
         <Text
-          onPress={() => setSelected(!selected)}
+          onPress={hasText ? () => setSelected(!selected) : undefined}
           onLayout={(e) => setPos(e.nativeEvent.layout.y)}
           style={{
             ...styles.text,
@@ -244,9 +246,8 @@ export function CustomText({
   return (
     <>
       <Text
-        selectable
         onLayout={(e) => setPos(e.nativeEvent.layout.y)}
-        onPress={() => setSelected(!selected)}
+        onPress={hasText ? () => setSelected(!selected) : undefined}
         style={{ ...styles.text, marginVertical: 12 }}
       >
         <Text
@@ -707,26 +708,39 @@ export function HyperLink({
     return '\n \n';
   };
 
+  const passageHeader = (text: string) => {
+    return (
+      <Text
+        key={text}
+        style={{
+          ...styles.header,
+          fontFamily: Theme.fonts.fontFamilyBold,
+        }}
+      >
+        {text}
+      </Text>
+    );
+  };
+
   const parseBibleJSON = (data: any, index: number, length: number) => {
     if (data?.attrs?.style === 's1') {
       return (
         <Text style={styles.header} key={index}>
           {data.items.map((item: any) => {
             if (item.text) {
-              return (
-                <Text
-                  key={item.text}
-                  style={{
-                    ...styles.header,
-                    fontFamily: Theme.fonts.fontFamilyBold,
-                  }}
-                >
-                  {`${item.text}\n`}
-                </Text>
-              );
+              return passageHeader(item.text);
+            }
+            if (item?.attrs?.style === 'nd') {
+              return item.items.map((subItem: any) => {
+                if (subItem.text) {
+                  return passageHeader(subItem.text);
+                }
+                return null;
+              });
             }
             return null;
           })}
+          {'\n'}
         </Text>
       );
     }

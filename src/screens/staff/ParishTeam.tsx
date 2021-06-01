@@ -30,7 +30,7 @@ interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
 
-export default function StaffList({ navigation }: Params): JSX.Element {
+export default function ParishTeam({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
   const [staffByLocation, setStaffByLocation] = useState([]);
   const [searchText, setSearchText] = useState('');

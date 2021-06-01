@@ -1,6 +1,11 @@
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { GetNotesQuery } from './API';
-import { checkIfNotesExistQuery, getNotes, getNotesNoContent } from './queries';
+import {
+  checkIfNotesExistQuery,
+  getNotes,
+  getNotesNoContent,
+  getNotesNoContentCustom,
+} from './queries';
 
 export default class NotesService {
   static loadNotes = async (
@@ -17,6 +22,15 @@ export default class NotesService {
   ): Promise<GetNotesQuery['getNotes']> => {
     const notes = (await API.graphql(
       graphqlOperation(getNotesNoContent, { id: date })
+    )) as GraphQLResult<GetNotesQuery>;
+    return notes.data?.getNotes ?? null;
+  };
+
+  static loadNotesNoContentCustom = async (
+    date: string
+  ): Promise<GetNotesQuery['getNotes']> => {
+    const notes = (await API.graphql(
+      graphqlOperation(getNotesNoContentCustom, { id: date })
     )) as GraphQLResult<GetNotesQuery>;
     return notes.data?.getNotes ?? null;
   };

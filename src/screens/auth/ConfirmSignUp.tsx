@@ -5,8 +5,6 @@ import {
   View,
   TextInput,
   Text,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableWithoutFeedback,
   Keyboard,
   SafeAreaView,
@@ -86,11 +84,10 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
   }, [email]);
 
   function toLogin(isNewUser: boolean): void {
-    setUser('');
     setCode('');
     setError('');
     setNeedsNewCode(false);
-    navigation.navigate('LoginScreen', { newUser: isNewUser });
+    navigation.navigate('LoginScreen', { newUser: isNewUser, email: user });
   }
 
   const confirm = async () => {
@@ -103,12 +100,6 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
     }
     setSending(false);
   };
-
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') confirm();
-  }
 
   const getNewCode = async () => {
     setSending(true);
@@ -208,7 +199,7 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
             <Text style={style.title}>One-Time Security Code</Text>
             <TextInput
               accessibilityLabel="One Time Code"
-              onKeyPress={(e) => handleEnter(e)}
+              onSubmitEditing={confirm}
               keyboardAppearance="dark"
               textContentType="oneTimeCode"
               keyboardType="number-pad"

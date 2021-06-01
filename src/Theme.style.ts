@@ -7,6 +7,8 @@ import UserWhite from '../assets/images/white/User.png';
 import NotesWhite from '../assets/images/white/Notes.png';
 import CalendarAddWhite from '../assets/images/white/Calendar-Add.png';
 import MapLocationWhite from '../assets/images/white/Map-Location.png';
+import MapIconBlack from '../assets/images/black/Map.png';
+import Location from '../assets/images/white/Location.png';
 import AnnouncementWhite from '../assets/images/white/Announcement.png';
 import SearchWhite from '../assets/images/white/Search.png';
 import CheckWhite from '../assets/images/white/Check.png';
@@ -18,8 +20,10 @@ import VolunteerWhite from '../assets/images/white/Volunteer.png';
 import ConnectWhite from '../assets/images/white/Connect.png';
 import StaffWhite from '../assets/images/white/Staff.png';
 import HomeChurchWhite from '../assets/images/white/HomeChurch.png';
+import HomeChurchBlack from '../assets/images/black/HomeChurch.png';
 import TextOptionsWhite from '../assets/images/white/TextOptions.png';
 import NewWindowWhite from '../assets/images/white/New-Window.png';
+import FamilyFriendly from '../assets/images/black/FamilyFriendly.png';
 import UserWhiteLoggedIn from '../assets/images/white/UserLoggedIn.png';
 import SignOutWhite from '../assets/images/white/SignOut.png';
 import AccountWhite from '../assets/images/white/Account.png';
@@ -101,6 +105,7 @@ export const Theme = {
       notes: NotesWhite,
       calendarAdd: CalendarAddWhite,
       mapLocation: MapLocationWhite,
+      location: Location,
       announcement: AnnouncementWhite,
       search: SearchWhite,
       check: CheckWhite,
@@ -142,9 +147,12 @@ export const Theme = {
       comment: CommentSmall,
     },
     black: {
+      familyFriendly: FamilyFriendly,
       arrow: Arrow,
       audio: AudioBlack,
       watch: WatchBlack,
+      homeChurch: HomeChurchBlack,
+      map: MapIconBlack,
       twitter: Twitter,
       facebook: Facebook,
       share: ShareBlack,

@@ -146,8 +146,15 @@ export default function MoreScreen(): JSX.Element {
         text: 'Home Church',
         subtext: 'Find a home church near you',
         icon: Theme.icons.white.homeChurch,
+        action: () => navigation.navigate('HomeChurchScreen', {}),
+      },
+      {
+        id: 'volunteer',
+        text: 'Volunteer',
+        subtext: 'Get involved!',
+        icon: Theme.icons.white.volunteer,
         action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
+          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
       },
       {
         id: 'betaTest',
@@ -199,8 +206,15 @@ export default function MoreScreen(): JSX.Element {
         text: 'Home Church',
         subtext: 'Find a home church near you',
         icon: Theme.icons.white.homeChurch,
+        action: () => navigation.navigate('HomeChurchScreen', {}),
+      },
+      {
+        id: 'volunteer',
+        text: 'Volunteer',
+        subtext: 'Get involved!',
+        icon: Theme.icons.white.volunteer,
         action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/find-homechurch'),
+          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
       },
       {
         id: 'betaTest',

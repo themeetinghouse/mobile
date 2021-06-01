@@ -5,8 +5,6 @@ import {
   View,
   TextInput,
   Text,
-  NativeSyntheticEvent,
-  TextInputKeyPressEventData,
   TouchableWithoutFeedback,
   SafeAreaView,
   Keyboard,
@@ -22,6 +20,7 @@ import UserContext from '../../contexts/UserContext';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import NoMedia from '../../components/NoMedia';
+import PasswordRequirements from '../../components/auth/PasswordRequirements';
 
 const style = StyleSheet.create({
   title: {
@@ -92,12 +91,11 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
   }
 
   function toLogin(): void {
-    setUser('');
     setPass('');
     setCode('');
     setError('');
     setCodeSent(false);
-    navigation.push('LoginScreen');
+    navigation.push('LoginScreen', { email: user });
   }
 
   function toHome(): void {
@@ -109,13 +107,6 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
     navigation.push('Main', {
       screen: 'Home',
     });
-  }
-
-  function handleEnter(
-    keyEvent: NativeSyntheticEvent<TextInputKeyPressEventData>,
-    cb: () => void
-  ): void {
-    if (keyEvent.nativeEvent.key === 'Enter') cb();
   }
 
   const sendCode = async () => {
@@ -175,7 +166,7 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
               <Text style={style.title}>Email</Text>
               <TextInput
                 accessibilityLabel="Email Address"
-                onKeyPress={(e) => handleEnter(e, sendCode)}
+                onSubmitEditing={sendCode}
                 keyboardAppearance="dark"
                 autoCompleteType="email"
                 textContentType="emailAddress"
@@ -248,12 +239,13 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
                 textContentType="newPassword"
                 passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
                 keyboardAppearance="dark"
-                onKeyPress={(e) => handleEnter(e, reset)}
+                onSubmitEditing={reset}
                 value={pass}
                 onChange={(e) => setPass(e.nativeEvent.text)}
                 secureTextEntry
                 style={style.input}
               />
+              <PasswordRequirements password={pass} />
               <View style={{ marginTop: 12 }}>
                 <Text
                   style={{

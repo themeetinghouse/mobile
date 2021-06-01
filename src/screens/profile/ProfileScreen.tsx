@@ -157,9 +157,9 @@ export default function Profile({ navigation }: Params): JSX.Element {
       {
         id: 'mycomments',
         text: 'My Comments',
-        subtext: 'This feature is coming soon',
+        subtext: 'All your comments in one place',
         icon: Theme.icons.white.comments,
-        action: () => null,
+        action: () => navigation.navigate('MyComments'),
       },
       {
         id: 'myaccount',

@@ -15,6 +15,7 @@ export const listAnnouncements = /* GraphQL */ `
         title
         description
         callToAction
+        callToActionTitle
         createdAt
         updatedAt
       }
@@ -109,6 +110,20 @@ export const getSeries = `
           notesURL
           videoURL
           audioURL
+        }
+        nextToken
+      }
+    }
+  }
+`;
+
+export const getSeriesEpisodeCount = `
+  query GetSeries($id: ID!) {
+    getSeries(id: $id) {
+      id
+      videos {
+        items {
+          id
         }
         nextToken
       }
@@ -338,6 +353,17 @@ export const checkIfNotesExistQuery = /* GraphQL */ `
   }
 `;
 
+export const getNotesNoContentCustom = /* GraphQL */ `
+  query GetNotes($id: ID!) {
+    getNotes(id: $id) {
+      id
+      title
+      episodeNumber
+      seriesId
+    }
+  }
+`;
+
 export const getNotesNoContent = /* GraphQL */ `
   query GetNotes($id: ID!) {
     getNotes(id: $id) {
@@ -523,6 +549,82 @@ export const getVideoByVideoType = /* GraphQL */ `
   }
 `;
 
+export const listF1ListGroup2s = /* GraphQL */ `
+  query ListF1ListGroup2s(
+    $filter: ModelF1ListGroup2FilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listF1ListGroup2s(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        description
+        startDate
+        timeZone {
+          name
+          id
+        }
+        groupType {
+          id
+          name
+        }
+        location {
+          id
+          name
+          description
+          isOnline
+          url
+          address {
+            address1
+            address2
+            address3
+            city
+            postalCode
+            latitude
+            longitude
+          }
+          createdDate
+          lastUpdatedDate
+        }
+        schedule {
+          id
+          name
+          description
+          startTime
+          endTime
+          numberRecurrences
+          startDate
+          endDate
+          recurrenceType {
+            name
+          }
+          recurrences {
+            recurrence {
+              recurrenceWeekly {
+                recurrenceFrequency
+                occurOnSunday
+                occurOnMonday
+                occurOnTuesday
+                occurOnWednesday
+                occurOnThursday
+                occurOnFriday
+                occurOnSaturday
+              }
+              recurrenceMonthly {
+                recurrenceFrequency
+                recurrenceOffset
+                monthDay
+                monthWeekDay
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const listSpeakersNoVideos = `
   query ListSpeakers(
     $filter: ModelSpeakerFilterInput
@@ -598,3 +700,28 @@ export const listSpeakersQuery = `
     }
   }
   `;
+
+export const getInstaPhotos = /* GraphQL */ `
+  query GetInstaPhotos($pageId: String) {
+    getInstaPhotos(pageId: $pageId) {
+      data {
+        id
+        media_url
+        caption
+        comments_count
+        like_count
+        media_type
+        thumbnail_url
+        timestamp
+        permalink
+        shortcode
+      }
+      paging {
+        cursors {
+          before
+          after
+        }
+      }
+    }
+  }
+`;

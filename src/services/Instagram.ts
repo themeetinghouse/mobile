@@ -1,91 +1,120 @@
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import {
-  GetInstagramByLocationQuery,
-  GetInstagramByLocationQueryVariables,
-  ModelSortDirection,
-} from './API';
-import { getInstagramByLocation } from './queries';
+import { GetInstaPhotosQuery, GetInstaPhotosQueryVariables } from './API';
+import { getInstaPhotos } from './queries';
 
-const locationsToUsername: { [loc: string]: string } = {
-  alliston: 'themeetinghousealliston',
-  sandbanks: 'tmhsandbanks',
-  ancaster: 'tmhancaster',
-  brampton: 'tmhbrampton',
-  brantford: 'tmhbrantford',
-  burlington: 'tmhburlington',
-  'hamilton-downtown': 'tmhdowntownham',
-  'toronto-downtown': 'tmhdowntowntoronto',
-  'hamilton-mountain': 'tmhhammountain',
-  'toronto-east': 'tmheasttoronto',
-  'toronto-high-park': 'tmhhighpark',
-  kitchener: 'tmhkitchener',
-  london: 'themeetinghouseldn',
-  newmarket: 'newmarket.tmh',
-  oakville: 'tmhoakville',
-  ottawa: 'tmhottawa',
-  'owen-sound': 'themeetinghouse',
-  'parry-sound': 'tmhparrysound',
-  'richmond-hill': 'tmhrichmond',
-  'toronto-uptown': 'tmhuptowntoronto',
-  waterloo: 'tmhwaterloo',
-  unknown: 'themeetinghouse',
-};
+function getInstaUsernameAndPageId(
+  loc: string
+): { username: string; pageId: string } {
+  switch (loc) {
+    case 'alliston':
+      return {
+        username: 'themeetinghousealliston',
+        pageId: '17841400321603203',
+      };
+    case 'sandbanks':
+      return { username: 'tmhsandbanks', pageId: '17841400321603203' };
+    case 'ancaster':
+      return { username: 'tmhancaster', pageId: '17841408879897536' };
+    case 'brampton':
+      return { username: 'tmhbrampton', pageId: '17841411750520408' };
+    case 'brantford':
+      return { username: 'tmhbrantford', pageId: '17841400321603203' };
+    case 'burlington':
+      return { username: 'tmhburlington', pageId: '17841408871557337' };
+    case 'hamilton-downtown':
+      return { username: 'tmhdowntownham', pageId: '17841400321603203' };
+    case 'toronto-downtown':
+      return { username: 'tmhdowntowntoronto', pageId: '17841408838131893' };
+    case 'hamilton-mountain':
+      return { username: 'tmhhammountain', pageId: '17841400321603203' };
+    case 'toronto-east':
+      return { username: 'tmheasttoronto', pageId: '17841409652026703' };
+    case 'toronto-high-park':
+      return { username: 'tmhhighpark', pageId: '17841432164905254' };
+    case 'kitchener':
+      return { username: 'tmhkitchener', pageId: '17841425888842969' };
+    case 'london':
+      return { username: 'themeetinghouseldn', pageId: '17841408115069699' };
+    case 'newmarket':
+      return { username: 'newmarket.tmh', pageId: '17841421476822902' };
+    case 'oakville':
+      return { username: 'tmhoakville', pageId: '17841400321603203' };
+    case 'ottawa':
+      return { username: 'tmhottawa', pageId: '17841408719847486' };
+    case 'owen-sound':
+      return { username: 'themeetinghouse', pageId: '17841400321603203' };
+    case 'parry-sound':
+      return { username: 'tmhparrysound', pageId: '17841443108276837' };
+    case 'richmond-hill':
+      return { username: 'tmhrichmond', pageId: '17841413912356153' };
+    case 'toronto-uptown':
+      return { username: 'tmhuptowntoronto', pageId: '17841409652056784' };
+    case 'waterloo':
+      return { username: 'tmhwaterloo', pageId: '17841417962985605' };
+    default:
+      return { username: 'themeetinghouse', pageId: '17841400321603203' };
+  }
+}
 
 export type InstagramData = NonNullable<
-  GetInstagramByLocationQuery['getInstagramByLocation']
->['items'];
+  NonNullable<GetInstaPhotosQuery['getInstaPhotos']>['data']
+>;
 
 export default class InstagramService {
   static async getInstagramByLocation(
     loc: string
   ): Promise<{ images: InstagramData; username: string }> {
-    const username = InstagramService.mapLocationToInstagram(loc);
+    const { username, pageId } = getInstaUsernameAndPageId(loc);
 
-    if (username) {
-      const data = await InstagramService.getInstagram(username);
+    try {
+      const data = await InstagramService.getInstagram(username, pageId);
       return data;
+    } catch (e) {
+      console.error(e);
     }
-    return { images: [], username: '' };
-  }
 
-  static mapLocationToInstagram(loc: string): string | undefined {
-    return locationsToUsername[loc];
+    return { images: [], username: 'themeetinghouse' };
   }
 
   static async getInstagram(
-    username: string
+    username: string,
+    pageId: string
   ): Promise<{ images: InstagramData; username: string }> {
     try {
-      const query: GetInstagramByLocationQueryVariables = {
-        locationId: username,
-        limit: 8,
-        sortDirection: ModelSortDirection.DESC,
+      const query: GetInstaPhotosQueryVariables = {
+        pageId,
       };
       const json = (await API.graphql(
-        graphqlOperation(getInstagramByLocation, query)
-      )) as GraphQLResult<GetInstagramByLocationQuery>;
-      const images = json.data?.getInstagramByLocation?.items;
-
-      if (images && images.length > 0) {
-        return { images, username };
-      }
-      if (username !== 'themeetinghouse') {
-        const query2: GetInstagramByLocationQueryVariables = {
-          locationId: 'themeetinghouse',
-          limit: 8,
-          sortDirection: ModelSortDirection.DESC,
-        };
-        const json2 = (await API.graphql(
-          graphqlOperation(getInstagramByLocation, query2)
-        )) as GraphQLResult<GetInstagramByLocationQuery>;
-        const backupImages = json2.data?.getInstagramByLocation?.items;
-        if (backupImages) {
-          return { images: backupImages, username: 'themeetinghouse' };
+        graphqlOperation(getInstaPhotos, query)
+      )) as GraphQLResult<GetInstaPhotosQuery>;
+      if (!json.data?.getInstaPhotos?.data?.length) {
+        if (pageId !== '17841400321603203') {
+          const fallbackQuery: GetInstaPhotosQueryVariables = {
+            pageId: '17841400321603203',
+          };
+          const jsonFallback = (await API.graphql(
+            graphqlOperation(getInstaPhotos, fallbackQuery)
+          )) as GraphQLResult<GetInstaPhotosQuery>;
+          const oakvilleImages = jsonFallback.data?.getInstaPhotos?.data;
+          if (oakvilleImages) {
+            return { images: oakvilleImages, username: 'themeetinghouse' };
+          }
         }
+      } else {
+        const { data } = json.data.getInstaPhotos;
+        const { length } = data;
+        const images = [];
+        let i = 0;
+
+        while (i < length && images.length < 8) {
+          if (data[i]?.media_type !== 'VIDEO') images.push(data[i]);
+          i += 1;
+        }
+        return { images, username };
       }
     } catch (e) {
       console.debug(e);
     }
-    return { images: [], username: '' };
+    return { images: [], username: 'themeetinghouse' };
   }
 }
