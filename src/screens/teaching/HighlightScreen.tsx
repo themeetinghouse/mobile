@@ -25,14 +25,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import SermonsService from '../../services/SermonsService';
-import SeriesService from '../../services/SeriesService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import NoMedia from '../../components/NoMedia';
+import loadSomeAsync from '../../utils/loading';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
   route: RouteProp<MainStackParamList, 'HighlightScreen'>;
-  fromSeries: boolean;
 }
 
 const style = StyleSheet.create({
@@ -71,48 +70,39 @@ const style = StyleSheet.create({
   },
 });
 
-export default function HighlightPlayer({
+export default function HighlightScreen({
   navigation,
   route,
-  fromSeries,
 }: Params): JSX.Element {
   const screenWidth = Dimensions.get('screen').width;
   const playerRef = useRef<YoutubeIframeRef>(null);
   const safeArea = useSafeAreaInsets();
-
   const [highlight, setHighlight] = useState(route.params?.highlights[0]);
-  const [allHighlights, setAllHighlights] = useState(route.params?.highlights);
-  const [isLoading, setIsLoading] = useState(false);
+  const [highlights, setHighlights] = useState({
+    loading: false,
+    items: [...route.params?.highlights],
+    nextToken: route?.params?.nextToken,
+  });
   const [videoIndex, setVideoIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(1);
-  const [nextToken, setNextToken] = useState(route.params.nextToken);
 
   const getMoreHighlights = async () => {
-    setIsLoading(true);
-    const data = await SermonsService.loadHighlightsList(20, nextToken);
-    setAllHighlights((prev) => {
-      return prev.concat(data.items);
-    });
-    setNextToken(data.nextToken ?? undefined);
-    setIsLoading(false);
-  };
-  const getSeriesHighlights = async () => {
-    const fetchSeriesHighlights = await SeriesService.loadSeriesHighlights(
-      100,
-      'Origins',
-      nextToken
+    loadSomeAsync(
+      SermonsService.loadHighlightsList,
+      highlights,
+      setHighlights,
+      5
     );
-    console.log(fetchSeriesHighlights?.items?.length);
   };
+
   useEffect(() => {
-    if (fromSeries) getSeriesHighlights();
     const interval = setInterval(async () => {
       try {
         const data = await playerRef.current?.getCurrentTime();
         if (data) setElapsed(data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -123,20 +113,20 @@ export default function HighlightPlayer({
       const data = await playerRef.current?.getDuration();
       if (data) setDuration(data);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   function handleStateChange(event: string) {
     if (event === 'ended') {
-      setHighlight(allHighlights[videoIndex + 1]);
+      setHighlight(highlights?.items?.[videoIndex + 1]);
       setVideoIndex(videoIndex + 1);
       setElapsed(0);
     }
   }
 
   function getTeachingImage(teaching: any) {
-    const { thumbnails } = teaching.Youtube.snippet;
+    const { thumbnails } = teaching?.Youtube?.snippet;
     if (thumbnails?.standard) return thumbnails?.standard?.url;
     return thumbnails?.maxres?.url;
   }
@@ -214,8 +204,8 @@ export default function HighlightPlayer({
           <Text style={style.categoryTitle}>Up Next</Text>
           <FlatList
             horizontal
-            data={allHighlights}
-            initialScrollIndex={allHighlights?.length === 1 ? 0 : 1}
+            data={highlights?.items}
+            initialScrollIndex={highlights?.items?.length === 1 ? 0 : 1}
             getItemLayout={(data, index) => {
               return {
                 length: 80 * (16 / 9),
@@ -223,15 +213,15 @@ export default function HighlightPlayer({
                 index,
               };
             }}
-            onEndReachedThreshold={0.8}
-            onEndReached={getMoreHighlights}
+            onEndReachedThreshold={0.9}
+            onEndReached={route?.params?.fromSeries ? null : getMoreHighlights}
             ListFooterComponent={() =>
-              isLoading ? <ActivityIndicator /> : null
+              highlights.loading ? <ActivityIndicator /> : null
             }
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => {
-                  setHighlight(allHighlights[index]);
+                  setHighlight(highlights?.items?.[index]);
                   setVideoIndex(index);
                   setElapsed(0);
                 }}

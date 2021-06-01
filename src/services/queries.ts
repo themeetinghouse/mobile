@@ -90,6 +90,21 @@ export const getSeries = `
           description
           length
           YoutubeIdent
+          Youtube {
+            snippet {
+              thumbnails {
+                high {
+                  url
+                }
+                standard {
+                  url
+                }
+                maxres {
+                  url
+                }
+              }
+            }
+          }
           videoTypes
           notesURL
           videoURL

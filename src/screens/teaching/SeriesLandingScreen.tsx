@@ -21,7 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
-import SeriesService from '../../services/SeriesService';
+import SeriesService, { SeriesHighlights } from '../../services/SeriesService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import ShareModal from '../../components/modals/Share';
@@ -178,15 +178,15 @@ export default function SeriesLandingScreen({
   const [videos, setVideos] = useState<VideoData>();
 
   const [share, setShare] = useState(false);
-  const [seriesHighlights, setSeriesHighlights] = useState({
+  const [seriesHighlights, setSeriesHighlights] = useState<SeriesHighlights>({
     loading: true,
     items: [],
-    nextToken: undefined,
+    nextToken: '',
   });
   const { colors } = useTheme();
   const loadHighlights = async () => {
     if (series?.title) {
-      const highlightsResult = await SeriesService.loadHighlightsList(
+      const highlightsResult = await SeriesService.loadSeriesHighlights(
         200,
         series?.title,
         seriesHighlights.nextToken
@@ -435,12 +435,13 @@ export default function SeriesLandingScreen({
               data={seriesHighlights.items}
               renderItem={({ item, index }) => (
                 <TouchableOpacity
-                  onPress={() =>
+                  onPress={() => {
                     navigation.navigate('HighlightScreen', {
                       highlights: seriesHighlights.items.slice(index),
                       nextToken: seriesHighlights.nextToken,
-                    })
-                  }
+                      fromSeries: true,
+                    });
+                  }}
                 >
                   <Image
                     style={style.highlightsThumbnail}
