@@ -58,8 +58,12 @@ export type MainStackParamList = {
   AccountScreen: undefined;
   ChangePasswordScreen: undefined;
   LocationSelectionScreen: { persist: boolean };
+  HighlightScreen: {
+    highlights: any[];
+    nextToken: string | undefined;
+    fromSeries?: boolean;
+  };
   HomeChurchLocationSelect: { loc?: LocationData };
-  HighlightScreen: { highlights: any[]; nextToken: string | undefined };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: {
     item: any;

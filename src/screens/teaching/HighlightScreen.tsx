@@ -27,6 +27,7 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import SermonsService from '../../services/SermonsService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import NoMedia from '../../components/NoMedia';
+import loadSomeAsync from '../../utils/loading';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
@@ -69,52 +70,63 @@ const style = StyleSheet.create({
   },
 });
 
-export default function HighlightPlayer({
+export default function HighlightScreen({
   navigation,
   route,
 }: Params): JSX.Element {
   const screenWidth = Dimensions.get('screen').width;
   const playerRef = useRef<YoutubeIframeRef>(null);
   const safeArea = useSafeAreaInsets();
-
   const [highlight, setHighlight] = useState(route.params?.highlights[0]);
-  const [allHighlights, setAllHighlights] = useState(route.params?.highlights);
+  const [highlights, setHighlights] = useState({
+    loading: false,
+    items: [...route.params?.highlights],
+    nextToken: route?.params?.nextToken,
+  });
   const [videoIndex, setVideoIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(1);
-  const [nextToken, setNextToken] = useState(route.params.nextToken);
 
   const getMoreHighlights = async () => {
-    const data = await SermonsService.loadHighlightsList(20, nextToken);
-    setAllHighlights((prev) => {
-      return prev.concat(data.items);
-    });
-    setNextToken(data.nextToken ?? undefined);
+    loadSomeAsync(
+      SermonsService.loadHighlightsList,
+      highlights,
+      setHighlights,
+      5
+    );
   };
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      const data = await playerRef.current?.getCurrentTime();
-      if (data) setElapsed(data);
+      try {
+        const data = await playerRef.current?.getCurrentTime();
+        if (data) setElapsed(data);
+      } catch (error) {
+        // console.log(error);
+      }
     }, 1000);
     return () => clearInterval(interval);
   }, []);
 
   const getDuration = async () => {
-    const data = await playerRef.current?.getDuration();
-    if (data) setDuration(data);
+    try {
+      const data = await playerRef.current?.getDuration();
+      if (data) setDuration(data);
+    } catch (error) {
+      // console.log(error);
+    }
   };
 
   function handleStateChange(event: string) {
     if (event === 'ended') {
-      setHighlight(allHighlights[videoIndex + 1]);
+      setHighlight(highlights?.items?.[videoIndex + 1]);
       setVideoIndex(videoIndex + 1);
       setElapsed(0);
     }
   }
 
   function getTeachingImage(teaching: any) {
-    const { thumbnails } = teaching.Youtube.snippet;
+    const { thumbnails } = teaching?.Youtube?.snippet;
     if (thumbnails?.standard) return thumbnails?.standard?.url;
     return thumbnails?.maxres?.url;
   }
@@ -169,7 +181,6 @@ export default function HighlightPlayer({
             ref={playerRef}
             onReady={getDuration}
             onChangeState={(e) => handleStateChange(e as string)}
-            forceAndroidAutoplay
             height={(9 / 16) * screenWidth}
             width={screenWidth}
             videoId={highlight.id}
@@ -194,8 +205,8 @@ export default function HighlightPlayer({
           <Text style={style.categoryTitle}>Up Next</Text>
           <FlatList
             horizontal
-            data={allHighlights}
-            initialScrollIndex={1}
+            data={highlights?.items}
+            initialScrollIndex={highlights?.items?.length === 1 ? 0 : 1}
             getItemLayout={(data, index) => {
               return {
                 length: 80 * (16 / 9),
@@ -203,10 +214,15 @@ export default function HighlightPlayer({
                 index,
               };
             }}
+            onEndReachedThreshold={0.9}
+            onEndReached={route?.params?.fromSeries ? null : getMoreHighlights}
+            ListFooterComponent={() =>
+              highlights.loading ? <ActivityIndicator /> : null
+            }
             renderItem={({ item, index }) => (
               <TouchableOpacity
                 onPress={() => {
-                  setHighlight(allHighlights[index]);
+                  setHighlight(highlights?.items?.[index]);
                   setVideoIndex(index);
                   setElapsed(0);
                 }}
@@ -217,9 +233,6 @@ export default function HighlightPlayer({
                 />
               </TouchableOpacity>
             )}
-            onEndReached={getMoreHighlights}
-            onEndReachedThreshold={0.8}
-            ListFooterComponent={() => <ActivityIndicator />}
           />
         </View>
       </Container>

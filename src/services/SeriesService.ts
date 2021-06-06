@@ -37,11 +37,33 @@ export interface LoadPlaylistData {
   >['nextToken'];
 }
 
+type PlaylistItem = NonNullable<
+  NonNullable<
+    NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']
+  >['items']
+>[0];
+
+type CustomPlaylist = {
+  items: Array<PlaylistItem>;
+  nextToken: NonNullable<
+    NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']
+  >['nextToken'];
+};
 type PlaylistData = NonNullable<
   NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>['items']
 >;
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>;
+
+export interface SeriesHighlights {
+  items: NonNullable<
+    NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['items']
+  >;
+  nextToken: NonNullable<
+    NonNullable<NonNullable<GetSeriesQuery['getSeries']>['videos']>['nextToken']
+  >;
+  loading?: boolean;
+}
 
 interface SeriesDataWithHeroImage extends SeriesData {
   heroImage?: string;
@@ -49,10 +71,29 @@ interface SeriesDataWithHeroImage extends SeriesData {
 }
 
 export default class SeriesService {
+  static loadSeriesHighlights = async (
+    count = 20,
+    seriesTitle: string,
+    nextToken?: string
+  ): Promise<SeriesHighlights> => {
+    const variables = {
+      limit: count,
+      id: `adult-sunday-shortcut-${seriesTitle}`,
+      nextToken,
+    };
+    const queryResult = (await API.graphql(
+      graphqlOperation(getSeries, variables)
+    )) as GraphQLResult<GetSeriesQuery>;
+    return {
+      items: queryResult.data?.getSeries?.videos?.items ?? [],
+      nextToken: queryResult.data?.getSeries?.videos?.nextToken ?? '',
+    };
+  };
+
   static loadCustomPlaylists = async (
     limit: number,
     nextToken?: string
-  ): Promise<LoadPlaylistData> => {
+  ): Promise<CustomPlaylist> => {
     const queryResult = (await API.graphql(
       graphqlOperation(listCustomPlaylists, {
         sortDirection: 'DESC',
@@ -60,7 +101,7 @@ export default class SeriesService {
         seriesType: 'adult-sunday',
         nextToken,
       })
-    )) as any;
+    )) as GraphQLResult<ListCustomPlaylistsQuery>;
     const items = queryResult?.data?.listCustomPlaylists?.items;
     if (items) {
       items.forEach((item) => {
@@ -70,10 +111,11 @@ export default class SeriesService {
       });
     }
     return {
-      items: items?.filter(
-        (item: any) => item?.videos?.items && item?.videos?.items?.length > 0
-      ),
-      nextToken: queryResult?.data?.listCustomPlaylists?.nextToken,
+      items:
+        items?.filter(
+          (item) => item?.videos?.items && item?.videos?.items?.length > 0
+        ) ?? [],
+      nextToken: queryResult?.data?.listCustomPlaylists?.nextToken ?? '',
     };
   };
 
@@ -106,7 +148,7 @@ export default class SeriesService {
     if (items) {
       for (const item of items) {
         if (item) {
-          SeriesService.updateSeriesImage(item as any);
+          SeriesService.updateSeriesImage(item as SeriesData);
         }
       }
     }

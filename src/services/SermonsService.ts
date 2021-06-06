@@ -14,7 +14,7 @@ export default class SermonsService {
   static loadSermonsList = async (
     count = 20,
     nextToken?: string
-  ): Promise<any> => {
+  ): Promise<LoadSermonResult> => {
     const query = {
       sortDirection: 'DESC',
       limit: count,
@@ -22,17 +22,13 @@ export default class SermonsService {
       publishedDate: { lt: 'a' },
       nextToken,
     };
-    try {
-      const result = (await API.graphql(
-        graphqlOperation(getVideoByVideoType, query)
-      )) as GraphQLResult<GetVideoByVideoTypeQuery>;
-      return {
-        items: result?.data?.getVideoByVideoType?.items,
-        nextToken: result?.data?.getVideoByVideoType?.nextToken,
-      };
-    } catch (e) {
-      console.debug(e);
-    }
+    const result = (await API.graphql(
+      graphqlOperation(getVideoByVideoType, query)
+    )) as GraphQLResult<GetVideoByVideoTypeQuery>;
+    return {
+      items: result?.data?.getVideoByVideoType?.items ?? [],
+      nextToken: result?.data?.getVideoByVideoType?.nextToken ?? '',
+    };
   };
 
   static loadRecentSermonsList = async (
@@ -40,28 +36,6 @@ export default class SermonsService {
     nextToken?: string
   ): Promise<LoadSermonResult> => {
     return SermonsService.loadSermonsList(count, nextToken);
-  };
-
-  static loadSermonsInSeriesList = async (
-    seriesTitle: string,
-    count = 99999,
-    nextToken?: string
-  ): Promise<LoadSermonResult> => {
-    const query = {
-      query: getVideoByVideoType,
-      variables: {
-        sortDirection: 'DESC',
-        limit: count,
-        videoTypes: 'adult-sunday',
-        publishedDate: { lt: 'a' },
-        filter: { seriesTitle: { eq: seriesTitle } },
-      },
-    };
-    const queryResult = await runGraphQLQuery(query);
-    return {
-      items: queryResult.getVideoByVideoType.items,
-      nextToken: queryResult.getVideoByVideoType.nextToken,
-    };
   };
 
   static loadHighlightsList = async (
@@ -81,8 +55,8 @@ export default class SermonsService {
     const queryResult = await runGraphQLQuery(query);
 
     return {
-      items: queryResult.getVideoByVideoType.items,
-      nextToken: queryResult.getVideoByVideoType.nextToken,
+      items: queryResult?.getVideoByVideoType?.items,
+      nextToken: queryResult?.getVideoByVideoType?.nextToken,
     };
   };
 }

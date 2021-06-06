@@ -496,6 +496,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   navigation.push('HighlightScreen', {
                     highlights: highlights.items.slice(index),
                     nextToken: highlights.nextToken,
+                    fromSeries: false,
                   })
                 }
               >
@@ -511,7 +512,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               </TouchableOpacity>
             )}
             onEndReached={loadHighlights}
-            onEndReachedThreshold={0.8}
+            onEndReachedThreshold={0.1}
             ListFooterComponent={() => <ActivityIndicator />}
           />
         </View>
