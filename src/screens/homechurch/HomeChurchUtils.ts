@@ -52,7 +52,7 @@ export const getTimeStamp = (homeChurch: HomeChurch) => {
       minute: timeInEST.get('minute'),
       second: timeInEST.get('second'),
     });
-  const hasDatePassed = moment() > eventStartTime;
+  const hasDatePassed = moment.tz('America/Toronto') > eventStartTime;
   if (hasDatePassed) return eventStartTime.add(7, 'days');
   return eventStartTime;
 };
