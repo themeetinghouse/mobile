@@ -158,8 +158,7 @@ const HomeChurchItem = ({
             {'\n'}
             {moment
               .tz(getTimeStamp(item), moment.tz.guess())
-              .format('h:mm a')}{' '}
-            {moment.tz(getTimeStamp(item), moment.tz.guess()).format('z')}{' '}
+              .format('h:mm a z')}{' '}
           </Text>
         </View>
         <View>
