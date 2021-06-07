@@ -44,22 +44,15 @@ export const getDayOfWeek = (homechurch: HomeChurch): string => {
 
 export const getTimeStamp = (homeChurch: HomeChurch) => {
   const timeInEST = moment(homeChurch?.schedule?.startTime);
-  return moment() < moment().isoWeekday(getDayOfWeek(homeChurch))
-    ? moment
-        .tz('America/Toronto')
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .set({
-          hour: timeInEST.get('hour'),
-          minute: timeInEST.get('minute'),
-          second: timeInEST.get('second'),
-        })
-    : moment
-        .tz('America/Toronto')
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .add(7, 'days')
-        .set({
-          hour: timeInEST.get('hour'),
-          minute: timeInEST.get('minute'),
-          second: timeInEST.get('second'),
-        });
+  const eventStartTime = moment()
+    .tz('America/Toronto')
+    .isoWeekday(getDayOfWeek(homeChurch))
+    .set({
+      hour: timeInEST.get('hour'),
+      minute: timeInEST.get('minute'),
+      second: timeInEST.get('second'),
+    });
+  const hasDatePassed = moment() > eventStartTime;
+  if (hasDatePassed) return eventStartTime.add(7, 'days');
+  return eventStartTime;
 };
