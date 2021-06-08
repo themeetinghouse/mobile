@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import {
   StyleSheet,
   View,
@@ -123,6 +123,7 @@ export default function HomeChurchMapScreen({
         />
       </TouchableOpacity>
       <MapView
+        provider={PROVIDER_GOOGLE}
         rotateEnabled={false}
         pitchEnabled={false}
         zoomControlEnabled
