@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import React, { useState } from 'react';
 import {
   View,
@@ -11,59 +11,24 @@ import {
 import WhiteButton from '../../../src/components/buttons/WhiteButton';
 import Calendar from '../../services/CalendarService';
 import Theme from '../../Theme.style';
+import { getTimeStamp } from './HomeChurchUtils';
 import { HomeChurch } from './HomeChurchScreen';
 
 interface Params {
   homeChurch: HomeChurch;
   handleClose: () => void;
-  getDayOfWeek: (homeChurch: HomeChurch) => string;
   type: 'contact' | 'calendar' | '';
 }
 const HomeChurchConfirmationModal = ({
   homeChurch,
   handleClose,
-  getDayOfWeek,
   type,
 }: Params): JSX.Element => {
-  const startTime =
-    moment() < moment().isoWeekday(getDayOfWeek(homeChurch))
-      ? moment()
-          .isoWeekday(getDayOfWeek(homeChurch))
-          .set({
-            hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-            minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-            second: moment(homeChurch?.schedule?.startTime).get('second'),
-          })
-      : moment()
-          .isoWeekday(getDayOfWeek(homeChurch))
-          .add(7, 'days')
-          .set({
-            hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-            minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-            second: moment(homeChurch?.schedule?.startTime).get('second'),
-          });
+  const startTime = moment.tz(getTimeStamp(homeChurch), moment.tz.guess());
   const [open] = useState(true);
   const addToCalendar = async () => {
-    let astartTime;
-    if (moment() < moment().isoWeekday(getDayOfWeek(homeChurch))) {
-      astartTime = moment()
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .set({
-          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-          second: moment(homeChurch?.schedule?.startTime).get('second'),
-        });
-    } else {
-      astartTime = moment()
-        .isoWeekday(getDayOfWeek(homeChurch))
-        .add(7, 'days')
-        .set({
-          hour: moment(homeChurch?.schedule?.startTime).get('hour'),
-          minute: moment(homeChurch?.schedule?.startTime).get('minute'),
-          second: moment(homeChurch?.schedule?.startTime).get('second'),
-        });
-    }
-    const endTime = moment(astartTime).add(2, 'hours');
+    const time = startTime;
+    const endTime = moment(time).add(2, 'hours');
     try {
       await Calendar.createEvent(
         {
@@ -75,7 +40,7 @@ const HomeChurchConfirmationModal = ({
           },
         },
         {
-          start_time: astartTime.format(),
+          start_time: time.format(),
           end_time: endTime.format(),
         }
       );

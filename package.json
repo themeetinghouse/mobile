@@ -52,6 +52,7 @@
     "expo-random": "~11.1.2",
     "expo-secure-store": "~10.1.0",
     "moment": "^2.24.0",
+    "moment-timezone": "^0.5.33",
     "nanoid": "^3.1.12",
     "native-base": "^2.15.2",
     "react": "16.13.1",
