@@ -337,7 +337,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
-
+    // These trigger "The user is not authenticated" message
     loadRecentSeries();
     loadRecentSermons();
     loadHighlights();
@@ -481,13 +481,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           <Text style={style.highlightsText}>Short snippets of teaching</Text>
           <FlatList
             contentContainerStyle={style.horizontalListContentContainer}
-            getItemLayout={(data, index) => {
-              return {
-                length: 80 * (16 / 9),
-                offset: 80 * (16 / 9) + 16,
-                index,
-              };
-            }}
             horizontal
             data={highlights.items}
             renderItem={({ item, index }) => (
@@ -512,7 +505,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               </TouchableOpacity>
             )}
             onEndReached={loadHighlights}
-            onEndReachedThreshold={0.1}
+            onEndReachedThreshold={0.8}
             ListFooterComponent={() => <ActivityIndicator />}
           />
         </View>
