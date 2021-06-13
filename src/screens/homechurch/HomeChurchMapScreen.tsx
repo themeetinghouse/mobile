@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   list: {
     backgroundColor: '#000',
     width,
+    paddingBottom: 4,
   },
   closeButton: {
     zIndex: 20000,
@@ -201,7 +202,7 @@ export default function HomeChurchMapScreen({
       <FlatList
         onMomentumScrollEnd={handleListScroll}
         ref={listRef}
-        showsHorizontalScrollIndicator
+        showsHorizontalScrollIndicator={false}
         snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
           const cardWidth = width - 64;
           const a = cardWidth * index;
