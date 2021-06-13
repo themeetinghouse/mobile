@@ -37,7 +37,7 @@ export const locationToGroupType = (groupId: string) => {
     case '58250':
       return 'hamilton-mountain';
     case '58251':
-      return 'hamilton-ancaster';
+      return 'ancaster';
     case '58253':
       return 'kitchener';
     case '58254':
@@ -240,9 +240,14 @@ export default function HomeChurchScreen({
                         : 0
                     )
                     .filter(
+                      // remove churches from included data based on day and location filter
                       (church) =>
-                        church?.location?.address?.latitude !== '' &&
-                        church?.location?.address?.longitude !== ''
+                        (church?.location?.address?.latitude !== '' &&
+                          church?.location?.address?.longitude !== '') ||
+                        (location?.locationId !== 'all' &&
+                          locationToGroupType(church?.groupType?.id ?? '') ===
+                            location?.locationId) ||
+                        location?.locationId !== 'all'
                     ),
                 })
               }
