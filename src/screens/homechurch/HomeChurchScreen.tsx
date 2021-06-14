@@ -145,8 +145,38 @@ export default function HomeChurchScreen({
       },
     });
   }, [navigation]);
-
   const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
+  const [filtered, setFiltered] = useState<HomeChurchData>([]);
+  const filterHelper = (church: HomeChurchData[0]) => {
+    if (
+      church?.location?.address?.latitude === '' ||
+      church?.location?.address?.longitude === ''
+    )
+      return false;
+    if (day === 'All Days' && location?.locationId === 'all') return true;
+    if (location?.locationId === 'all' && getDayOfWeek(church) === day)
+      return true;
+    if (
+      location?.locationId ===
+        locationToGroupType(church?.groupType?.id ?? '') &&
+      day === 'All Days'
+    )
+      return true;
+    if (
+      location?.locationId ===
+        locationToGroupType(church?.groupType?.id ?? '') &&
+      getDayOfWeek(church) === day
+    )
+      return true;
+    return false;
+  };
+
+  useEffect(() => {
+    if (homeChurches?.length > 0) {
+      setFiltered(homeChurches.filter((church) => filterHelper(church)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [day, location?.locationId, homeChurches]);
 
   useEffect(() => {
     const loadHomeChurches = async () => {
@@ -219,6 +249,9 @@ export default function HomeChurchScreen({
               }).length
             } Results`}</Text>
             <IconButton
+              disabled={
+                homeChurches.filter((church) => filterHelper(church)).length < 1
+              }
               labelStyle={{
                 color: 'black',
                 fontFamily: Theme.fonts.fontFamilyBold,
@@ -232,24 +265,7 @@ export default function HomeChurchScreen({
                 backgroundColor: '#fff',
               }}
               onPress={() =>
-                navigation.navigate('HomeChurchMapScreen', {
-                  items: homeChurches
-                    .sort((a, b) =>
-                      a?.groupType?.id && b?.groupType?.id
-                        ? a?.groupType?.id?.localeCompare(b?.groupType?.id)
-                        : 0
-                    )
-                    .filter(
-                      // remove churches from included data based on day and location filter
-                      (church) =>
-                        (church?.location?.address?.latitude !== '' &&
-                          church?.location?.address?.longitude !== '') ||
-                        (location?.locationId !== 'all' &&
-                          locationToGroupType(church?.groupType?.id ?? '') ===
-                            location?.locationId) ||
-                        location?.locationId !== 'all'
-                    ),
-                })
+                navigation.navigate('HomeChurchMapScreen', { items: filtered })
               }
             />
           </View>
