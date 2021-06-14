@@ -146,10 +146,8 @@ export default class SeriesService {
 
     const items = queryResult?.data?.getSeriesBySeriesType?.items;
     if (items) {
-      for (const item of items) {
-        if (item) {
-          SeriesService.updateSeriesImage(item as SeriesData);
-        }
+      for (let i = 0; i < items.length; i++) {
+        SeriesService.updateSeriesImage(items[i] as SeriesData);
       }
     }
     return {
@@ -168,6 +166,7 @@ export default class SeriesService {
       variables: { id: seriesId },
     });
     const series = queryResult.getSeries;
+    await SeriesService.updateSeriesImage(series as SeriesData);
     return series;
   };
 
@@ -208,18 +207,20 @@ export default class SeriesService {
     series: SeriesDataWithHeroImage
   ): Promise<void> => {
     if (series?.title) {
-      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
-      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
+      series.image =
+        `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
+      series.image640px =
+        `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
       series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(
         / /g,
         '%20'

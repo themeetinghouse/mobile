@@ -228,6 +228,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     items: [],
     nextToken: null,
   });
+  const [popularSeries, setPopularSeries] = useState({
+    loading: true,
+    items: [],
+  });
   const [highlights, setHighlights] = useState({
     loading: true,
     items: [],
@@ -317,6 +321,23 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
+  const loadPopularSeries = async () => {
+    const res = await fetch(
+      'https://www.themeetinghouse.com/static/content/teaching.json'
+    );
+    const data = await res.json();
+    const findSeries =
+      data?.page?.content?.filter((a) => a?.collection)[0]?.collection ?? [];
+    if (findSeries.length) {
+      const arr = [];
+      findSeries.forEach(async (seriesName: string) => {
+        arr.push(SeriesService.loadSeriesById(seriesName));
+      });
+      await Promise.all(arr).then((series) => {
+        setPopularSeries({ items: series, loading: false });
+      });
+    }
+  };
   useEffect(() => {
     const getPopularTeaching = async () => {
       const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
@@ -337,7 +358,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
-
+    loadPopularSeries();
     loadRecentSeries();
     loadRecentSermons();
     loadHighlights();
@@ -541,6 +562,39 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             }
           >
             More popular teaching
+          </AllButton>
+        </View>
+        <View style={style.categorySection}>
+          <Text style={style.categoryTitle}>Popular Series</Text>
+          <Text style={style.highlightsText}>
+            A collection of our favourite and most popular series
+          </Text>
+          {customPlaylists.loading && (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ActivityIndicator />
+            </View>
+          )}
+          <View style={style.seriesListContainer}>
+            {popularSeries?.items?.map((s: any, key: any) => {
+              if (key < 4)
+                return (
+                  <SeriesItem
+                    key={s.id}
+                    navigation={navigation as any}
+                    seriesData={s}
+                  />
+                );
+              return null;
+            })}
+          </View>
+          <AllButton handlePress={() => navigation.push('AllSeriesScreen')}>
+            More Popular Series
           </AllButton>
         </View>
         <View style={style.categorySection}>
