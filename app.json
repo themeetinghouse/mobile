@@ -32,8 +32,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "1",
+      "buildNumber": "3",
       "config": {
+        "googleMapsApiKey": "AIzaSyDQi7MSFW1DumNy0zpUkyVWXA2NhhtjEvE",
         "usesNonExemptEncryption": false
       },
       "associatedDomains": [
@@ -46,9 +47,14 @@
       }
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAYPqUYMe4VKqZ3fhhS-vOF5gEcjnnuzIk"
+        }
+      },
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20121,
+      "versionCode": 20123,
       "intentFilters": [
         {
           "action": "VIEW",
