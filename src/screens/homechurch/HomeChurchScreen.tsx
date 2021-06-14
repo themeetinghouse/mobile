@@ -17,10 +17,11 @@ import { RouteProp } from '@react-navigation/native';
 import { listF1ListGroup2s } from '../../services/queries';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
-import HomeChurchItem, { getDayOfWeek } from './HomeChurchItem';
+import HomeChurchItem from './HomeChurchItem';
 import IconButton from '../../components/buttons/IconButton';
 import HomeChurchControls from './HomeChurchControls';
 import AllButton from '../../../src/components/buttons/AllButton';
+import { getDayOfWeek } from './HomeChurchUtils';
 
 export const locationToGroupType = (groupId: string) => {
   switch (groupId) {
