@@ -200,7 +200,7 @@ export default function HomeChurchScreen({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, route?.params?.loc]);
+  }, [route?.params?.loc]);
 
   return (
     <View>
@@ -231,6 +231,7 @@ export default function HomeChurchScreen({
             isLoading={isLoading}
             setDay={setDay}
             navigation={navigation}
+            setLoc={(a) => setLocation(a)}
             loc={location}
           />
           <View style={{ flexDirection: 'row', zIndex: -2 }}>

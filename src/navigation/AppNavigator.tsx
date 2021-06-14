@@ -63,7 +63,7 @@ export type MainStackParamList = {
     nextToken: string | undefined;
     fromSeries?: boolean;
   };
-  HomeChurchLocationSelect: { loc?: LocationData };
+  HomeChurchLocationSelect: { location?: LocationData };
   DateRangeSelectScreen: undefined;
   SermonLandingScreen: {
     item: any;
