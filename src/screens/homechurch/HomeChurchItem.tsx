@@ -19,6 +19,7 @@ interface Params {
   active?: boolean;
   openModal?: () => void;
   locationToGroupType: (a: string) => string;
+  single?: boolean;
 }
 const { width, height } = Dimensions.get('window');
 
@@ -70,6 +71,7 @@ const HomeChurchItem = ({
   modal,
   openModal,
   locationToGroupType,
+  single,
 }: Params): JSX.Element => {
   const style = StyleSheet.create({
     homeChurchCard: card
@@ -78,7 +80,7 @@ const HomeChurchItem = ({
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: active ? '#FFF' : 'transparent',
-          width: width - 80,
+          width: single ? width - 40 : width - 80,
           overflow: 'hidden',
           flexWrap: 'nowrap',
         }
