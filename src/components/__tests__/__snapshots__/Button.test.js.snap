@@ -267,6 +267,7 @@ exports[`Snapshot and functional tests for button components Icon button, defaul
               "paddingTop": 3,
             },
             Object {},
+            Object {},
           ]
         }
         uppercase={false}
@@ -332,6 +333,7 @@ exports[`Snapshot and functional tests for button components Icon button, test r
               "paddingBottom": 3,
               "paddingTop": 3,
             },
+            Object {},
             Object {},
           ]
         }
