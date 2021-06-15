@@ -116,10 +116,15 @@ export default function AllSeriesScreen({
         100
       );
     };
+    const loadPopularSeries = async () => {
+      const data: any = await SeriesService.fetchPopularSeries();
+      setAllSeries({ items: data, loading: false, nextToken: null });
+    };
 
     generateYears();
-    if (route?.params?.customPlaylists) {
-      loadCustomPlaylists();
+    if (route?.params?.popularSeries || route?.params?.customPlaylists) {
+      if (route?.params?.popularSeries) loadPopularSeries();
+      if (route?.params?.customPlaylists) loadCustomPlaylists();
     } else {
       loadAllSeriesAsync();
     }
@@ -145,7 +150,11 @@ export default function AllSeriesScreen({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: route?.params?.customPlaylists ? 'Video Playlists' : 'All Series',
+      title: route?.params?.customPlaylists
+        ? 'Video Playlists'
+        : route?.params?.popularSeries
+        ? 'Popular Series'
+        : 'All Series',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
@@ -185,13 +194,15 @@ export default function AllSeriesScreen({
   return (
     <Container>
       <Content style={style.content}>
-        <SearchBar
-          style={style.searchBar}
-          searchText={searchText}
-          handleTextChanged={(newStr) => setSearchText(newStr)}
-          placeholderLabel="Search by name..."
-        />
-        {!route?.params?.customPlaylists ? (
+        {!route?.params?.popularSeries ? (
+          <SearchBar
+            style={style.searchBar}
+            searchText={searchText}
+            handleTextChanged={(newStr) => setSearchText(newStr)}
+            placeholderLabel="Search by name..."
+          />
+        ) : null}
+        {!route?.params?.customPlaylists && !route?.params?.popularSeries ? (
           <>
             <View style={style.dateSelectBar}>
               <FlatList

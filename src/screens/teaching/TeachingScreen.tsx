@@ -24,6 +24,7 @@ import SermonsService from '../../services/SermonsService';
 import SeriesService, {
   LoadPlaylistData,
   LoadSeriesListData,
+  SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
 import SpeakersService from '../../services/SpeakersService';
 import loadSomeAsync from '../../utils/loading';
@@ -211,6 +212,11 @@ interface PlaylistData extends LoadPlaylistData {
   loading: boolean;
 }
 
+interface PopularSeriesData {
+  items: Array<SeriesDataWithHeroImage>;
+  loading: boolean;
+}
+
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
   const [recentTeaching, setRecentTeaching] = useState({
@@ -228,7 +234,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     items: [],
     nextToken: null,
   });
-  const [popularSeries, setPopularSeries] = useState({
+  const [popularSeries, setPopularSeries] = useState<PopularSeriesData>({
     loading: true,
     items: [],
   });
@@ -322,22 +328,14 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   };
 
   const loadPopularSeries = async () => {
-    const res = await fetch(
-      'https://www.themeetinghouse.com/static/content/teaching.json'
-    );
-    const data = await res.json();
-    const findSeries =
-      data?.page?.content?.filter((a) => a?.collection)[0]?.collection ?? [];
-    if (findSeries.length) {
-      const arr = [];
-      findSeries.forEach(async (seriesName: string) => {
-        arr.push(SeriesService.loadSeriesById(seriesName));
-      });
-      await Promise.all(arr).then((series) => {
-        setPopularSeries({ items: series, loading: false });
-      });
+    try {
+      const data = await SeriesService.fetchPopularSeries();
+      setPopularSeries({ items: data, loading: false });
+    } catch (err) {
+      setPopularSeries({ items: [], loading: false });
     }
   };
+
   useEffect(() => {
     const getPopularTeaching = async () => {
       const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
@@ -593,7 +591,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               return null;
             })}
           </View>
-          <AllButton handlePress={() => navigation.push('AllSeriesScreen')}>
+          <AllButton
+            handlePress={() =>
+              navigation.push('AllSeriesScreen', { popularSeries: true })
+            }
+          >
             More Popular Series
           </AllButton>
         </View>

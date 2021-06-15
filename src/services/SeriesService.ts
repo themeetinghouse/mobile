@@ -65,7 +65,7 @@ export interface SeriesHighlights {
   loading?: boolean;
 }
 
-interface SeriesDataWithHeroImage extends SeriesData {
+export interface SeriesDataWithHeroImage extends SeriesData {
   heroImage?: string;
   image640px?: string;
 }
@@ -129,6 +129,26 @@ export default class SeriesService {
     const series = queryResult.getCustomPlaylist;
     await SeriesService.updateSeriesImageFromPlaylist(series);
     return series;
+  };
+
+  static fetchPopularSeries = async (): Promise<
+    Array<SeriesDataWithHeroImage>
+  > => {
+    const res = await fetch(
+      'https://www.themeetinghouse.com/static/content/teaching.json'
+    );
+    const data = await res.json();
+    // TODO: does this need typing?
+    const findSeries =
+      data?.page?.content?.filter((a) => a?.collection)[0]?.collection ?? [];
+
+    const arr: Array<Promise<SeriesDataWithHeroImage>> = [];
+    findSeries.forEach(async (seriesName: string) => {
+      arr.push(SeriesService.loadSeriesById(seriesName));
+    });
+    return Promise.all(arr).then((series) => {
+      return series;
+    });
   };
 
   static loadSeriesList = async (
