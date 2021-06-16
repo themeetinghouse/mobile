@@ -300,6 +300,7 @@ export default function HomeChurchScreen({
             .map((a) => {
               return (
                 <HomeChurchItem
+                  homeChurches={filtered}
                   locationToGroupType={locationToGroupType}
                   key={a?.id}
                   item={a}

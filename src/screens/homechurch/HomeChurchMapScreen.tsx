@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import {
@@ -65,12 +64,16 @@ export default function HomeChurchMapScreen({
 }: Params): JSX.Element {
   const cardLength = width - 80 + 16;
   const homeChurches: HomeChurchData = route?.params?.items;
+  const selectedChurch = homeChurches.findIndex(
+    (hm) => hm?.id === route?.params?.selection?.id
+  );
   const [, setUserLocation] = useState<Location.LocationObject['coords']>();
   const listRef = useRef<FlatList | null>(null);
   const mapRef = useRef<MapView>(null);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(
+    selectedChurch >= 0 ? selectedChurch : 0
+  );
   const [showModal, setShowModal] = useState(false);
-
   const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const xOffset = event.nativeEvent.contentOffset.x;
     setSelected(Math.round(xOffset / cardLength));
@@ -113,12 +116,21 @@ export default function HomeChurchMapScreen({
     setUserLocation(location?.coords);
   };
   useEffect(() => {
+    if (selectedChurch >= 0) {
+      if (listRef && listRef?.current) {
+        listRef.current.scrollToIndex({
+          animated: true,
+          index: selectedChurch,
+        });
+      }
+    }
     Platform.OS === 'ios' ? StatusBar.setBarStyle('dark-content', true) : null;
     return () => {
       Platform.OS === 'ios'
         ? StatusBar.setBarStyle('light-content', true)
         : null;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <View style={styles.container}>
