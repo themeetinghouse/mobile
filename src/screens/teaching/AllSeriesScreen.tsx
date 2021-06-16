@@ -145,7 +145,7 @@ export default function AllSeriesScreen({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      title: route?.params?.customPlaylists ? 'Video Playlists' : 'All Series',
+      title: route?.params?.customPlaylists ? 'Teaching Topics' : 'All Series',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {

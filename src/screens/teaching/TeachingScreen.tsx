@@ -558,9 +558,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </AllButton>
         </View>
         <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Video Playlists</Text>
+          <Text style={style.categoryTitle}>Teaching by Topic</Text>
           <Text style={style.highlightsText}>
-            A collection of our favourite and most popular videos
+            A collection of our favourite and most popular teachings by topic
           </Text>
           {customPlaylists.loading && (
             <View
@@ -592,7 +592,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               navigation.push('AllSeriesScreen', { customPlaylists: true })
             }
           >
-            More Playlists
+            More Teaching Topics
           </AllButton>
         </View>
         <View style={style.categorySectionLast}>
