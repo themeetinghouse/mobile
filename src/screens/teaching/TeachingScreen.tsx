@@ -316,10 +316,24 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       10
     );
   };
-
+  const fetchPopularVideoParams = async () => {
+    const res = await fetch(
+      'https://www.themeetinghouse.com/static/content/teaching.json'
+    );
+    const data = await res.json();
+    // TODO: does this need typing?
+    const params = data?.page?.content
+      ?.filter((a) => a?.minViews)
+      .find((b) => b.header1 === 'Popular Teaching');
+    return params;
+  };
   useEffect(() => {
     const getPopularTeaching = async () => {
-      const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
+      const { numberOfDays = 120, minViews = 900 } =
+        await fetchPopularVideoParams();
+      const startDate = moment()
+        .subtract(numberOfDays, 'days')
+        .format('YYYY-MM-DD');
       const variables: GetVideoByVideoTypeQueryVariables = {
         limit: 30,
         videoTypes: 'adult-sunday',
@@ -333,7 +347,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       })) as GraphQLResult<GetVideoByVideoTypeQuery>;
       const items = json?.data?.getVideoByVideoType?.items ?? [];
       const popularTeaching = items.filter((item) =>
-        item?.viewCount ? parseInt(item?.viewCount, 10) >= 700 : false
+        item?.viewCount ? parseInt(item?.viewCount, 10) >= minViews : false
       );
       setPopular(popularTeaching);
     };
