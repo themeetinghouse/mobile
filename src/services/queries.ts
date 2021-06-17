@@ -130,6 +130,25 @@ export const getSeriesEpisodeCount = `
     }
   }
 `;
+export const listCustomPlaylistsForRandom = /* GraphQL */ `
+  query ListCustomPlaylists(
+    $filter: ModelCustomPlaylistFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listCustomPlaylists(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        videos {
+          items {
+            id
+          }
+        }
+      }
+      nextToken
+    }
+  }
+`;
 
 export const listCustomPlaylists = /* GraphQL */ `
   query ListCustomPlaylists(

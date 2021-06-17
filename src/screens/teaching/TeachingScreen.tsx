@@ -22,6 +22,7 @@ import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import SermonsService from '../../services/SermonsService';
 import SeriesService, {
+  CustomPlaylist,
   LoadPlaylistData,
   LoadSeriesListData,
 } from '../../services/SeriesService';
@@ -210,6 +211,9 @@ interface SeriesData extends LoadSeriesListData {
 interface PlaylistData extends LoadPlaylistData {
   loading: boolean;
 }
+export type SuggestedVideos = NonNullable<
+  NonNullable<CustomPlaylist>['videos']
+>['items'];
 
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
@@ -218,6 +222,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     items: [],
     nextToken: null,
   });
+  const [suggestedVideos, setSuggestedVideos] = useState<SuggestedVideos>();
   const [recentSeries, setRecentSeries] = useState<SeriesData>({
     loading: true,
     items: [],
@@ -316,6 +321,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       10
     );
   };
+
   const fetchPopularVideoParams = async () => {
     const res = await fetch(
       'https://www.themeetinghouse.com/static/content/teaching.json'
@@ -328,6 +334,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return params;
   };
   useEffect(() => {
+    const getSuggestedVideos = async () => {
+      const suggested = await SeriesService.loadRandomPlaylist();
+      setSuggestedVideos(suggested ?? []);
+    };
     const getPopularTeaching = async () => {
       const { numberOfDays = 120, minViews = 900 } =
         await fetchPopularVideoParams();
@@ -351,7 +361,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
-
+    getSuggestedVideos();
     loadRecentSeries();
     loadRecentSermons();
     loadHighlights();
@@ -370,11 +380,17 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
 
   const getTeachingImage = (teaching: any) => {
     const { thumbnails } = teaching?.Youtube?.snippet;
-
     if (thumbnails?.standard) return thumbnails?.standard?.url;
     return thumbnails?.maxres?.url;
   };
-
+  const getSuggestedImage = (suggested: any) => {
+    const { thumbnails } = suggested?.video?.Youtube?.snippet;
+    return (
+      thumbnails?.standard?.url ??
+      thumbnails?.maxres?.url ??
+      thumbnails?.high?.url
+    );
+  };
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     if (event.nativeEvent.contentOffset.y > Dimensions.get('screen').height) {
       setBounce(true);
@@ -595,6 +611,45 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             More Teaching Topics
           </AllButton>
         </View>
+        {suggestedVideos?.length ? (
+          <View style={style.categorySection}>
+            <Text style={style.categoryTitle}>Suggested Videos</Text>
+            <FlatList
+              contentContainerStyle={style.horizontalListContentContainer}
+              getItemLayout={(data, index) => {
+                return {
+                  length: 80 * (16 / 9),
+                  offset: 80 * (16 / 9) + 16,
+                  index,
+                };
+              }}
+              horizontal
+              data={suggestedVideos}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.push('SermonLandingScreen', {
+                      item: item?.video,
+                      customPlaylist: item?.customPlaylistID,
+                      seriesId: item?.video?.seriesTitle,
+                    });
+                  }}
+                >
+                  <Image
+                    style={[
+                      style.highlightsThumbnail,
+                      index === highlights.items.length - 1
+                        ? style.lastHorizontalListItem
+                        : {},
+                    ]}
+                    source={{ uri: getSuggestedImage(item) }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        ) : null}
+
         <View style={style.categorySectionLast}>
           <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
             Teachers

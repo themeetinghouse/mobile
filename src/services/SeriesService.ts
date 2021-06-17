@@ -1,6 +1,9 @@
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { SuggestedVideos } from 'src/screens/teaching/TeachingScreen';
 import { runGraphQLQuery } from './ApiService';
 import {
+  GetCustomPlaylistQuery,
+  GetCustomPlaylistQueryVariables,
   GetSeriesBySeriesTypeQuery,
   GetSeriesQuery,
   ListCustomPlaylistsQuery,
@@ -11,6 +14,7 @@ import {
   getSeriesBySeriesType,
   getSeriesEpisodeCount,
   getSeries,
+  listCustomPlaylistsForRandom,
 } from './queries';
 
 type SeriesByTypeQueryResult = NonNullable<
@@ -37,21 +41,7 @@ export interface LoadPlaylistData {
   >['nextToken'];
 }
 
-type PlaylistItem = NonNullable<
-  NonNullable<
-    NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']
-  >['items']
->[0];
-
-type CustomPlaylist = {
-  items: Array<PlaylistItem>;
-  nextToken: NonNullable<
-    NonNullable<ListCustomPlaylistsQuery>['listCustomPlaylists']
-  >['nextToken'];
-};
-type PlaylistData = NonNullable<
-  NonNullable<ListCustomPlaylistsQuery['listCustomPlaylists']>['items']
->;
+export type CustomPlaylist = GetCustomPlaylistQuery['getCustomPlaylist'];
 
 type SeriesData = NonNullable<GetSeriesQuery['getSeries']>;
 
@@ -90,6 +80,41 @@ export default class SeriesService {
     };
   };
 
+  static generateNum = (max: number): number => {
+    return Math.floor(Math.random() * max);
+  };
+
+  static getCustomPlaylistById = async (
+    customPlaylistId: string
+  ): Promise<CustomPlaylist> => {
+    const queryResult = (await API.graphql({
+      query: getCustomPlaylist,
+      variables: { id: customPlaylistId },
+    })) as GraphQLResult<GetCustomPlaylistQuery>;
+    const series = queryResult?.data?.getCustomPlaylist;
+    return series ?? null;
+  };
+
+  static loadRandomPlaylist = async (): Promise<SuggestedVideos> => {
+    const queryResult = (await API.graphql(
+      graphqlOperation(listCustomPlaylistsForRandom, {
+        sortDirection: 'DESC',
+        seriesType: 'adult-sunday',
+      })
+    )) as GraphQLResult<ListCustomPlaylistsQuery>;
+    const items = queryResult?.data?.listCustomPlaylists?.items;
+    const filteredItems = items?.filter(
+      (item) => item?.videos?.items && item?.videos?.items?.length > 0
+    );
+    const numberItems = filteredItems?.length ?? 3;
+    const random = SeriesService.generateNum(numberItems) - 1;
+    const seriesName = filteredItems?.[random]?.id ?? '';
+    const playlistResult = await SeriesService.getCustomPlaylistById(
+      seriesName
+    );
+    return playlistResult?.videos?.items ?? [];
+  };
+
   static loadCustomPlaylists = async (
     limit: number,
     nextToken?: string
@@ -117,18 +142,6 @@ export default class SeriesService {
         ) ?? [],
       nextToken: queryResult?.data?.listCustomPlaylists?.nextToken ?? '',
     };
-  };
-
-  static getCustomPlaylistById = async (
-    customPlaylistId: string
-  ): Promise<PlaylistData> => {
-    const queryResult = await runGraphQLQuery({
-      query: getCustomPlaylist,
-      variables: { id: customPlaylistId },
-    });
-    const series = queryResult.getCustomPlaylist;
-    await SeriesService.updateSeriesImageFromPlaylist(series);
-    return series;
   };
 
   static loadSeriesList = async (
@@ -208,18 +221,20 @@ export default class SeriesService {
     series: SeriesDataWithHeroImage
   ): Promise<void> => {
     if (series?.title) {
-      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
-      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
+      series.image =
+        `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
+      series.image640px =
+        `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
       series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(
         / /g,
         '%20'
