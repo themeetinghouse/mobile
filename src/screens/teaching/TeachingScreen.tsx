@@ -10,9 +10,10 @@ import {
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
-import { FlatList } from 'react-native-gesture-handler';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
@@ -408,37 +409,38 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       return <ActivityIndicator />;
     }
     return (
-      <TouchableOpacity
+      <TouchableWithoutFeedback
         key={item.id}
         onPress={() => navigation.push('SeriesLandingScreen', { item })}
-        style={style.seriesThumbnailContainer}
       >
-        <AnimatedFallbackImage
-          style={{
-            ...style.seriesThumbnail,
-            ...{
-              transform: [
-                {
-                  scale: animatedValue.interpolate({
-                    inputRange: [index - 1, index, index + 1],
-                    outputRange: [0.9, 1, 0.9],
-                    extrapolate: 'clamp',
-                  }),
-                },
-              ],
-            },
-          }}
-          uri={item.image640px}
-          catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
-        />
+        <View style={style.seriesThumbnailContainer}>
+          <AnimatedFallbackImage
+            style={{
+              ...style.seriesThumbnail,
+              ...{
+                transform: [
+                  {
+                    scale: animatedValue.interpolate({
+                      inputRange: [index - 1, index, index + 1],
+                      outputRange: [0.9, 1, 0.9],
+                      extrapolate: 'clamp',
+                    }),
+                  },
+                ],
+              },
+            }}
+            uri={item.image640px}
+            catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+          />
 
-        <View style={style.seriesDetailContainer}>
-          <Text style={style.seriesDetail1}>{item.title}</Text>
-          <Text style={style.seriesDetail2}>
-            {getSeriesDate(item)} &bull; {item.videos.items.length} episodes
-          </Text>
+          <View style={style.seriesDetailContainer}>
+            <Text style={style.seriesDetail1}>{item.title}</Text>
+            <Text style={style.seriesDetail2}>
+              {getSeriesDate(item)} &bull; {item.videos.items.length} episodes
+            </Text>
+          </View>
         </View>
-      </TouchableOpacity>
+      </TouchableWithoutFeedback>
     );
   };
 
