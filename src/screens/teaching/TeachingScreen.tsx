@@ -24,6 +24,7 @@ import SermonsService from '../../services/SermonsService';
 import SeriesService, {
   LoadPlaylistData,
   LoadSeriesListData,
+  SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
 import SpeakersService from '../../services/SpeakersService';
 import loadSomeAsync from '../../utils/loading';
@@ -211,6 +212,11 @@ interface PlaylistData extends LoadPlaylistData {
   loading: boolean;
 }
 
+interface PopularSeriesData {
+  items: Array<SeriesDataWithHeroImage>;
+  loading: boolean;
+}
+
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
   const [recentTeaching, setRecentTeaching] = useState({
@@ -227,6 +233,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loading: true,
     items: [],
     nextToken: null,
+  });
+  const [popularSeries, setPopularSeries] = useState<PopularSeriesData>({
+    loading: true,
+    items: [],
   });
   const [highlights, setHighlights] = useState({
     loading: true,
@@ -317,6 +327,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
+  const loadPopularSeries = async () => {
+    try {
+      const data = await SeriesService.fetchPopularSeries();
+      setPopularSeries({ items: data, loading: false });
+    } catch (err) {
+      setPopularSeries({ items: [], loading: false });
+    }
+  };
+
   useEffect(() => {
     const getPopularTeaching = async () => {
       const startDate = moment().subtract(150, 'days').format('YYYY-MM-DD');
@@ -337,6 +356,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
+    loadPopularSeries();
     // These trigger "The user is not authenticated" message
     loadRecentSeries();
     loadRecentSermons();
@@ -534,6 +554,43 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             }
           >
             More popular teaching
+          </AllButton>
+        </View>
+        <View style={style.categorySection}>
+          <Text style={style.categoryTitle}>Popular Series</Text>
+          <Text style={style.highlightsText}>
+            A collection of our favourite and most popular series
+          </Text>
+          {customPlaylists.loading && (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ActivityIndicator />
+            </View>
+          )}
+          <View style={style.seriesListContainer}>
+            {popularSeries?.items?.map((s: any, key: any) => {
+              if (key < 4)
+                return (
+                  <SeriesItem
+                    key={s.id}
+                    navigation={navigation as any}
+                    seriesData={s}
+                  />
+                );
+              return null;
+            })}
+          </View>
+          <AllButton
+            handlePress={() =>
+              navigation.push('AllSeriesScreen', { popularSeries: true })
+            }
+          >
+            More Popular Series
           </AllButton>
         </View>
         <View style={style.categorySection}>

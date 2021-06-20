@@ -275,11 +275,7 @@ export default function SeriesLandingScreen({
       let loadedSeries = series;
       if (!loadedSeries && seriesId) {
         loadedSeries = await SeriesService.loadSeriesById(seriesId);
-        const uri = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${loadedSeries.id.replace(
-          '?',
-          ''
-        )}.jpg`;
-        setSeries({ ...loadedSeries, image640px: uri });
+        setSeries(loadedSeries);
       }
       if (!customPlaylist) {
         const json = (await API.graphql(

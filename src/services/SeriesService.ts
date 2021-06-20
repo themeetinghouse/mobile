@@ -65,7 +65,7 @@ export interface SeriesHighlights {
   loading?: boolean;
 }
 
-interface SeriesDataWithHeroImage extends SeriesData {
+export interface SeriesDataWithHeroImage extends SeriesData {
   heroImage?: string;
   image640px?: string;
 }
@@ -131,6 +131,26 @@ export default class SeriesService {
     return series;
   };
 
+  static fetchPopularSeries = async (): Promise<
+    Array<SeriesDataWithHeroImage>
+  > => {
+    const res = await fetch(
+      'https://www.themeetinghouse.com/static/content/teaching.json'
+    );
+    const data = await res.json();
+    // TODO: does this need typing?
+    const findSeries =
+      data?.page?.content?.filter((a) => a?.collection)[0]?.collection ?? [];
+
+    const arr: Array<Promise<SeriesDataWithHeroImage>> = [];
+    findSeries.forEach(async (seriesName: string) => {
+      arr.push(SeriesService.loadSeriesById(seriesName));
+    });
+    return Promise.all(arr).then((series) => {
+      return series;
+    });
+  };
+
   static loadSeriesList = async (
     limit: number,
     nextToken?: string
@@ -146,10 +166,8 @@ export default class SeriesService {
 
     const items = queryResult?.data?.getSeriesBySeriesType?.items;
     if (items) {
-      for (const item of items) {
-        if (item) {
-          SeriesService.updateSeriesImage(item as SeriesData);
-        }
+      for (let i = 0; i < items.length; i++) {
+        SeriesService.updateSeriesImage(items[i] as SeriesData);
       }
     }
     return {
@@ -168,6 +186,7 @@ export default class SeriesService {
       variables: { id: seriesId },
     });
     const series = queryResult.getSeries;
+    await SeriesService.updateSeriesImage(series as SeriesData);
     return series;
   };
 
@@ -208,18 +227,20 @@ export default class SeriesService {
     series: SeriesDataWithHeroImage
   ): Promise<void> => {
     if (series?.title) {
-      series.image = `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
-      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
-        '?',
-        ''
-      )}.jpg`
-        .replace(/ /g, '%20')
-        .replace("'", '');
+      series.image =
+        `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
+      series.image640px =
+        `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
+          '?',
+          ''
+        )}.jpg`
+          .replace(/ /g, '%20')
+          .replace("'", '');
       series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(
         / /g,
         '%20'
