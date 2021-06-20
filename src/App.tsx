@@ -306,7 +306,7 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
             <UserContext.Provider value={{ userData, setUserData }}>
               <SafeAreaProvider style={{ backgroundColor: 'black' }}>
                 {Platform.OS === 'ios' && (
-                  <StatusBar barStyle="light-content" />
+                  <StatusBar animated barStyle="light-content" />
                 )}
                 <NavigationContainer
                   theme={CustomTheme}

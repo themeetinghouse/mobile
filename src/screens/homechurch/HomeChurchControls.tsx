@@ -79,12 +79,14 @@ interface Params {
   loc: LocationData;
   setDay: (day: string) => void;
   isLoading: boolean;
+  setLoc: (location: LocationData) => void;
 }
 const HomeChurchControls = ({
   loc,
   navigation,
   setDay,
   isLoading,
+  setLoc,
 }: Params): JSX.Element => {
   const [selectedLocation, setSelectedLocation] = useState<LocationData>(
     loc?.locationName === 'unknown' || !loc?.locationName
@@ -112,7 +114,7 @@ const HomeChurchControls = ({
 
   const handleClearButton = () => {
     handleDrop('All Days');
-    setSelectedLocation({
+    setLoc({
       locationName: 'All Locations',
       locationId: 'all',
     });
@@ -127,7 +129,11 @@ const HomeChurchControls = ({
       <View style={style.container}>
         <TouchableWithoutFeedback
           disabled={isLoading}
-          onPress={() => navigation.navigate('HomeChurchLocationSelect', {})}
+          onPress={() =>
+            navigation.navigate('HomeChurchLocationSelect', {
+              location: selectedLocation,
+            })
+          }
         >
           <View style={style.containerItem}>
             <Thumbnail

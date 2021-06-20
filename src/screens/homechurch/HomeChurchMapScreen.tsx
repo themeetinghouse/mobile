@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import {
   StyleSheet,
@@ -8,6 +8,8 @@ import {
   NativeSyntheticEvent,
   NativeScrollEvent,
   TouchableOpacity,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -40,6 +42,7 @@ const styles = StyleSheet.create({
   list: {
     backgroundColor: '#000',
     width,
+    paddingBottom: 4,
   },
   closeButton: {
     zIndex: 20000,
@@ -61,10 +64,15 @@ export default function HomeChurchMapScreen({
 }: Params): JSX.Element {
   const cardLength = width - 80 + 16;
   const homeChurches: HomeChurchData = route?.params?.items;
+  const selectedChurch = homeChurches.findIndex(
+    (hm) => hm?.id === route?.params?.selection?.id
+  );
   const [, setUserLocation] = useState<Location.LocationObject['coords']>();
   const listRef = useRef<FlatList | null>(null);
   const mapRef = useRef<MapView>(null);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState(
+    selectedChurch >= 0 ? selectedChurch : 0
+  );
   const [showModal, setShowModal] = useState(false);
   const handleListScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const xOffset = event.nativeEvent.contentOffset.x;
@@ -100,14 +108,30 @@ export default function HomeChurchMapScreen({
     }
   };
   const getUserLocation = async () => {
-    const { status } = await Location.requestPermissionsAsync();
+    const { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== 'granted') {
       return;
     }
     const location = await Location.getCurrentPositionAsync({});
     setUserLocation(location?.coords);
   };
-
+  useEffect(() => {
+    if (selectedChurch >= 0) {
+      if (listRef && listRef?.current) {
+        listRef.current.scrollToIndex({
+          animated: true,
+          index: selectedChurch,
+        });
+      }
+    }
+    Platform.OS === 'ios' ? StatusBar.setBarStyle('dark-content', true) : null;
+    return () => {
+      Platform.OS === 'ios'
+        ? StatusBar.setBarStyle('light-content', true)
+        : null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -199,42 +223,71 @@ export default function HomeChurchMapScreen({
           selected={homeChurches[selected]}
         />
       ) : null}
-      <FlatList
-        onMomentumScrollEnd={handleListScroll}
-        ref={listRef}
-        showsHorizontalScrollIndicator
-        snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
-          const cardWidth = width - 64;
-          const a = cardWidth * index;
-          return a - 24;
-        })}
-        decelerationRate={0.88}
-        disableIntervalMomentum
-        ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
-        contentContainerStyle={{ padding: 16 }}
-        getItemLayout={(data, index) => {
-          return { length: cardLength, offset: cardLength * index - 24, index };
-        }}
-        style={styles.list}
-        /* 
-          The data fed to the flatlist needs to match data fed to markers. Indexes must match 
-          Online Home Churches will not show up on map screen (?) 
-        */
-        data={homeChurches}
-        renderItem={({ item, index }) => (
+      {homeChurches.length === 1 ? (
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#000',
+            width,
+            paddingBottom: 4,
+            flex: 1,
+          }}
+        >
           <HomeChurchItem
             locationToGroupType={locationToGroupType}
             openModal={() => {
-              setSelected(index);
+              setSelected(0);
               setShowModal(true);
             }}
-            active={index === selected}
+            active
             card
-            item={item}
+            single
+            item={homeChurches[0]}
           />
-        )}
-        horizontal
-      />
+        </View>
+      ) : (
+        <FlatList
+          onMomentumScrollEnd={handleListScroll}
+          ref={listRef}
+          showsHorizontalScrollIndicator={false}
+          snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
+            const cardWidth = width - 64;
+            const a = cardWidth * index;
+            return a - 24;
+          })}
+          decelerationRate={0.88}
+          disableIntervalMomentum
+          ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
+          contentContainerStyle={{ padding: 16 }}
+          getItemLayout={(data, index) => {
+            return {
+              length: cardLength,
+              offset: cardLength * index - 24,
+              index,
+            };
+          }}
+          style={styles.list}
+          /* 
+          The data fed to the flatlist needs to match data fed to markers. Indexes must match 
+          Online Home Churches will not show up on map screen (?) 
+        */
+          data={homeChurches}
+          renderItem={({ item, index }) => (
+            <HomeChurchItem
+              locationToGroupType={locationToGroupType}
+              openModal={() => {
+                setSelected(index);
+                setShowModal(true);
+              }}
+              active={index === selected}
+              card
+              item={item}
+            />
+          )}
+          horizontal
+        />
+      )}
     </View>
   );
 }

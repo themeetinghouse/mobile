@@ -161,6 +161,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
               Object {
                 "marginLeft": 0,
               },
+              Object {},
             ]
           }
         />
@@ -184,6 +185,7 @@ exports[`Recent Teaching component on Home Screen Snapshot using data from Sunda
                   "paddingBottom": 3,
                   "paddingTop": 3,
                 },
+                Object {},
                 Object {},
               ]
             }
