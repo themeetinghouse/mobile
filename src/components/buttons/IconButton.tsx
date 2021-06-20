@@ -47,6 +47,7 @@ interface Props {
   icon?: ImageSourcePropType;
   label: string;
   rightArrow?: boolean;
+  disabled?: boolean;
 }
 
 export default function IconButton({
@@ -56,19 +57,34 @@ export default function IconButton({
   icon,
   label,
   rightArrow,
+  disabled,
 }: Props): JSX.Element {
   return (
     <View style={[buttonStyle.container, style]}>
-      <TouchableOpacity style={buttonStyle.button} onPress={onPress}>
+      <TouchableOpacity
+        disabled={!!disabled}
+        style={buttonStyle.button}
+        onPress={onPress}
+      >
         {icon && (
           <Thumbnail
             square
             source={icon}
-            style={[Style.icon, buttonStyle.icon]}
+            style={[
+              Style.icon,
+              buttonStyle.icon,
+              disabled ? { opacity: 0.5 } : {},
+            ]}
           />
         )}
         <View>
-          <Text style={[buttonStyle.label, (style && labelStyle) || {}]}>
+          <Text
+            style={[
+              buttonStyle.label,
+              (style && labelStyle) || {},
+              disabled ? { opacity: 0.5 } : {},
+            ]}
+          >
             {label}
           </Text>
         </View>

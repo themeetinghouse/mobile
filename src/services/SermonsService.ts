@@ -39,7 +39,7 @@ export default class SermonsService {
   };
 
   static loadHighlightsList = async (
-    count = 20,
+    count = 5,
     nextToken?: string
   ): Promise<LoadSermonResult> => {
     const query = {

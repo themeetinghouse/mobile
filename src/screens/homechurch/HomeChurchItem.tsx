@@ -6,10 +6,12 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  TouchableHighlight,
 } from 'react-native';
 import { Thumbnail } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
 import { Theme, Style } from '../../Theme.style';
-import { HomeChurch } from './HomeChurchScreen';
+import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 import { getTimeStamp, getDayOfWeek } from './HomeChurchUtils';
 
@@ -20,6 +22,8 @@ interface Params {
   active?: boolean;
   openModal?: () => void;
   locationToGroupType: (a: string) => string;
+  single?: boolean;
+  homeChurches?: HomeChurchData;
 }
 const { width, height } = Dimensions.get('window');
 
@@ -30,8 +34,10 @@ const HomeChurchItem = ({
   modal,
   openModal,
   locationToGroupType,
+  single,
+  homeChurches,
 }: Params): JSX.Element => {
-  const eventTime = getTimeStamp(item);
+  const navigation = useNavigation();
   const style = StyleSheet.create({
     homeChurchCard: card
       ? {
@@ -39,7 +45,7 @@ const HomeChurchItem = ({
           padding: 16,
           borderTopWidth: 2,
           borderTopColor: active ? '#FFF' : 'transparent',
-          width: width - 80,
+          width: single ? width - 40 : width - 80,
           overflow: 'hidden',
           flexWrap: 'nowrap',
         }
@@ -67,6 +73,7 @@ const HomeChurchItem = ({
       color: 'white',
     },
     hmAddress: {
+      textDecorationLine: card || modal ? 'none' : 'underline',
       fontSize: card ? 12 : 16,
       lineHeight: 24,
       fontFamily: Theme.fonts.fontFamilyRegular,
@@ -149,9 +156,24 @@ const HomeChurchItem = ({
             {item?.name}
           </Text>
           {item?.location?.address?.address1 ? (
-            <Text style={style.hmAddress}>
-              {item?.location?.address?.address1}
-            </Text>
+            card || modal ? (
+              <Text style={style.hmAddress}>
+                {item?.location?.address?.address1}
+              </Text>
+            ) : (
+              <TouchableHighlight
+                onPress={() =>
+                  navigation.navigate('HomeChurchMapScreen', {
+                    items: homeChurches,
+                    selection: item,
+                  })
+                }
+              >
+                <Text style={style.hmAddress}>
+                  {item?.location?.address?.address1}
+                </Text>
+              </TouchableHighlight>
+            )
           ) : null}
           <Text style={style.hmDate}>
             {getDayOfWeek(item)}

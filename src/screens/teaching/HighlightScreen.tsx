@@ -206,15 +206,7 @@ export default function HighlightScreen({
           <FlatList
             horizontal
             data={highlights?.items}
-            initialScrollIndex={highlights?.items?.length === 1 ? 0 : 1}
-            getItemLayout={(data, index) => {
-              return {
-                length: 80 * (16 / 9),
-                offset: 80 * (16 / 9) + 16,
-                index,
-              };
-            }}
-            onEndReachedThreshold={0.9}
+            onEndReachedThreshold={0.8}
             onEndReached={route?.params?.fromSeries ? null : getMoreHighlights}
             ListFooterComponent={() =>
               highlights.loading ? <ActivityIndicator /> : null
