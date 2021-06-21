@@ -254,14 +254,9 @@ export default function SermonLandingScreen({
 
   const loadAndNavigateToSeries = () => {
     if (route?.params?.customPlaylist) {
-      console.log(
-        `logging sermonTitle from SermonLandingScreen.tsx: ${sermon.seriesTitle}`
-      );
-      navigation.replace('SeriesLandingScreen', {
-        seriesId: sermon.seriesTitle,
-      });
       navigation.navigate('SeriesLandingScreen', {
         seriesId: sermon.seriesTitle,
+        customPlaylist: false,
       });
     } else {
       navigation.navigate('SeriesLandingScreen', {

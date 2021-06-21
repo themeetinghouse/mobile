@@ -40,6 +40,8 @@ import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
 import { popularTeachingQuery } from '../../graphql/queries';
 import TeacherListPicture from '../../components/teaching/TeacherListPicture';
+import HighlightCarousel from '../../components/HighlightCarousel';
+import SuggestedCarousel from '../../components/SuggestedCarousel';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -223,7 +225,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     items: [],
     nextToken: null,
   });
-  const [suggestedVideos, setSuggestedVideos] = useState<SuggestedVideos>();
   const [recentSeries, setRecentSeries] = useState<SeriesData>({
     loading: true,
     items: [],
@@ -233,11 +234,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loading: true,
     items: [],
     nextToken: null,
-  });
-  const [highlights, setHighlights] = useState({
-    loading: true,
-    items: [],
-    nextToken: undefined,
   });
   const [speakers, setSpeakers] = useState({
     loading: true,
@@ -305,15 +301,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
-  const loadHighlights = async () => {
-    loadSomeAsync(
-      SermonsService.loadHighlightsList,
-      highlights,
-      setHighlights,
-      5
-    );
-  };
-
   const loadRecentSeries = async () => {
     loadSomeAsync(
       SeriesService.loadSeriesList,
@@ -335,10 +322,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return params;
   };
   useEffect(() => {
-    const getSuggestedVideos = async () => {
-      const suggested = await SeriesService.loadRandomPlaylist();
-      setSuggestedVideos(suggested ?? []);
-    };
     const getPopularTeaching = async () => {
       const { numberOfDays = 120, minViews = 900 } =
         await fetchPopularVideoParams();
@@ -362,10 +345,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
-    getSuggestedVideos();
     loadRecentSeries();
     loadRecentSermons();
-    loadHighlights();
     loadSpeakers();
     loadCustomPlaylists();
     getPopularTeaching();
@@ -379,19 +360,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return moment(series.startDate || moment()).format('YYYY');
   };
 
-  const getTeachingImage = (teaching: any) => {
-    const { thumbnails } = teaching?.Youtube?.snippet;
-    if (thumbnails?.standard) return thumbnails?.standard?.url;
-    return thumbnails?.maxres?.url;
-  };
-  const getSuggestedImage = (suggested: any) => {
-    const { thumbnails } = suggested?.video?.Youtube?.snippet;
-    return (
-      thumbnails?.standard?.url ??
-      thumbnails?.maxres?.url ??
-      thumbnails?.high?.url
-    );
-  };
   function handleScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
     if (event.nativeEvent.contentOffset.y > Dimensions.get('screen').height) {
       setBounce(true);
@@ -508,46 +476,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </AllButton>
         </View>
 
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Highlights</Text>
-          <Text style={style.highlightsText}>Short snippets of teaching</Text>
-          <FlatList
-            contentContainerStyle={style.horizontalListContentContainer}
-            getItemLayout={(data, index) => {
-              return {
-                length: 80 * (16 / 9),
-                offset: 80 * (16 / 9) + 16,
-                index,
-              };
-            }}
-            horizontal
-            data={highlights.items}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.push('HighlightScreen', {
-                    highlights: highlights.items.slice(index),
-                    nextToken: highlights.nextToken,
-                    fromSeries: false,
-                  })
-                }
-              >
-                <Image
-                  style={[
-                    style.highlightsThumbnail,
-                    index === highlights.items.length - 1
-                      ? style.lastHorizontalListItem
-                      : {},
-                  ]}
-                  source={{ uri: getTeachingImage(item) }}
-                />
-              </TouchableOpacity>
-            )}
-            onEndReached={loadHighlights}
-            onEndReachedThreshold={0.1}
-            ListFooterComponent={() => <ActivityIndicator />}
-          />
-        </View>
+        <HighlightCarousel />
 
         <View style={style.categorySection}>
           <Text style={style.categoryTitle}>Popular Teaching</Text>
@@ -613,45 +542,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             More Teaching Topics
           </AllButton>
         </View>
-        {suggestedVideos?.length ? (
-          <View style={style.categorySection}>
-            <Text style={style.categoryTitle}>Suggested Videos</Text>
-            <FlatList
-              contentContainerStyle={style.horizontalListContentContainer}
-              getItemLayout={(data, index) => {
-                return {
-                  length: 80 * (16 / 9),
-                  offset: 80 * (16 / 9) + 16,
-                  index,
-                };
-              }}
-              horizontal
-              data={suggestedVideos}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.push('SermonLandingScreen', {
-                      item: item?.video,
-                      customPlaylist: item?.customPlaylistID,
-                      seriesId: item?.video?.seriesTitle,
-                    });
-                  }}
-                >
-                  <Image
-                    style={[
-                      style.highlightsThumbnail,
-                      index === highlights.items.length - 1
-                        ? style.lastHorizontalListItem
-                        : {},
-                    ]}
-                    source={{ uri: getSuggestedImage(item) }}
-                  />
-                </TouchableOpacity>
-              )}
-            />
-          </View>
-        ) : null}
-
+        <SuggestedCarousel />
         <View style={style.categorySectionLast}>
           <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
             Teachers
