@@ -107,8 +107,9 @@ export default class SeriesService {
       (item) => item?.videos?.items && item?.videos?.items?.length > 0
     );
     const numberItems = filteredItems?.length ?? 3;
-    const random = SeriesService.generateNum(numberItems) - 1;
+    const random = SeriesService.generateNum(numberItems);
     const seriesName = filteredItems?.[random]?.id ?? '';
+
     const playlistResult = await SeriesService.getCustomPlaylistById(
       seriesName
     );
