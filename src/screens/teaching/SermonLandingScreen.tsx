@@ -579,6 +579,7 @@ export default function SermonLandingScreen({
             }}
           >
             <YoutubePlayer
+              webViewStyle={{ opacity: 0.99 }}
               ref={playerRef}
               onReady={handleVideoReady}
               forceAndroidAutoplay
