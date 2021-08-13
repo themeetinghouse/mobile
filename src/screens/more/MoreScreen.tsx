@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect, useState } from 'react';
 import {
   Container,
   Content,
@@ -14,6 +14,8 @@ import { Platform, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { Auth } from 'aws-amplify';
+import { CognitoUser } from '@aws-amplify/auth';
 import UserContext from '../../contexts/UserContext';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -75,16 +77,43 @@ const style = StyleSheet.create({
   icon: Style.icon,
 });
 
+type SpecialLinkItem = {
+  action: () => void;
+  id: string;
+  text: string;
+  subtext: string;
+  icon: string;
+};
+
 export default function MoreScreen(): JSX.Element {
   const location = useContext(LocationContext);
   const user = useContext(UserContext);
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
-
   let items = [];
-
+  const [specialLink, setSpecialLink] = useState<SpecialLinkItem | null>(null);
   useLayoutEffect(() => {
+    const getUserType = async () => {
+      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+      if (
+        userType
+          .getSignInUserSession()
+          ?.getAccessToken()
+          ?.payload?.['cognito:groups']?.includes('Elder')
+      ) {
+        setSpecialLink({
+          id: 'elder',
+          text: 'Elders Resources',
+          subtext: 'Resource for elders',
+          icon: Theme.icons.black.frame,
+          action: () =>
+            Linking.openURL('https://www.themeetinghouse.com/elders-hub'),
+        });
+      }
+    };
+    getUserType();
+
     navigation.setOptions({
       headerShown: true,
       title: 'More',
@@ -230,7 +259,9 @@ export default function MoreScreen(): JSX.Element {
       },
     ];
   }
-
+  if (specialLink) {
+    items.unshift(specialLink);
+  }
   return (
     <Container>
       <Content style={style.content}>
