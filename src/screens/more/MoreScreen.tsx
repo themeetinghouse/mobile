@@ -95,21 +95,25 @@ export default function MoreScreen(): JSX.Element {
   const [specialLink, setSpecialLink] = useState<SpecialLinkItem | null>(null);
   useLayoutEffect(() => {
     const getUserType = async () => {
-      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
-      if (
-        userType
-          .getSignInUserSession()
-          ?.getAccessToken()
-          ?.payload?.['cognito:groups']?.includes('Elder')
-      ) {
-        setSpecialLink({
-          id: 'elder',
-          text: 'Elders Resources',
-          subtext: 'Resource for elders',
-          icon: Theme.icons.black.frame,
-          action: () =>
-            Linking.openURL('https://www.themeetinghouse.com/elders-hub'),
-        });
+      try {
+        const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+        if (
+          userType
+            .getSignInUserSession()
+            ?.getAccessToken()
+            ?.payload?.['cognito:groups']?.includes('Elder')
+        ) {
+          setSpecialLink({
+            id: 'elder',
+            text: 'Elders Resources',
+            subtext: 'Resource for elders',
+            icon: Theme.icons.black.frame,
+            action: () =>
+              Linking.openURL('https://www.themeetinghouse.com/elders-hub'),
+          });
+        }
+      } catch (err) {
+        console.log(err);
       }
     };
     getUserType();
