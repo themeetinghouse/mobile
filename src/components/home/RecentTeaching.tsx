@@ -86,7 +86,10 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
       ''
     )}.jpg`;
     const teachingImage =
-      teaching?.Youtube?.snippet?.thumbnails?.standard ?? null;
+      teaching?.Youtube?.snippet?.thumbnails?.standard ??
+      teaching?.Youtube?.snippet?.thumbnails?.high ??
+      teaching?.Youtube?.snippet?.thumbnails?.medium ??
+      null;
 
     const openNotes = () => {
       navigation.push('NotesScreen', {
