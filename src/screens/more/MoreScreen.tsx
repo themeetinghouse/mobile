@@ -10,7 +10,7 @@ import {
   List,
   ListItem,
 } from 'native-base';
-import { Platform, StyleSheet } from 'react-native';
+import { ImageSourcePropType, Platform, StyleSheet } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -77,12 +77,20 @@ const style = StyleSheet.create({
   icon: Style.icon,
 });
 
-type SpecialLinkItem = {
+type LinkItem = {
   action: () => void;
   id: string;
   text: string;
   subtext: string;
   icon: string;
+};
+
+type JSONMenuLinkItem = {
+  name: string;
+  subtext: string;
+  location: string;
+  groups: Array<string>;
+  external: boolean;
 };
 
 export default function MoreScreen(): JSX.Element {
@@ -91,64 +99,7 @@ export default function MoreScreen(): JSX.Element {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
-  let items = [];
-  const [specialLink, setSpecialLink] = useState<SpecialLinkItem | null>(null);
-  useLayoutEffect(() => {
-    const getUserType = async () => {
-      try {
-        const userType: CognitoUser = await Auth.currentAuthenticatedUser();
-        if (
-          userType
-            .getSignInUserSession()
-            ?.getAccessToken()
-            ?.payload?.['cognito:groups']?.includes('Elder')
-        ) {
-          setSpecialLink({
-            id: 'elder',
-            text: 'Elders Resources',
-            subtext: 'Resource for elders',
-            icon: Theme.icons.black.frame,
-            action: () =>
-              Linking.openURL('https://www.themeetinghouse.com/elders-hub'),
-          });
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getUserType();
-
-    navigation.setOptions({
-      headerShown: true,
-      title: 'More',
-      headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
-      headerLeft: function render() {
-        return <View style={{ flex: 1 }} />;
-      },
-      headerRight: function render() {
-        return (
-          <Button
-            icon
-            transparent
-            onPress={() => navigation.navigate('ProfileScreen')}
-          >
-            <Thumbnail
-              square
-              source={
-                emailVerified
-                  ? Theme.icons.white.userLoggedIn
-                  : Theme.icons.white.user
-              }
-              style={style.icon}
-            />
-          </Button>
-        );
-      },
-      headerRightContainerStyle: { right: 16 },
-    });
-  }, [emailVerified, navigation]);
-
+  let items: Array<LinkItem>;
   if (location?.locationData?.locationId === 'unknown')
     items = [
       {
@@ -263,15 +214,96 @@ export default function MoreScreen(): JSX.Element {
       },
     ];
   }
-  if (specialLink) {
-    items.unshift(specialLink);
-  }
+  const [menuItems, setMenuItems] = useState(items);
+
+  const getUserType = async () => {
+    try {
+      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+      return userType.getSignInUserSession()?.getAccessToken()?.payload?.[
+        'cognito:groups'
+      ];
+    } catch (err) {
+      return null;
+    }
+  };
+  const loadMenu = async () => {
+    try {
+      const response: any = await fetch(
+        'https://www.themeetinghouse.com/static/app/menu.json'
+      ); // this returns status 200 even when fail
+      if (response?.headers?.map?.['content-type'] === 'application/json') {
+        const jsonItems: Array<JSONMenuLinkItem> = await response.json();
+        const groups = await getUserType();
+        if (groups) {
+          const transformedItems: Array<LinkItem> = jsonItems
+            .filter((linkItem) => {
+              for (let i = 0; i < linkItem.groups.length; i++) {
+                return groups.includes(linkItem.groups[i]);
+              }
+              return false;
+            })
+            .map((a: JSONMenuLinkItem) => {
+              return {
+                id: a.name,
+                location: a.location,
+                text: a.name,
+                subtext: a.subtext,
+                icon: Theme.icons.black.frame,
+                action: () => {
+                  if (a.external) return Linking.openURL(a.location);
+                  return null; // perform navigation here
+                },
+              };
+            });
+          setMenuItems((prev) => [...transformedItems, ...prev]);
+        }
+      }
+    } catch (err) {
+      // err
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: 'More',
+      headerTitleStyle: style.headerTitle,
+      headerStyle: { backgroundColor: Theme.colors.background },
+      headerLeft: function render() {
+        return <View style={{ flex: 1 }} />;
+      },
+      headerRight: function render() {
+        return (
+          <Button
+            icon
+            transparent
+            onPress={() => navigation.navigate('ProfileScreen')}
+          >
+            <Thumbnail
+              square
+              source={
+                emailVerified
+                  ? Theme.icons.white.userLoggedIn
+                  : Theme.icons.white.user
+              }
+              style={style.icon}
+            />
+          </Button>
+        );
+      },
+      headerRightContainerStyle: { right: 16 },
+    });
+
+    loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [emailVerified, navigation]);
+
   return (
     <Container>
       <Content style={style.content}>
         <View>
           <List>
-            {items.slice(0, 4).map((item) => {
+            {menuItems.slice(0, 4).map((item) => {
               return (
                 <ListItem
                   key={item.id}
@@ -281,7 +313,7 @@ export default function MoreScreen(): JSX.Element {
                   <Left>
                     <Thumbnail
                       style={style.listIcon}
-                      source={item.icon}
+                      source={item.icon as ImageSourcePropType}
                       square
                     />
                     <View>
@@ -308,7 +340,7 @@ export default function MoreScreen(): JSX.Element {
               }}
             />
 
-            {items.slice(4).map((item) => {
+            {menuItems.slice(4).map((item) => {
               return (
                 <ListItem
                   key={item.id}
@@ -318,7 +350,7 @@ export default function MoreScreen(): JSX.Element {
                   <Left>
                     <Thumbnail
                       style={style.listIcon}
-                      source={item.icon}
+                      source={item.icon as ImageSourcePropType}
                       square
                     />
                     <View>
