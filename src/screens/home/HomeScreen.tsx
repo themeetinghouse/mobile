@@ -171,7 +171,8 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   useEffect(() => {
     const loadLiveStreams = async () => {
       try {
-        const liveStreamsResult = await LiveEventService.startLiveEventService();
+        const liveStreamsResult =
+          await LiveEventService.startLiveEventService();
         if (liveStreamsResult?.liveEvents)
           setLiveEvents(liveStreamsResult?.liveEvents);
       } catch (error) {
@@ -213,7 +214,12 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       }
     };
     if (locationId !== 'unknown' || locationName !== 'unknown') loadEvents();
-  }, [locationId, locationName]);
+  }, [
+    locationId,
+    locationName,
+    location?.locationData?.locationId,
+    location?.locationData?.locationName,
+  ]);
 
   const sendQuestion = () => {
     navigation.navigate('AskAQuestion');
@@ -270,9 +276,10 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
           }
         }
       }, 2000);
-      return () => clearInterval(interval);
+      clearInterval(interval);
     }
-  }, [appStateVisible, liveEvents, navigation]);
+    return null;
+  }, [appStateVisible, liveEvents, navigation, preLive]);
 
   const handleAppStateChange = (nextAppState: any) => {
     appState.current = nextAppState;
@@ -327,9 +334,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
         />
       ) : null}
       {showQuestionModal ? (
-        <QuestionSuccessModal
-          setShow={setShowQuestionModal}
-        ></QuestionSuccessModal>
+        <QuestionSuccessModal setShow={setShowQuestionModal} />
       ) : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
         <View style={style.categoryContainer}>
@@ -358,7 +363,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
             ))
           ) : announcements.length === 0 ? null : (
             <View>
-              <ActivityIndicator></ActivityIndicator>
+              <ActivityIndicator />
             </View>
           )}
         </View>
@@ -386,12 +391,12 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                             }
                           />
                         );
-                      else return null;
+                      return null;
                     })}
                     {events.length > 3 ? (
                       <AllButton
                         handlePress={() => {
-                          navigation.navigate('AllEvents', { events: events });
+                          navigation.navigate('AllEvents', { events });
                         }}
                       >
                         See All Events
