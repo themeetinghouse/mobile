@@ -229,7 +229,7 @@ export default function MoreScreen(): JSX.Element {
   const loadMenu = async () => {
     try {
       const response: any = await fetch(
-        'https://www.themeetinghouse.com/static/app/menu.json'
+        'https://www.themeetinghouse.com/static/app/data/menu.json'
       ); // this returns status 200 even when fail
       if (response?.headers?.map?.['content-type'] === 'application/json') {
         const jsonItems: Array<JSONMenuLinkItem> = await response.json();
