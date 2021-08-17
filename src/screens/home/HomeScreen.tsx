@@ -276,9 +276,9 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
           }
         }
       }, 2000);
-      clearInterval(interval);
+      return () => clearInterval(interval);
     }
-    return null;
+    return () => null;
   }, [appStateVisible, liveEvents, navigation, preLive]);
 
   const handleAppStateChange = (nextAppState: any) => {
