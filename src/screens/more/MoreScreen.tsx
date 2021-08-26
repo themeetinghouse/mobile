@@ -2,23 +2,23 @@ import React, { useContext, useLayoutEffect, useState } from 'react';
 import {
   Image,
   ImageSourcePropType,
-  Platform,
   StyleSheet,
   TouchableHighlight,
   TouchableOpacity,
   Text,
   View,
+  Platform,
 } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { Auth } from 'aws-amplify';
 import { CognitoUser } from '@aws-amplify/auth';
 import { ScrollView } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import LocationContext from '../../contexts/LocationContext';
+import useFallbackItems, { LinkItem } from './useFallbackItems';
+import LocationContext from '../../../src/contexts/LocationContext';
 
 const style = StyleSheet.create({
   content: {
@@ -84,15 +84,6 @@ const style = StyleSheet.create({
   icon: Style.icon,
 });
 
-type LinkItem = {
-  action: () => void;
-  id: string;
-  text: string;
-  subtext: string;
-  icon: string;
-  customIcon?: boolean;
-};
-
 type JSONMenuLinkItem = {
   name: string;
   subtext: string;
@@ -104,126 +95,11 @@ type JSONMenuLinkItem = {
 export default function MoreScreen(): JSX.Element {
   const location = useContext(LocationContext);
   const user = useContext(UserContext);
-  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+  const navigation = useNavigation();
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
-  let items: Array<LinkItem>;
-  if (location?.locationData?.locationId === 'unknown')
-    items = [
-      {
-        id: 'give',
-        text: 'Give',
-        subtext: 'Donate to The Meeting House',
-        icon: Theme.icons.white.give,
-        action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
-      },
-      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-      {
-        id: 'connect',
-        text: 'Connect',
-        subtext: 'Looking to connect with us?',
-        icon: Theme.icons.white.connect,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/connect'),
-      },
-      {
-        id: 'staff',
-        text: 'Staff Team',
-        subtext: 'Contact a staff member directly',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('StaffList'),
-      },
-      {
-        id: 'homeChurch',
-        text: 'Home Church',
-        subtext: 'Find a home church near you',
-        icon: Theme.icons.white.homeChurch,
-        action: () => navigation.navigate('HomeChurchScreen', {}),
-      },
-      {
-        id: 'volunteer',
-        text: 'Volunteer',
-        subtext: 'Get involved!',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
-      },
-      {
-        id: 'betaTest',
-        text: 'Beta Test',
-        subtext: 'Help us improve this app',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Platform.OS === 'ios'
-            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-            : Linking.openURL(
-                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-              ),
-      },
-    ];
-  else {
-    items = [
-      {
-        id: 'give',
-        text: 'Give',
-        subtext: 'Donate to The Meeting House',
-        icon: Theme.icons.white.give,
-        action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
-      },
-      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-      {
-        id: 'connect',
-        text: 'Connect',
-        subtext: 'Looking to connect with us?',
-        icon: Theme.icons.white.connect,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/connect'),
-      },
-      {
-        id: 'staff',
-        text: 'Staff Team',
-        subtext: 'Contact a staff member directly',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('StaffList'),
-      },
-      {
-        id: 'parish',
-        text: 'My Parish Team',
-        subtext: 'Contact a parish team member',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('ParishTeam'),
-      },
-      {
-        id: 'homeChurch',
-        text: 'Home Church',
-        subtext: 'Find a home church near you',
-        icon: Theme.icons.white.homeChurch,
-        action: () => navigation.navigate('HomeChurchScreen', {}),
-      },
-      {
-        id: 'volunteer',
-        text: 'Volunteer',
-        subtext: 'Get involved!',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
-      },
-      {
-        id: 'betaTest',
-        text: 'Beta Test',
-        subtext: 'Help us improve this app',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Platform.OS === 'ios'
-            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-            : Linking.openURL(
-                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-              ),
-      },
-    ];
-  }
-  const [menuItems, setMenuItems] = useState(items);
-
+  const [menuItems, setMenuItems] = useState<Array<LinkItem>>([]);
+  const fallbackItems = useFallbackItems();
   const getUserType = async () => {
     try {
       const userType: CognitoUser = await Auth.currentAuthenticatedUser();
@@ -231,7 +107,7 @@ export default function MoreScreen(): JSX.Element {
         'cognito:groups'
       ];
     } catch (err) {
-      return null;
+      return [];
     }
   };
   const loadMenu = async () => {
@@ -241,34 +117,55 @@ export default function MoreScreen(): JSX.Element {
       ); // this returns status 200 even when fail
       if (response?.headers?.map?.['content-type'] === 'application/json') {
         const jsonItems: Array<JSONMenuLinkItem> = await response.json();
-        const groups = await getUserType();
-        if (groups) {
-          const transformedItems: Array<LinkItem> = jsonItems
-            .filter((linkItem) => {
-              for (let i = 0; i < linkItem.groups.length; i++) {
-                return groups.includes(linkItem.groups[i]);
-              }
+        const groups: Array<string> = await getUserType();
+        groups.push('default');
+        const transformedItems: Array<LinkItem> = jsonItems
+          .filter((linkItem) => {
+            if (
+              location?.locationData?.locationId === 'unknown' &&
+              linkItem.location === 'ParishTeam'
+            )
               return false;
-            })
-            .map((a: JSONMenuLinkItem) => {
-              return {
-                id: a.name,
-                location: a.location,
-                text: a.name,
-                subtext: a.subtext,
-                icon: a.icon,
-                customIcon: true,
-                action: () => {
-                  if (a.external) return Linking.openURL(a.location);
-                  return null; // perform navigation here
-                },
-              };
-            });
-          setMenuItems((prev) => [...transformedItems, ...prev]);
-        }
+            for (let i = 0; i < linkItem.groups.length; i++) {
+              return groups.includes(linkItem.groups[i]);
+            }
+            return false;
+          })
+          .map((a: JSONMenuLinkItem) => {
+            return {
+              id: a.name,
+              location: a.location,
+              text: a.name,
+              subtext: a.subtext,
+              icon: a.icon,
+              customIcon: true,
+              action: () => {
+                if (a.external) return Linking.openURL(a.location);
+                return navigation.navigate(
+                  a.location as keyof MainStackParamList
+                );
+              },
+            };
+          });
+        setMenuItems([
+          ...transformedItems,
+          {
+            id: 'betaTest',
+            text: 'Beta Test',
+            subtext: 'Help us improve this app',
+            icon: Theme.icons.white.volunteer,
+            action: () =>
+              Platform.OS === 'ios'
+                ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
+                : Linking.openURL(
+                    'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+                  ),
+          },
+        ]);
       }
     } catch (err) {
-      // err
+      console.log('Error occurred, falls back to default items');
+      setMenuItems(fallbackItems);
     }
   };
 
@@ -330,7 +227,12 @@ export default function MoreScreen(): JSX.Element {
                   }}
                 >
                   {item.customIcon ? (
-                    <Image style={style.listIcon} source={{ uri: item.icon }} />
+                    <Image
+                      style={style.listIcon}
+                      source={
+                        { uri: item.icon as string } as ImageSourcePropType
+                      }
+                    />
                   ) : (
                     <Image
                       style={style.listIcon}
@@ -406,10 +308,19 @@ export default function MoreScreen(): JSX.Element {
                     top: 14,
                   }}
                 >
-                  <Image
-                    style={style.listIcon}
-                    source={item.icon as ImageSourcePropType}
-                  />
+                  {item.customIcon ? (
+                    <Image
+                      style={style.listIcon}
+                      source={
+                        { uri: item.icon as string } as ImageSourcePropType
+                      }
+                    />
+                  ) : (
+                    <Image
+                      style={style.listIcon}
+                      source={item.icon as ImageSourcePropType}
+                    />
+                  )}
                 </View>
                 <View
                   style={{
