@@ -73,7 +73,6 @@ function useFallbackItems(): Array<LinkItem> {
             ),
     },
   ];
-  console.log('locationId', location?.locationData?.locationId);
   return fallbackMenu.filter(
     (item) =>
       location?.locationData?.locationId !== 'unknown' ||
