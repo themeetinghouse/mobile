@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 
+import Frame from '../assets/images/black/Frame.png';
 import Arrow from '../assets/images/black/Arrow.png';
 import ArrowWhite from '../assets/images/white/Arrow.png';
 import ArrowLeftWhite from '../assets/images/white/Arrow-Left.png';
@@ -147,6 +148,7 @@ export const Theme = {
       comment: CommentSmall,
     },
     black: {
+      frame: Frame,
       familyFriendly: FamilyFriendly,
       arrow: Arrow,
       audio: AudioBlack,

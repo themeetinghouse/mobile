@@ -1,23 +1,24 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect, useState } from 'react';
 import {
-  Container,
-  Content,
+  Image,
+  ImageSourcePropType,
+  StyleSheet,
+  TouchableHighlight,
+  TouchableOpacity,
   Text,
-  Left,
-  Button,
   View,
-  Thumbnail,
-  List,
-  ListItem,
-} from 'native-base';
-import { Platform, StyleSheet } from 'react-native';
+  Platform,
+} from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Auth } from 'aws-amplify';
+import { CognitoUser } from '@aws-amplify/auth';
+import { ScrollView } from 'react-native-gesture-handler';
 import UserContext from '../../contexts/UserContext';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import LocationContext from '../../contexts/LocationContext';
+import useFallbackItems, { LinkItem } from './useFallbackItems';
+import LocationContext from '../../../src/contexts/LocationContext';
 
 const style = StyleSheet.create({
   content: {
@@ -51,8 +52,10 @@ const style = StyleSheet.create({
     },
   },
   listItem: {
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 0,
-    borderColor: Theme.colors.gray2,
+    height: 72,
   },
   listText: {
     fontSize: Theme.fonts.medium,
@@ -61,6 +64,7 @@ const style = StyleSheet.create({
   },
   listSubtext: {
     fontSize: Theme.fonts.smallMedium,
+    lineHeight: 24,
     color: Theme.colors.gray5,
     fontFamily: Theme.fonts.fontFamilyRegular,
   },
@@ -71,18 +75,99 @@ const style = StyleSheet.create({
       marginLeft: 16,
     },
   },
-  listArrowIcon: { ...Style.icon, right: 10 },
+  listArrowIcon: {
+    ...Style.icon,
+    right: 18,
+    alignSelf: 'flex-start',
+    top: 16,
+  },
   icon: Style.icon,
 });
 
+type JSONMenuLinkItem = {
+  name: string;
+  subtext: string;
+  location: string;
+  groups: Array<string>;
+  icon: string;
+  external: boolean;
+};
 export default function MoreScreen(): JSX.Element {
   const location = useContext(LocationContext);
   const user = useContext(UserContext);
-  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+  const navigation = useNavigation();
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
-
-  let items = [];
+  const [menuItems, setMenuItems] = useState<Array<LinkItem>>([]);
+  const fallbackItems = useFallbackItems();
+  const getUserType = async () => {
+    try {
+      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+      return userType.getSignInUserSession()?.getAccessToken()?.payload?.[
+        'cognito:groups'
+      ];
+    } catch (err) {
+      return [];
+    }
+  };
+  const loadMenu = async () => {
+    try {
+      const response: any = await fetch(
+        'https://www.themeetinghouse.com/static/app/data/menu.json'
+      ); // this returns status 200 even when fail
+      if (response?.headers?.map?.['content-type'] === 'application/json') {
+        const jsonItems: Array<JSONMenuLinkItem> = await response.json();
+        const groups: Array<string> = await getUserType();
+        groups.push('default');
+        const transformedItems: Array<LinkItem> = jsonItems
+          .filter((linkItem) => {
+            if (
+              location?.locationData?.locationId === 'unknown' &&
+              linkItem.location === 'ParishTeam'
+            )
+              return false;
+            for (let i = 0; i < linkItem.groups.length; i++) {
+              return groups.includes(linkItem.groups[i]);
+            }
+            return false;
+          })
+          .map((a: JSONMenuLinkItem) => {
+            return {
+              id: a.name,
+              location: a.location,
+              text: a.name,
+              subtext: a.subtext,
+              icon: a.icon,
+              customIcon: true,
+              action: () => {
+                if (a.external) return Linking.openURL(a.location);
+                return navigation.navigate(
+                  a.location as keyof MainStackParamList
+                );
+              },
+            };
+          });
+        setMenuItems([
+          ...transformedItems,
+          {
+            id: 'betaTest',
+            text: 'Beta Test',
+            subtext: 'Help us improve this app',
+            icon: Theme.icons.white.volunteer,
+            action: () =>
+              Platform.OS === 'ios'
+                ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
+                : Linking.openURL(
+                    'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+                  ),
+          },
+        ]);
+      }
+    } catch (err) {
+      console.log('Error occurred, falls back to default items');
+      setMenuItems(fallbackItems);
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,13 +180,10 @@ export default function MoreScreen(): JSX.Element {
       },
       headerRight: function render() {
         return (
-          <Button
-            icon
-            transparent
+          <TouchableOpacity
             onPress={() => navigation.navigate('ProfileScreen')}
           >
-            <Thumbnail
-              square
+            <Image
               source={
                 emailVerified
                   ? Theme.icons.white.userLoggedIn
@@ -109,201 +191,169 @@ export default function MoreScreen(): JSX.Element {
               }
               style={style.icon}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerRightContainerStyle: { right: 16 },
     });
+
+    loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emailVerified, navigation]);
 
-  if (location?.locationData?.locationId === 'unknown')
-    items = [
-      {
-        id: 'give',
-        text: 'Give',
-        subtext: 'Donate to The Meeting House',
-        icon: Theme.icons.white.give,
-        action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
-      },
-      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-      {
-        id: 'connect',
-        text: 'Connect',
-        subtext: 'Looking to connect with us?',
-        icon: Theme.icons.white.connect,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/connect'),
-      },
-      {
-        id: 'staff',
-        text: 'Staff Team',
-        subtext: 'Contact a staff member directly',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('StaffList'),
-      },
-      {
-        id: 'homeChurch',
-        text: 'Home Church',
-        subtext: 'Find a home church near you',
-        icon: Theme.icons.white.homeChurch,
-        action: () => navigation.navigate('HomeChurchScreen', {}),
-      },
-      {
-        id: 'volunteer',
-        text: 'Volunteer',
-        subtext: 'Get involved!',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
-      },
-      {
-        id: 'betaTest',
-        text: 'Beta Test',
-        subtext: 'Help us improve this app',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Platform.OS === 'ios'
-            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-            : Linking.openURL(
-                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-              ),
-      },
-    ];
-  else {
-    items = [
-      {
-        id: 'give',
-        text: 'Give',
-        subtext: 'Donate to The Meeting House',
-        icon: Theme.icons.white.give,
-        action: () => Linking.openURL('https://www.themeetinghouse.com/give'),
-      },
-      // { id: "volunteer", text: "Volunteer", subtext: "Help out your local community", icon: Theme.icons.white.volunteer },
-      {
-        id: 'connect',
-        text: 'Connect',
-        subtext: 'Looking to connect with us?',
-        icon: Theme.icons.white.connect,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/connect'),
-      },
-      {
-        id: 'staff',
-        text: 'Staff Team',
-        subtext: 'Contact a staff member directly',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('StaffList'),
-      },
-      {
-        id: 'parish',
-        text: 'My Parish Team',
-        subtext: 'Contact a parish team member',
-        icon: Theme.icons.white.staff,
-        action: () => navigation.navigate('ParishTeam'),
-      },
-      {
-        id: 'homeChurch',
-        text: 'Home Church',
-        subtext: 'Find a home church near you',
-        icon: Theme.icons.white.homeChurch,
-        action: () => navigation.navigate('HomeChurchScreen', {}),
-      },
-      {
-        id: 'volunteer',
-        text: 'Volunteer',
-        subtext: 'Get involved!',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Linking.openURL('https://www.themeetinghouse.com/volunteer'),
-      },
-      {
-        id: 'betaTest',
-        text: 'Beta Test',
-        subtext: 'Help us improve this app',
-        icon: Theme.icons.white.volunteer,
-        action: () =>
-          Platform.OS === 'ios'
-            ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-            : Linking.openURL(
-                'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-              ),
-      },
-    ];
-  }
-
   return (
-    <Container>
-      <Content style={style.content}>
-        <View>
-          <List>
-            {items.slice(0, 4).map((item) => {
-              return (
-                <ListItem
-                  key={item.id}
-                  style={style.listItem}
-                  onPress={item.action}
+    <View style={style.content}>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {menuItems.slice(0, 4).map((item, index) => {
+          return (
+            <TouchableHighlight
+              delayPressIn={100}
+              key={item.id}
+              style={style.listItem}
+              onPress={item.action}
+              underlayColor={Theme.colors.gray3}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    top: 14,
+                  }}
                 >
-                  <Left>
-                    <Thumbnail
+                  {item.customIcon ? (
+                    <Image
                       style={style.listIcon}
-                      source={item.icon}
-                      square
+                      source={
+                        { uri: item.icon as string } as ImageSourcePropType
+                      }
                     />
-                    <View>
+                  ) : (
+                    <Image
+                      style={style.listIcon}
+                      source={item.icon as ImageSourcePropType}
+                    />
+                  )}
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                  }}
+                >
+                  <View
+                    style={[
+                      {
+                        flexDirection: 'row',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      },
+                      index !== 3
+                        ? {
+                            borderColor: Theme.colors.gray2,
+                            borderBottomWidth: 2,
+                          }
+                        : {},
+                    ]}
+                  >
+                    <View style={{ flex: 1 }}>
                       <Text style={style.listText}>{item.text}</Text>
                       <Text style={style.listSubtext}>{item.subtext}</Text>
                     </View>
-                  </Left>
-                  <View>
-                    <Thumbnail
+
+                    <Image
                       style={style.listArrowIcon}
                       source={Theme.icons.white.arrow}
-                      square
                     />
                   </View>
-                </ListItem>
-              );
-            })}
+                </View>
+              </View>
+            </TouchableHighlight>
+          );
+        })}
 
-            <View
-              style={{
-                height: 15,
-                backgroundColor: Theme.colors.background,
-                padding: 0,
-              }}
-            />
+        <View
+          style={{
+            height: 15,
+            backgroundColor: Theme.colors.background,
+            padding: 0,
+          }}
+        />
 
-            {items.slice(4).map((item) => {
-              return (
-                <ListItem
-                  key={item.id}
-                  style={style.listItem}
-                  onPress={item.action}
+        {menuItems.slice(4).map((item, index) => {
+          return (
+            <TouchableHighlight
+              delayPressIn={100}
+              key={item.id}
+              style={style.listItem}
+              onPress={item.action}
+              underlayColor={Theme.colors.gray6}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    top: 14,
+                  }}
                 >
-                  <Left>
-                    <Thumbnail
+                  {item.customIcon ? (
+                    <Image
                       style={style.listIcon}
-                      source={item.icon}
-                      square
+                      source={
+                        { uri: item.icon as string } as ImageSourcePropType
+                      }
                     />
-                    <View>
+                  ) : (
+                    <Image
+                      style={style.listIcon}
+                      source={item.icon as ImageSourcePropType}
+                    />
+                  )}
+                </View>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'column',
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      height: '100%',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderColor: Theme.colors.gray2,
+                      borderBottomWidth: 2,
+                    }}
+                  >
+                    <View style={{ flex: 1 }}>
                       <Text style={style.listText}>{item.text}</Text>
                       <Text style={style.listSubtext}>{item.subtext}</Text>
                     </View>
-                  </Left>
-                  <View>
-                    <Thumbnail
+
+                    <Image
                       style={style.listArrowIcon}
                       source={Theme.icons.white.arrow}
-                      square
                     />
                   </View>
-                </ListItem>
-              );
-            })}
-          </List>
-        </View>
-      </Content>
-    </Container>
+                </View>
+              </View>
+            </TouchableHighlight>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 }
