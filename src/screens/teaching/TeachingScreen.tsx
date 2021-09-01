@@ -325,7 +325,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
-
   const fetchPopularVideoParams = async () => {
     const res = await fetch(
       'https://www.themeetinghouse.com/static/content/teaching.json'
@@ -530,7 +529,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </AllButton>
         </View>
         <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Teaching by Topic</Text>
+          <Text style={style.categoryTitle}>Popular Series</Text>
           <Text style={style.highlightsText}>
             A collection of our favourite and most popular series
           </Text>
@@ -567,7 +566,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </AllButton>
         </View>
         <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Video Playlists</Text>
+          <Text style={style.categoryTitle}>Teaching by Topic</Text>
           <Text style={style.highlightsText}>
             A collection of our favourite and most popular teachings by topic
           </Text>
