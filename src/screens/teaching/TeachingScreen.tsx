@@ -26,6 +26,7 @@ import SeriesService, {
   CustomPlaylist,
   LoadPlaylistData,
   LoadSeriesListData,
+  SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
 import SpeakersService from '../../services/SpeakersService';
 import loadSomeAsync from '../../utils/loading';
@@ -218,6 +219,11 @@ export type SuggestedVideos = NonNullable<
   NonNullable<CustomPlaylist>['videos']
 >['items'];
 
+interface PopularSeriesData {
+  items: Array<SeriesDataWithHeroImage>;
+  loading: boolean;
+}
+
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
   const [recentTeaching, setRecentTeaching] = useState({
@@ -234,6 +240,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loading: true,
     items: [],
     nextToken: null,
+  });
+  const [popularSeries, setPopularSeries] = useState<PopularSeriesData>({
+    loading: true,
+    items: [],
+  });
+  const [highlights, setHighlights] = useState({
+    loading: true,
+    items: [],
+    nextToken: undefined,
   });
   const [speakers, setSpeakers] = useState({
     loading: true,
@@ -310,6 +325,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
+
   const fetchPopularVideoParams = async () => {
     const res = await fetch(
       'https://www.themeetinghouse.com/static/content/teaching.json'
@@ -321,6 +337,16 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       .find((b) => b.header1 === 'Popular Teaching');
     return params;
   };
+
+  const loadPopularSeries = async () => {
+    try {
+      const data = await SeriesService.fetchPopularSeries();
+      setPopularSeries({ items: data, loading: false });
+    } catch (err) {
+      setPopularSeries({ items: [], loading: false });
+    }
+  };
+
   useEffect(() => {
     const getPopularTeaching = async () => {
       const { numberOfDays = 120, minViews = 900 } =
@@ -345,6 +371,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       );
       setPopular(popularTeaching);
     };
+    loadPopularSeries();
     loadRecentSeries();
     loadRecentSermons();
     loadSpeakers();
@@ -475,9 +502,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             All sermons
           </AllButton>
         </View>
-
         <HighlightCarousel />
-
         <View style={style.categorySection}>
           <Text style={style.categoryTitle}>Popular Teaching</Text>
           <View style={style.listContentContainer}>
@@ -506,6 +531,43 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         </View>
         <View style={style.categorySection}>
           <Text style={style.categoryTitle}>Teaching by Topic</Text>
+          <Text style={style.highlightsText}>
+            A collection of our favourite and most popular series
+          </Text>
+          {customPlaylists.loading && (
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <ActivityIndicator />
+            </View>
+          )}
+          <View style={style.seriesListContainer}>
+            {popularSeries?.items?.map((s: any, key: any) => {
+              if (key < 4)
+                return (
+                  <SeriesItem
+                    key={s.id}
+                    navigation={navigation as any}
+                    seriesData={s}
+                  />
+                );
+              return null;
+            })}
+          </View>
+          <AllButton
+            handlePress={() =>
+              navigation.push('AllSeriesScreen', { popularSeries: true })
+            }
+          >
+            More Popular Series
+          </AllButton>
+        </View>
+        <View style={style.categorySection}>
+          <Text style={style.categoryTitle}>Video Playlists</Text>
           <Text style={style.highlightsText}>
             A collection of our favourite and most popular teachings by topic
           </Text>

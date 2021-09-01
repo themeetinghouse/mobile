@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Thumbnail } from 'native-base';
 import { StyleSheet } from 'react-native';
+import { Announcement } from 'src/services/AnnouncementService';
 import HomeScreen from '../screens/home/HomeScreen';
 import TeachingScreen from '../screens/teaching/TeachingScreen';
 import AllSeriesScreen from '../screens/teaching/AllSeriesScreen';
@@ -22,12 +23,12 @@ import { Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
-import {EventQueryResult} from "../services/EventsService";
+import { EventQueryResult } from '../services/EventsService';
 
 export type HomeStackParamList = {
-  HomeScreen: {questionResult?:boolean};
+  HomeScreen: { questionResult?: boolean };
   EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
-  AnnouncementDetailsScreen: { item: any };
+  AnnouncementDetailsScreen: { item: Announcement };
   LiveStreamScreen: undefined;
 };
 
@@ -53,7 +54,9 @@ type PopularVideoData = NonNullable<
 
 export type TeachingStackParamList = {
   Teaching: undefined;
-  AllSeriesScreen: { customPlaylists: boolean } | undefined;
+  AllSeriesScreen:
+    | { customPlaylists?: boolean; popularSeries?: boolean }
+    | undefined;
   AllSermonsScreen: { startDate: string; endDate: string } | undefined;
   SeriesLandingScreen: {
     seriesId?: string;

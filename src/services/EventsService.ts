@@ -7,7 +7,22 @@ export type EventQueryResult = NonNullable<
   GetFbEventsQuery['getFBEvents']
 >['data'];
 
+function parseFBDate(date: string): Date {
+  const st = `${date.substring(0, date.length - 2)}:${date.substring(
+    date.length - 2
+  )}`;
+  return new Date(st);
+}
 export default class EventsService {
+  static filterEvents = (events: any) => {
+    return events.filter((item: any) => {
+      if (!item?.start_time) {
+        return false;
+      }
+      return new Date() < parseFBDate(item.start_time);
+    });
+  };
+
   static loadEventsList = async (
     location: Location | null
   ): Promise<EventQueryResult> => {
@@ -32,6 +47,6 @@ export default class EventsService {
       query: getFbEvents,
       variables: { pageId: selectedLocation[0].facebookEvents[0] },
     });
-    return queryResult.getFBEvents.data.reverse();
+    return this.filterEvents(queryResult.getFBEvents.data.reverse());
   };
 }

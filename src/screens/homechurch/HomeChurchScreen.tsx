@@ -38,7 +38,7 @@ export const locationToGroupType = (groupId: string) => {
     case '58250':
       return 'hamilton-mountain';
     case '58251':
-      return 'hamilton-ancaster';
+      return 'ancaster';
     case '58253':
       return 'kitchener';
     case '58254':
@@ -146,8 +146,38 @@ export default function HomeChurchScreen({
       },
     });
   }, [navigation]);
-
   const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
+  const [filtered, setFiltered] = useState<HomeChurchData>([]);
+  const filterHelper = (church: HomeChurchData[0]) => {
+    if (
+      church?.location?.address?.latitude === '' ||
+      church?.location?.address?.longitude === ''
+    )
+      return false;
+    if (day === 'All Days' && location?.locationId === 'all') return true;
+    if (location?.locationId === 'all' && getDayOfWeek(church) === day)
+      return true;
+    if (
+      location?.locationId ===
+        locationToGroupType(church?.groupType?.id ?? '') &&
+      day === 'All Days'
+    )
+      return true;
+    if (
+      location?.locationId ===
+        locationToGroupType(church?.groupType?.id ?? '') &&
+      getDayOfWeek(church) === day
+    )
+      return true;
+    return false;
+  };
+
+  useEffect(() => {
+    if (homeChurches?.length > 0) {
+      setFiltered(homeChurches.filter((church) => filterHelper(church)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [day, location?.locationId, homeChurches]);
 
   useEffect(() => {
     const loadHomeChurches = async () => {
@@ -171,7 +201,7 @@ export default function HomeChurchScreen({
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location, route?.params?.loc]);
+  }, [route?.params?.loc]);
 
   return (
     <View>
@@ -202,6 +232,7 @@ export default function HomeChurchScreen({
             isLoading={isLoading}
             setDay={setDay}
             navigation={navigation}
+            setLoc={(a) => setLocation(a)}
             loc={location}
           />
           <View style={{ flexDirection: 'row', zIndex: -2 }}>
@@ -220,6 +251,9 @@ export default function HomeChurchScreen({
               }).length
             } Results`}</Text>
             <IconButton
+              disabled={
+                homeChurches.filter((church) => filterHelper(church)).length < 1
+              }
               labelStyle={{
                 color: 'black',
                 fontFamily: Theme.fonts.fontFamilyBold,
@@ -233,19 +267,7 @@ export default function HomeChurchScreen({
                 backgroundColor: '#fff',
               }}
               onPress={() =>
-                navigation.navigate('HomeChurchMapScreen', {
-                  items: homeChurches
-                    .sort((a, b) =>
-                      a?.groupType?.id && b?.groupType?.id
-                        ? a?.groupType?.id?.localeCompare(b?.groupType?.id)
-                        : 0
-                    )
-                    .filter(
-                      (church) =>
-                        church?.location?.address?.latitude !== '' &&
-                        church?.location?.address?.longitude !== ''
-                    ),
-                })
+                navigation.navigate('HomeChurchMapScreen', { items: filtered })
               }
             />
           </View>
@@ -278,6 +300,7 @@ export default function HomeChurchScreen({
             .map((a) => {
               return (
                 <HomeChurchItem
+                  homeChurches={filtered}
                   locationToGroupType={locationToGroupType}
                   key={a?.id}
                   item={a}
