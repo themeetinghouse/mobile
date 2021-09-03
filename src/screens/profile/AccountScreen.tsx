@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect } from 'react';
+import React, { useContext, useLayoutEffect, useState } from 'react';
 import {
   Container,
   Content,
@@ -13,6 +13,7 @@ import {
 import { StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Auth, { CognitoUser } from '@aws-amplify/auth';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 import LocationsService from '../../services/LocationsService';
@@ -24,6 +25,32 @@ const style = StyleSheet.create({
     ...{
       backgroundColor: 'black',
     },
+  },
+  groupPillContainer: {
+    paddingLeft: 8,
+    marginTop: 20,
+    justifyContent: 'flex-start',
+    paddingVertical: 8,
+    borderColor: Theme.colors.gray2,
+    backgroundColor: Theme.colors.background,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  groupPill: {
+    backgroundColor: Theme.colors.gray5,
+    borderRadius: 50,
+    margin: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  groupPillText: {
+    textTransform: 'capitalize',
+    color: Theme.colors.black,
+    fontSize: 12,
+    lineHeight: 18,
+    fontFamily: Theme.fonts.fontFamilyBold,
   },
   header: {
     backgroundColor: Theme.colors.header,
@@ -130,8 +157,19 @@ interface Params {
 export default function Account({ navigation }: Params): JSX.Element {
   const user = useContext(UserContext);
   const safeArea = useSafeAreaInsets();
-
+  const [groups, setGroups] = useState([]);
+  const getUserType = async (): Promise<void> => {
+    try {
+      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+      const userGroups = userType.getSignInUserSession()?.getAccessToken()
+        ?.payload?.['cognito:groups'];
+      setGroups(userGroups);
+    } catch (err) {
+      setGroups([]);
+    }
+  };
   useLayoutEffect(() => {
+    getUserType();
     navigation.setOptions({
       headerShown: true,
       title: 'My Account',
@@ -246,6 +284,16 @@ export default function Account({ navigation }: Params): JSX.Element {
               );
             })}
           </List>
+          <View style={{ marginTop: 20 }}>
+            <Text style={style.listText}>Groups</Text>
+            <View style={style.groupPillContainer}>
+              {groups.map((a) => (
+                <View key={a} style={style.groupPill}>
+                  <Text style={style.groupPillText}>{a}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
       </Content>
     </Container>
