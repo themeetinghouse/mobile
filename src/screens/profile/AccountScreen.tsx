@@ -37,7 +37,7 @@ const style = StyleSheet.create({
     flexWrap: 'wrap',
   },
   groupPill: {
-    backgroundColor: Theme.colors.gray5,
+    backgroundColor: Theme.colors.gray4,
     borderRadius: 50,
     margin: 6,
     justifyContent: 'center',
@@ -47,7 +47,7 @@ const style = StyleSheet.create({
   },
   groupPillText: {
     textTransform: 'capitalize',
-    color: Theme.colors.black,
+    color: Theme.colors.grey5,
     fontSize: 12,
     lineHeight: 18,
     fontFamily: Theme.fonts.fontFamilyBold,
