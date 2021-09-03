@@ -269,7 +269,6 @@ export default function SeriesLandingScreen({
     safeArea.top,
     share,
   ]);
-
   useEffect(() => {
     const loadSermonsInSeriesAsync = async () => {
       let loadedSeries = series;
@@ -281,10 +280,11 @@ export default function SeriesLandingScreen({
         const json = (await API.graphql(
           graphqlOperation(getSeries, { id: seriesId ?? series.id })
         )) as GraphQLResult<GetSeriesQuery>;
+        setSeries({ ...json?.data?.getSeries });
         setVideos(json.data?.getSeries?.videos?.items);
       } else {
         const json = (await API.graphql(
-          graphqlOperation(getCustomPlaylist, { id: seriesId ?? series.id })
+          graphqlOperation(getCustomPlaylist, { id: series.id })
         )) as GraphQLResult<GetCustomPlaylistQuery>;
         setVideos(
           json.data?.getCustomPlaylist?.videos?.items?.map((item) => {

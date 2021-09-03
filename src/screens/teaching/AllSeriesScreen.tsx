@@ -151,7 +151,7 @@ export default function AllSeriesScreen({
     navigation.setOptions({
       headerShown: true,
       title: route?.params?.customPlaylists
-        ? 'Video Playlists'
+        ? 'Teaching Topics'
         : route?.params?.popularSeries
         ? 'Popular Series'
         : 'All Series',
