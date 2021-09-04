@@ -1,22 +1,18 @@
 import React, { useContext, useLayoutEffect } from 'react';
 import {
-  Content,
-  Text,
-  Left,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
   View,
-  Thumbnail,
-  List,
-  ListItem,
-  Container,
-} from 'native-base';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+  Text,
+} from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { StackNavigationProp } from '@react-navigation/stack';
 import {
   CompositeNavigationProp,
   CommonActions,
 } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import LocationContext from '../../contexts/LocationContext';
@@ -38,10 +34,6 @@ const style = StyleSheet.create({
     flexShrink: 0,
     flexBasis: 50,
   },
-  headerBody: {
-    flexGrow: 3,
-    justifyContent: 'center',
-  },
   headerRight: {
     flexGrow: 0,
     flexShrink: 0,
@@ -62,27 +54,18 @@ const style = StyleSheet.create({
       marginBottom: 16,
     },
   },
-  body: {
-    ...Style.body,
-    ...{
-      marginBottom: 40,
-    },
-  },
-  searchIcon: Style.icon,
-  searchInput: {
-    color: Theme.colors.white,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    fontSize: Theme.fonts.medium,
-  },
   listItem: {
-    marginLeft: 0,
-    borderColor: Theme.colors.gray2,
+    height: 73,
     backgroundColor: 'black',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
   listText: {
     fontSize: Theme.fonts.medium,
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilyBold,
+    lineHeight: 24,
   },
   listSubtext: {
     fontSize: Theme.fonts.smallMedium,
@@ -96,12 +79,11 @@ const style = StyleSheet.create({
       marginLeft: 16,
     },
   },
-  listArrowIcon: Style.icon,
-  headerText: {
-    fontSize: 16,
-    fontFamily: Theme.fonts.fontFamilyRegular,
-    color: 'white',
-    lineHeight: 24,
+  listArrowIcon: {
+    ...Style.icon,
+    right: 18,
+    alignSelf: 'flex-start',
+    top: 16,
   },
 });
 
@@ -113,8 +95,8 @@ interface Params {
 }
 
 export default function Profile({ navigation }: Params): JSX.Element {
-  const safeArea = useSafeAreaInsets();
   const user = useContext(UserContext);
+  const isLoggedIn = user?.userData?.email_verified;
   const location = useContext(LocationContext);
 
   useLayoutEffect(() => {
@@ -152,130 +134,113 @@ export default function Profile({ navigation }: Params): JSX.Element {
       );
     });
   };
-  const loggedIn = () => {
-    const items = [
-      {
-        id: 'mycomments',
-        text: 'My Comments',
-        subtext: 'All your comments in one place',
-        icon: Theme.icons.white.comments,
-        action: () => navigation.navigate('MyComments'),
-      },
-      {
-        id: 'myaccount',
-        text: 'My Account',
-        subtext: 'Email, password and location',
-        icon: Theme.icons.white.account,
-        action: () => navigation.navigate('AccountScreen'),
-      },
-    ];
-    return (
-      <Content style={style.content}>
-        <View>
-          <List>
-            {items.map((item) => (
-              <ListItem
-                key={item.id}
-                style={style.listItem}
-                onPress={item.action}
-              >
-                <Left>
-                  <Thumbnail style={style.listIcon} source={item.icon} square />
-                  <View>
-                    <Text style={style.listText}>{item.text}</Text>
-                    <Text style={style.listSubtext}>{item.subtext}</Text>
-                  </View>
-                </Left>
-                <View>
-                  <Thumbnail
-                    style={style.listArrowIcon}
-                    source={Theme.icons.white.arrow}
-                    square
-                  />
-                </View>
-              </ListItem>
-            ))}
+  const signedInItems = [
+    {
+      id: 'mycomments',
+      text: 'My Comments',
+      subtext: 'All your comments in one place',
+      icon: Theme.icons.white.comments,
+      action: () => navigation.navigate('MyComments'),
+    },
+    {
+      id: 'myaccount',
+      text: 'My Account',
+      subtext: 'Email, password and location',
+      icon: Theme.icons.white.account,
+      action: () => navigation.navigate('AccountScreen'),
+    },
+  ];
+  const signedOutItems = [
+    {
+      id: 'signup',
+      text: "Don't have an account?",
+      subtext: 'Create one today',
+      icon: Theme.icons.white.signUp,
+      action: () => navigation.navigate('Auth', { screen: 'SignUpScreen' }),
+    },
+    {
+      id: 'signin',
+      text: 'Forgot to sign in?',
+      subtext: 'Back to login',
+      icon: Theme.icons.white.account,
+      action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }),
+    },
+  ];
+  const items = isLoggedIn ? signedInItems : signedOutItems;
+  return (
+    <ScrollView
+      alwaysBounceVertical={false}
+      showsVerticalScrollIndicator={false}
+      style={style.content}
+    >
+      {items.map((item, index) => (
+        <TouchableOpacity
+          delayPressIn={100}
+          key={item.id}
+          style={style.listItem}
+          onPress={item.action}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              alignItems: 'flex-start',
+            }}
+          >
             <View
               style={{
-                height: 15,
-                backgroundColor: Theme.colors.background,
-                padding: 0,
+                flexDirection: 'column',
+                top: 14,
               }}
-            />
-            <ListItem style={style.listItem} onPress={signOut}>
-              <Left>
-                <Thumbnail
-                  style={style.listIcon}
-                  source={Theme.icons.white.signOut}
-                  square
-                />
-                <View>
-                  <Text style={style.listText}>Sign Out</Text>
-                </View>
-              </Left>
-            </ListItem>
-          </List>
-        </View>
-      </Content>
-    );
-  };
-  const notLoggedIn = () => {
-    const items = [
-      {
-        id: 'signup',
-        text: "Don't have an account?",
-        subtext: 'Create one today',
-        icon: Theme.icons.white.signUp,
-        action: () => navigation.navigate('Auth', { screen: 'SignUpScreen' }),
-      },
-      {
-        id: 'signin',
-        text: 'Forgot to sign in?',
-        subtext: 'Back to login',
-        icon: Theme.icons.white.account,
-        action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }),
-      },
-    ];
-    return (
-      <Content style={style.content}>
-        <View>
-          <List>
-            {items.map((item) => (
-              <ListItem
-                key={item.id}
-                style={style.listItem}
-                onPress={item.action}
+            >
+              <Image style={style.listIcon} source={item.icon} />
+            </View>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'column',
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderColor: Theme.colors.gray2,
+                  borderBottomWidth: index !== items.length - 1 ? 2 : 0,
+                }}
               >
-                <Left>
-                  <Thumbnail style={style.listIcon} source={item.icon} square />
-                  <View>
-                    <Text style={style.listText}>{item.text}</Text>
-                    <Text style={style.listSubtext}>{item.subtext}</Text>
-                  </View>
-                </Left>
-                <View>
-                  <Thumbnail
-                    style={style.listArrowIcon}
-                    source={Theme.icons.white.arrow}
-                    square
-                  />
+                <View style={{ flex: 1 }}>
+                  <Text style={style.listText}>{item.text}</Text>
+                  <Text style={style.listSubtext}>{item.subtext}</Text>
                 </View>
-              </ListItem>
-            ))}
-          </List>
-        </View>
-      </Content>
-    );
-  };
-  return (
-    <Container
-      style={{
-        backgroundColor: Theme.colors.background,
-        paddingBottom: safeArea.bottom,
-      }}
-    >
-      {/* eslint-disable-next-line camelcase */}
-      {user?.userData?.email_verified ? loggedIn() : notLoggedIn()}
-    </Container>
+
+                <Image
+                  style={style.listArrowIcon}
+                  source={Theme.icons.white.arrow}
+                />
+              </View>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ))}
+      {isLoggedIn ? (
+        <>
+          <View
+            style={{
+              height: 15,
+              backgroundColor: Theme.colors.background,
+              padding: 0,
+            }}
+          />
+          <TouchableOpacity style={style.listItem} onPress={signOut}>
+            <Image style={style.listIcon} source={Theme.icons.white.signOut} />
+
+            <Text style={style.listText}>Sign Out</Text>
+          </TouchableOpacity>
+        </>
+      ) : null}
+    </ScrollView>
   );
 }

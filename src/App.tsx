@@ -15,11 +15,11 @@ import * as SecureStore from 'expo-secure-store';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { init as initSentry } from 'sentry-expo';
 import * as Notifications from 'expo-notifications';
-import * as Permissions from 'expo-permissions';
 import * as Constants from 'expo-constants';
 import { Subscription } from '@unimodules/core';
 import { Analytics } from 'aws-amplify';
 import { registerRootComponent } from 'expo';
+import { DevicePushToken } from 'expo-notifications';
 import MiniPlayer from './components/teaching/MiniPlayer';
 import { version } from '../version';
 import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
@@ -31,8 +31,7 @@ import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 
 initSentry({
-  dsn:
-    'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
+  dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
   enableInExpoDevelopment: true,
   debug: false,
   environment: 'prod',
@@ -117,27 +116,24 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
   const [currentScreen, setCurrentScreen] = useState('HomeScreen');
   const [display, setDisplay] = useState<ViewStyle['display']>('flex');
   const [comments, setComments] = useState<CommentContextType['comments']>([]);
-  const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
+  const [, setExpoPushToken] = useState<DevicePushToken>();
+  const [, setNotification] = useState(false);
   const notificationListener = useRef() as React.MutableRefObject<Subscription>;
 
   const navRef = createRef<NavigationContainerRef>();
-  async function registerForPushNotificationsAsync() {
+  async function registerForPushNotificationsAsync(): Promise<DevicePushToken | null> {
     let token;
     if (Constants.default.isDevice) {
-      const { status: existingStatus } = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS
-      );
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
-        const { status } = await Permissions.askAsync(
-          Permissions.NOTIFICATIONS
-        );
+        const { status } = await Notifications.requestPermissionsAsync();
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
         console.log('Failed to get push token for push notification!');
-        return;
+        return null;
       }
       token = (await Notifications.getDevicePushTokenAsync()).data;
       console.log(token);
@@ -191,16 +187,15 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
     setCurrentScreen(screen ?? 'unknown');
   };
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) =>
-      setExpoPushToken(token)
-    );
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) setExpoPushToken(token);
+    });
 
     // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification: any) => {
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification: any) => {
         setNotification(notification);
-      }
-    );
+      });
     return () => {
       Notifications.removeNotificationSubscription(
         notificationListener.current
@@ -261,16 +256,15 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
         try {
           const location = await SecureStore.getItemAsync('location');
           if (location) {
-            const selectedLocation = LocationsService.mapLocationIdToName(
-              location
-            );
+            const selectedLocation =
+              LocationsService.mapLocationIdToName(location);
             setLocationData({
               locationId: location,
               locationName: selectedLocation,
             });
           }
-        } catch (e) {
-          console.debug(e);
+        } catch (err) {
+          console.debug(err);
         }
       }
     }
