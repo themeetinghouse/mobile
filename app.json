@@ -10,7 +10,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.13",
+    "version": "6.0.14",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -32,7 +32,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "config": {
         "googleMapsApiKey": "AIzaSyDQi7MSFW1DumNy0zpUkyVWXA2NhhtjEvE",
         "usesNonExemptEncryption": false
@@ -54,7 +54,7 @@
       },
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20131,
+      "versionCode": 20142,
       "intentFilters": [
         {
           "action": "VIEW",
