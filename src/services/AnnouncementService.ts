@@ -15,11 +15,12 @@ export default class AnnouncementService {
     const locations = await LocationService.loadLocations();
     let currentLocation;
     if (location?.id === 'unknown') {
-      currentLocation = 'Cross-Regional';
+      currentLocation = 'No Location';
     } else {
-      currentLocation = locations?.filter((loc: Location) => {
-        return loc.id === location?.id;
-      })?.[0]?.name;
+      currentLocation =
+        locations?.filter((loc: Location) => {
+          return loc.id === location?.id;
+        })?.[0]?.name ?? 'Cross-Regional';
     }
 
     const today = moment()
@@ -30,7 +31,7 @@ export default class AnnouncementService {
         publishedDate: { le: today },
         expirationDate: { gt: today },
         or: [
-          { parish: { eq: currentLocation ?? 'Cross-Regional' } },
+          { parish: { eq: currentLocation } },
           { parish: { eq: 'Cross-Regional' } },
         ],
       },
