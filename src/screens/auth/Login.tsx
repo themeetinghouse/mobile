@@ -144,6 +144,8 @@ export default function Login({ navigation }: Params): JSX.Element {
     try {
       const { attributes } = cognitoUser;
       const userAttributes = mapToArrayOfStrings(attributes);
+      const groups = cognitoUser.getSignInUserSession()?.getAccessToken()
+        ?.payload?.['cognito:groups'];
       const token = (await Notifications.getDevicePushTokenAsync()).data;
       await Analytics.updateEndpoint({
         address: token,
@@ -151,6 +153,9 @@ export default function Login({ navigation }: Params): JSX.Element {
         optOut: 'NONE',
         userId: attributes?.sub,
         userAttributes,
+        attributes: {
+          groups,
+        },
       });
     } catch (e) {
       console.log(e);
@@ -160,7 +165,8 @@ export default function Login({ navigation }: Params): JSX.Element {
     setSending(true);
     try {
       await Auth.signIn(user, pass);
-      const userSignedIn: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+      const userSignedIn: TMHCognitoUser =
+        await Auth.currentAuthenticatedUser();
       await trackUserId(userSignedIn);
       Analytics.record({
         name: 'login',

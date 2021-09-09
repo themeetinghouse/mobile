@@ -216,6 +216,9 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
       try {
         const { attributes } = user;
         const userAttributes = mapToArrayOfStrings(attributes);
+        const groups = user.getSignInUserSession()?.getAccessToken()?.payload?.[
+          'cognito:groups'
+        ];
         const token = (await Notifications.getDevicePushTokenAsync()).data;
         await Analytics.updateEndpoint({
           address: token,
@@ -223,6 +226,7 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
           optOut: 'NONE',
           userId: attributes?.sub,
           userAttributes,
+          attributes: { groups },
         });
       } catch (error) {
         console.log(error);
