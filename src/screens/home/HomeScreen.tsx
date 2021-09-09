@@ -4,6 +4,7 @@ import React, {
   useContext,
   useRef,
   useLayoutEffect,
+  useCallback,
 } from 'react';
 import {
   Container,
@@ -18,6 +19,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
 import { StyleSheet, AppState } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 import * as Linking from 'expo-linking';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
@@ -53,6 +55,7 @@ import { VideoData } from '../../utils/types';
 import NotesService from '../../services/NotesService';
 import { getVideoByVideoType } from '../../graphql/queries';
 import HomeChurchCard from '../../components/home/HomeChurchCard';
+import NewUserModal from '../../components/modals/NewUserModal';
 
 const style = StyleSheet.create({
   categoryContainer: {
@@ -108,12 +111,19 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const [note, setNote] = useState<GetNotesQuery['getNotes']>(null);
   const user = useContext(UserContext);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
-
+  const [showNewUserModal, setShowNewUserModal] = useState(false);
   const locationName = location?.locationData?.locationName;
   const locationId = location?.locationData?.locationId;
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
-
+  const getFirstLoad = useCallback(async () => {
+    const alreadyLoaded = await SecureStore.getItemAsync('first-load');
+    if (!alreadyLoaded) {
+      await SecureStore.setItemAsync('first-load', 'true');
+      if (location?.locationData?.locationId === 'unknown')
+        setShowNewUserModal(true);
+    }
+  }, [location?.locationData?.locationId]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -167,7 +177,9 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       },
     });
   }, [locationName, navigation, emailVerified]);
-
+  useEffect(() => {
+    getFirstLoad();
+  }, [getFirstLoad]);
   useEffect(() => {
     const loadLiveStreams = async () => {
       try {
@@ -337,6 +349,10 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
         <QuestionSuccessModal setShow={setShowQuestionModal} />
       ) : null}
       <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
+        <NewUserModal
+          closeModal={() => setShowNewUserModal(false)}
+          show={showNewUserModal}
+        />
         <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]}>
