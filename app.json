@@ -32,7 +32,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "2",
+      "buildNumber": "4",
       "config": {
         "googleMapsApiKey": "AIzaSyDQi7MSFW1DumNy0zpUkyVWXA2NhhtjEvE",
         "usesNonExemptEncryption": false
@@ -47,6 +47,7 @@
       }
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyAYPqUYMe4VKqZ3fhhS-vOF5gEcjnnuzIk"
@@ -54,7 +55,7 @@
       },
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20142,
+      "versionCode": 20144,
       "intentFilters": [
         {
           "action": "VIEW",

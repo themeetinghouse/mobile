@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "16570899094",
+    "firebase_url": "https://the-meeting-house.firebaseio.com",
+    "project_id": "the-meeting-house",
+    "storage_bucket": "the-meeting-house.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:16570899094:android:b139bb84fd42cd9d9b40b7",
+        "android_client_info": {
+          "package_name": "org.tmh.takenote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "16570899094-ehc6d53sjd40c0shm9gaj6r70qs3jbv1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA81WFB3_CvX5m0g3t-ZiEJVtkB9EF7LAI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "16570899094-ehc6d53sjd40c0shm9gaj6r70qs3jbv1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
