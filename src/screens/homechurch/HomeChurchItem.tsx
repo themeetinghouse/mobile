@@ -154,9 +154,9 @@ const HomeChurchItem = ({
   const [type, setType] = useState<'contact' | 'calendar' | ''>('');
   const badgeHelper = (keyName: string) => {
     switch (keyName) {
-      case 'vacinationRequired':
+      case 'vaccinationRequired':
         return 'Vaccination Required';
-      case 'hasChildcare':
+      case 'isFamilyFriendly':
         return 'Family Friendly';
       case 'isOnline':
         return 'Online';
