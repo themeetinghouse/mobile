@@ -610,6 +610,7 @@ export const listF1ListGroup2s = /* GraphQL */ `
     $nextToken: String
   ) {
     listF1ListGroup2s(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      nextToken
       items {
         id
         name
