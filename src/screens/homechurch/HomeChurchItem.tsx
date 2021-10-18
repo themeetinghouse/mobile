@@ -174,12 +174,12 @@ const HomeChurchItem = ({
     const { hmData } = props;
     return (
       <>
-        {Object.keys(hmData)
+        {Object.keys(hmData ?? {})
           .filter((value: string) => {
             return hmData?.[value as keyof HomeChurchInfo] === 'Yes';
           })
           .map((homeChurchKey) => (
-            <View style={style.locationBadge}>
+            <View key={homeChurchKey} style={style.locationBadge}>
               <Text style={style.locationBadgeText}>
                 {badgeHelper(homeChurchKey)}
               </Text>
@@ -292,7 +292,9 @@ const HomeChurchItem = ({
               )}
             </Text>
           </View>
-          {!card ? <Badges hmData={item.homeChurchInfoData} /> : null}
+          {!card && item?.homeChurchInfoData ? (
+            <Badges hmData={item.homeChurchInfoData} />
+          ) : null}
           {item?.name?.includes('Family Friendly') && (
             <View
               style={[

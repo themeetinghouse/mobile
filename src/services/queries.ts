@@ -269,9 +269,12 @@ export const listHomeChurchInfos = /* GraphQL */ `
       items {
         id
         elders
-        vacinationRequired
-        hasChildcare
+        customPills
+        vaccinationRequired
         isOnline
+        isYoungAdult
+        isFamilyFriendly
+        isHybrid
         onlineConnectUrl
         ageGroups
         petFree
@@ -279,7 +282,7 @@ export const listHomeChurchInfos = /* GraphQL */ `
         accessCode
         gender
         extendedDescription
-        imgageUrl
+        imageUrl
         imageAlt
         videoUrl
         createdAt
