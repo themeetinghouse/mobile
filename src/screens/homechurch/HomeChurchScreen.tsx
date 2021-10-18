@@ -12,9 +12,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import API, { GraphQLResult } from '@aws-amplify/api';
-import { ListF1ListGroup2sQuery } from 'src/services/API';
+import {
+  ListF1ListGroup2sQuery,
+  ListHomeChurchInfosQuery,
+} from 'src/services/API';
 import { RouteProp } from '@react-navigation/native';
-import { listF1ListGroup2s } from '../../services/queries';
+import { listF1ListGroup2s, listHomeChurchInfos } from '../../services/queries';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
 import HomeChurchItem from './HomeChurchItem';
@@ -23,7 +26,7 @@ import HomeChurchControls from './HomeChurchControls';
 import AllButton from '../../../src/components/buttons/AllButton';
 import { getDayOfWeek } from './HomeChurchUtils';
 
-export const locationToGroupType = (groupId: string) => {
+export const locationToGroupType = (groupId: string): string => {
   switch (groupId) {
     case '62948':
       return 'alliston';
@@ -180,6 +183,31 @@ export default function HomeChurchScreen({
   }, [day, location?.locationId, homeChurches]);
 
   useEffect(() => {
+    const injectF1Data = (homeChurchInfos: any, f1HomeChurches: any) => {
+      return f1HomeChurches.map((f1HomeChurch) => {
+        const inHomeChurchInfosTable = homeChurchInfos.find(
+          (homeChurchInfo) => homeChurchInfo?.id === f1HomeChurch?.id
+        );
+        return {
+          ...f1HomeChurch,
+          homeChurchInfoData: inHomeChurchInfosTable,
+        };
+      });
+    };
+    const loadHomeChurchInfo = async () => {
+      try {
+        const json = (await API.graphql({
+          query: listHomeChurchInfos,
+          variables: {
+            limit: 200,
+          },
+        })) as GraphQLResult<ListHomeChurchInfosQuery>;
+        return json?.data?.listHomeChurchInfos?.items;
+      } catch (err) {
+        // console.log({ err });
+        return [];
+      }
+    };
     const loadHomeChurches = async () => {
       try {
         const json = (await API.graphql({
@@ -188,14 +216,20 @@ export default function HomeChurchScreen({
             limit: 200,
           },
         })) as GraphQLResult<ListF1ListGroup2sQuery>;
-        setHomeChurches(json.data?.listF1ListGroup2s?.items ?? []);
+        return json.data?.listF1ListGroup2s?.items ?? [];
       } catch (err) {
-        // catch error here
-      } finally {
-        setIsLoading(false);
+        // console.log({ err });
+        return [];
       }
     };
-    loadHomeChurches();
+    const load = async () => {
+      const hmInfo = await loadHomeChurchInfo();
+      const hm = await loadHomeChurches();
+      const injectedHomeChurchInfoData = injectF1Data(hmInfo, hm);
+      setHomeChurches(injectedHomeChurchInfoData);
+      setIsLoading(false);
+    };
+    load();
     if (route?.params?.loc) {
       setLocation(route.params.loc);
     }

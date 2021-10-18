@@ -259,6 +259,38 @@ export const getCustomPlaylist = /* GraphQL */ `
   }
 `;
 
+export const listHomeChurchInfos = /* GraphQL */ `
+  query ListHomeChurchInfos(
+    $filter: ModelHomeChurchInfoFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listHomeChurchInfos(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        elders
+        vacinationRequired
+        hasChildcare
+        isOnline
+        onlineConnectUrl
+        ageGroups
+        petFree
+        transitAccessible
+        accessCode
+        gender
+        extendedDescription
+        imgageUrl
+        imageAlt
+        videoUrl
+        createdAt
+        updatedAt
+        owner
+      }
+      nextToken
+    }
+  }
+`;
+
 export const getFbEvents = `
   query GetFbEvents($pageId: String) {
     getFBEvents(pageId: $pageId) {

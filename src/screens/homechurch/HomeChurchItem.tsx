@@ -10,13 +10,23 @@ import {
 } from 'react-native';
 import { Thumbnail } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
+import { HomeChurchInfo, ListHomeChurchInfosQuery } from 'src/services/API';
 import { Theme, Style } from '../../Theme.style';
 import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 import { getTimeStamp, getDayOfWeek } from './HomeChurchUtils';
 
+type HomeChurchExtra = HomeChurch & {
+  homeChurchInfoData?: NonNullable<
+    NonNullable<
+      NonNullable<
+        NonNullable<ListHomeChurchInfosQuery>['listHomeChurchInfos']
+      >['items']
+    >[0]
+  >;
+};
 interface Params {
-  item: HomeChurch;
+  item: HomeChurchExtra;
   card?: boolean;
   modal?: boolean;
   active?: boolean;
@@ -97,6 +107,7 @@ const HomeChurchItem = ({
       marginTop: 24,
       flexDirection: 'row',
       alignContent: 'center',
+      flexWrap: 'wrap',
     },
     locationBadge: {
       backgroundColor: Theme.colors.grey3,
@@ -106,6 +117,7 @@ const HomeChurchItem = ({
       justifyContent: 'center',
       alignItems: 'center',
       paddingVertical: 4,
+      marginVertical: 4,
     },
     locationBadgeText: {
       textTransform: 'capitalize',
@@ -140,6 +152,42 @@ const HomeChurchItem = ({
   });
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [type, setType] = useState<'contact' | 'calendar' | ''>('');
+  const badgeHelper = (keyName: string) => {
+    switch (keyName) {
+      case 'vaccinationRequired':
+        return 'Vaccination Required';
+      case 'isFamilyFriendly':
+        return 'Family Friendly';
+      case 'isOnline':
+        return 'Online';
+      case 'isHybrid':
+        return 'Hybrid';
+      case 'petFree':
+        return 'Pet Free';
+      case 'transitAccessible':
+        return 'Transit Accessible';
+      default:
+        return keyName;
+    }
+  };
+  const Badges = (props: { hmData: HomeChurchExtra['homeChurchInfoData'] }) => {
+    const { hmData } = props;
+    return (
+      <>
+        {Object.keys(hmData)
+          .filter((value: string) => {
+            return hmData?.[value as keyof HomeChurchInfo] === 'Yes';
+          })
+          .map((homeChurchKey) => (
+            <View style={style.locationBadge}>
+              <Text style={style.locationBadgeText}>
+                {badgeHelper(homeChurchKey)}
+              </Text>
+            </View>
+          ))}
+      </>
+    );
+  };
   return (
     <View style={style.homeChurchCard}>
       {modal ? <View style={style.drawerIndicator} /> : null}
@@ -217,7 +265,10 @@ const HomeChurchItem = ({
         numberOfLines={card ? 2 : 8}
         style={style.hmDescription}
       >
-        {item?.description}
+        {item?.homeChurchInfoData?.extendedDescription &&
+        item?.homeChurchInfoData?.extendedDescription !== ''
+          ? item?.homeChurchInfoData?.extendedDescription
+          : item?.description}
       </Text>
       {card ? (
         <TouchableOpacity
@@ -241,6 +292,7 @@ const HomeChurchItem = ({
               )}
             </Text>
           </View>
+          {!card ? <Badges hmData={item.homeChurchInfoData} /> : null}
           {item?.name?.includes('Family Friendly') && (
             <View
               style={[
