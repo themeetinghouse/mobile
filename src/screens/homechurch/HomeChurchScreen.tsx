@@ -13,6 +13,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import API, { GraphQLResult } from '@aws-amplify/api';
 import {
+  HomeChurchInfo,
   ListF1ListGroup2sQuery,
   ListHomeChurchInfosQuery,
 } from 'src/services/API';
@@ -20,11 +21,15 @@ import { RouteProp } from '@react-navigation/native';
 import { listF1ListGroup2s, listHomeChurchInfos } from '../../services/queries';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext from '../../contexts/LocationContext';
-import HomeChurchItem from './HomeChurchItem';
+import HomeChurchItem, { HomeChurchExtra } from './HomeChurchItem';
 import IconButton from '../../components/buttons/IconButton';
 import HomeChurchControls from './HomeChurchControls';
 import AllButton from '../../../src/components/buttons/AllButton';
 import { getDayOfWeek } from './HomeChurchUtils';
+
+type ListF1ListGroup2sData = NonNullable<
+  NonNullable<ListF1ListGroup2sQuery['listF1ListGroup2s']>['items']
+>[0];
 
 export const locationToGroupType = (groupId: string): string => {
   switch (groupId) {
@@ -149,8 +154,8 @@ export default function HomeChurchScreen({
       },
     });
   }, [navigation]);
-  const [homeChurches, setHomeChurches] = useState<HomeChurchData>([]);
-  const [filtered, setFiltered] = useState<HomeChurchData>([]);
+  const [homeChurches, setHomeChurches] = useState<Array<HomeChurchExtra>>([]);
+  const [filtered, setFiltered] = useState<Array<HomeChurchExtra>>([]);
   const filterHelper = (church: HomeChurchData[0]) => {
     if (
       church?.location?.address?.latitude === '' ||
@@ -177,13 +182,16 @@ export default function HomeChurchScreen({
 
   useEffect(() => {
     if (homeChurches?.length > 0) {
-      setFiltered(homeChurches.filter((church) => filterHelper(church)));
+      setFiltered(homeChurches?.filter((church) => filterHelper(church)));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [day, location?.locationId, homeChurches]);
 
   useEffect(() => {
-    const injectF1Data = (homeChurchInfos: any, f1HomeChurches: any) => {
+    const injectF1Data = (
+      homeChurchInfos: Array<HomeChurchInfo>,
+      f1HomeChurches: Array<ListF1ListGroup2sData>
+    ): Array<any> => {
       return f1HomeChurches.map((f1HomeChurch) => {
         const inHomeChurchInfosTable = homeChurchInfos.find(
           (homeChurchInfo) => homeChurchInfo?.id === f1HomeChurch?.id
@@ -194,38 +202,65 @@ export default function HomeChurchScreen({
         };
       });
     };
-    const loadHomeChurchInfo = async () => {
-      try {
-        const json = (await API.graphql({
-          query: listHomeChurchInfos,
-          variables: {
-            limit: 200,
-          },
-        })) as GraphQLResult<ListHomeChurchInfosQuery>;
-        return json?.data?.listHomeChurchInfos?.items;
-      } catch (err) {
-        // console.log({ err });
-        return [];
-      }
+    const fetchHomeChurchInfoData = async (): Promise<
+      Array<HomeChurchInfo>
+    > => {
+      const data: Array<HomeChurchInfo> = [];
+      const fetchNext = async (next: string | null = null) => {
+        try {
+          const json = (await API.graphql({
+            query: listHomeChurchInfos,
+            variables: {
+              limit: 200,
+              nextToken: next,
+            },
+          })) as GraphQLResult<ListHomeChurchInfosQuery>;
+          if (json?.data?.listHomeChurchInfos?.items?.length) {
+            json?.data?.listHomeChurchInfos?.items?.forEach((hmInfo) => {
+              if (hmInfo) data.push(hmInfo);
+            });
+          }
+          if (json?.data?.listHomeChurchInfos?.nextToken)
+            await fetchNext(json?.data?.listHomeChurchInfos?.nextToken);
+        } catch (err) {
+          // an error occurred
+        }
+      };
+      await fetchNext();
+      return data;
     };
-    const loadHomeChurches = async () => {
-      try {
-        const json = (await API.graphql({
-          query: listF1ListGroup2s,
-          variables: {
-            limit: 200,
-          },
-        })) as GraphQLResult<ListF1ListGroup2sQuery>;
-        return json.data?.listF1ListGroup2s?.items ?? [];
-      } catch (err) {
-        // console.log({ err });
-        return [];
-      }
+    const fetchF1HomeChurchData = async (): Promise<
+      Array<ListF1ListGroup2sData>
+    > => {
+      const data: Array<ListF1ListGroup2sData> = [];
+      const fetchNext = async (next: string | null = null) => {
+        try {
+          const json = (await API.graphql({
+            query: listF1ListGroup2s,
+            variables: {
+              limit: 200,
+              nextToken: next,
+            },
+          })) as GraphQLResult<ListF1ListGroup2sQuery>;
+          if (json?.data?.listF1ListGroup2s?.items?.length) {
+            json?.data?.listF1ListGroup2s?.items?.forEach((f1Info) => {
+              if (f1Info) data.push(f1Info);
+            });
+          }
+          if (json?.data?.listF1ListGroup2s?.nextToken) {
+            await fetchNext(json?.data?.listF1ListGroup2s?.nextToken);
+          }
+        } catch (err) {
+          // an error occurred
+        }
+      };
+      await fetchNext();
+      return data;
     };
     const load = async () => {
-      const hmInfo = await loadHomeChurchInfo();
-      const hm = await loadHomeChurches();
-      const injectedHomeChurchInfoData = injectF1Data(hmInfo, hm);
+      const hmInfo = await fetchHomeChurchInfoData();
+      const f1Info = await fetchF1HomeChurchData();
+      const injectedHomeChurchInfoData = injectF1Data(hmInfo, f1Info);
       setHomeChurches(injectedHomeChurchInfoData);
       setIsLoading(false);
     };
@@ -337,7 +372,7 @@ export default function HomeChurchScreen({
                   homeChurches={filtered}
                   locationToGroupType={locationToGroupType}
                   key={a?.id}
-                  item={a}
+                  item={a as HomeChurchExtra}
                 />
               );
             })}

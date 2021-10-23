@@ -269,9 +269,12 @@ export const listHomeChurchInfos = /* GraphQL */ `
       items {
         id
         elders
-        vacinationRequired
-        hasChildcare
+        customPills
+        vaccinationRequired
         isOnline
+        isYoungAdult
+        isFamilyFriendly
+        isHybrid
         onlineConnectUrl
         ageGroups
         petFree
@@ -279,7 +282,7 @@ export const listHomeChurchInfos = /* GraphQL */ `
         accessCode
         gender
         extendedDescription
-        imgageUrl
+        imageUrl
         imageAlt
         videoUrl
         createdAt
@@ -607,6 +610,7 @@ export const listF1ListGroup2s = /* GraphQL */ `
     $nextToken: String
   ) {
     listF1ListGroup2s(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      nextToken
       items {
         id
         name

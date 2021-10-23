@@ -16,7 +16,7 @@ import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 import { getTimeStamp, getDayOfWeek } from './HomeChurchUtils';
 
-type HomeChurchExtra = HomeChurch & {
+export type HomeChurchExtra = HomeChurch & {
   homeChurchInfoData?: NonNullable<
     NonNullable<
       NonNullable<
@@ -172,21 +172,23 @@ const HomeChurchItem = ({
   };
   const Badges = (props: { hmData: HomeChurchExtra['homeChurchInfoData'] }) => {
     const { hmData } = props;
-    return (
-      <>
-        {Object.keys(hmData)
-          .filter((value: string) => {
-            return hmData?.[value as keyof HomeChurchInfo] === 'Yes';
-          })
-          .map((homeChurchKey) => (
-            <View style={style.locationBadge}>
-              <Text style={style.locationBadgeText}>
-                {badgeHelper(homeChurchKey)}
-              </Text>
-            </View>
-          ))}
-      </>
-    );
+    if (hmData)
+      return (
+        <>
+          {Object.keys(hmData)
+            .filter((value: string) => {
+              return hmData?.[value as keyof HomeChurchInfo] === 'Yes';
+            })
+            .map((homeChurchKey) => (
+              <View key={homeChurchKey} style={style.locationBadge}>
+                <Text style={style.locationBadgeText}>
+                  {badgeHelper(homeChurchKey)}
+                </Text>
+              </View>
+            ))}
+        </>
+      );
+    return null;
   };
   return (
     <View style={style.homeChurchCard}>
@@ -292,7 +294,9 @@ const HomeChurchItem = ({
               )}
             </Text>
           </View>
-          {!card ? <Badges hmData={item.homeChurchInfoData} /> : null}
+          {!card && item?.homeChurchInfoData ? (
+            <Badges hmData={item?.homeChurchInfoData} />
+          ) : null}
           {item?.name?.includes('Family Friendly') && (
             <View
               style={[
