@@ -23,6 +23,7 @@ export default class LiveEventService {
     } catch (error) {
       console.log(error);
     }
+    return null;
   };
 
   static fetchLiveEventData = async (): Promise<any> => {
@@ -33,9 +34,10 @@ export default class LiveEventService {
         query: listLivestreams,
         variables: { filter: { date: { eq: today } } },
       });
-      const filteredLiveEvents = liveStreamsResult?.listLivestreams?.items.filter(
-        (a: any) => a.liveYoutubeId || !a.id.includes('CustomEvent')
-      );
+      const filteredLiveEvents =
+        liveStreamsResult?.listLivestreams?.items.filter(
+          (a: any) => a.liveYoutubeId || !a.id.includes('CustomEvent')
+        );
       await LiveEventService.storeLiveEventData(filteredLiveEvents);
     } catch (error) {
       console.log(error);
@@ -80,7 +82,10 @@ export default class LiveEventService {
       // console.log("Date fetched is not older. No need to update")
       return false;
     } catch (error) {
-      return error;
+      if (error instanceof Error) {
+        return false;
+      }
+      return false;
     }
   };
 }

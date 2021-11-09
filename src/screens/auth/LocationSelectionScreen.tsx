@@ -1,18 +1,6 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
-import {
-  Container,
-  Content,
-  Text,
-  Left,
-  Right,
-  View,
-  Thumbnail,
-  Item,
-  Input,
-  List,
-  ListItem,
-} from 'native-base';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useLayoutEffect, Component } from 'react';
+import { Text, Image, Input } from 'native-base';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import LocationsService from '../../services/LocationsService';
@@ -94,7 +82,6 @@ const style = StyleSheet.create({
 type LocationSelectionScreenInput = {
   navigation: StackNavigationProp<AuthStackParamList>;
 };
-
 export default function LocationSelectionScreen({
   navigation,
 }: LocationSelectionScreenInput): JSX.Element {
@@ -139,6 +126,29 @@ export default function LocationSelectionScreen({
     selectedLocation?.locationName,
     navigation,
   ]);
+  const renderLocations = (): Element[] => {
+    const z = locations.map((location) =>
+      location?.locationName
+        .toLowerCase()
+        .includes(searchText.toLowerCase()) ? (
+        <TouchableOpacity
+          key={location.locationId}
+          style={style.listItem}
+          onPress={() => setSelectedLocation(location)}
+        >
+          <Text style={style.listText}>{location.locationName}</Text>
+          {selectedLocation?.locationId === location.locationId && (
+            <Image
+              style={style.listCheckIcon}
+              source={Theme.icons.white.check}
+              alt="check icon"
+            />
+          )}
+        </TouchableOpacity>
+      ) : null
+    );
+    return z.filter((x) => x != null) as Element[];
+  };
 
   useEffect(() => {
     const loadLocations = () => {
@@ -153,69 +163,37 @@ export default function LocationSelectionScreen({
   }, []);
 
   return (
-    <Container style={{ backgroundColor: 'black' }}>
-      <Content style={style.content}>
+    <Component style={{ backgroundColor: 'black' }}>
+      <ScrollView style={style.content}>
         <View>
-          <Item>
-            <Thumbnail
-              style={style.searchIcon}
-              source={Theme.icons.white.search}
-              square
-            />
-            <Input
-              style={searchText ? style.searchInputActive : style.searchInput}
-              value={searchText}
-              onChangeText={(str) => setSearchText(str)}
-              placeholder="Search locations..."
-            />
-            {searchText ? (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchText('');
-                }}
-              >
-                <Thumbnail
-                  style={style.searchIcon}
-                  accessibilityLabel="Close Location Search"
-                  source={Theme.icons.white.closeCancel}
-                  square
-                />
-              </TouchableOpacity>
-            ) : null}
-          </Item>
+          <Image
+            style={style.searchIcon}
+            source={Theme.icons.white.search}
+            alt="search icon"
+          />
+          <Input
+            style={searchText ? style.searchInputActive : style.searchInput}
+            value={searchText}
+            onChangeText={(str) => setSearchText(str)}
+            placeholder="Search locations..."
+          />
+          {searchText ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}
+            >
+              <Image
+                style={style.searchIcon}
+                accessibilityLabel="Close Location Search"
+                source={Theme.icons.white.closeCancel}
+                alt="close icon"
+              />
+            </TouchableOpacity>
+          ) : null}
         </View>
-        <View style={{ paddingVertical: 24 }}>
-          <List>
-            {locations.map(
-              (location) =>
-                location?.locationName
-                  .toLowerCase()
-                  .includes(searchText.toLowerCase()) && (
-                  <ListItem
-                    key={location.locationId}
-                    style={style.listItem}
-                    onPress={() => setSelectedLocation(location)}
-                  >
-                    <Left>
-                      <Text style={style.listText}>
-                        {location.locationName}
-                      </Text>
-                    </Left>
-                    <Right>
-                      {selectedLocation?.locationId === location.locationId && (
-                        <Thumbnail
-                          style={style.listCheckIcon}
-                          source={Theme.icons.white.check}
-                          square
-                        />
-                      )}
-                    </Right>
-                  </ListItem>
-                )
-            )}
-          </List>
-        </View>
-      </Content>
-    </Container>
+        <View style={{ paddingVertical: 24 }}>{renderLocations()}</View>
+      </ScrollView>
+    </Component>
   );
 }

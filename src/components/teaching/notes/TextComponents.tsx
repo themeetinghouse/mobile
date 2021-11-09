@@ -8,7 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import * as Linking from 'expo-linking';
-import { Thumbnail, Button } from 'native-base';
+import { Button } from 'native-base';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
@@ -127,10 +127,10 @@ export function Comment({ comment, styles }: CommentParams): JSX.Element {
             flexWrap: 'wrap',
           }}
         >
-          {comment?.tags?.map((tag, index) => {
+          {comment?.tags?.map((tag) => {
             return (
               <View
-                key={index + (tag as string)}
+                key={tag}
                 style={{
                   backgroundColor: '#FFFFFF10',
                   borderRadius: 2,
@@ -223,16 +223,14 @@ export function CustomText({
         {selected ? (
           <Button
             onPress={openComment}
-            transparent
             style={{ position: 'absolute', right: 16, top: pos - 5 }}
           >
-            <Thumbnail
+            <Image
               source={
                 mode === 'dark'
                   ? Theme.icons.white.addComment
                   : Theme.icons.black.addComment
               }
-              square
               style={{ width: 24, height: 24 }}
             />
           </Button>
@@ -295,16 +293,14 @@ export function CustomText({
       {selected ? (
         <Button
           onPress={openComment}
-          transparent
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
         >
-          <Thumbnail
+          <Image
             source={
               mode === 'dark'
                 ? Theme.icons.white.addComment
                 : Theme.icons.black.addComment
             }
-            square
             style={{ width: 24, height: 24 }}
           />
         </Button>
@@ -365,17 +361,15 @@ export function CustomListItem({
         </Text>
         {selected ? (
           <Button
-            transparent
             style={{ position: 'absolute', right: 16, top: pos - 5 }}
             onPress={openComment}
           >
-            <Thumbnail
+            <Image
               source={
                 mode === 'dark'
                   ? Theme.icons.white.addComment
                   : Theme.icons.black.addComment
               }
-              square
               style={{ width: 24, height: 24 }}
             />
           </Button>
@@ -442,17 +436,15 @@ export function CustomListItem({
       </Text>
       {selected ? (
         <Button
-          transparent
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
           onPress={openComment}
         >
-          <Thumbnail
+          <Image
             source={
               mode === 'dark'
                 ? Theme.icons.white.addComment
                 : Theme.icons.black.addComment
             }
-            square
             style={{ width: 24, height: 24 }}
           />
         </Button>
@@ -556,17 +548,15 @@ export function CustomImage({
       </View>
       {selected ? (
         <Button
-          transparent
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
           onPress={openComment}
         >
-          <Thumbnail
+          <Image
             source={
               mode === 'dark'
                 ? Theme.icons.white.addComment
                 : Theme.icons.black.addComment
             }
-            square
             style={{ width: 24, height: 24 }}
           />
         </Button>
@@ -889,9 +879,8 @@ export function HyperLink({
               openVerseCallback(biblePassage?.youVersionUri, passage.uri)
             }
           >
-            <Thumbnail
+            <Image
               source={Theme.icons.white.newWindow}
-              square
               style={{ width: 16, height: 16 }}
             />
           </TouchableOpacity>
@@ -979,16 +968,14 @@ export function HyperLink({
       {selected || show ? (
         <Button
           onPress={openComment}
-          transparent
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
         >
-          <Thumbnail
+          <Image
             source={
               mode === 'dark'
                 ? Theme.icons.white.addComment
                 : Theme.icons.black.addComment
             }
-            square
             style={{ width: 24, height: 24 }}
           />
         </Button>

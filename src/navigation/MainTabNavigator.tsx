@@ -1,8 +1,7 @@
 import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Thumbnail } from 'native-base';
-import { StyleSheet } from 'react-native';
+import { Image, StyleSheet } from 'react-native';
 import { Announcement } from 'src/services/AnnouncementService';
 import HomeScreen from '../screens/home/HomeScreen';
 import TeachingScreen from '../screens/teaching/TeachingScreen';
@@ -156,7 +155,7 @@ export default function MainTabNavigator(): JSX.Element {
           } else if (route.name === 'More') {
             icon = focused ? TabMoreActiveImage : TabMoreImage;
           }
-          return <Thumbnail square source={icon} style={style.tabIcon} />;
+          return <Image source={icon} style={style.tabIcon} />;
         },
       })}
     >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Right, Thumbnail, Text } from 'native-base';
+import { View, Image, Text } from 'native-base';
 import {
   TouchableOpacity,
   ImageSourcePropType,
@@ -67,8 +67,8 @@ export default function IconButton({
         onPress={onPress}
       >
         {icon && (
-          <Thumbnail
-            square
+          <Image
+            alt="icon"
             source={icon}
             style={[
               Style.icon,
@@ -89,12 +89,11 @@ export default function IconButton({
           </Text>
         </View>
         {rightArrow && (
-          <Right>
-            <Thumbnail
-              source={Theme.icons.white.arrow}
-              style={buttonStyle.iconRight}
-            />
-          </Right>
+          <Image
+            alt="right arrow icon"
+            source={Theme.icons.white.arrow}
+            style={buttonStyle.iconRight}
+          />
         )}
       </TouchableOpacity>
     </View>

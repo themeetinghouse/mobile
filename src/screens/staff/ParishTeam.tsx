@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
 import { StyleSheet, View, Text, SectionList } from 'react-native';
-import { Thumbnail, Left } from 'native-base';
+import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -54,8 +54,8 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
               paddingTop: 12,
             }}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -81,9 +81,8 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
   useEffect(() => {
     const loadStaff = async () => {
       setIsLoading(true);
-      const staffByLocationResults = await StaffDirectoryService.loadStaffListByLocation(
-        location as any
-      );
+      const staffByLocationResults =
+        await StaffDirectoryService.loadStaffListByLocation(location as any);
       setStaffByLocation(staffByLocationResults);
       setIsLoading(false);
     };
@@ -145,19 +144,17 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
                   Your Home Parish
                 </Text>
                 <View style={{ flexDirection: 'row' }}>
-                  <Left>
-                    <Text
-                      style={{
-                        left: 16,
-                        color: 'white',
-                        fontSize: 24,
-                        lineHeight: 32,
-                        fontFamily: Theme.fonts.fontFamilyBold,
-                      }}
-                    >
-                      {title}
-                    </Text>
-                  </Left>
+                  <Text
+                    style={{
+                      left: 16,
+                      color: 'white',
+                      fontSize: 24,
+                      lineHeight: 32,
+                      fontFamily: Theme.fonts.fontFamilyBold,
+                    }}
+                  >
+                    {title}
+                  </Text>
                 </View>
               </>
             );

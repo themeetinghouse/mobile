@@ -81,10 +81,8 @@ export default function WhiteButton({
 
   return (
     <View style={style}>
-      <Button style={buttonStyle} block onPress={onPress}>
-        <Text style={labelStyle} uppercase={false}>
-          {label}
-        </Text>
+      <Button style={buttonStyle} onPress={onPress}>
+        <Text style={labelStyle}>{label}</Text>
       </Button>
     </View>
   );
@@ -106,13 +104,11 @@ export function WhiteButtonAsync({
 
   return (
     <View style={style}>
-      <Button disabled={isLoading} style={buttonStyle} block onPress={onPress}>
+      <Button disabled={isLoading} style={buttonStyle} onPress={onPress}>
         {isLoading ? (
           <ActivityIndicator color="black" />
         ) : (
-          <Text style={labelStyle} uppercase={false}>
-            {label}
-          </Text>
+          <Text style={labelStyle}>{label}</Text>
         )}
       </Button>
     </View>

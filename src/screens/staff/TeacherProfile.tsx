@@ -1,4 +1,3 @@
-import { Thumbnail } from 'native-base';
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import {
   View,
@@ -13,7 +12,6 @@ import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import CachedImage from 'react-native-expo-cached-image';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { MoreStackParamList } from 'src/navigation/MainTabNavigator';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
@@ -130,8 +128,7 @@ export default function TeacherProfile({
               paddingTop: 12,
             }}
           >
-            <Thumbnail
-              square
+            <Image
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -155,11 +152,7 @@ export default function TeacherProfile({
                   onPress={() => Linking.openURL(`tel:${teacherData.Phone}`)}
                   style={style.iconContainer}
                 >
-                  <Thumbnail
-                    style={style.icon}
-                    source={Theme.icons.white.phone}
-                    square
-                  />
+                  <Image style={style.icon} source={Theme.icons.white.phone} />
                 </TouchableOpacity>
               ) : null}
               {teacherData.Email !== '' ? (
@@ -167,10 +160,9 @@ export default function TeacherProfile({
                   onPress={() => Linking.openURL(`mailto:${teacherData.Email}`)}
                   style={style.iconContainer}
                 >
-                  <Thumbnail
+                  <Image
                     style={style.icon}
                     source={Theme.icons.white.contact}
-                    square
                   />
                 </TouchableOpacity>
               ) : null}

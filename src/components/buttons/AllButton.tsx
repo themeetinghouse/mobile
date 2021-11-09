@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Right, Text, Thumbnail } from 'native-base';
+import { Button, Text, Image } from 'native-base';
 import { StyleSheet, ImageSourcePropType } from 'react-native';
 
 import { Theme } from '../../Theme.style';
@@ -37,17 +37,14 @@ export default function AllButton({
   icon,
 }: Params): JSX.Element {
   return (
-    <Button full iconRight style={style.button} onPress={handlePress}>
-      <Text uppercase={false} style={style.text}>
-        {children}
-      </Text>
-      <Right>
-        <Thumbnail
-          square
-          source={icon ?? Theme.icons.white.arrow}
-          style={style.icon}
-        />
-      </Right>
+    <Button style={style.button} onPress={handlePress}>
+      <Text style={style.text}>{children}</Text>
+
+      <Image
+        source={icon ?? Theme.icons.white.arrow}
+        alt="Arrow"
+        style={style.icon}
+      />
     </Button>
   );
 }

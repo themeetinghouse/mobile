@@ -18,7 +18,7 @@ export default function HighlightCarousel(): JSX.Element {
     setSuggestedVideos({ items: suggested, loading: false, nextToken: '' });
   };
 
-  const handleNavigation = (item: any, index: number) => {
+  const handleNavigation = (item: any) => {
     navigation.push('SermonLandingScreen', {
       item: item?.video,
       customPlaylist: true,
@@ -35,7 +35,7 @@ export default function HighlightCarousel(): JSX.Element {
   }, []);
   return (
     <GenericCarousel
-      handleNavigation={(item, index) => handleNavigation(item, index)}
+      handleNavigation={(item) => handleNavigation(item)}
       data={{
         items: suggestedVideos.items,
         loading: suggestedVideos.loading,

@@ -3,7 +3,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native-gesture-handler';
-import { View, Thumbnail, Text, Button } from 'native-base';
+import { View, Image, Text, Button } from 'native-base';
 import WhiteButton from '../buttons/WhiteButton';
 import Theme from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
@@ -58,10 +58,10 @@ export default function OpenVerseModal({
         >
           How would you like to open this verse?
         </Text>
-        <Button transparent onPress={closeCallback}>
-          <Thumbnail
+        <Button onPress={closeCallback}>
+          <Image
+            alt="Cancel Icon"
             source={Theme.icons.black.closeCancel}
-            square
             style={{ width: 24, height: 24 }}
           />
         </Button>
@@ -89,10 +89,10 @@ export default function OpenVerseModal({
           Open in Bible App
         </Text>
         {openIn === 'app' ? (
-          <Thumbnail
+          <Image
             source={Theme.icons.black.checkMark}
             style={{ width: 24, height: 24 }}
-            square
+            alt="Check mark Icon"
           />
         ) : null}
       </TouchableOpacity>
@@ -119,10 +119,10 @@ export default function OpenVerseModal({
           Open in Web Browser
         </Text>
         {openIn === 'web' ? (
-          <Thumbnail
+          <Image
             source={Theme.icons.black.checkMark}
             style={{ width: 24, height: 24 }}
-            square
+            alt="Check mark Icon"
           />
         ) : null}
       </TouchableOpacity>
@@ -147,10 +147,10 @@ export default function OpenVerseModal({
             }}
           >
             {rememberChoice ? (
-              <Thumbnail
+              <Image
                 source={Theme.icons.black.checkMark}
                 style={{ width: 24, height: 24 }}
-                square
+                alt="Check mark Icon"
               />
             ) : null}
           </TouchableWithoutFeedback>

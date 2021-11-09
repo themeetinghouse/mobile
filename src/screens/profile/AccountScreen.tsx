@@ -1,19 +1,10 @@
 import React, { useContext, useLayoutEffect, useState } from 'react';
-import {
-  Container,
-  Content,
-  Text,
-  Left,
-  View,
-  Thumbnail,
-  List,
-  ListItem,
-  Button,
-} from 'native-base';
-import { StyleSheet } from 'react-native';
+import { Container, Text, View, Image, List, Button } from 'native-base';
+import { ScrollView, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Auth, { CognitoUser } from '@aws-amplify/auth';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 import LocationsService from '../../services/LocationsService';
@@ -177,14 +168,11 @@ export default function Account({ navigation }: Params): JSX.Element {
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button
-            transparent
-            onPress={() => navigation.navigate('ProfileScreen')}
-          >
-            <Thumbnail
+          <Button onPress={() => navigation.navigate('ProfileScreen')}>
+            <Image
               style={Style.icon}
               source={Theme.icons.white.arrowLeft}
-              square
+              alt="left icon"
             />
           </Button>
         );
@@ -232,13 +220,13 @@ export default function Account({ navigation }: Params): JSX.Element {
         paddingBottom: safeArea.bottom,
       }}
     >
-      <Content style={[style.content, { flex: 1 }]}>
+      <ScrollView style={[style.content, { flex: 1 }]}>
         <View>
           <List>
             {items.map((item) => {
               if (typeof item === 'string')
                 return (
-                  <ListItem
+                  <TouchableOpacity
                     key={item}
                     style={[
                       style.listItem,
@@ -246,19 +234,18 @@ export default function Account({ navigation }: Params): JSX.Element {
                     ]}
                   >
                     <Text style={style.listText}>{item}</Text>
-                  </ListItem>
+                  </TouchableOpacity>
                 );
               return (
-                <ListItem
+                <TouchableOpacity
                   key={item.id}
                   style={style.listItem2}
                   onPress={item.action ? item.action : () => null}
                 >
-                  <Left>
-                    <View>
-                      <Text style={style.listText2}>{item.text}</Text>
-                    </View>
-                  </Left>
+                  <View>
+                    <Text style={style.listText2}>{item.text}</Text>
+                  </View>
+
                   <View
                     style={{
                       maxWidth: '75%',
@@ -273,14 +260,14 @@ export default function Account({ navigation }: Params): JSX.Element {
                       </Text>
                     ) : null}
                     {item.icon ? (
-                      <Thumbnail
+                      <Image
                         style={style.listArrowIcon}
                         source={item.icon}
-                        square
+                        alt="icon"
                       />
                     ) : null}
                   </View>
-                </ListItem>
+                </TouchableOpacity>
               );
             })}
           </List>
@@ -295,7 +282,7 @@ export default function Account({ navigation }: Params): JSX.Element {
             </View>
           </View>
         </View>
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

@@ -7,7 +7,7 @@ import {
   Text,
   Dimensions,
 } from 'react-native';
-import { Thumbnail } from 'native-base';
+import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -136,10 +136,10 @@ const HomeChurchControls = ({
           }
         >
           <View style={style.containerItem}>
-            <Thumbnail
+            <Image
               style={style.locationIcon}
               source={Theme.icons.white.location}
-              square
+              alt="location icon"
             />
             <Text style={style.locationSelectText}>
               {selectedLocation?.locationName}
@@ -153,7 +153,7 @@ const HomeChurchControls = ({
         >
           <View style={style.containerItem}>
             <Text style={style.daySelectText}>{weekday}</Text>
-            <Thumbnail
+            <Image
               source={Theme.icons.white.caretDown}
               style={style.caretIcon}
             />
@@ -171,7 +171,7 @@ const HomeChurchControls = ({
                 <>
                   <Text style={style.dropdownItemText}>{day}</Text>
                   {index === 0 ? (
-                    <Thumbnail
+                    <Image
                       source={Theme.icons.white.caretDown}
                       style={[style.caretIcon, style.upsideDown]}
                     />

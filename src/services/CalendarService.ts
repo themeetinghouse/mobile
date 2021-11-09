@@ -41,7 +41,7 @@ export default class CalendarService {
     return false;
   };
 
-  static getDefaultCalendar = async (): Promise<string> => {
+  static getDefaultCalendar = async (): Promise<string | null> => {
     try {
       if (Platform.OS === 'ios') {
         const defaultCalendar = await Calendar.getDefaultCalendarAsync();
@@ -49,8 +49,9 @@ export default class CalendarService {
       }
       return await CalendarService.findTMHCalendar(); // if unable to create tmh-calendar defaults to id 1.
     } catch (error) {
-      return error;
+      if (error instanceof Error) return error.message;
     }
+    return null;
   };
 
   static createTMHCalendar = async (): Promise<string> => {
@@ -157,7 +158,8 @@ export default class CalendarService {
     if (validated !== false) {
       try {
         await CalendarService.checkPermissions();
-        const defaultCalendar: string = await CalendarService.getDefaultCalendar();
+        const defaultCalendar: string =
+          (await CalendarService.getDefaultCalendar()) ?? '';
         const shouldCreateEvent = await CalendarService.eventNotExists(
           defaultCalendar,
           options,
@@ -189,17 +191,20 @@ export default class CalendarService {
           );
         }
       } catch (error) {
-        if (error.message.includes('permission')) {
-          Alert.alert(
-            'Permission Error',
-            'Please enable Calendar permissions in settings',
-            [{ text: 'Dismiss' }],
-            { cancelable: false }
-          );
+        if (error instanceof Error) {
+          if (error.message.includes('permission')) {
+            Alert.alert(
+              'Permission Error',
+              'Please enable Calendar permissions in settings',
+              [{ text: 'Dismiss' }],
+              { cancelable: false }
+            );
+          }
         }
       }
     } else {
       console.log('Failed to validate event data');
     }
+    return undefined;
   };
 }

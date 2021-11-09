@@ -3,7 +3,6 @@ import { SuggestedVideos } from 'src/screens/teaching/TeachingScreen';
 import { runGraphQLQuery } from './ApiService';
 import {
   GetCustomPlaylistQuery,
-  GetCustomPlaylistQueryVariables,
   GetSeriesBySeriesTypeQuery,
   GetSeriesQuery,
   ListCustomPlaylistsQuery,
@@ -87,12 +86,13 @@ export default class SeriesService {
   static getCustomPlaylistById = async (
     customPlaylistId: string
   ): Promise<CustomPlaylist> => {
-    const queryResult = (await API.graphql({
+    const queryResult = await runGraphQLQuery({
       query: getCustomPlaylist,
       variables: { id: customPlaylistId },
-    })) as GraphQLResult<GetCustomPlaylistQuery>;
-    const series = queryResult?.data?.getCustomPlaylist;
-    return series ?? null;
+    });
+    let series = queryResult.getCustomPlaylist;
+    series = SeriesService.updateSeriesImageFromPlaylist(series);
+    return series;
   };
 
   static loadRandomPlaylist = async (): Promise<SuggestedVideos> => {
@@ -130,11 +130,11 @@ export default class SeriesService {
     )) as GraphQLResult<ListCustomPlaylistsQuery>;
     const items = queryResult?.data?.listCustomPlaylists?.items;
     if (items) {
-      items.forEach((item) => {
-        if (item) {
-          SeriesService.updateSeriesImageFromPlaylist(item as any);
+      for (let i = 0; i < items.length; i++) {
+        if (items[i]) {
+          items[i] = SeriesService.updateSeriesImageFromPlaylist(items[i]);
         }
-      });
+      }
     }
     return {
       items:
@@ -143,18 +143,6 @@ export default class SeriesService {
         ) ?? [],
       nextToken: queryResult?.data?.listCustomPlaylists?.nextToken ?? '',
     };
-  };
-
-  static getCustomPlaylistById = async (
-    customPlaylistId: string
-  ): Promise<PlaylistData> => {
-    const queryResult = await runGraphQLQuery({
-      query: getCustomPlaylist,
-      variables: { id: customPlaylistId },
-    });
-    const series = queryResult.getCustomPlaylist;
-    await SeriesService.updateSeriesImageFromPlaylist(series);
-    return series;
   };
 
   static fetchPopularSeries = async (): Promise<
@@ -177,7 +165,6 @@ export default class SeriesService {
     });
   };
 
-
   static loadSeriesList = async (
     limit: number,
     nextToken?: string
@@ -194,7 +181,7 @@ export default class SeriesService {
     const items = queryResult?.data?.getSeriesBySeriesType?.items;
     if (items) {
       for (let i = 0; i < items.length; i++) {
-        SeriesService.updateSeriesImage(items[i] as SeriesData);
+        items[i] = SeriesService.updateSeriesImage(items[i] as SeriesData);
       }
     }
     return {
@@ -212,8 +199,8 @@ export default class SeriesService {
       query: getSeries,
       variables: { id: seriesId },
     });
-    const series = queryResult.getSeries;
-    await SeriesService.updateSeriesImage(series as SeriesData);
+    let series = queryResult.getSeries;
+    series = SeriesService.updateSeriesImage(series as SeriesData);
     return series;
   };
 
@@ -226,57 +213,61 @@ export default class SeriesService {
     return episodeCount;
   };
 
-  static updateSeriesImage = async (
+  static updateSeriesImage = (
     series: SeriesDataWithHeroImage
-  ): Promise<void> => {
-    if (series?.title) {
-      series.image = `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${series.title.replace(
+  ): SeriesDataWithHeroImage => {
+    const series2 = series;
+    if (series2?.title) {
+      series2.image = `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${series.title?.replace(
         '?',
         ''
       )}.jpg`;
-      series.image640px = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${series.title.replace(
+      series2.image640px = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${series.title?.replace(
         '?',
         ''
       )}.jpg`;
-      series.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title.replace(
+      series2.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title?.replace(
         / /g,
         '%20'
       )}.jpg`;
     } else {
-      series.image =
+      series2.image =
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
-      series.heroImage =
+      series2.heroImage =
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
     }
+    return series2;
   };
 
-  static updateSeriesImageFromPlaylist = async (
+  static updateSeriesImageFromPlaylist = (
     series: SeriesDataWithHeroImage
-  ): Promise<void> => {
-    if (series?.title) {
-      series.image =
-        `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title.replace(
+  ): SeriesDataWithHeroImage => {
+    const series2 = series;
+    if (series2?.title) {
+      series2.image =
+        `https://themeetinghouse.com/cache/320/static/photos/playlists/${series.title?.replace(
           '?',
           ''
         )}.jpg`
           .replace(/ /g, '%20')
           .replace("'", '');
-      series.image640px =
-        `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title.replace(
+      series2.image640px =
+        `https://themeetinghouse.com/cache/640/static/photos/playlists/${series.title?.replace(
           '?',
           ''
         )}.jpg`
           .replace(/ /g, '%20')
           .replace("'", '');
-      series.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title.replace(
+      series2.heroImage = `https://www.themeetinghouse.com/static/photos/playlists/${series.title?.replace(
         / /g,
         '%20'
       )}.jpg`;
     } else {
-      series.image =
+      series2.image =
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
-      series.heroImage =
+      series2.heroImage =
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
     }
+    return series2;
   };
 }

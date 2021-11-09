@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Thumbnail, Item, Input } from 'native-base';
+import { View, Image, Input } from 'native-base';
 import { TouchableOpacity, ViewStyle, StyleSheet } from 'react-native';
 import Theme, { Style } from '../Theme.style';
 
@@ -28,33 +28,31 @@ export default function SearchBar({
 }: Params): JSX.Element {
   return (
     <View style={style}>
-      <Item>
-        <Thumbnail
-          style={localStyle.searchIcon}
-          source={Theme.icons.white.search}
-          square
-        />
-        <Input
-          style={localStyle.searchInput}
-          value={searchText}
-          onChangeText={handleTextChanged}
-          placeholder={placeholderLabel}
-        />
+      <Image
+        style={localStyle.searchIcon}
+        source={Theme.icons.white.search}
+        alt="search icon"
+      />
+      <Input
+        style={localStyle.searchInput}
+        value={searchText}
+        onChangeText={handleTextChanged}
+        placeholder={placeholderLabel}
+      />
 
-        {searchText ? (
-          <TouchableOpacity
-            onPress={() => handleTextChanged('')}
-            testID="close-search"
-          >
-            <Thumbnail
-              accessibilityLabel="Close Search"
-              style={localStyle.searchIcon}
-              source={Theme.icons.white.closeCancel}
-              square
-            />
-          </TouchableOpacity>
-        ) : null}
-      </Item>
+      {searchText ? (
+        <TouchableOpacity
+          onPress={() => handleTextChanged('')}
+          testID="close-search"
+        >
+          <Image
+            accessibilityLabel="Close Search"
+            style={localStyle.searchIcon}
+            source={Theme.icons.white.closeCancel}
+            alt="close icon"
+          />
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 }

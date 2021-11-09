@@ -1,4 +1,3 @@
-import { Thumbnail } from 'native-base';
 import React, { useState, memo } from 'react';
 import { View, StyleSheet, Text, Image, Platform } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -187,11 +186,7 @@ function StaffItem({ staff }: Props): JSX.Element {
               onPress={() => Linking.openURL(`tel:${staff.Phone}`)}
               style={style.iconContainer}
             >
-              <Thumbnail
-                style={style.icon}
-                source={Theme.icons.white.phone}
-                square
-              />
+              <Image style={style.icon} source={Theme.icons.white.phone} />
             </TouchableOpacity>
           ) : null}
           {staff.Email ? (
@@ -200,11 +195,7 @@ function StaffItem({ staff }: Props): JSX.Element {
               onPress={() => Linking.openURL(`mailto:${staff.Email}`)}
               style={style.iconContainer}
             >
-              <Thumbnail
-                style={style.icon}
-                source={Theme.icons.white.contact}
-                square
-              />
+              <Image style={style.icon} source={Theme.icons.white.contact} />
             </TouchableOpacity>
           ) : null}
         </View>

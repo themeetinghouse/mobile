@@ -5,9 +5,15 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react';
-import { Text, Button, Content, View, Thumbnail } from 'native-base';
+import { Text, Button, View } from 'native-base';
 import moment from 'moment';
-import { Dimensions, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import {
+  Dimensions,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
 import { Audio, AVPlaybackStatus } from 'expo-av';
@@ -447,9 +453,8 @@ export default function SermonLandingScreen({
       safeAreaInsets: { top: safeArea.top },
       headerLeft: function render() {
         return (
-          <Button transparent onPress={handleMinimize}>
-            <Thumbnail
-              square
+          <Button onPress={handleMinimize}>
+            <Image
               accessibilityLabel="Close Mini-player"
               source={
                 mediaContext.media.playerType === 'audio' ||
@@ -464,9 +469,8 @@ export default function SermonLandingScreen({
       },
       headerRight: function render() {
         return (
-          <Button transparent onPress={() => setShare(!share)}>
-            <Thumbnail
-              square
+          <Button onPress={() => setShare(!share)}>
+            <Image
               accessibilityLabel="Share"
               source={Theme.icons.white.share}
               style={{ width: 24, height: 24 }}
@@ -549,7 +553,7 @@ export default function SermonLandingScreen({
 
   return (
     <View style={{ flex: 1 }}>
-      <Content>
+      <ScrollView>
         {justOpened &&
         mediaContext.media.playerType !== 'video' &&
         mediaContext.media.playerType !== 'audio' ? (
@@ -638,10 +642,9 @@ export default function SermonLandingScreen({
                   alignItems: 'center',
                 }}
               >
-                <Thumbnail
+                <Image
                   source={Theme.icons.grey.skipBack}
                   style={{ width: 24, height: 24, marginTop: 14 }}
-                  square
                 />
                 <Text style={style.skipText}>15s</Text>
               </TouchableOpacity>
@@ -653,8 +656,7 @@ export default function SermonLandingScreen({
                 }}
               >
                 <TouchableOpacity onPress={pauseAudio}>
-                  <Thumbnail
-                    square
+                  <Image
                     style={{ width: 40, height: 40, marginBottom: 24 }}
                     source={
                       mediaContext.media.playing
@@ -675,10 +677,9 @@ export default function SermonLandingScreen({
                   alignItems: 'center',
                 }}
               >
-                <Thumbnail
+                <Image
                   source={Theme.icons.grey.skipForward}
                   style={{ width: 24, height: 24, marginTop: 14 }}
-                  square
                 />
                 <Text style={style.skipText}>30s</Text>
               </TouchableOpacity>
@@ -765,7 +766,7 @@ export default function SermonLandingScreen({
         </View>
 
         <View style={style.categorySection}>{renderMoreVideos()}</View>
-      </Content>
+      </ScrollView>
       {share ? (
         <ShareModal
           closeCallback={() => setShare(false)}

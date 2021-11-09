@@ -6,18 +6,16 @@ import React, {
   useLayoutEffect,
 } from 'react';
 import {
-  Container,
-  Content,
+  StyleSheet,
+  AppState,
   View,
+  ScrollView,
   Text,
-  Button,
-  Thumbnail,
-  Left,
-  Right,
-} from 'native-base';
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
-import { StyleSheet, AppState } from 'react-native';
 import * as Linking from 'expo-linking';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
 import { API, GraphQLResult, graphqlOperation } from '@aws-amplify/api';
@@ -120,9 +118,11 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       header: function render() {
         return (
           <Header>
-            <Left style={{ flexGrow: 1 }} />
-            <Button
-              style={[style.headerButton, { flexGrow: 0 }]}
+            <TouchableOpacity
+              style={[
+                style.headerButton,
+                { flexGrow: 1, alignContent: 'center' },
+              ]}
               onPress={() =>
                 navigation.navigate('LocationSelectionScreen', {
                   persist: !emailVerified,
@@ -137,31 +137,27 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                       ? 'Select Location'
                       : locationName}
                   </Text>
-                  <Thumbnail
-                    square
+                  <Image
                     source={Theme.icons.white.caretDown}
                     style={{ width: 12, height: 24 }}
                   />
                 </View>
               </View>
-            </Button>
-            <Right style={{ flexGrow: 1, right: 16 }}>
-              <Button
-                icon
-                transparent
-                onPress={() => navigation.navigate('ProfileScreen')}
-              >
-                <Thumbnail
-                  square
-                  source={
-                    emailVerified
-                      ? Theme.icons.white.userLoggedIn
-                      : Theme.icons.white.user
-                  }
-                  style={style.icon}
-                />
-              </Button>
-            </Right>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{ alignContent: 'flex-end' }}
+              onPress={() => navigation.navigate('ProfileScreen')}
+            >
+              <Image
+                source={
+                  emailVerified
+                    ? Theme.icons.white.userLoggedIn
+                    : Theme.icons.white.user
+                }
+                style={[style.icon]}
+              />
+            </TouchableOpacity>
           </Header>
         );
       },
@@ -327,7 +323,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
     }
   }, [route.params?.questionResult, navigation]);
   return (
-    <Container>
+    <View>
       {preLive || live ? (
         <AnnouncementBar
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
@@ -336,7 +332,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       {showQuestionModal ? (
         <QuestionSuccessModal setShow={setShowQuestionModal} />
       ) : null}
-      <Content style={{ backgroundColor: Theme.colors.background, flex: 1 }}>
+      <ScrollView style={{ backgroundColor: Theme.colors.background }}>
         <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />
           <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]}>
@@ -428,7 +424,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
             </AllButton>
           </View>
         ) : null}
-      </Content>
-    </Container>
+      </ScrollView>
+    </View>
   );
 }

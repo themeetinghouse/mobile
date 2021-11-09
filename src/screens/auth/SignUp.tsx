@@ -18,7 +18,7 @@ import {
   useRoute,
   CompositeNavigationProp,
 } from '@react-navigation/native';
-import { Thumbnail, Button } from 'native-base';
+import { Image, Button } from 'native-base';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -174,11 +174,13 @@ export default function SignUp({ navigation }: Params): JSX.Element {
         attributes: { email: user, 'custom:home_location': site.locationId },
       }).then(() => confirmUser());
     } catch (e) {
-      if (e.code === 'InvalidPasswordException')
-        setError(e.message.split(': ')[1]);
-      else if (e.code === 'InvalidParameterException')
-        setError('Password not long enough');
-      else setError(e.message);
+      if (e instanceof Error) {
+        if (e.code === 'InvalidPasswordException')
+          setError(e.message.split(': ')[1]);
+        else if (e.code === 'InvalidParameterException')
+          setError('Password not long enough');
+        else setError(e.message);
+      }
     }
 
     setSending(false);
@@ -207,12 +209,11 @@ export default function SignUp({ navigation }: Params): JSX.Element {
           }}
         >
           <Button
-            transparent
             style={{ position: 'absolute', left: '5%' }}
             onPress={() => navigateHome()}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="close icon"
               accessibilityLabel="Close Button"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}

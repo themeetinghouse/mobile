@@ -8,7 +8,7 @@ import {
   Dimensions,
   TouchableHighlight,
 } from 'react-native';
-import { Thumbnail } from 'native-base';
+import { Image } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { HomeChurchInfo, ListHomeChurchInfosQuery } from 'src/services/API';
 import { Theme, Style } from '../../Theme.style';
@@ -241,8 +241,8 @@ const HomeChurchItem = ({
             }}
             style={style.iconContainer}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="calendar add icon"
               source={Theme.icons.white.calendarAdd}
               style={Style.icon}
             />
@@ -254,8 +254,8 @@ const HomeChurchItem = ({
             }}
             style={style.iconContainer}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="contact icon"
               source={Theme.icons.white.contact}
               style={Style.icon}
             />
@@ -307,8 +307,8 @@ const HomeChurchItem = ({
                 },
               ]}
             >
-              <Thumbnail
-                square
+              <Image
+                alt="family friendly icon"
                 source={Theme.icons.black.familyFriendly}
                 style={{ width: 16, height: 16 }}
               />

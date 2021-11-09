@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Thumbnail } from 'native-base';
+import { View, Text } from 'native-base';
 import { Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import moment from 'moment';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
@@ -71,7 +71,8 @@ export default function TeachingListItem({
   useEffect(() => {
     const getComments = async () => {
       try {
-        const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+        const cognitoUser: TMHCognitoUser =
+          await Auth.currentAuthenticatedUser();
         const input: GetCommentsByOwnerQueryVariables = {
           owner: cognitoUser.username,
           noteId: { eq: teaching?.publishedDate },
@@ -125,8 +126,7 @@ export default function TeachingListItem({
               </Text>
             ) : null}
             {hasComments ? (
-              <Thumbnail
-                square
+              <Image
                 source={Theme.icons.grey.comment}
                 style={{ width: 12, height: 12 }}
               />
