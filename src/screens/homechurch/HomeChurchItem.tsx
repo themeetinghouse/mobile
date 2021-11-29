@@ -166,6 +166,8 @@ const HomeChurchItem = ({
         return 'Pet Free';
       case 'transitAccessible':
         return 'Transit Accessible';
+      case 'isYoungAdult':
+        return 'Young Adult';
       default:
         return keyName;
     }
