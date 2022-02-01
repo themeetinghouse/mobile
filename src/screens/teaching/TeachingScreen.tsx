@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Container, Text, Button, View } from 'native-base';
+import { Container, Text, View } from 'native-base';
 import moment from 'moment';
 import {
   ScrollView,
@@ -268,8 +268,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       },
       headerRight: function render() {
         return (
-          <Button
-            style={{}}
+          <TouchableOpacity
             onPress={() => navigation.navigate('ProfileScreen')}
           >
             <Image
@@ -280,7 +279,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               }
               style={style.icon}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerRightContainerStyle: { right: 16 },
