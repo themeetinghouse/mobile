@@ -1,15 +1,12 @@
 /* eslint-disable camelcase */
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import {
-  Container,
-  Text,
-  Button,
-  Content,
-  View,
-  Thumbnail,
-  Left,
-  Right,
-} from 'native-base';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
+import { Container, Text, Button, View } from 'native-base';
 import moment from 'moment';
 import {
   Alert,
@@ -20,6 +17,7 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -134,7 +132,7 @@ export default function EventDetailsScreen({
   const [eventItem] = useState(route.params?.item);
   // Needed to check if app is in the background or foreground.
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+  const [setAppStateVisible] = useState(appState.current);
   const [alerts, setAlerts] = useState<any>({ message: '' });
 
   useLayoutEffect(() => {
@@ -143,33 +141,27 @@ export default function EventDetailsScreen({
       header: function render() {
         return (
           <Header>
-            <Left style={{ flexGrow: 1, padding: 16 }}>
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <Thumbnail
-                  square
-                  source={Theme.icons.white.back}
-                  style={{ width: 24, height: 24 }}
-                />
-              </TouchableOpacity>
-            </Left>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Image
+                source={Theme.icons.white.back}
+                style={{ width: 24, height: 24 }}
+              />
+            </TouchableOpacity>
 
-            <Right style={{ flexGrow: 1, paddingRight: 16 }}>
-              <Button transparent onPress={() => setShare(!share)}>
-                <Thumbnail
-                  square
-                  accessibilityLabel="Share"
-                  source={Theme.icons.white.share}
-                  style={{ width: 24, height: 24 }}
-                />
-              </Button>
-            </Right>
+            <Button onPress={() => setShare(!share)}>
+              <Image
+                accessibilityLabel="Share"
+                source={Theme.icons.white.share}
+                style={{ width: 24, height: 24 }}
+              />
+            </Button>
           </Header>
         );
       },
@@ -319,7 +311,7 @@ export default function EventDetailsScreen({
     return () => {
       AppState.removeEventListener('change', handleAppStateChange);
     };
-  }, []);
+  });
   /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground. */
   useEffect(() => {
     if (appState.current === 'active') {
@@ -337,7 +329,7 @@ export default function EventDetailsScreen({
 
   return (
     <Container>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         {eventItem?.cover?.source ? (
           <>
             <View style={style.fixedTop}>
@@ -502,7 +494,7 @@ export default function EventDetailsScreen({
             ) : null}
           </View>
         </View>
-      </Content>
+      </ScrollView>
       {share ? (
         <ShareModal
           noBottomPadding

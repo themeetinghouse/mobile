@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import { Thumbnail } from 'native-base';
+import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -140,8 +140,8 @@ export default function HomeChurchScreen({
               paddingTop: 12,
             }}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />

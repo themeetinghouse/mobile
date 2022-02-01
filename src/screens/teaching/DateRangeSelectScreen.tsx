@@ -1,7 +1,12 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, Button, Content, View, Thumbnail } from 'native-base';
+import { Container, Text, Button, View, Image } from 'native-base';
 import moment from 'moment';
-import { TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  ScrollView,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
@@ -114,9 +119,9 @@ export default function DateRangeSelectScreen({
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Thumbnail
-              square
+          <Button onPress={() => navigation.goBack()}>
+            <Image
+              alt="back icon"
               accessibilityLabel="Close Date Range"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
@@ -252,7 +257,7 @@ export default function DateRangeSelectScreen({
 
   return (
     <Container style={{ backgroundColor: 'black' }}>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         {years.map((year) => (
           <View key={`${year}`} style={style.yearSection}>
             <Text style={style.yearTitle}>{year}</Text>
@@ -281,7 +286,7 @@ export default function DateRangeSelectScreen({
             </View>
           </View>
         ))}
-      </Content>
+      </ScrollView>
       <View
         style={{
           flexGrow: 0,

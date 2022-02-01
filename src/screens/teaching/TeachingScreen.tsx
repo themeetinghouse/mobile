@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Container, Text, Button, View, Thumbnail } from 'native-base';
+import { Container, Text, View } from 'native-base';
 import moment from 'moment';
 import {
   ScrollView,
@@ -245,11 +245,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     loading: true,
     items: [],
   });
-  const [highlights, setHighlights] = useState({
-    loading: true,
-    items: [],
-    nextToken: undefined,
-  });
+
   const [speakers, setSpeakers] = useState({
     loading: true,
     items: [],
@@ -272,14 +268,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       },
       headerRight: function render() {
         return (
-          <Button
-            icon
-            transparent
-            style={{}}
+          <TouchableOpacity
             onPress={() => navigation.navigate('ProfileScreen')}
           >
-            <Thumbnail
-              square
+            <Image
               source={
                 emailVerified
                   ? Theme.icons.white.userLoggedIn
@@ -287,7 +279,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               }
               style={style.icon}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerRightContainerStyle: { right: 16 },
@@ -617,7 +609,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 ]}
                 horizontal
                 data={speakers.items}
-                renderItem={({ item, index }: any) =>
+                renderItem={({ item }: any) =>
                   !item.hidden ? (
                     <TouchableOpacity
                       onPress={() =>

@@ -1,18 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import {
-  Container,
-  Content,
-  Text,
-  Left,
-  Right,
-  View,
-  Thumbnail,
-  Item,
-  Input,
-  List,
-  ListItem,
-} from 'native-base';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Container, Text, View, Image, Input, List } from 'native-base';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -141,34 +129,32 @@ export default function HomeChurchLocationSelect({
   }, []);
   return (
     <Container style={{ backgroundColor: 'black' }}>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         <View>
-          <Item>
-            <Thumbnail
-              style={style.searchIcon}
-              source={Theme.icons.white.search}
-              square
-            />
-            <Input
-              style={searchText ? style.searchInputActive : style.searchInput}
-              value={searchText}
-              onChangeText={(str) => setSearchText(str)}
-              placeholder="Search locations..."
-            />
-            {searchText ? (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchText('');
-                }}
-              >
-                <Thumbnail
-                  style={style.searchIcon}
-                  source={Theme.icons.white.closeCancel}
-                  square
-                />
-              </TouchableOpacity>
-            ) : null}
-          </Item>
+          <Image
+            style={style.searchIcon}
+            source={Theme.icons.white.search}
+            alt="search icon"
+          />
+          <Input
+            style={searchText ? style.searchInputActive : style.searchInput}
+            value={searchText}
+            onChangeText={(str) => setSearchText(str)}
+            placeholder="Search locations..."
+          />
+          {searchText ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}
+            >
+              <Image
+                style={style.searchIcon}
+                source={Theme.icons.white.closeCancel}
+                alt="close icon"
+              />
+            </TouchableOpacity>
+          ) : null}
         </View>
         <View style={{ paddingVertical: 24 }}>
           <List>
@@ -177,7 +163,7 @@ export default function HomeChurchLocationSelect({
                 item?.locationName
                   .toLowerCase()
                   .includes(searchText.toLowerCase()) && (
-                  <ListItem
+                  <TouchableOpacity
                     key={item.locationId}
                     onPress={async () => {
                       await setSelectedLocation(item);
@@ -187,25 +173,21 @@ export default function HomeChurchLocationSelect({
                     }}
                     style={style.listItem}
                   >
-                    <Left>
-                      <Text style={style.listText}>{item.locationName}</Text>
-                    </Left>
-                    <Right>
-                      {selectedLocation?.locationId === item.locationId && (
-                        <Thumbnail
-                          style={style.listCheckIcon}
-                          source={Theme.icons.white.check}
-                          square
-                        />
-                      )}
-                    </Right>
-                  </ListItem>
+                    <Text style={style.listText}>{item.locationName}</Text>
+                    {selectedLocation?.locationId === item.locationId && (
+                      <Image
+                        style={style.listCheckIcon}
+                        source={Theme.icons.white.check}
+                        alt="check icon"
+                      />
+                    )}
+                  </TouchableOpacity>
                 )
               );
             })}
           </List>
         </View>
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

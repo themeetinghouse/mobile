@@ -1,4 +1,4 @@
-import { Button, Text, Thumbnail, View } from 'native-base';
+import { Button, Text, View } from 'native-base';
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
@@ -229,12 +229,8 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
             <View
               style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }}
             >
-              <Button
-                transparent
-                onPress={pauseAudio}
-                style={{ width: 56, height: 56 }}
-              >
-                <Thumbnail
+              <Button onPress={pauseAudio} style={{ width: 56, height: 56 }}>
+                <Image
                   accessibilityLabel={
                     mediaContext.media.playing ? 'Pause Button' : 'Play Button'
                   }
@@ -246,12 +242,8 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                   style={{ width: 24, height: 24 }}
                 />
               </Button>
-              <Button
-                transparent
-                onPress={closeAudio}
-                style={{ width: 56, height: 56 }}
-              >
-                <Thumbnail
+              <Button onPress={closeAudio} style={{ width: 56, height: 56 }}>
+                <Image
                   accessibilityLabel="Close Mini-player"
                   source={Theme.icons.white.closeCancel}
                   style={{ width: 24, height: 24 }}
@@ -320,12 +312,8 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
           <View
             style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }}
           >
-            <Button
-              transparent
-              onPress={pauseVideo}
-              style={{ width: 56, height: 56 }}
-            >
-              <Thumbnail
+            <Button onPress={pauseVideo} style={{ width: 56, height: 56 }}>
+              <Image
                 accessibilityLabel={
                   mediaContext.media.playing ? 'Pause Button' : 'Play Button'
                 }
@@ -337,12 +325,8 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                 style={{ width: 24, height: 24 }}
               />
             </Button>
-            <Button
-              transparent
-              onPress={closeVideo}
-              style={{ width: 56, height: 56 }}
-            >
-              <Thumbnail
+            <Button onPress={closeVideo} style={{ width: 56, height: 56 }}>
+              <Image
                 accessibilityLabel="Close Mini-player"
                 source={Theme.icons.white.closeCancel}
                 style={{ width: 24, height: 24 }}

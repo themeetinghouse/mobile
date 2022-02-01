@@ -1,6 +1,6 @@
 import React, { useLayoutEffect } from 'react';
-import { Container, Text, Content, View, Thumbnail } from 'native-base';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Container, Text, View, Image } from 'native-base';
+import { TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
@@ -68,8 +68,8 @@ export default function AllSermonsScreen({
               alignItems: 'center',
             }}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -94,7 +94,7 @@ export default function AllSermonsScreen({
 
   return (
     <Container>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         <View style={{ marginBottom: 48 }}>
           {teaching && teaching.length > 0 ? (
             teaching.map((sermon) => (
@@ -110,7 +110,7 @@ export default function AllSermonsScreen({
             <ActivityIndicator />
           )}
         </View>
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React, { useLayoutEffect, useState, useContext, useEffect } from 'react';
-import { Container, Content, Thumbnail } from 'native-base';
+import { Container, Image } from 'native-base';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
   TextInput,
   Alert,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { API, graphqlOperation } from 'aws-amplify';
@@ -90,8 +91,8 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
             style={{ padding: 16, marginLeft: -16, zIndex: 1 }}
             onPress={() => navigation.goBack()}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="close icon"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
@@ -134,7 +135,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
 
   return (
     <Container>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         <View style={style.body}>
           <Text style={style.headingText}>
             Questions submitted here will have the chance to be answered this
@@ -177,7 +178,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
             onPress={submitQuestion}
           />
         </View>
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

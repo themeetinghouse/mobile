@@ -12,16 +12,8 @@ import {
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import {
-  Header,
-  Left,
-  Button,
-  Thumbnail,
-  Container,
-  Body,
-  Right,
-} from 'native-base';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Button, Container } from 'native-base';
+import Header from '../../components/Header';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import SermonsService from '../../services/SermonsService';
@@ -76,7 +68,6 @@ export default function HighlightScreen({
 }: Params): JSX.Element {
   const screenWidth = Dimensions.get('screen').width;
   const playerRef = useRef<YoutubeIframeRef>(null);
-  const safeArea = useSafeAreaInsets();
   const [highlight, setHighlight] = useState(route.params?.highlights[0]);
   const [highlights, setHighlights] = useState({
     loading: false,
@@ -134,44 +125,36 @@ export default function HighlightScreen({
   return (
     <NoMedia>
       <Container style={{ backgroundColor: 'black', flex: 1 }}>
-        <Header style={{ backgroundColor: 'black', height: 68 + safeArea.top }}>
+        <Header>
           <StatusBar
             backgroundColor={Theme.colors.black}
             barStyle="light-content"
           />
-          <Left style={[style.headerLeft, { height: 68 }]}>
-            <Button transparent onPress={() => navigation.goBack()}>
-              <Thumbnail
-                square
-                accessibilityLabel="Close Highlight"
-                source={Theme.icons.white.closeCancel}
-                style={{ width: 24, height: 24 }}
-              />
-            </Button>
-          </Left>
-          <Body style={style.headerBody}>
+
+          <Button onPress={() => navigation.goBack()}>
             <Image
-              source={{
-                uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`,
-              }}
-              style={{ width: 56, height: 68, marginRight: 16 }}
+              accessibilityLabel="Close Highlight"
+              source={Theme.icons.white.closeCancel}
+              style={{ width: 24, height: 24 }}
             />
-            <View>
-              <Text numberOfLines={1} ellipsizeMode="tail" style={style.series}>
-                {highlight.seriesTitle}
-              </Text>
-              <Text
-                numberOfLines={1}
-                ellipsizeMode="tail"
-                style={style.episode}
-              >
-                {highlight.episodeTitle
-                  ? highlight.episodeTitle
-                  : highlight.Youtube?.snippet?.title}
-              </Text>
-            </View>
-          </Body>
-          <Right />
+          </Button>
+
+          <Image
+            source={{
+              uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`,
+            }}
+            style={{ width: 56, height: 68, marginRight: 16 }}
+          />
+          <View>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={style.series}>
+              {highlight.seriesTitle}
+            </Text>
+            <Text numberOfLines={1} ellipsizeMode="tail" style={style.episode}>
+              {highlight.episodeTitle
+                ? highlight.episodeTitle
+                : highlight.Youtube?.snippet?.title}
+            </Text>
+          </View>
         </Header>
         <View
           style={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}

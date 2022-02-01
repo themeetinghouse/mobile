@@ -5,7 +5,7 @@ import React, {
   Fragment,
   useLayoutEffect,
 } from 'react';
-import { Text, Button, View, Thumbnail } from 'native-base';
+import { Text, View } from 'native-base';
 import moment from 'moment';
 import {
   Dimensions,
@@ -229,8 +229,7 @@ export default function SeriesLandingScreen({
               alignItems: 'center',
             }}
           >
-            <Thumbnail
-              square
+            <Image
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -248,14 +247,13 @@ export default function SeriesLandingScreen({
       },
       headerRight: function render() {
         return (
-          <Button transparent onPress={() => setShare(!share)}>
-            <Thumbnail
-              square
+          <TouchableOpacity onPress={() => setShare(!share)}>
+            <Image
               accessibilityLabel="Share"
               source={Theme.icons.white.share}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerLeftContainerStyle: { left: 16 },

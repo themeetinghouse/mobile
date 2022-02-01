@@ -1,20 +1,12 @@
 import React, { useState, useContext, useLayoutEffect } from 'react';
-import {
-  Container,
-  Content,
-  Text,
-  Button,
-  View,
-  Thumbnail,
-  List,
-  ListItem,
-} from 'native-base';
+import { Container, Text, Button, View, Image, List } from 'native-base';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   Dimensions,
   StyleSheet,
+  ScrollView,
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { TextInput } from 'react-native-gesture-handler';
@@ -151,15 +143,17 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
         await Auth.changePassword(user, currentPass, newPass);
         signOut();
       } catch (e) {
-        if (e.code === 'NotAuthorizedException')
-          setError('Current password incorrect');
-        else if (e.code === 'InvalidPasswordException')
-          setError(e.message.split(': ')[1]);
-        else if (e.code === 'InvalidParameterException')
-          if (e.message.includes('previousPassword'))
+        if (e instanceof Error) {
+          if (e.code === 'NotAuthorizedException')
             setError('Current password incorrect');
-          else setError('Password not long enough');
-        else setError(e.message);
+          else if (e.code === 'InvalidPasswordException')
+            setError(e.message.split(': ')[1]);
+          else if (e.code === 'InvalidParameterException')
+            if (e.message.includes('previousPassword'))
+              setError('Current password incorrect');
+            else setError('Password not long enough');
+          else setError(e.message);
+        }
       }
     };
 
@@ -170,11 +164,11 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button transparent onPress={() => navigation.goBack()}>
-            <Thumbnail
+          <Button onPress={() => navigation.goBack()}>
+            <Image
               style={Style.icon}
               source={Theme.icons.white.arrowLeft}
-              square
+              alt="left icon"
             />
           </Button>
         );
@@ -217,7 +211,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
           paddingBottom: safeArea.bottom,
         }}
       >
-        <Content style={style.content}>
+        <ScrollView style={style.content}>
           <View>
             <List>
               <View
@@ -227,7 +221,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                   padding: 0,
                 }}
               />
-              <ListItem style={style.listItem}>
+              <TouchableOpacity style={style.listItem}>
                 <View style={{ display: 'flex', flexDirection: 'column' }}>
                   <View style={{ display: 'flex', flexDirection: 'row' }}>
                     <Text style={style.listText}>Current Password</Text>
@@ -254,7 +248,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     </Text>
                   </View>
                 </View>
-              </ListItem>
+              </TouchableOpacity>
               <View
                 style={{
                   height: 15,
@@ -262,7 +256,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                   padding: 0,
                 }}
               />
-              <ListItem style={style.listItem}>
+              <TouchableOpacity style={style.listItem}>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
                   <Text style={style.listText}>New Password</Text>
                   <View style={{ width: Dimensions.get('window').width - 150 }}>
@@ -277,7 +271,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
                     />
                   </View>
                 </View>
-              </ListItem>
+              </TouchableOpacity>
               <View style={{ marginTop: 12 }}>
                 <Text
                   style={{
@@ -297,7 +291,7 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
               style={{ marginHorizontal: '5%' }}
             />
           </View>
-        </Content>
+        </ScrollView>
       </Container>
     </TouchableWithoutFeedback>
   );

@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, Content, View, Thumbnail } from 'native-base';
+import { Container, Text, View, Image } from 'native-base';
 import moment from 'moment';
 import {
   TouchableOpacity,
   StyleSheet,
   TouchableHighlight,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -174,8 +175,8 @@ export default function AllSermonsScreen({
               alignItems: 'center',
             }}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -200,7 +201,7 @@ export default function AllSermonsScreen({
 
   return (
     <Container>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         <SearchBar
           style={style.searchBar}
           searchText={searchText}
@@ -253,7 +254,7 @@ export default function AllSermonsScreen({
             </View>
           ) : null}
         </View>
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

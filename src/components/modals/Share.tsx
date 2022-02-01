@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Share, Platform, Animated } from 'react-native';
 import Clipboard from 'expo-clipboard';
-import { Button, View, Text, Thumbnail } from 'native-base';
+import { Button, View, Text, Image } from 'native-base';
 import * as Linking from 'expo-linking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -114,14 +114,13 @@ export default function ShareModal({
             borderRadius: 0,
             backgroundColor: Theme.colors.background,
           }}
-          block
           onPress={() => {
             Clipboard.setString(link);
             setCopyLinkText('Copied');
           }}
         >
-          <Thumbnail
-            square
+          <Image
+            alt="link icon"
             source={Theme.icons.white.link}
             style={{ width: 24, height: 24 }}
           />
@@ -132,7 +131,6 @@ export default function ShareModal({
               fontSize: 16,
               lineHeight: 24,
             }}
-            uppercase={false}
           >
             {copyLinkText}
           </Text>
@@ -149,11 +147,10 @@ export default function ShareModal({
               backgroundColor: 'transparent',
               marginRight: 16,
             }}
-            block
             onPress={shareToTwitter}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="twitter icon"
               accessibilityLabel="Share to Twitter"
               source={Theme.icons.black.twitter}
               style={{ width: 24, height: 24 }}
@@ -169,11 +166,10 @@ export default function ShareModal({
               borderColor: Theme.colors.background,
               backgroundColor: 'transparent',
             }}
-            block
             onPress={share}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="share icon"
               accessibilityLabel="Share"
               source={Theme.icons.black.share}
               style={{ width: 24, height: 24 }}

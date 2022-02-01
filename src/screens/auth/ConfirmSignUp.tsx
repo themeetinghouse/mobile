@@ -73,9 +73,8 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
   const [needsNewCode, setNeedsNewCode] = useState(false);
-  const route = useRoute<
-    RouteProp<AuthStackParamList, 'ConfirmSignUpScreen'>
-  >();
+  const route =
+    useRoute<RouteProp<AuthStackParamList, 'ConfirmSignUpScreen'>>();
 
   const email = route.params?.email;
 
@@ -95,8 +94,10 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
     try {
       await Auth.confirmSignUp(user, code).then(() => toLogin(true));
     } catch (e) {
-      if (e.code === 'UserNotFoundException') setError('Username not found.');
-      else setError(e.message);
+      if (e instanceof Error) {
+        if (e.code === 'UserNotFoundException') setError('Username not found.');
+        else setError(e.message);
+      }
     }
     setSending(false);
   };
@@ -109,8 +110,10 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
       setCode('');
       setError('');
     } catch (e) {
-      if (e.code === 'UserNotFoundException') setError('Username not found.');
-      else setError(e.message);
+      if (e instanceof Error) {
+        if (e.code === 'UserNotFoundException') setError('Username not found.');
+        else setError(e.message);
+      }
     }
     setSending(false);
   };

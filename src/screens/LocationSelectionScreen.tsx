@@ -1,18 +1,6 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import {
-  Container,
-  Content,
-  Text,
-  Left,
-  Right,
-  View,
-  Thumbnail,
-  Item,
-  Input,
-  List,
-  ListItem,
-} from 'native-base';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, Image, Input } from 'native-base';
+import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Auth } from '@aws-amplify/auth';
@@ -191,66 +179,58 @@ export default function LocationSelectionScreen({
   }, []);
 
   return (
-    <Container style={{ backgroundColor: 'black' }}>
-      <Content style={style.content}>
+    <View style={{ backgroundColor: 'black' }}>
+      <ScrollView style={style.content}>
         <View>
-          <Item>
-            <Thumbnail
-              style={style.searchIcon}
-              source={Theme.icons.white.search}
-              square
-            />
-            <Input
-              style={searchText ? style.searchInputActive : style.searchInput}
-              value={searchText}
-              onChangeText={(str) => setSearchText(str)}
-              placeholder="Search locations..."
-            />
-            {searchText ? (
-              <TouchableOpacity
-                onPress={() => {
-                  setSearchText('');
-                }}
-              >
-                <Thumbnail
-                  style={style.searchIcon}
-                  source={Theme.icons.white.closeCancel}
-                  square
-                />
-              </TouchableOpacity>
-            ) : null}
-          </Item>
+          <Image
+            style={style.searchIcon}
+            source={Theme.icons.white.search}
+            alt="search icon"
+          />
+          <Input
+            style={searchText ? style.searchInputActive : style.searchInput}
+            value={searchText}
+            onChangeText={(str) => setSearchText(str)}
+            placeholder="Search locations..."
+          />
+          {searchText ? (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchText('');
+              }}
+            >
+              <Image
+                style={style.searchIcon}
+                source={Theme.icons.white.closeCancel}
+                alt="close icon"
+              />
+            </TouchableOpacity>
+          ) : null}
         </View>
         <View style={{ paddingVertical: 24 }}>
-          <List>
-            {locations.map(
-              (item) =>
-                item?.locationName
-                  .toLowerCase()
-                  .includes(searchText.toLowerCase()) && (
-                  <ListItem
-                    key={item.locationId}
-                    style={style.listItem}
-                    onPress={() => setSelectedLocation(item)}
-                  >
-                    <Left>
-                      <Text style={style.listText}>{item.locationName}</Text>
-                    </Left>
-                    <Right>
-                      {selectedLocation?.locationId === item.locationId && (
-                        <Thumbnail
-                          style={style.listCheckIcon}
-                          source={Theme.icons.white.check}
-                          square
-                        />
-                      )}
-                    </Right>
-                  </ListItem>
-                )
-            )}
-          </List>
+          {locations.map((item) =>
+            item?.locationName
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) ? (
+              <TouchableOpacity
+                key={item.locationId}
+                style={style.listItem}
+                onPress={() => setSelectedLocation(item)}
+              >
+                <Text style={style.listText}>{item.locationName}</Text>
+
+                {selectedLocation?.locationId === item.locationId && (
+                  <Image
+                    style={style.listCheckIcon}
+                    source={Theme.icons.white.check}
+                    alt="check icon"
+                  />
+                )}
+              </TouchableOpacity>
+            ) : null
+          )}
         </View>
-      </Content>
-    </Container>
+      </ScrollView>
+    </View>
   );
 }

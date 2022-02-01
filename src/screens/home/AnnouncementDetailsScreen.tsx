@@ -1,6 +1,12 @@
 import React, { useLayoutEffect } from 'react';
-import { Text, Thumbnail, Content, View } from 'native-base';
-import { Dimensions, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, View } from 'native-base';
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
@@ -78,8 +84,7 @@ export default function AnnouncementDetailScreen({
               alignItems: 'center',
             }}
           >
-            <Thumbnail
-              square
+            <Image
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
@@ -128,7 +133,7 @@ export default function AnnouncementDetailScreen({
           />
         </>
       ) : null}
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         <Text style={style.title}>{announcementItem?.title}</Text>
         <Text style={style.body}>{announcementItem?.description}</Text>
         {announcementItem?.callToAction ? (
@@ -144,7 +149,7 @@ export default function AnnouncementDetailScreen({
             }}
           />
         ) : null}
-      </Content>
+      </ScrollView>
     </>
   );
 }

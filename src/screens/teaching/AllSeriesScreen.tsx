@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, Content, View, Thumbnail } from 'native-base';
+import { Container, Text, View, Image } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
+import {
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { RouteProp } from '@react-navigation/native';
@@ -167,8 +173,8 @@ export default function AllSeriesScreen({
               alignItems: 'center',
             }}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -193,7 +199,7 @@ export default function AllSeriesScreen({
 
   return (
     <Container>
-      <Content style={style.content}>
+      <ScrollView style={style.content}>
         {!route?.params?.popularSeries ? (
           <SearchBar
             style={style.searchBar}
@@ -281,7 +287,7 @@ export default function AllSeriesScreen({
             </AllButton>
           </View>
         ) : null}
-      </Content>
+      </ScrollView>
     </Container>
   );
 }

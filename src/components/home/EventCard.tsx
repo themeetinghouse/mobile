@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import React from 'react';
-import { Text, Thumbnail, View } from 'native-base';
+import { Text, Image, View } from 'native-base';
 import moment from 'moment';
 import { StyleSheet, TouchableHighlight } from 'react-native';
 import { EventQueryResult } from '../../services/EventsService';
@@ -91,10 +91,12 @@ export default function EventCard({
           {moment(event?.start_time ?? undefined).format('MMM D')}
         </Text>
         <View style={style.titleButtonContainer}>
-          <Text uppercase={false} style={style.title}>
-            {event?.name}
-          </Text>
-          <Thumbnail style={style.icon} source={Theme.icons.white.arrow} />
+          <Text style={style.title}>{event?.name}</Text>
+          <Image
+            alt="Arrow Icon"
+            style={style.icon}
+            source={Theme.icons.white.arrow}
+          />
         </View>
         <Text style={style.descriptionContainer} numberOfLines={4}>
           {event?.description

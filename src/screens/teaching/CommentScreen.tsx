@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Container, Text, Button, View, Thumbnail } from 'native-base';
+import { Container, Text, Button, View } from 'native-base';
 import {
   TouchableOpacity,
   StyleSheet,
@@ -145,7 +145,8 @@ export default function CommentScreen({
       } else if ('key' in routeParams && comment) {
         try {
           const nanoId = await nanoid();
-          const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+          const cognitoUser: TMHCognitoUser =
+            await Auth.currentAuthenticatedUser();
           const input: CreateCommentInput = {
             id: nanoId,
             comment,
@@ -239,7 +240,8 @@ export default function CommentScreen({
   useEffect(() => {
     const getTags = async () => {
       try {
-        const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+        const cognitoUser: TMHCognitoUser =
+          await Auth.currentAuthenticatedUser();
         const input: GetCommentsByOwnerQueryVariables = {
           owner: cognitoUser.username,
           limit: 8,
@@ -356,8 +358,7 @@ export default function CommentScreen({
           {tag}
         </Text>
         <TouchableOpacity onPress={() => removeTag(tag)}>
-          <Thumbnail
-            square
+          <Image
             accessibilityLabel="Close Comment"
             style={{ width: 12, height: 12, marginLeft: 4 }}
             source={Theme.icons.white.closeCancel}
@@ -459,14 +460,12 @@ export default function CommentScreen({
                 </Text>
               ) : null}
               <Button
-                transparent
                 style={{}}
                 onLongPress={removeComment}
                 onPress={handleShortPress}
               >
-                <Thumbnail
+                <Image
                   source={Theme.icons.white.delete}
-                  square
                   style={{ width: 24, height: 24 }}
                 />
               </Button>
@@ -480,9 +479,8 @@ export default function CommentScreen({
                 paddingHorizontal: 24,
               }}
             >
-              <Thumbnail
+              <Image
                 source={Theme.icons.white.tags}
-                square
                 style={{ width: 16, height: 16, marginRight: 16 }}
               />
               <FlatList
@@ -554,9 +552,8 @@ export default function CommentScreen({
                 paddingHorizontal: 24,
               }}
             >
-              <Thumbnail
+              <Image
                 source={Theme.icons.white.tags}
-                square
                 style={{ width: 16, height: 16, marginRight: 16 }}
               />
               <FlatList

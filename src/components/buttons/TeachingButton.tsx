@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button, Text, Thumbnail } from 'native-base';
+import { View, Button, Text, Image } from 'native-base';
 import { ViewStyle, ImageSourcePropType, StyleSheet } from 'react-native';
 import Theme from '../../Theme.style';
 
@@ -55,20 +55,14 @@ export default function TeachingButton({
     <View style={wrapperStyle}>
       <Button
         style={active ? style.button : style.buttonInactive}
-        block
         onPress={onPress}
       >
-        <Thumbnail
-          square
+        <Image
+          alt="icon"
           source={active ? iconActive : iconInactive}
           style={style.icon}
         />
-        <Text
-          style={active ? style.label : style.labelInactive}
-          uppercase={false}
-        >
-          {label}
-        </Text>
+        <Text style={active ? style.label : style.labelInactive}>{label}</Text>
       </Button>
     </View>
   );

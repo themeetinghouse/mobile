@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import { Text, Button, Image } from 'native-base';
 import {
-  Text,
-  Left,
-  Body,
-  Right,
-  Button,
-  Content,
-  Thumbnail,
-} from 'native-base';
-import { TextStyle, ViewStyle, StyleSheet, View, Linking } from 'react-native';
+  TextStyle,
+  ViewStyle,
+  StyleSheet,
+  View,
+  Linking,
+  ScrollView,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
@@ -205,50 +204,46 @@ export default function NotesScreen({
       header: function render() {
         return (
           <Header>
-            <Left style={style.headerLeft}>
-              <Button transparent onPress={() => navigation.goBack()}>
-                <Thumbnail
-                  style={Style.icon}
-                  source={Theme.icons.white.arrowLeft}
-                  square
-                />
-              </Button>
-            </Left>
-            <Body style={style.headerBody}>
-              <Text
-                onPress={() => {
-                  setNotesMode('notes');
-                  ref.current?.scrollTo(0);
-                }}
-                style={[
-                  style.headerTitle,
-                  notesMode === 'notes' ? style.headerTitleSelected : {},
-                ]}
-              >
-                Notes
-              </Text>
-              <Text
-                onPress={() => {
-                  setNotesMode('questions');
-                  ref.current?.scrollTo(1);
-                }}
-                style={[
-                  style.headerTitle,
-                  notesMode === 'questions' ? style.headerTitleSelected : {},
-                ]}
-              >
-                Questions
-              </Text>
-            </Body>
-            <Right style={style.headerRight}>
-              <Button transparent onPress={handleOpenTextOptions}>
-                <Thumbnail
-                  style={Style.icon}
-                  source={Theme.icons.white.textOptions}
-                  square
-                />
-              </Button>
-            </Right>
+            <Button onPress={() => navigation.goBack()}>
+              <Image
+                style={Style.icon}
+                source={Theme.icons.white.arrowLeft}
+                alt="left icon"
+              />
+            </Button>
+
+            <Text
+              onPress={() => {
+                setNotesMode('notes');
+                ref.current?.scrollTo(0);
+              }}
+              style={[
+                style.headerTitle,
+                notesMode === 'notes' ? style.headerTitleSelected : {},
+              ]}
+            >
+              Notes
+            </Text>
+            <Text
+              onPress={() => {
+                setNotesMode('questions');
+                ref.current?.scrollTo(1);
+              }}
+              style={[
+                style.headerTitle,
+                notesMode === 'questions' ? style.headerTitleSelected : {},
+              ]}
+            >
+              Questions
+            </Text>
+
+            <Button onPress={handleOpenTextOptions}>
+              <Image
+                style={Style.icon}
+                source={Theme.icons.white.textOptions}
+                alt="text options icon"
+              />
+            </Button>
           </Header>
         );
       },
@@ -326,7 +321,8 @@ export default function NotesScreen({
     const getComments = async () => {
       if (noteId)
         try {
-          const cognitoUser: TMHCognitoUser = await Auth.currentAuthenticatedUser();
+          const cognitoUser: TMHCognitoUser =
+            await Auth.currentAuthenticatedUser();
           const input: GetCommentsByOwnerQueryVariables = {
             owner: cognitoUser.username,
             noteId: { eq: noteId },
@@ -424,7 +420,7 @@ export default function NotesScreen({
             setNotesMode(index === 0 ? 'notes' : 'questions')
           }
         >
-          <Content
+          <ScrollView
             style={[
               style.content,
               {
@@ -445,8 +441,8 @@ export default function NotesScreen({
               type="notes"
               openVerseCallback={handleOpenVerse}
             />
-          </Content>
-          <Content
+          </ScrollView>
+          <ScrollView
             style={[
               style.content,
               {
@@ -467,7 +463,7 @@ export default function NotesScreen({
               type="questions"
               openVerseCallback={handleOpenVerse}
             />
-          </Content>
+          </ScrollView>
         </Swiper>
       ) : (
         <ActivityIndicator />

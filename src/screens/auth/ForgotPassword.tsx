@@ -114,12 +114,14 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
     try {
       await Auth.forgotPassword(user).then(() => updateCodeState(true));
     } catch (e) {
-      if (e.code === 'UserNotFoundException') setError('Username not found.');
-      else if (e.code === 'InvalidPasswordException')
-        setError(e.message.split(': ')[1]);
-      else if (e.code === 'InvalidParameterException')
-        setError('Password not long enough');
-      else setError(e.message);
+      if (e instanceof Error) {
+        if (e.code === 'UserNotFoundException') setError('Username not found.');
+        else if (e.code === 'InvalidPasswordException')
+          setError(e.message.split(': ')[1]);
+        else if (e.code === 'InvalidParameterException')
+          setError('Password not long enough');
+        else setError(e.message);
+      }
     }
     setSending(false);
   };
@@ -131,7 +133,9 @@ export default function ForgotPassword({ navigation }: Params): JSX.Element {
       updateCodeState(true);
       toLogin();
     } catch (e) {
-      setError(e.message);
+      if (e instanceof Error) {
+        setError(e.message);
+      }
     }
     setSending(false);
   };

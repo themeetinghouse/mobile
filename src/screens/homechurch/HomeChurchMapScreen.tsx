@@ -11,7 +11,7 @@ import {
   StatusBar,
   Platform,
 } from 'react-native';
-import { Thumbnail } from 'native-base';
+import { Image } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
@@ -138,7 +138,7 @@ export default function HomeChurchMapScreen({
         onPress={() => navigation.goBack()}
         style={styles.closeButton}
       >
-        <Thumbnail
+        <Image
           style={{
             width: 26,
             height: 26,
@@ -198,8 +198,8 @@ export default function HomeChurchMapScreen({
                       },
                     ]}
                   >
-                    <Thumbnail
-                      square
+                    <Image
+                      alt="homechurch icon"
                       style={{ width: 18, height: 18 }}
                       source={
                         selected === index

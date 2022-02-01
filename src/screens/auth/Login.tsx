@@ -17,7 +17,7 @@ import {
   useRoute,
   RouteProp,
 } from '@react-navigation/native';
-import { Thumbnail, Button } from 'native-base';
+import { Image, Button } from 'native-base';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
@@ -184,7 +184,9 @@ export default function Login({ navigation }: Params): JSX.Element {
         });
       navigateHome();
     } catch (e) {
-      setError(e.message);
+      if (e instanceof Error) {
+        setError(e.message);
+      }
     }
     setSending(false);
   };
@@ -212,12 +214,11 @@ export default function Login({ navigation }: Params): JSX.Element {
           }}
         >
           <Button
-            transparent
             style={{ position: 'absolute', left: '5%' }}
             onPress={() => navigateHome()}
           >
-            <Thumbnail
-              square
+            <Image
+              alt="close icon"
               accessibilityLabel="Close Button"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}

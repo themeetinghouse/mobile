@@ -1,4 +1,3 @@
-import { Thumbnail } from 'native-base';
 import React, { useState, memo } from 'react';
 import {
   TouchableOpacity,
@@ -176,11 +175,7 @@ function TeacherItem({ teacher }: Props): JSX.Element {
                 onPress={() => Linking.openURL(`tel:${teacher.Phone}`)}
                 style={style.iconContainer}
               >
-                <Thumbnail
-                  style={style.icon}
-                  source={Theme.icons.white.phone}
-                  square
-                />
+                <Image style={style.icon} source={Theme.icons.white.phone} />
               </TouchableOpacity>
             ) : null}
             {teacher.Email ? (
@@ -189,11 +184,7 @@ function TeacherItem({ teacher }: Props): JSX.Element {
                 onPress={() => Linking.openURL(`mailto:${teacher.Email}`)}
                 style={style.iconContainer}
               >
-                <Thumbnail
-                  style={style.icon}
-                  source={Theme.icons.white.contact}
-                  square
-                />
+                <Image style={style.icon} source={Theme.icons.white.contact} />
               </TouchableOpacity>
             ) : null}
           </View>

@@ -37,11 +37,11 @@ export default function HighlightCarousel(): JSX.Element {
   }, []);
   return (
     <GenericCarousel
-      handleNavigation={(item, index) => handleNavigation(item, index)}
+      handleNavigation={(item, index) => handleNavigation(item, index ?? -1)}
       loadMore={loadHighlights}
       data={{
         items: highlights.items,
-        nextToken: highlights?.nextToken,
+        nextToken: highlights?.nextToken ?? '',
         loading: highlights.loading,
       }}
       header="Highlights"
