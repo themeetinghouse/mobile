@@ -122,7 +122,7 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
   const [display, setDisplay] = useState<ViewStyle['display']>('flex');
   const [comments, setComments] = useState<CommentContextType['comments']>([]);
   const [, setExpoPushToken] = useState<DevicePushToken>();
-  const [, setNotification] = useState(false);
+  const [, setNotification] = useState<Notifications.Notification | null>(null);
   const notificationListener = useRef() as React.MutableRefObject<Subscription>;
 
   const navRef = createRef<NavigationContainerRef>();
@@ -198,9 +198,11 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
 
     // This listener is fired whenever a notification is received while the app is foregrounded
     notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification: any) => {
-        setNotification(notification);
-      });
+      Notifications.addNotificationReceivedListener(
+        (notification: Notifications.Notification) => {
+          setNotification(notification);
+        }
+      );
     return () => {
       Notifications.removeNotificationSubscription(
         notificationListener.current
