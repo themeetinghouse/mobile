@@ -1,5 +1,5 @@
 export const popularTeachingQuery = `query GetVideoByVideoType(
-    $videoTypes: String
+    $videoTypes: String!
     $publishedDate: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelVideoFilterInput
@@ -59,7 +59,7 @@ export const popularTeachingQuery = `query GetVideoByVideoType(
   `;
 
 export const getVideoByVideoType = `query GetVideoByVideoType(
-    $videoTypes: String
+    $videoTypes: String!
     $publishedDate: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelVideoFilterInput
@@ -135,7 +135,7 @@ export const askQuestion = /* GraphQL */ `
   }
 `;
 export const allSermonsQuery = `query GetVideoByVideoType(
-    $videoTypes: String
+    $videoTypes: String!
     $publishedDate: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelVideoFilterInput

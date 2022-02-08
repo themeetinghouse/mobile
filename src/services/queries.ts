@@ -26,7 +26,7 @@ export const listAnnouncements = /* GraphQL */ `
 
 export const getSeriesBySeriesType = `
   query getSeriesBySeriesType(
-    $seriesType: String, 
+    $seriesType: String!, 
     $startDate: ModelStringKeyConditionInput, 
     $sortDirection: ModelSortDirection, 
     $filter: ModelSeriesFilterInput, 
@@ -473,7 +473,7 @@ export const getNotes = /* GraphQL */ `
 
 export const getVideoByVideoType = /* GraphQL */ `
   query GetVideoByVideoType(
-    $videoTypes: String
+    $videoTypes: String!
     $publishedDate: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelVideoFilterInput

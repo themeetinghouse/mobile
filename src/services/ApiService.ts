@@ -2,14 +2,12 @@ import axios from 'axios';
 
 const env = {
   dev: {
-    url:
-      'https://qt6manqtzbhkvd6tcxvchusmyq.appsync-api.us-east-1.amazonaws.com/graphql',
-    apiKey: 'da2-6zfuocqmhvecrfkng7hx2oipni',
+    url: 'https://qt6manqtzbhkvd6tcxvchusmyq.appsync-api.us-east-1.amazonaws.com/graphql',
+    apiKey: 'da2-z4ilyrquhnagtbiosodc6qq4kq',
   },
   prod: {
-    url:
-      'https://4etvlewcdnamtpf7pl2engjw6y.appsync-api.us-east-1.amazonaws.com/graphql',
-    apiKey: 'da2-b5fz4t7epfczvjlgbjroyt4cc4',
+    url: 'https://4etvlewcdnamtpf7pl2engjw6y.appsync-api.us-east-1.amazonaws.com/graphql',
+    apiKey: 'da2-z4ilyrquhnagtbiosodc6qq4kq',
   },
 };
 const settings = env.dev;
