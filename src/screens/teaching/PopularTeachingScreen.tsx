@@ -1,6 +1,12 @@
 import React, { useLayoutEffect } from 'react';
-import { Container, Text, View, Image } from 'native-base';
-import { TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import {
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Text,
+  View,
+  Image,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
@@ -69,7 +75,6 @@ export default function AllSermonsScreen({
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -93,24 +98,22 @@ export default function AllSermonsScreen({
   }, [navigation]);
 
   return (
-    <Container>
-      <ScrollView style={style.content}>
-        <View style={{ marginBottom: 48 }}>
-          {teaching && teaching.length > 0 ? (
-            teaching.map((sermon) => (
-              <TeachingListItem
-                key={sermon?.id}
-                teaching={sermon}
-                handlePress={() =>
-                  navigation.push('SermonLandingScreen', { item: sermon })
-                }
-              />
-            ))
-          ) : (
-            <ActivityIndicator />
-          )}
-        </View>
-      </ScrollView>
-    </Container>
+    <ScrollView style={style.content}>
+      <View style={{ marginBottom: 48 }}>
+        {teaching && teaching.length > 0 ? (
+          teaching.map((sermon) => (
+            <TeachingListItem
+              key={sermon?.id}
+              teaching={sermon}
+              handlePress={() =>
+                navigation.push('SermonLandingScreen', { item: sermon })
+              }
+            />
+          ))
+        ) : (
+          <ActivityIndicator />
+        )}
+      </View>
+    </ScrollView>
   );
 }

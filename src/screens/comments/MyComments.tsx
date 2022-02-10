@@ -8,8 +8,8 @@ import {
   FlatList,
   SectionList,
   TouchableHighlight,
+  Image,
 } from 'react-native';
-import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -170,7 +170,6 @@ export default function MyComments({ navigation }: Params): JSX.Element {
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -497,12 +496,17 @@ export default function MyComments({ navigation }: Params): JSX.Element {
 
   return (
     <View style={{ flex: 1, marginTop: 12 }}>
-      <SearchBar
-        style={{ marginHorizontal: 16, marginBottom: 18.5 }}
-        handleTextChanged={(newStr) => setSearchText(newStr)}
-        searchText={searchText}
-        placeholderLabel="Search"
-      />
+      <View style={{ height: 40, marginBottom: 18.5 }}>
+        <SearchBar
+          style={{
+            marginHorizontal: 16,
+          }}
+          handleTextChanged={(newStr) => setSearchText(newStr)}
+          searchText={searchText}
+          placeholderLabel="Search"
+        />
+      </View>
+
       <ToggleButton
         toggle={(current: boolean) => setFilterToggle(current)}
         currentToggle={filterToggle}

@@ -1,6 +1,5 @@
-import { Image } from 'native-base';
 import React, { memo, useLayoutEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Image } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -48,7 +47,6 @@ function AllEvents({ navigation, route }: Props): JSX.Element {
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />

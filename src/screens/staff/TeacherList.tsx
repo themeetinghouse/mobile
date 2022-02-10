@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { FlatList, StyleSheet, View, Text } from 'react-native';
-import { Image } from 'native-base';
+import { FlatList, StyleSheet, View, Text, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -53,7 +52,6 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />

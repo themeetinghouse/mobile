@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Platform, Animated } from 'react-native';
-import { View, Text } from 'native-base';
+import { StyleSheet, Platform, Animated, View, Text } from 'react-native';
 import {
   TouchableOpacity,
   PanGestureHandler,

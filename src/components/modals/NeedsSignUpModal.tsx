@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text } from 'native-base';
-import { Modal } from 'react-native';
+import { Modal, View, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Theme from '../../Theme.style';

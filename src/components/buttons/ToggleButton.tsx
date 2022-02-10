@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text, View } from 'native-base';
-import { StyleSheet, TouchableHighlight } from 'react-native';
+import { StyleSheet, TouchableHighlight, Text, View } from 'react-native';
 import { Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({

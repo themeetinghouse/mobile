@@ -62,8 +62,7 @@ const style = StyleSheet.create({
   icon: Style.icon,
   headerButton: {
     backgroundColor: Theme.colors.header,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 40,
   },
   title: HeaderStyle.title,
   subtitle: HeaderStyle.subtitle,

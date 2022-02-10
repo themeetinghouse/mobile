@@ -1,12 +1,20 @@
 import React from 'react';
-import { View, Button, Text } from 'native-base';
-import { ViewStyle, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  ViewStyle,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
 import Theme from '../../Theme.style';
 
 const styles = StyleSheet.create({
   button: {
     backgroundColor: Theme.colors.white,
     borderRadius: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
     height: '100%',
   },
   label: {
@@ -16,6 +24,8 @@ const styles = StyleSheet.create({
   },
   buttonBlack: {
     backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 0,
     height: '100%',
   },
@@ -28,6 +38,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 3,
     borderColor: 'white',
   },
@@ -81,9 +93,9 @@ export default function WhiteButton({
 
   return (
     <View style={style}>
-      <Button style={buttonStyle} onPress={onPress}>
+      <TouchableOpacity style={buttonStyle} onPress={onPress}>
         <Text style={labelStyle}>{label}</Text>
-      </Button>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -104,13 +116,17 @@ export function WhiteButtonAsync({
 
   return (
     <View style={style}>
-      <Button disabled={isLoading} style={buttonStyle} onPress={onPress}>
+      <TouchableOpacity
+        disabled={isLoading}
+        style={buttonStyle}
+        onPress={onPress}
+      >
         {isLoading ? (
           <ActivityIndicator color="black" />
         ) : (
           <Text style={labelStyle}>{label}</Text>
         )}
-      </Button>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { Share, Platform, Animated } from 'react-native';
+import {
+  Share,
+  Platform,
+  Animated,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import Clipboard from 'expo-clipboard';
-import { Button, View, Text, Image } from 'native-base';
 import * as Linking from 'expo-linking';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -108,9 +115,12 @@ export default function ShareModal({
             }}
           />
         </View>
-        <Button
+        <TouchableOpacity
           style={{
-            height: 56,
+            padding: 16,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
             borderRadius: 0,
             backgroundColor: Theme.colors.background,
           }}
@@ -120,7 +130,7 @@ export default function ShareModal({
           }}
         >
           <Image
-            alt="link icon"
+            accessibilityLabel="link icon"
             source={Theme.icons.white.link}
             style={{ width: 24, height: 24 }}
           />
@@ -129,52 +139,61 @@ export default function ShareModal({
               color: 'white',
               fontFamily: Theme.fonts.fontFamilyBold,
               fontSize: 16,
-              lineHeight: 24,
+              marginLeft: 8,
+              lineHeight: 18,
             }}
           >
             {copyLinkText}
           </Text>
-        </Button>
-        <View style={{ display: 'flex', flexDirection: 'row', marginTop: 16 }}>
-          <Button
+        </TouchableOpacity>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            marginTop: 16,
+          }}
+        >
+          <TouchableOpacity
             testID="twitter"
             style={{
-              flexGrow: 1,
-              height: 56,
-              borderRadius: 0,
+              padding: 12,
+
               borderWidth: 3,
+              flexGrow: 1,
               borderColor: Theme.colors.background,
               backgroundColor: 'transparent',
+              justifyContent: 'center',
+              alignItems: 'center',
               marginRight: 16,
             }}
             onPress={shareToTwitter}
           >
             <Image
-              alt="twitter icon"
               accessibilityLabel="Share to Twitter"
               source={Theme.icons.black.twitter}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
-          <Button
+          </TouchableOpacity>
+          <TouchableOpacity
             testID="share"
             style={{
-              flexGrow: 1,
-              height: 56,
-              borderRadius: 0,
+              padding: 12,
+
               borderWidth: 3,
+              flexGrow: 1,
               borderColor: Theme.colors.background,
               backgroundColor: 'transparent',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
             onPress={share}
           >
             <Image
-              alt="share icon"
               accessibilityLabel="Share"
               source={Theme.icons.black.share}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         </View>
       </Animated.View>
     </PanGestureHandler>

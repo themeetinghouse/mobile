@@ -1,10 +1,15 @@
 import React, { useContext, useLayoutEffect, useState } from 'react';
-import { Container, Text, View, Image, List, Button } from 'native-base';
-import { ScrollView, StyleSheet } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Auth, { CognitoUser } from '@aws-amplify/auth';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
 import LocationsService from '../../services/LocationsService';
@@ -89,6 +94,8 @@ const style = StyleSheet.create({
   },
   listItem2: {
     marginLeft: 0,
+    paddingVertical: 10,
+    flexDirection: 'row',
     borderColor: Theme.colors.gray2,
     backgroundColor: Theme.colors.background,
   },
@@ -130,7 +137,8 @@ const style = StyleSheet.create({
   listArrowIcon: {
     ...Style.icon,
     ...{
-      marginLeft: 5,
+      marginRight: 16,
+      marginLeft: 2,
     },
   },
   headerText: {
@@ -154,7 +162,8 @@ export default function Account({ navigation }: Params): JSX.Element {
       const userType: CognitoUser = await Auth.currentAuthenticatedUser();
       const userGroups = userType.getSignInUserSession()?.getAccessToken()
         ?.payload?.['cognito:groups'];
-      setGroups(userGroups);
+      const uniqu: any = [...new Set(userGroups)];
+      setGroups(uniqu);
     } catch (err) {
       setGroups([]);
     }
@@ -168,13 +177,11 @@ export default function Account({ navigation }: Params): JSX.Element {
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button onPress={() => navigation.navigate('ProfileScreen')}>
-            <Image
-              style={Style.icon}
-              source={Theme.icons.white.arrowLeft}
-              alt="left icon"
-            />
-          </Button>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ProfileScreen')}
+          >
+            <Image style={Style.icon} source={Theme.icons.white.arrowLeft} />
+          </TouchableOpacity>
         );
       },
       headerLeftContainerStyle: { left: 16 },
@@ -214,63 +221,63 @@ export default function Account({ navigation }: Params): JSX.Element {
   ];
 
   return (
-    <Container
+    <View
       style={{
+        flex: 1,
         backgroundColor: Theme.colors.black,
         paddingBottom: safeArea.bottom,
       }}
     >
       <ScrollView style={[style.content, { flex: 1 }]}>
-        <View>
-          <List>
-            {items.map((item) => {
-              if (typeof item === 'string')
-                return (
-                  <TouchableOpacity
-                    key={item}
-                    style={[
-                      style.listItem,
-                      { height: 50, alignItems: 'flex-end', paddingBottom: 4 },
-                    ]}
-                  >
-                    <Text style={style.listText}>{item}</Text>
-                  </TouchableOpacity>
-                );
+        <View style={{ marginTop: 4 }}>
+          {items.map((item) => {
+            if (typeof item === 'string')
               return (
                 <TouchableOpacity
-                  key={item.id}
-                  style={style.listItem2}
-                  onPress={item.action ? item.action : () => null}
+                  key={item}
+                  style={[
+                    style.listItem,
+                    {
+                      alignItems: 'flex-start',
+                      paddingVertical: 20,
+                      paddingRight: 8,
+                    },
+                  ]}
                 >
-                  <View>
-                    <Text style={style.listText2}>{item.text}</Text>
-                  </View>
-
-                  <View
-                    style={{
-                      maxWidth: '75%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    {item.data ? (
-                      <Text numberOfLines={1} style={style.listText3}>
-                        {item.data}
-                      </Text>
-                    ) : null}
-                    {item.icon ? (
-                      <Image
-                        style={style.listArrowIcon}
-                        source={item.icon}
-                        alt="icon"
-                      />
-                    ) : null}
-                  </View>
+                  <Text style={style.listText}>{item}</Text>
                 </TouchableOpacity>
               );
-            })}
-          </List>
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[style.listItem2, { flex: 1 }]}
+                onPress={item.action ? item.action : () => null}
+              >
+                <Text numberOfLines={1} style={[style.listText2, { flex: 1 }]}>
+                  {item.text}
+                </Text>
+
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  {item.data ? (
+                    <Text numberOfLines={1} style={style.listText3}>
+                      {item.data}
+                    </Text>
+                  ) : null}
+                  {item.icon ? (
+                    <Image style={style.listArrowIcon} source={item.icon} />
+                  ) : (
+                    <View style={style.listArrowIcon} />
+                  )}
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+
           <View style={{ marginTop: 20 }}>
             <Text style={style.listText}>Groups</Text>
             <View style={style.groupPillContainer}>
@@ -283,6 +290,6 @@ export default function Account({ navigation }: Params): JSX.Element {
           </View>
         </View>
       </ScrollView>
-    </Container>
+    </View>
   );
 }

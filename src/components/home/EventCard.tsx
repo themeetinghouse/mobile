@@ -1,8 +1,13 @@
 /* eslint-disable camelcase */
 import React from 'react';
-import { Text, Image, View } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, TouchableHighlight } from 'react-native';
+import {
+  StyleSheet,
+  TouchableHighlight,
+  Text,
+  View,
+  Image,
+} from 'react-native';
 import { EventQueryResult } from '../../services/EventsService';
 import { Style, Theme } from '../../Theme.style';
 
@@ -92,11 +97,7 @@ export default function EventCard({
         </Text>
         <View style={style.titleButtonContainer}>
           <Text style={style.title}>{event?.name}</Text>
-          <Image
-            alt="Arrow Icon"
-            style={style.icon}
-            source={Theme.icons.white.arrow}
-          />
+          <Image style={style.icon} source={Theme.icons.white.arrow} />
         </View>
         <Text style={style.descriptionContainer} numberOfLines={4}>
           {event?.description

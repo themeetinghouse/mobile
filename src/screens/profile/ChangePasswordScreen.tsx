@@ -1,10 +1,11 @@
 import React, { useState, useContext, useLayoutEffect } from 'react';
-import { Container, Text, Button, View, Image, List } from 'native-base';
 import {
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Image,
+  View,
+  Text,
   Keyboard,
-  Dimensions,
   StyleSheet,
   ScrollView,
 } from 'react-native';
@@ -68,11 +69,14 @@ const style = StyleSheet.create({
   },
   listItem: {
     marginLeft: 0,
+    paddingVertical: 16,
+    paddingRight: 16,
     borderColor: Theme.colors.gray2,
     backgroundColor: Theme.colors.background,
   },
   listText: {
     fontSize: Theme.fonts.medium,
+    flex: 1,
     color: Theme.colors.grey5,
     fontFamily: Theme.fonts.fontFamilyRegular,
     marginLeft: 16,
@@ -100,10 +104,13 @@ const style = StyleSheet.create({
     lineHeight: 24,
   },
   input: {
+    borderBottomColor: '#54565A',
+    borderBottomWidth: 1,
+    flex: 1,
     fontFamily: Theme.fonts.fontFamilyRegular,
     color: 'white',
     fontSize: 24,
-    paddingLeft: 16,
+    marginLeft: 16,
   },
 });
 
@@ -164,13 +171,9 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button onPress={() => navigation.goBack()}>
-            <Image
-              style={Style.icon}
-              source={Theme.icons.white.arrowLeft}
-              alt="left icon"
-            />
-          </Button>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Image style={Style.icon} source={Theme.icons.white.arrowLeft} />
+          </TouchableOpacity>
         );
       },
       headerLeftContainerStyle: { left: 16 },
@@ -205,94 +208,94 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <Container
+      <View
         style={{
+          flex: 1,
           backgroundColor: Theme.colors.black,
           paddingBottom: safeArea.bottom,
         }}
       >
         <ScrollView style={style.content}>
           <View>
-            <List>
-              <View
-                style={{
-                  height: 15,
-                  backgroundColor: Theme.colors.black,
-                  padding: 0,
-                }}
-              />
-              <TouchableOpacity style={style.listItem}>
-                <View style={{ display: 'flex', flexDirection: 'column' }}>
-                  <View style={{ display: 'flex', flexDirection: 'row' }}>
-                    <Text style={style.listText}>Current Password</Text>
-                    <View
-                      style={{ width: Dimensions.get('window').width - 150 }}
-                    >
-                      <TextInput
-                        secureTextEntry
-                        autoCompleteType="password"
-                        textContentType="password"
-                        keyboardAppearance="dark"
-                        style={style.input}
-                        value={currentPass}
-                        onChange={(e) => setCurrentPass(e.nativeEvent.text)}
-                      />
-                    </View>
-                  </View>
-                  <View style={{ alignItems: 'flex-start' }}>
-                    <Text
-                      onPress={() => forgotPass()}
-                      style={style.listSubtext}
-                    >
-                      Forgot password?
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-              <View
-                style={{
-                  height: 15,
-                  backgroundColor: Theme.colors.black,
-                  padding: 0,
-                }}
-              />
-              <TouchableOpacity style={style.listItem}>
+            <View
+              style={{
+                height: 15,
+                backgroundColor: Theme.colors.black,
+                padding: 0,
+              }}
+            />
+            <View style={style.listItem}>
+              <View style={{ display: 'flex', flexDirection: 'column' }}>
                 <View style={{ display: 'flex', flexDirection: 'row' }}>
-                  <Text style={style.listText}>New Password</Text>
-                  <View style={{ width: Dimensions.get('window').width - 150 }}>
+                  <Text numberOfLines={1} style={style.listText}>
+                    Current Password
+                  </Text>
+                  <View style={{ flex: 1 }}>
                     <TextInput
-                      textContentType="newPassword"
-                      passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
                       secureTextEntry
+                      autoCompleteType="password"
+                      textContentType="password"
                       keyboardAppearance="dark"
                       style={style.input}
-                      value={newPass}
-                      onChange={(e) => setNewPass(e.nativeEvent.text)}
+                      value={currentPass}
+                      autoFocus
+                      onChange={(e) => setCurrentPass(e.nativeEvent.text)}
                     />
                   </View>
                 </View>
-              </TouchableOpacity>
-              <View style={{ marginTop: 12 }}>
-                <Text
-                  style={{
-                    color: Theme.colors.red,
-                    alignSelf: 'center',
-                    fontFamily: Theme.fonts.fontFamilyRegular,
-                    fontSize: 12,
-                    height: 12,
-                  }}
-                >
-                  {error}
-                </Text>
+                <View style={{ alignItems: 'flex-start' }}>
+                  <TouchableOpacity onPress={() => forgotPass()}>
+                    <Text style={style.listSubtext}>Forgot password?</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </List>
+            </View>
+            <View
+              style={{
+                height: 15,
+                backgroundColor: Theme.colors.black,
+                padding: 0,
+              }}
+            />
+            <View style={style.listItem}>
+              <View style={{ flexDirection: 'row' }}>
+                <Text numberOfLines={1} style={style.listText}>
+                  New Password
+                </Text>
+                <View style={{ flex: 1 }}>
+                  <TextInput
+                    textContentType="newPassword"
+                    passwordRules="required: lower; required: upper; required: digit; required: special; minlength: 8;"
+                    secureTextEntry
+                    keyboardAppearance="dark"
+                    style={style.input}
+                    value={newPass}
+                    onChange={(e) => setNewPass(e.nativeEvent.text)}
+                  />
+                </View>
+              </View>
+            </View>
+            <View style={{ marginTop: 12 }}>
+              <Text
+                style={{
+                  color: Theme.colors.red,
+                  alignSelf: 'center',
+                  fontFamily: Theme.fonts.fontFamilyRegular,
+                  fontSize: 12,
+                  height: 12,
+                }}
+              >
+                {error}
+              </Text>
+            </View>
+
             <PasswordRequirements
               password={newPass}
               style={{ marginHorizontal: '5%' }}
             />
           </View>
         </ScrollView>
-      </Container>
+      </View>
     </TouchableWithoutFeedback>
   );
 }

@@ -5,7 +5,6 @@ import React, {
   Fragment,
   useLayoutEffect,
 } from 'react';
-import { Text, View } from 'native-base';
 import moment from 'moment';
 import {
   Dimensions,
@@ -14,6 +13,8 @@ import {
   Animated,
   FlatList,
   Image,
+  View,
+  Text,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';

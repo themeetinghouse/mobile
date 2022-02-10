@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect, Component } from 'react';
-import { Text, Image, Input } from 'native-base';
-import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  Image,
+  TextInput,
+} from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import LocationsService from '../../services/LocationsService';
@@ -88,7 +95,6 @@ export default function LocationSelectionScreen({
   const [locations, setLocations] = useState<LocationData[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<LocationData>();
   const [searchText, setSearchText] = useState('');
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -141,7 +147,6 @@ export default function LocationSelectionScreen({
             <Image
               style={style.listCheckIcon}
               source={Theme.icons.white.check}
-              alt="check icon"
             />
           )}
         </TouchableOpacity>
@@ -166,12 +171,8 @@ export default function LocationSelectionScreen({
     <Component style={{ backgroundColor: 'black' }}>
       <ScrollView style={style.content}>
         <View>
-          <Image
-            style={style.searchIcon}
-            source={Theme.icons.white.search}
-            alt="search icon"
-          />
-          <Input
+          <Image style={style.searchIcon} source={Theme.icons.white.search} />
+          <TextInput
             style={searchText ? style.searchInputActive : style.searchInput}
             value={searchText}
             onChangeText={(str) => setSearchText(str)}
@@ -187,7 +188,6 @@ export default function LocationSelectionScreen({
                 style={style.searchIcon}
                 accessibilityLabel="Close Location Search"
                 source={Theme.icons.white.closeCancel}
-                alt="close icon"
               />
             </TouchableOpacity>
           ) : null}

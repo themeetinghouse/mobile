@@ -9,9 +9,9 @@ import {
   NativeScrollEvent,
   TouchableOpacity,
   StatusBar,
+  Image,
   Platform,
 } from 'react-native';
-import { Image } from 'native-base';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
@@ -199,7 +199,6 @@ export default function HomeChurchMapScreen({
                     ]}
                   >
                     <Image
-                      alt="homechurch icon"
                       style={{ width: 18, height: 18 }}
                       source={
                         selected === index

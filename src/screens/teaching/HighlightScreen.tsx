@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  StatusBar,
   StyleSheet,
   Text,
   View,
@@ -12,7 +11,6 @@ import {
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { Button, Container } from 'native-base';
 import Header from '../../components/Header';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -124,36 +122,52 @@ export default function HighlightScreen({
 
   return (
     <NoMedia>
-      <Container style={{ backgroundColor: 'black', flex: 1 }}>
+      <View style={{ backgroundColor: 'black', flex: 1 }}>
         <Header>
-          <StatusBar
-            backgroundColor={Theme.colors.black}
-            barStyle="light-content"
-          />
-
-          <Button onPress={() => navigation.goBack()}>
-            <Image
-              accessibilityLabel="Close Highlight"
-              source={Theme.icons.white.closeCancel}
-              style={{ width: 24, height: 24 }}
-            />
-          </Button>
-
-          <Image
-            source={{
-              uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`,
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              justifyContent: 'flex-start',
+              alignItems: 'center',
             }}
-            style={{ width: 56, height: 68, marginRight: 16 }}
-          />
-          <View>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={style.series}>
-              {highlight.seriesTitle}
-            </Text>
-            <Text numberOfLines={1} ellipsizeMode="tail" style={style.episode}>
-              {highlight.episodeTitle
-                ? highlight.episodeTitle
-                : highlight.Youtube?.snippet?.title}
-            </Text>
+          >
+            <TouchableOpacity
+              style={{
+                alignSelf: 'flex-start',
+                paddingTop: 6,
+                paddingLeft: 16,
+                paddingRight: 30,
+              }}
+              onPress={() => navigation.goBack()}
+            >
+              <Image
+                accessibilityLabel="Close Highlight"
+                source={Theme.icons.white.closeCancel}
+                style={{ width: 24, height: 24 }}
+              />
+            </TouchableOpacity>
+
+            <Image
+              source={{
+                uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`,
+              }}
+              style={{ width: 56, height: 68, marginRight: 16 }}
+            />
+            <View style={{ flex: 1 }}>
+              <Text numberOfLines={1} ellipsizeMode="tail" style={style.series}>
+                {highlight.seriesTitle}
+              </Text>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={style.episode}
+              >
+                {highlight.episodeTitle
+                  ? highlight.episodeTitle
+                  : highlight.Youtube?.snippet?.title}
+              </Text>
+            </View>
           </View>
         </Header>
         <View
@@ -210,7 +224,7 @@ export default function HighlightScreen({
             )}
           />
         </View>
-      </Container>
+      </View>
     </NoMedia>
   );
 }

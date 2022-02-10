@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   Dimensions,
   TouchableHighlight,
+  Image,
 } from 'react-native';
-import { Image } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { HomeChurchInfo, ListHomeChurchInfosQuery } from 'src/services/API';
 import { Theme, Style } from '../../Theme.style';
@@ -243,11 +243,7 @@ const HomeChurchItem = ({
             }}
             style={style.iconContainer}
           >
-            <Image
-              alt="calendar add icon"
-              source={Theme.icons.white.calendarAdd}
-              style={Style.icon}
-            />
+            <Image source={Theme.icons.white.calendarAdd} style={Style.icon} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -256,11 +252,7 @@ const HomeChurchItem = ({
             }}
             style={style.iconContainer}
           >
-            <Image
-              alt="contact icon"
-              source={Theme.icons.white.contact}
-              style={Style.icon}
-            />
+            <Image source={Theme.icons.white.contact} style={Style.icon} />
           </TouchableOpacity>
         </View>
       </View>
@@ -310,7 +302,6 @@ const HomeChurchItem = ({
               ]}
             >
               <Image
-                alt="family friendly icon"
                 source={Theme.icons.black.familyFriendly}
                 style={{ width: 16, height: 16 }}
               />

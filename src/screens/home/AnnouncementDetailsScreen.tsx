@@ -1,10 +1,11 @@
 import React, { useLayoutEffect } from 'react';
-import { Text, View } from 'native-base';
 import {
   Dimensions,
   Image,
   ScrollView,
   StyleSheet,
+  Text,
+  View,
   TouchableOpacity,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';

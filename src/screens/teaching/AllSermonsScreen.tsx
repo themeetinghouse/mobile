@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, View, Image } from 'native-base';
 import moment from 'moment';
 import {
   TouchableOpacity,
   StyleSheet,
   TouchableHighlight,
   Platform,
+  Text,
+  View,
+  Image,
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -176,7 +178,6 @@ export default function AllSermonsScreen({
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -200,61 +201,58 @@ export default function AllSermonsScreen({
   }, [navigation]);
 
   return (
-    <Container>
-      <ScrollView style={style.content}>
-        <SearchBar
-          style={style.searchBar}
-          searchText={searchText}
-          handleTextChanged={(newStr) => setSearchText(newStr)}
-          placeholderLabel="Search by name..."
-        />
-        <View style={style.dateSelectBar}>
-          <TouchableHighlight
-            style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }}
-            onPress={() => {
-              setShowCount(20);
-              navigation.push('DateRangeSelectScreen');
-            }}
-            underlayColor={Theme.colors.grey3}
-          >
-            {dateStart && dateEnd ? (
-              <Text style={style.dateRangeItemText}>
-                {isSame ? dateEndStr : `${dateStartStr} - ${dateEndStr}`}
-              </Text>
-            ) : (
-              <Text style={style.dateRangeItemText}>Date range</Text>
-            )}
-          </TouchableHighlight>
-        </View>
-        <View>
-          {sermons && sermons.length > 0 ? (
-            filteredSermons.map((sermon, key: number) => {
-              if (key < showCount)
-                return (
-                  <TeachingListItem
-                    key={sermon?.id}
-                    teaching={sermon}
-                    handlePress={() =>
-                      navigation.push('SermonLandingScreen', { item: sermon })
-                    }
-                  />
-                );
-
-              return null;
-            })
+    <ScrollView style={style.content}>
+      <SearchBar
+        style={style.searchBar}
+        searchText={searchText}
+        handleTextChanged={(newStr) => setSearchText(newStr)}
+        placeholderLabel="Search by name..."
+      />
+      <View style={style.dateSelectBar}>
+        <TouchableHighlight
+          style={{ borderRadius: 50, overflow: 'hidden', marginRight: 8 }}
+          onPress={() => {
+            setShowCount(20);
+            navigation.push('DateRangeSelectScreen');
+          }}
+          underlayColor={Theme.colors.grey3}
+        >
+          {dateStart && dateEnd ? (
+            <Text style={style.dateRangeItemText}>
+              {isSame ? dateEndStr : `${dateStartStr} - ${dateEndStr}`}
+            </Text>
           ) : (
-            <ActivityIndicator />
+            <Text style={style.dateRangeItemText}>Date range</Text>
           )}
-          {filteredSermons?.length > 20 &&
-          showCount < filteredSermons.length ? (
-            <View style={{ marginBottom: 20 }}>
-              <AllButton handlePress={() => setShowCount(showCount + 20)}>
-                Load More
-              </AllButton>
-            </View>
-          ) : null}
-        </View>
-      </ScrollView>
-    </Container>
+        </TouchableHighlight>
+      </View>
+      <View>
+        {sermons && sermons.length > 0 ? (
+          filteredSermons.map((sermon, key: number) => {
+            if (key < showCount)
+              return (
+                <TeachingListItem
+                  key={sermon?.id}
+                  teaching={sermon}
+                  handlePress={() =>
+                    navigation.push('SermonLandingScreen', { item: sermon })
+                  }
+                />
+              );
+
+            return null;
+          })
+        ) : (
+          <ActivityIndicator />
+        )}
+        {filteredSermons?.length > 20 && showCount < filteredSermons.length ? (
+          <View style={{ marginBottom: 20 }}>
+            <AllButton handlePress={() => setShowCount(showCount + 20)}>
+              Load More
+            </AllButton>
+          </View>
+        ) : null}
+      </View>
+    </ScrollView>
   );
 }

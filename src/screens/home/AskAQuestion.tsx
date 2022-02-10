@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import React, { useLayoutEffect, useState, useContext, useEffect } from 'react';
-import { Container, Image } from 'native-base';
 import {
   StyleSheet,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   TextInput,
   Alert,
   Platform,
+  Image,
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -92,7 +92,7 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
             onPress={() => navigation.goBack()}
           >
             <Image
-              alt="close icon"
+              accessibilityLabel="close icon"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
@@ -134,51 +134,49 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
   };
 
   return (
-    <Container>
-      <ScrollView style={style.content}>
-        <View style={style.body}>
-          <Text style={style.headingText}>
-            Questions submitted here will have the chance to be answered this
-            week after the sermon during our Q&A time.
-          </Text>
-          <TextInput
-            accessibilityLabel="Question Description"
-            keyboardAppearance="dark"
-            autoFocus
-            placeholder={"Ask whatever you'd like..."}
-            placeholderTextColor="#646469"
-            textContentType="none"
-            keyboardType="default"
-            value={question}
-            multiline
-            textAlignVertical="top"
-            onChange={(e) => setQuestion(e.nativeEvent.text)}
-            maxLength={1500}
-            autoCapitalize="sentences"
-            style={style.input}
-          />
-          <TextInput
-            accessibilityLabel="Email Address"
-            keyboardAppearance="dark"
-            placeholder="Email"
-            placeholderTextColor="#646469"
-            textContentType="emailAddress"
-            keyboardType="email-address"
-            value={email}
-            onChange={(e) => setEmail(e.nativeEvent.text.toLowerCase())}
-            style={style.emailInput}
-          />
-          <Text style={style.minorText}>
-            We do our best to answer as many questions as possible, but we
-            cannot guarantee that we’ll be able to get to yours.
-          </Text>
-          <WhiteButton
-            style={{ height: 56, marginVertical: 40 }}
-            label="Submit a Question"
-            onPress={submitQuestion}
-          />
-        </View>
-      </ScrollView>
-    </Container>
+    <ScrollView style={style.content}>
+      <View style={style.body}>
+        <Text style={style.headingText}>
+          Questions submitted here will have the chance to be answered this week
+          after the sermon during our Q&A time.
+        </Text>
+        <TextInput
+          accessibilityLabel="Question Description"
+          keyboardAppearance="dark"
+          autoFocus
+          placeholder={"Ask whatever you'd like..."}
+          placeholderTextColor="#646469"
+          textContentType="none"
+          keyboardType="default"
+          value={question}
+          multiline
+          textAlignVertical="top"
+          onChange={(e) => setQuestion(e.nativeEvent.text)}
+          maxLength={1500}
+          autoCapitalize="sentences"
+          style={style.input}
+        />
+        <TextInput
+          accessibilityLabel="Email Address"
+          keyboardAppearance="dark"
+          placeholder="Email"
+          placeholderTextColor="#646469"
+          textContentType="emailAddress"
+          keyboardType="email-address"
+          value={email}
+          onChange={(e) => setEmail(e.nativeEvent.text.toLowerCase())}
+          style={style.emailInput}
+        />
+        <Text style={style.minorText}>
+          We do our best to answer as many questions as possible, but we cannot
+          guarantee that we’ll be able to get to yours.
+        </Text>
+        <WhiteButton
+          style={{ height: 56, marginVertical: 40 }}
+          label="Submit a Question"
+          onPress={submitQuestion}
+        />
+      </View>
+    </ScrollView>
   );
 }

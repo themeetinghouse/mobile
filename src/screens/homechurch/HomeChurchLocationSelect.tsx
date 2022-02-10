@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, View, Image, Input, List } from 'native-base';
-import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  View,
+  Image,
+} from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -67,16 +74,24 @@ const style = StyleSheet.create({
     marginLeft: 20,
   },
   listItem: {
-    marginLeft: 0,
-    borderColor: Theme.colors.gray3,
+    flexDirection: 'row',
+    paddingTop: 16,
   },
   listText: {
-    paddingVertical: 4,
+    flex: 1,
+    borderColor: '#1A1A1A',
+    borderBottomWidth: 1,
+    paddingBottom: 16,
     fontSize: Theme.fonts.medium,
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilySemiBold,
   },
-  listCheckIcon: Style.icon,
+  listCheckIcon: {
+    ...Style.icon,
+    position: 'absolute',
+    right: 20,
+    alignSelf: 'center',
+  },
 });
 
 type Params = {
@@ -128,66 +143,65 @@ export default function HomeChurchLocationSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <Container style={{ backgroundColor: 'black' }}>
-      <ScrollView style={style.content}>
-        <View>
-          <Image
-            style={style.searchIcon}
-            source={Theme.icons.white.search}
-            alt="search icon"
-          />
-          <Input
-            style={searchText ? style.searchInputActive : style.searchInput}
-            value={searchText}
-            onChangeText={(str) => setSearchText(str)}
-            placeholder="Search locations..."
-          />
-          {searchText ? (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchText('');
-              }}
-            >
-              <Image
-                style={style.searchIcon}
-                source={Theme.icons.white.closeCancel}
-                alt="close icon"
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        <View style={{ paddingVertical: 24 }}>
-          <List>
-            {locations.map((item) => {
-              return (
-                item?.locationName
-                  .toLowerCase()
-                  .includes(searchText.toLowerCase()) && (
-                  <TouchableOpacity
-                    key={item.locationId}
-                    onPress={async () => {
-                      await setSelectedLocation(item);
-                      navigation.navigate('HomeChurchScreen', {
-                        loc: item,
-                      });
-                    }}
-                    style={style.listItem}
-                  >
-                    <Text style={style.listText}>{item.locationName}</Text>
-                    {selectedLocation?.locationId === item.locationId && (
-                      <Image
-                        style={style.listCheckIcon}
-                        source={Theme.icons.white.check}
-                        alt="check icon"
-                      />
-                    )}
-                  </TouchableOpacity>
-                )
-              );
-            })}
-          </List>
-        </View>
-      </ScrollView>
-    </Container>
+    <ScrollView style={style.content}>
+      <View
+        style={{
+          flexDirection: 'row',
+          borderBottomColor: '#54565A',
+          borderBottomWidth: 1,
+          paddingBottom: 16,
+        }}
+      >
+        <Image style={style.searchIcon} source={Theme.icons.white.search} />
+        <TextInput
+          style={searchText ? style.searchInputActive : style.searchInput}
+          value={searchText}
+          onChangeText={(str) => setSearchText(str)}
+          placeholder="Search locations..."
+          placeholderTextColor="#54565A"
+        />
+        {searchText ? (
+          <TouchableOpacity
+            onPress={() => {
+              setSearchText('');
+            }}
+          >
+            <Image
+              style={style.searchIcon}
+              source={Theme.icons.white.closeCancel}
+            />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      <View style={{ paddingVertical: 24 }}>
+        {locations.map((item) => {
+          return (
+            item?.locationName
+              .toLowerCase()
+              .includes(searchText.toLowerCase()) && (
+              <TouchableOpacity
+                key={item.locationId}
+                onPress={async () => {
+                  await setSelectedLocation(item);
+                  navigation.navigate('HomeChurchScreen', {
+                    loc: item,
+                  });
+                }}
+                style={style.listItem}
+              >
+                <Text style={style.listText}>{item.locationName}</Text>
+                {selectedLocation?.locationId === item.locationId && (
+                  <Image
+                    style={style.listCheckIcon}
+                    source={Theme.icons.white.check}
+                    accessibilityLabel="check icon"
+                  />
+                )}
+              </TouchableOpacity>
+            )
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 }

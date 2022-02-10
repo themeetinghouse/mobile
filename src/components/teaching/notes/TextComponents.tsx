@@ -6,13 +6,10 @@ import {
   StyleSheet,
   TextStyle,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import * as Linking from 'expo-linking';
-import { Button } from 'native-base';
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
@@ -221,7 +218,7 @@ export function CustomText({
           {block.text}
         </Text>
         {selected ? (
-          <Button
+          <TouchableOpacity
             onPress={openComment}
             style={{ position: 'absolute', right: 16, top: pos - 5 }}
           >
@@ -233,7 +230,7 @@ export function CustomText({
               }
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         ) : null}
         {comments.map((comment) => (
           <Comment key={comment?.id} comment={comment} styles={styles} />
@@ -291,7 +288,7 @@ export function CustomText({
         </Text>
       </Text>
       {selected ? (
-        <Button
+        <TouchableOpacity
           onPress={openComment}
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
         >
@@ -303,7 +300,7 @@ export function CustomText({
             }
             style={{ width: 24, height: 24 }}
           />
-        </Button>
+        </TouchableOpacity>
       ) : null}
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />
@@ -360,7 +357,7 @@ export function CustomListItem({
           &bull; {block.text}
         </Text>
         {selected ? (
-          <Button
+          <TouchableOpacity
             style={{ position: 'absolute', right: 16, top: pos - 5 }}
             onPress={openComment}
           >
@@ -372,7 +369,7 @@ export function CustomListItem({
               }
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         ) : null}
         {comments.map((comment) => (
           <Comment key={comment?.id} comment={comment} styles={styles} />
@@ -435,7 +432,7 @@ export function CustomListItem({
         </Text>
       </Text>
       {selected ? (
-        <Button
+        <TouchableOpacity
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
           onPress={openComment}
         >
@@ -447,7 +444,7 @@ export function CustomListItem({
             }
             style={{ width: 24, height: 24 }}
           />
-        </Button>
+        </TouchableOpacity>
       ) : null}
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />
@@ -547,7 +544,7 @@ export function CustomImage({
         </TouchableWithoutFeedback>
       </View>
       {selected ? (
-        <Button
+        <TouchableOpacity
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
           onPress={openComment}
         >
@@ -559,7 +556,7 @@ export function CustomImage({
             }
             style={{ width: 24, height: 24 }}
           />
-        </Button>
+        </TouchableOpacity>
       ) : null}
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />
@@ -966,7 +963,7 @@ export function HyperLink({
           )
         : null}
       {selected || show ? (
-        <Button
+        <TouchableOpacity
           onPress={openComment}
           style={{ position: 'absolute', right: 16, top: pos - 5 }}
         >
@@ -978,7 +975,7 @@ export function HyperLink({
             }
             style={{ width: 24, height: 24 }}
           />
-        </Button>
+        </TouchableOpacity>
       ) : null}
       {comments.map((comment) => (
         <Comment key={comment?.id} comment={comment} styles={styles} />

@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Text, Image, Input } from 'native-base';
-import { View, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  TextInput,
+  Image,
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Auth } from '@aws-amplify/auth';
@@ -17,7 +24,9 @@ const style = StyleSheet.create({
     ...Style.cardContainer,
     ...{
       backgroundColor: Theme.colors.black,
-      padding: 16,
+      paddingTop: 16,
+      paddingLeft: 16,
+      paddingRight: 0,
       paddingBottom: 150,
     },
   },
@@ -70,15 +79,24 @@ const style = StyleSheet.create({
     marginLeft: 20,
   },
   listItem: {
-    marginLeft: 0,
-    borderColor: Theme.colors.gray3,
+    flexDirection: 'row',
+    paddingTop: 16,
   },
   listText: {
+    flex: 1,
+    borderColor: '#1A1A1A',
+    borderBottomWidth: 1,
+    paddingBottom: 16,
     fontSize: Theme.fonts.medium,
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilySemiBold,
   },
-  listCheckIcon: Style.icon,
+  listCheckIcon: {
+    ...Style.icon,
+    position: 'absolute',
+    right: 20,
+    alignSelf: 'center',
+  },
 });
 
 type LocationSelectionScreenInput = {
@@ -181,17 +199,22 @@ export default function LocationSelectionScreen({
   return (
     <View style={{ backgroundColor: 'black' }}>
       <ScrollView style={style.content}>
-        <View>
-          <Image
-            style={style.searchIcon}
-            source={Theme.icons.white.search}
-            alt="search icon"
-          />
-          <Input
+        <View
+          style={{
+            flexDirection: 'row',
+            borderBottomColor: '#54565A',
+            borderBottomWidth: 1,
+            paddingBottom: 16,
+            marginRight: 16,
+          }}
+        >
+          <Image style={style.searchIcon} source={Theme.icons.white.search} />
+          <TextInput
             style={searchText ? style.searchInputActive : style.searchInput}
             value={searchText}
             onChangeText={(str) => setSearchText(str)}
             placeholder="Search locations..."
+            placeholderTextColor="#54565A"
           />
           {searchText ? (
             <TouchableOpacity
@@ -202,7 +225,6 @@ export default function LocationSelectionScreen({
               <Image
                 style={style.searchIcon}
                 source={Theme.icons.white.closeCancel}
-                alt="close icon"
               />
             </TouchableOpacity>
           ) : null}
@@ -223,7 +245,6 @@ export default function LocationSelectionScreen({
                   <Image
                     style={style.listCheckIcon}
                     source={Theme.icons.white.check}
-                    alt="check icon"
                   />
                 )}
               </TouchableOpacity>

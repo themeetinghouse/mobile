@@ -6,8 +6,8 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Dimensions,
+  Image,
 } from 'react-native';
-import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ScrollView } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
@@ -141,7 +141,7 @@ export default function HomeChurchScreen({
             }}
           >
             <Image
-              alt="back icon"
+              accessibilityLabel="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />

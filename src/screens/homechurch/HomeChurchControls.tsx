@@ -6,8 +6,8 @@ import {
   View,
   Text,
   Dimensions,
+  Image,
 } from 'react-native';
-import { Image } from 'native-base';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -139,7 +139,6 @@ const HomeChurchControls = ({
             <Image
               style={style.locationIcon}
               source={Theme.icons.white.location}
-              alt="location icon"
             />
             <Text style={style.locationSelectText}>
               {selectedLocation?.locationName}

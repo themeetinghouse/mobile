@@ -1,36 +1,41 @@
 import React from 'react';
-import { View, Button, Text, Image } from 'native-base';
-import { ViewStyle, ImageSourcePropType, StyleSheet } from 'react-native';
+import {
+  ViewStyle,
+  ImageSourcePropType,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import Theme from '../../Theme.style';
 
 const style = StyleSheet.create({
   button: {
-    backgroundColor: Theme.colors.white,
-    borderRadius: 0,
-    height: '100%',
-  },
-  label: {
-    color: Theme.colors.black,
-    fontFamily: Theme.fonts.fontFamilyBold,
-    fontSize: Theme.fonts.medium,
-    paddingRight: 0,
-    paddingTop: 4,
-  },
-  buttonInactive: {
     backgroundColor: Theme.colors.grey2,
-    borderRadius: 0,
-    height: '100%',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   },
-  labelInactive: {
+  buttonActive: {
+    backgroundColor: Theme.colors.white,
+  },
+
+  label: {
     color: 'white',
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.medium,
-    paddingRight: 0,
-    paddingTop: 4,
+  },
+
+  labelActive: {
+    color: Theme.colors.black,
+    fontFamily: Theme.fonts.fontFamilyBold,
+    fontSize: Theme.fonts.medium,
   },
   icon: {
     width: 24,
     height: 24,
+    marginRight: 18,
   },
 });
 
@@ -52,18 +57,18 @@ export default function TeachingButton({
   iconInactive,
 }: Params): JSX.Element {
   return (
-    <View style={wrapperStyle}>
-      <Button
-        style={active ? style.button : style.buttonInactive}
-        onPress={onPress}
-      >
-        <Image
-          alt="icon"
-          source={active ? iconActive : iconInactive}
-          style={style.icon}
-        />
-        <Text style={active ? style.label : style.labelInactive}>{label}</Text>
-      </Button>
-    </View>
+    <TouchableOpacity
+      onPress={onPress}
+      style={[style.button, wrapperStyle, active ? style.buttonActive : {}]}
+    >
+      <Image
+        accessibilityLabel="icon"
+        source={active ? iconActive : iconInactive}
+        style={style.icon}
+      />
+      <Text style={[style.label, active ? style.labelActive : {}]}>
+        {label}
+      </Text>
+    </TouchableOpacity>
   );
 }
