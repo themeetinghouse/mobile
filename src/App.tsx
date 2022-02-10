@@ -89,8 +89,6 @@ async function loadResourcesAsync() {
       require('./assets/images/robot-prod.png'),
     ]), */
     Font.loadAsync({
-      //      Roboto: require('node_modules/native-base/Fonts/Roboto.ttf'), // eslint-disable-line
-      //      Roboto_medium: require('node_modules/native-base/Fonts/Roboto_medium.ttf'), // eslint-disable-line
       'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
       'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
       'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
