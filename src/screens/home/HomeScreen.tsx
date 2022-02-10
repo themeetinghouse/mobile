@@ -388,7 +388,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                         );
                       return null;
                     })}
-                    {events.length < 3 ? (
+                    {events.length > 3 ? (
                       <AllButton
                         handlePress={() => {
                           navigation.navigate('AllEvents', { events });
