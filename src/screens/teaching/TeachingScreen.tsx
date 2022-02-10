@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Container, Text, View } from 'native-base';
 import moment from 'moment';
 import {
   ScrollView,
@@ -12,6 +11,8 @@ import {
   NativeScrollEvent,
   FlatList,
   TouchableWithoutFeedback,
+  Text,
+  View,
 } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -435,223 +436,219 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
   return (
-    <Container>
-      <ScrollView
-        style={style.content}
-        bounces={bounce}
-        onScroll={(e) => handleScroll(e)}
-        scrollEventThrottle={6}
-      >
-        <View style={style.categorySection}>
-          <SideSwipe
-            contentContainerStyle={style.horizontalListContentContainer}
-            data={recentSeries?.items?.concat({ loading: true }) ?? []}
-            itemWidth={
-              isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10
-            }
-            threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
-            style={{ width: '100%' }}
-            contentOffset={contentOffset}
-            onEndReachedThreshold={0.2}
-            onEndReached={loadRecentSeries}
-            useVelocityForIndex
-            renderItem={({ item, itemIndex, animatedValue }) =>
-              renderSeriesSwipeItem(item, itemIndex, animatedValue)
-            }
-          />
-          <AllButton
-            handlePress={() => {
-              navigation.push('AllSeriesScreen');
-            }}
-          >
-            All series
-          </AllButton>
-        </View>
+    <ScrollView
+      style={style.content}
+      bounces={bounce}
+      onScroll={(e) => handleScroll(e)}
+      scrollEventThrottle={6}
+    >
+      <View style={style.categorySection}>
+        <SideSwipe
+          contentContainerStyle={style.horizontalListContentContainer}
+          data={recentSeries?.items?.concat({ loading: true }) ?? []}
+          itemWidth={
+            isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10
+          }
+          threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
+          style={{ width: '100%' }}
+          contentOffset={contentOffset}
+          onEndReachedThreshold={0.2}
+          onEndReached={loadRecentSeries}
+          useVelocityForIndex
+          renderItem={({ item, itemIndex, animatedValue }) =>
+            renderSeriesSwipeItem(item, itemIndex, animatedValue)
+          }
+        />
+        <AllButton
+          handlePress={() => {
+            navigation.push('AllSeriesScreen');
+          }}
+        >
+          All series
+        </AllButton>
+      </View>
 
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Recent Teaching</Text>
-          <View style={style.listContentContainer}>
-            {recentTeaching.loading && (
-              <ActivityIndicator animating={recentTeaching.loading} />
-            )}
-            {!recentTeaching.loading &&
-              recentTeaching.items.map((teaching: any) => (
-                <TeachingListItem
-                  key={teaching.id}
-                  teaching={teaching}
-                  handlePress={() =>
-                    navigation.push('SermonLandingScreen', { item: teaching })
-                  }
-                />
-              ))}
-          </View>
-          <AllButton
-            handlePress={() => {
-              navigation.push('AllSermonsScreen');
-            }}
-          >
-            All sermons
-          </AllButton>
-        </View>
-        <HighlightCarousel />
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Popular Teaching</Text>
-          <View style={style.listContentContainer}>
-            {popular
-              .sort((a, b) => sortByViews(a, b))
-              .slice(0, 6)
-              .map((video) => (
-                <TeachingListItem
-                  key={video?.id}
-                  teaching={video}
-                  handlePress={() =>
-                    navigation.push('SermonLandingScreen', { item: video })
-                  }
-                />
-              ))}
-          </View>
-          <AllButton
-            handlePress={() =>
-              navigation.navigate('PopularTeachingScreen', {
-                popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
-              })
-            }
-          >
-            More popular teaching
-          </AllButton>
-        </View>
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Popular Series</Text>
-          <Text style={style.highlightsText}>
-            A collection of our favourite and most popular series
-          </Text>
-          {customPlaylists.loading && (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <ActivityIndicator />
-            </View>
+      <View style={style.categorySection}>
+        <Text style={style.categoryTitle}>Recent Teaching</Text>
+        <View style={style.listContentContainer}>
+          {recentTeaching.loading && (
+            <ActivityIndicator animating={recentTeaching.loading} />
           )}
-          <View style={style.seriesListContainer}>
-            {popularSeries?.items?.map((s: any, key: any) => {
-              if (key < 4)
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    navigation={navigation as any}
-                    seriesData={s}
-                  />
-                );
-              return null;
-            })}
-          </View>
-          <AllButton
-            handlePress={() =>
-              navigation.push('AllSeriesScreen', { popularSeries: true })
-            }
-          >
-            More Popular Series
-          </AllButton>
-        </View>
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Teaching by Topic</Text>
-          <Text style={style.highlightsText}>
-            A collection of our favourite and most popular teachings by topic
-          </Text>
-          {customPlaylists.loading && (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <ActivityIndicator />
-            </View>
-          )}
-          <View style={style.seriesListContainer}>
-            {customPlaylists?.items?.map((s: any, key: any) => {
-              if (key < 4)
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    customPlaylist
-                    navigation={navigation as any}
-                    seriesData={s}
-                  />
-                );
-              return null;
-            })}
-          </View>
-          <AllButton
-            handlePress={() =>
-              navigation.push('AllSeriesScreen', { customPlaylists: true })
-            }
-          >
-            More Teaching Topics
-          </AllButton>
-        </View>
-        <SuggestedCarousel />
-        <View style={style.categorySectionLast}>
-          <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
-            Teachers
-          </Text>
-          {!speakers.loading ? (
-            <>
-              <FlatList
-                contentContainerStyle={[
-                  style.horizontalListContentContainer,
-                  { marginBottom: 2 },
-                ]}
-                horizontal
-                data={speakers.items}
-                renderItem={({ item }: any) =>
-                  !item.hidden ? (
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('TeacherProfile', {
-                          staff: {
-                            ...item,
-                            uri: item.image,
-                            idFromTeaching: item.name,
-                          },
-                        })
-                      }
-                    >
-                      <View style={style.teacherContainer}>
-                        <View
-                          style={[
-                            style.teacherThumbnailContainer,
-                            {
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            },
-                          ]}
-                        >
-                          <TeacherListPicture item={item} />
-                        </View>
-                        <Text style={style.teacherDetail1}>{item.name}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ) : null
-                }
-                ListFooterComponent={() =>
-                  speakers.loading ? <ActivityIndicator /> : null
+          {!recentTeaching.loading &&
+            recentTeaching.items.map((teaching: any) => (
+              <TeachingListItem
+                key={teaching.id}
+                teaching={teaching}
+                handlePress={() =>
+                  navigation.push('SermonLandingScreen', { item: teaching })
                 }
               />
-              <AllButton handlePress={() => navigation.push('TeacherList')}>
-                All teachers
-              </AllButton>
-            </>
-          ) : (
-            <ActivityIndicator />
-          )}
+            ))}
         </View>
-      </ScrollView>
-    </Container>
+        <AllButton
+          handlePress={() => {
+            navigation.push('AllSermonsScreen');
+          }}
+        >
+          All sermons
+        </AllButton>
+      </View>
+      <HighlightCarousel />
+      <View style={style.categorySection}>
+        <Text style={style.categoryTitle}>Popular Teaching</Text>
+        <View style={style.listContentContainer}>
+          {popular
+            .sort((a, b) => sortByViews(a, b))
+            .slice(0, 6)
+            .map((video) => (
+              <TeachingListItem
+                key={video?.id}
+                teaching={video}
+                handlePress={() =>
+                  navigation.push('SermonLandingScreen', { item: video })
+                }
+              />
+            ))}
+        </View>
+        <AllButton
+          handlePress={() =>
+            navigation.navigate('PopularTeachingScreen', {
+              popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
+            })
+          }
+        >
+          More popular teaching
+        </AllButton>
+      </View>
+      <View style={style.categorySection}>
+        <Text style={style.categoryTitle}>Popular Series</Text>
+        <Text style={style.highlightsText}>
+          A collection of our favourite and most popular series
+        </Text>
+        {customPlaylists.loading && (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        )}
+        <View style={style.seriesListContainer}>
+          {popularSeries?.items?.map((s: any, key: any) => {
+            if (key < 4)
+              return (
+                <SeriesItem
+                  key={s.id}
+                  navigation={navigation as any}
+                  seriesData={s}
+                />
+              );
+            return null;
+          })}
+        </View>
+        <AllButton
+          handlePress={() =>
+            navigation.push('AllSeriesScreen', { popularSeries: true })
+          }
+        >
+          More Popular Series
+        </AllButton>
+      </View>
+      <View style={style.categorySection}>
+        <Text style={style.categoryTitle}>Teaching by Topic</Text>
+        <Text style={style.highlightsText}>
+          A collection of our favourite and most popular teachings by topic
+        </Text>
+        {customPlaylists.loading && (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        )}
+        <View style={style.seriesListContainer}>
+          {customPlaylists?.items?.map((s: any, key: any) => {
+            if (key < 4)
+              return (
+                <SeriesItem
+                  key={s.id}
+                  customPlaylist
+                  navigation={navigation as any}
+                  seriesData={s}
+                />
+              );
+            return null;
+          })}
+        </View>
+        <AllButton
+          handlePress={() =>
+            navigation.push('AllSeriesScreen', { customPlaylists: true })
+          }
+        >
+          More Teaching Topics
+        </AllButton>
+      </View>
+      <SuggestedCarousel />
+      <View style={style.categorySectionLast}>
+        <Text style={[style.categoryTitle, { marginBottom: 4 }]}>Teachers</Text>
+        {!speakers.loading ? (
+          <>
+            <FlatList
+              contentContainerStyle={[
+                style.horizontalListContentContainer,
+                { marginBottom: 2 },
+              ]}
+              horizontal
+              data={speakers.items}
+              renderItem={({ item }: any) =>
+                !item.hidden ? (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('TeacherProfile', {
+                        staff: {
+                          ...item,
+                          uri: item.image,
+                          idFromTeaching: item.name,
+                        },
+                      })
+                    }
+                  >
+                    <View style={style.teacherContainer}>
+                      <View
+                        style={[
+                          style.teacherThumbnailContainer,
+                          {
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          },
+                        ]}
+                      >
+                        <TeacherListPicture item={item} />
+                      </View>
+                      <Text style={style.teacherDetail1}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : null
+              }
+              ListFooterComponent={() =>
+                speakers.loading ? <ActivityIndicator /> : null
+              }
+            />
+            <AllButton handlePress={() => navigation.push('TeacherList')}>
+              All teachers
+            </AllButton>
+          </>
+        ) : (
+          <ActivityIndicator />
+        )}
+      </View>
+    </ScrollView>
   );
 }

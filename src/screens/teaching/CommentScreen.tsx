@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Container, Text, Button, View } from 'native-base';
 import {
+  View,
+  Text,
   TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
   Image,
+  ScrollView,
   NativeSyntheticEvent,
   TextInputKeyPressEventData,
 } from 'react-native';
@@ -397,8 +399,9 @@ export default function CommentScreen({
   }
 
   return (
-    <Container
+    <View
       style={{
+        flex: 1,
         backgroundColor: mode === 'comment' ? Theme.colors.background : 'black',
         paddingBottom: safeArea.bottom,
       }}
@@ -407,7 +410,7 @@ export default function CommentScreen({
       {mode === 'comment' ? (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={headerHeight}
+          keyboardVerticalOffset={headerHeight + 30}
           style={{ flex: 1, backgroundColor: 'black' }}
         >
           <View style={{ flexGrow: 1, padding: 16 }}>
@@ -436,7 +439,7 @@ export default function CommentScreen({
               value={comment}
               onChange={(e) => setComment(e.nativeEvent.text)}
               keyboardAppearance="dark"
-              placeholder="Write a comment"
+              placeholder="Write a comment.."
               autoCapitalize="sentences"
               multiline
               placeholderTextColor={Theme.colors.grey4}
@@ -459,7 +462,7 @@ export default function CommentScreen({
                   Long press to delete
                 </Text>
               ) : null}
-              <Button
+              <TouchableOpacity
                 style={{}}
                 onLongPress={removeComment}
                 onPress={handleShortPress}
@@ -468,7 +471,7 @@ export default function CommentScreen({
                   source={Theme.icons.white.delete}
                   style={{ width: 24, height: 24 }}
                 />
-              </Button>
+              </TouchableOpacity>
             </View>
             <View
               style={{
@@ -567,6 +570,6 @@ export default function CommentScreen({
           </View>
         </KeyboardAvoidingView>
       )}
-    </Container>
+    </View>
   );
 }

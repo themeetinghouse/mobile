@@ -1,6 +1,11 @@
 import React from 'react';
-import { Button, Text, Image } from 'native-base';
-import { StyleSheet, ImageSourcePropType } from 'react-native';
+import {
+  StyleSheet,
+  ImageSourcePropType,
+  TouchableOpacity,
+  Text,
+  Image,
+} from 'react-native';
 
 import { Theme } from '../../Theme.style';
 
@@ -12,16 +17,21 @@ const style = StyleSheet.create({
     borderTopWidth: 1,
     borderLeftWidth: 0,
     borderRightWidth: 0,
-    height: 63,
+    paddingVertical: 20,
+    paddingLeft: 16,
+    paddingRight: 25,
+    flex: 1,
+    flexDirection: 'row',
   },
   text: {
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: Theme.fonts.medium,
+    flex: 1,
+    color: Theme.colors.white,
   },
   icon: {
     width: Theme.icons.width,
     height: Theme.icons.height,
-    marginRight: 15,
   },
 });
 
@@ -37,14 +47,10 @@ export default function AllButton({
   icon,
 }: Params): JSX.Element {
   return (
-    <Button style={style.button} onPress={handlePress}>
+    <TouchableOpacity style={style.button} onPress={handlePress}>
       <Text style={style.text}>{children}</Text>
 
-      <Image
-        source={icon ?? Theme.icons.white.arrow}
-        alt="Arrow"
-        style={style.icon}
-      />
-    </Button>
+      <Image source={icon ?? Theme.icons.white.arrow} style={style.icon} />
+    </TouchableOpacity>
   );
 }

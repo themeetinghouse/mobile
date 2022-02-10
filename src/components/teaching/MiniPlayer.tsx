@@ -1,6 +1,12 @@
-import { Button, Text, View } from 'native-base';
 import React, { useContext, useRef, useState, useEffect } from 'react';
-import { Dimensions, StyleSheet, Image } from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  Image,
+  View,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { AVPlaybackStatus } from 'expo-av';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +36,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     containerVideo: {
       height: 56,
       width: Dimensions.get('window').width,
-      backgroundColor: Theme.colors.black,
+      backgroundColor: '#111111',
       display: display.display,
       flexDirection: 'row',
       alignItems: 'center',
@@ -229,7 +235,10 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
             <View
               style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }}
             >
-              <Button onPress={pauseAudio} style={{ width: 56, height: 56 }}>
+              <TouchableOpacity
+                onPress={pauseAudio}
+                style={{ width: 56, height: 56 }}
+              >
                 <Image
                   accessibilityLabel={
                     mediaContext.media.playing ? 'Pause Button' : 'Play Button'
@@ -241,14 +250,17 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                   }
                   style={{ width: 24, height: 24 }}
                 />
-              </Button>
-              <Button onPress={closeAudio} style={{ width: 56, height: 56 }}>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={closeAudio}
+                style={{ width: 56, height: 56 }}
+              >
                 <Image
                   accessibilityLabel="Close Mini-player"
                   source={Theme.icons.white.closeCancel}
                   style={{ width: 24, height: 24 }}
                 />
-              </Button>
+              </TouchableOpacity>
             </View>
           </View>
           <View
@@ -300,10 +312,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
               marginLeft: 8,
               width: width - (100 + 56 + 56),
               paddingRight: 12,
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'flex-start',
             }}
           >
-            <Text numberOfLines={1} ellipsizeMode="tail" style={style.title}>
-              {mediaContext.media.episode}
+            <Text numberOfLines={2} ellipsizeMode="tail" style={style.title}>
+              {mediaContext.media.episode} {mediaContext.media.episode}
             </Text>
             <Text numberOfLines={1} ellipsizeMode="tail" style={style.subTitle}>
               {mediaContext.media.series}
@@ -312,7 +327,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
           <View
             style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }}
           >
-            <Button onPress={pauseVideo} style={{ width: 56, height: 56 }}>
+            <TouchableOpacity onPress={pauseVideo} style={{ padding: 16 }}>
               <Image
                 accessibilityLabel={
                   mediaContext.media.playing ? 'Pause Button' : 'Play Button'
@@ -324,14 +339,14 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                 }
                 style={{ width: 24, height: 24 }}
               />
-            </Button>
-            <Button onPress={closeVideo} style={{ width: 56, height: 56 }}>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={closeVideo} style={{ padding: 16 }}>
               <Image
                 accessibilityLabel="Close Mini-player"
                 source={Theme.icons.white.closeCancel}
                 style={{ width: 24, height: 24 }}
               />
-            </Button>
+            </TouchableOpacity>
           </View>
         </View>
       );

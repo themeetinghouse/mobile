@@ -1,6 +1,5 @@
 import React from 'react';
-import { Text } from 'native-base';
-import { StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
 import FallbackImage from '../FallbackImage';

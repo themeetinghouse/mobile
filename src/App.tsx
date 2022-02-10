@@ -20,11 +20,6 @@ import { Subscription } from '@unimodules/core';
 import { Analytics } from 'aws-amplify';
 import { registerRootComponent } from 'expo';
 import { DevicePushToken } from 'expo-notifications';
-import {
-  extendTheme,
-  NativeBaseProvider,
-  v3CompatibleTheme,
-} from 'native-base';
 import MiniPlayer from './components/teaching/MiniPlayer';
 import { version } from '../version';
 import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
@@ -294,41 +289,39 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
     );
   }
   return (
-    <NativeBaseProvider theme={extendTheme(v3CompatibleTheme)}>
-      <CommentContext.Provider value={{ comments, setComments }}>
-        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
-          <MediaContext.Provider
-            value={{
-              media,
-              setMedia,
-              setVideoTime,
-              closeAudio,
-              setAudioNull,
-              closeVideo,
-              setPlayerTypeNone,
-            }}
-          >
-            <LocationContext.Provider value={{ locationData, setLocationData }}>
-              <UserContext.Provider value={{ userData, setUserData }}>
-                <SafeAreaProvider style={{ backgroundColor: 'black' }}>
-                  {Platform.OS === 'ios' && (
-                    <StatusBar animated barStyle="light-content" />
-                  )}
-                  <NavigationContainer
-                    theme={CustomTheme}
-                    ref={navRef}
-                    onStateChange={handleRouteChange}
-                  >
-                    <AppNavigator />
-                    <MiniPlayer currentScreen={currentScreen} />
-                  </NavigationContainer>
-                </SafeAreaProvider>
-              </UserContext.Provider>
-            </LocationContext.Provider>
-          </MediaContext.Provider>
-        </MiniPlayerStyleContext.Provider>
-      </CommentContext.Provider>
-    </NativeBaseProvider>
+    <CommentContext.Provider value={{ comments, setComments }}>
+      <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
+        <MediaContext.Provider
+          value={{
+            media,
+            setMedia,
+            setVideoTime,
+            closeAudio,
+            setAudioNull,
+            closeVideo,
+            setPlayerTypeNone,
+          }}
+        >
+          <LocationContext.Provider value={{ locationData, setLocationData }}>
+            <UserContext.Provider value={{ userData, setUserData }}>
+              <SafeAreaProvider style={{ backgroundColor: 'black' }}>
+                {Platform.OS === 'ios' && (
+                  <StatusBar animated barStyle="light-content" />
+                )}
+                <NavigationContainer
+                  theme={CustomTheme}
+                  ref={navRef}
+                  onStateChange={handleRouteChange}
+                >
+                  <AppNavigator />
+                  <MiniPlayer currentScreen={currentScreen} />
+                </NavigationContainer>
+              </SafeAreaProvider>
+            </UserContext.Provider>
+          </LocationContext.Provider>
+        </MediaContext.Provider>
+      </MiniPlayerStyleContext.Provider>
+    </CommentContext.Provider>
   );
 }
 

@@ -9,6 +9,7 @@ import {
   Dimensions,
   Platform,
   StatusBar,
+  Image,
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { AntDesign } from '@expo/vector-icons';
@@ -18,7 +19,6 @@ import {
   useRoute,
   CompositeNavigationProp,
 } from '@react-navigation/native';
-import { Image, Button } from 'native-base';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -204,21 +204,20 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingTop: 20,
+            paddingVertical: 10,
             backgroundColor: 'black',
           }}
         >
-          <Button
-            style={{ position: 'absolute', left: '5%' }}
+          <TouchableOpacity
+            style={{ position: 'absolute', left: '5%', paddingTop: 4 }}
             onPress={() => navigateHome()}
           >
             <Image
-              alt="close icon"
               accessibilityLabel="Close Button"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
           <Text
             onPress={() => navigateInAuthStack('LoginScreen')}
             style={style.headerTextInactive}

@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Container, View } from 'native-base';
 import moment from 'moment';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Text, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { Theme, Style, HeaderStyle } from '../Theme.style';
+import { Style, HeaderStyle } from '../Theme.style';
 
 import NotesScreen from './teaching/NotesScreen';
 import { MainStackParamList } from '../navigation/AppNavigator';
@@ -15,7 +14,7 @@ const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
     ...{
-      backgroundColor: Theme.colors.black,
+      backgroundColor: 'red',
       padding: 0,
     },
   },
@@ -88,7 +87,8 @@ export default function LiveStreamScreen({
   useEffect(() => {
     const loadLiveStreams = async () => {
       try {
-        const liveStreamsResult = await LiveEventService.startLiveEventService();
+        const liveStreamsResult =
+          await LiveEventService.startLiveEventService();
         liveStreamsResult.liveEvents.forEach((event: LiveEvent) => {
           const rightNow = moment()
             .utcOffset(moment().isDST() ? '-0400' : '-0500')
@@ -137,7 +137,7 @@ export default function LiveStreamScreen({
 
   // this page needs to be unmounted when navigating to teaching
   return (
-    <Container style={{ backgroundColor: 'black' }}>
+    <View style={{ backgroundColor: 'black' }}>
       <View style={style.player}>
         {showTime ? (
           <YoutubePlayer
@@ -173,6 +173,6 @@ export default function LiveStreamScreen({
         navigation={navigation}
         route={route}
       />
-    </Container>
+    </View>
   );
 }

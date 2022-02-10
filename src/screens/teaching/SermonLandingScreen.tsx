@@ -5,10 +5,11 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react';
-import { Text, Button, View } from 'native-base';
 import moment from 'moment';
 import {
   Dimensions,
+  Text,
+  View,
   TouchableOpacity,
   StyleSheet,
   Image,
@@ -453,7 +454,7 @@ export default function SermonLandingScreen({
       safeAreaInsets: { top: safeArea.top },
       headerLeft: function render() {
         return (
-          <Button onPress={handleMinimize}>
+          <TouchableOpacity onPress={handleMinimize}>
             <Image
               accessibilityLabel="Close Mini-player"
               source={
@@ -464,7 +465,7 @@ export default function SermonLandingScreen({
               }
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerRight: function render() {
@@ -688,13 +689,16 @@ export default function SermonLandingScreen({
         ) : null}
         <View style={style.sermonContainer}>
           <View
-            style={{ display: 'flex', flexDirection: 'row', width: '100%' }}
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              height: 56,
+            }}
           >
             {sermon.id ? (
               <TeachingButton
                 wrapperStyle={{
                   flex: 1,
-                  height: 56,
                   marginRight: sermon.audioURL ? 16 : 0,
                 }}
                 active={mediaContext.media.playerType === 'video'}
@@ -710,7 +714,7 @@ export default function SermonLandingScreen({
             ) : null}
             {sermon.audioURL ? (
               <TeachingButton
-                wrapperStyle={{ flex: 1, height: 56 }}
+                wrapperStyle={{ flex: 1 }}
                 active={mediaContext.media.playerType === 'audio'}
                 label="Listen"
                 iconActive={Theme.icons.black.audio}

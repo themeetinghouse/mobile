@@ -1,11 +1,13 @@
 import React, { useState, useContext, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, Button, View, Image } from 'native-base';
 import moment from 'moment';
 import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
   ScrollView,
+  View,
+  Image,
+  Text,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
@@ -49,6 +51,7 @@ const style = StyleSheet.create({
     marginBottom: 32,
   },
   yearTitle: {
+    marginLeft: 16,
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.large,
     color: Theme.colors.white,
@@ -119,14 +122,13 @@ export default function DateRangeSelectScreen({
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <Button onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image
-              alt="back icon"
               accessibilityLabel="Close Date Range"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
         );
       },
       headerLeftContainerStyle: { left: 16 },
@@ -256,8 +258,8 @@ export default function DateRangeSelectScreen({
   };
 
   return (
-    <Container style={{ backgroundColor: 'black' }}>
-      <ScrollView style={style.content}>
+    <View style={{ backgroundColor: 'black', flex: 1 }}>
+      <ScrollView>
         {years.map((year) => (
           <View key={`${year}`} style={style.yearSection}>
             <Text style={style.yearTitle}>{year}</Text>
@@ -316,6 +318,6 @@ export default function DateRangeSelectScreen({
           style={{ marginTop: 16, height: 56 }}
         />
       </View>
-    </Container>
+    </View>
   );
 }

@@ -1,17 +1,12 @@
 /* eslint-disable camelcase */
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useLayoutEffect,
-  useCallback,
-} from 'react';
-import { Container, Text, Button, View } from 'native-base';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import moment from 'moment';
 import {
   Alert,
   StyleSheet,
   ActionSheetIOS,
+  Text,
+  View,
   Platform,
   AppState,
   TouchableOpacity,
@@ -38,6 +33,7 @@ const style = StyleSheet.create({
     ...Style.cardContainer,
     ...{
       backgroundColor: Theme.colors.black,
+      marginTop: -60,
     },
   },
 
@@ -144,9 +140,10 @@ export default function EventDetailsScreen({
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={{
-                display: 'flex',
+                flex: 1,
                 flexDirection: 'row',
-                alignItems: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 12,
               }}
             >
               <Image
@@ -155,13 +152,18 @@ export default function EventDetailsScreen({
               />
             </TouchableOpacity>
 
-            <Button onPress={() => setShare(!share)}>
+            <TouchableOpacity
+              style={{
+                paddingVertical: 12,
+              }}
+              onPress={() => setShare(!share)}
+            >
               <Image
                 accessibilityLabel="Share"
                 source={Theme.icons.white.share}
                 style={{ width: 24, height: 24 }}
               />
-            </Button>
+            </TouchableOpacity>
           </Header>
         );
       },
@@ -328,7 +330,7 @@ export default function EventDetailsScreen({
   }, [alerts.message]);
 
   return (
-    <Container>
+    <>
       <ScrollView style={style.content}>
         {eventItem?.cover?.source ? (
           <>
@@ -507,6 +509,6 @@ export default function EventDetailsScreen({
           }
         />
       ) : null}
-    </Container>
+    </>
   );
 }

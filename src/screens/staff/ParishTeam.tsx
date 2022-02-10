@@ -1,8 +1,15 @@
 import React, { useEffect, useState, useContext, useLayoutEffect } from 'react';
-import { StyleSheet, View, Text, SectionList } from 'react-native';
-import { Image } from 'native-base';
+import {
+  StyleSheet,
+  View,
+  Text,
+  SectionList,
+  TouchableOpacity,
+  Image,
+} from 'react-native';
+
 import { StackNavigationProp } from '@react-navigation/stack';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import StaffItem from '../../components/staff/StaffItem';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
@@ -55,7 +62,6 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
             }}
           >
             <Image
-              alt="back icon"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />

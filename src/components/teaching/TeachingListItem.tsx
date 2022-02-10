@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text } from 'native-base';
-import { Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import {
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  View,
+  Text,
+} from 'react-native';
 import moment from 'moment';
 import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';

@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Image, Text } from 'native-base';
 import {
   TouchableOpacity,
+  View,
+  Text,
+  Image,
   ImageSourcePropType,
   StyleSheet,
   ViewStyle,
@@ -16,9 +18,7 @@ const buttonStyle = StyleSheet.create({
   },
   button: {
     backgroundColor: Theme.colors.transparent,
-    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   icon: {
@@ -68,7 +68,7 @@ export default function IconButton({
       >
         {icon && (
           <Image
-            alt="icon"
+            accessibilityLabel="icon"
             source={icon}
             style={[
               Style.icon,
@@ -77,20 +77,20 @@ export default function IconButton({
             ]}
           />
         )}
-        <View>
-          <Text
-            style={[
-              buttonStyle.label,
-              (style && labelStyle) || {},
-              disabled ? { opacity: 0.5 } : {},
-            ]}
-          >
-            {label}
-          </Text>
-        </View>
+
+        <Text
+          style={[
+            buttonStyle.label,
+            (style && labelStyle) || {},
+            disabled ? { opacity: 0.5 } : {},
+          ]}
+        >
+          {label}
+        </Text>
+        <View style={{ flex: 1 }} />
         {rightArrow && (
           <Image
-            alt="right arrow icon"
+            accessibilityLabel="Right Arrow"
             source={Theme.icons.white.arrow}
             style={buttonStyle.iconRight}
           />

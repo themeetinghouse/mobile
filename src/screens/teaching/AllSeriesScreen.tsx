@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
-import { Container, Text, View, Image } from 'native-base';
 import moment from 'moment';
 import {
   StyleSheet,
@@ -7,6 +6,9 @@ import {
   FlatList,
   Platform,
   ScrollView,
+  View,
+  Text,
+  Image,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -174,7 +176,7 @@ export default function AllSeriesScreen({
             }}
           >
             <Image
-              alt="back icon"
+              accessibilityLabel="Go back"
               source={Theme.icons.white.back}
               style={{ width: 24, height: 24 }}
             />
@@ -198,96 +200,92 @@ export default function AllSeriesScreen({
   }, [navigation, route]);
 
   return (
-    <Container>
-      <ScrollView style={style.content}>
-        {!route?.params?.popularSeries ? (
-          <SearchBar
-            style={style.searchBar}
-            searchText={searchText}
-            handleTextChanged={(newStr) => setSearchText(newStr)}
-            placeholderLabel="Search by name..."
-          />
-        ) : null}
-        {!route?.params?.customPlaylists && !route?.params?.popularSeries ? (
-          <>
-            <View style={style.dateSelectBar}>
-              <FlatList
-                style={style.horizontalListContentContainer}
-                horizontal
-                data={seriesYears}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableHighlight
-                    underlayColor={Theme.colors.grey3}
-                    onPress={() => setSelectedYear(item)}
-                    style={{
-                      borderRadius: 50,
-                      overflow: 'hidden',
-                      marginRight: 8,
-                    }}
+    <ScrollView style={style.content}>
+      {!route?.params?.popularSeries ? (
+        <SearchBar
+          style={style.searchBar}
+          searchText={searchText}
+          handleTextChanged={(newStr) => setSearchText(newStr)}
+          placeholderLabel="Search by name..."
+        />
+      ) : null}
+      {!route?.params?.customPlaylists && !route?.params?.popularSeries ? (
+        <>
+          <View style={style.dateSelectBar}>
+            <FlatList
+              style={style.horizontalListContentContainer}
+              horizontal
+              data={seriesYears}
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableHighlight
+                  underlayColor={Theme.colors.grey3}
+                  onPress={() => setSelectedYear(item)}
+                  style={{
+                    borderRadius: 50,
+                    overflow: 'hidden',
+                    marginRight: 8,
+                  }}
+                >
+                  <Text
+                    style={[
+                      style.dateSelectYear,
+                      item === selectedYear ? style.dateSelectYearSelected : {},
+                    ]}
                   >
-                    <Text
-                      style={[
-                        style.dateSelectYear,
-                        item === selectedYear
-                          ? style.dateSelectYearSelected
-                          : {},
-                      ]}
-                    >
-                      {item}
-                    </Text>
-                  </TouchableHighlight>
-                )}
-              />
-            </View>
-          </>
-        ) : null}
-        <View style={style.seriesListContainer}>
-          {allSeries.loading && (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <ActivityIndicator />
-            </View>
-          )}
-          {series.map((s: any, key: any) => {
-            if (key < showCount) {
-              if (route?.params?.customPlaylists) {
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    customPlaylist
-                    navigation={navigation}
-                    seriesData={s}
-                    year={getSeriesDate(s)}
-                  />
-                );
-              }
+                    {item}
+                  </Text>
+                </TouchableHighlight>
+              )}
+            />
+          </View>
+        </>
+      ) : null}
+      <View style={style.seriesListContainer}>
+        {allSeries.loading && (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        )}
+        {series.map((s: any, key: any) => {
+          if (key < showCount) {
+            if (route?.params?.customPlaylists) {
               return (
                 <SeriesItem
                   key={s.id}
+                  customPlaylist
                   navigation={navigation}
                   seriesData={s}
                   year={getSeriesDate(s)}
                 />
               );
             }
-            return null;
-          })}
+            return (
+              <SeriesItem
+                key={s.id}
+                navigation={navigation}
+                seriesData={s}
+                year={getSeriesDate(s)}
+              />
+            );
+          }
+          return null;
+        })}
+      </View>
+      {series?.length > 20 && showCount < series.length ? (
+        <View style={{ marginBottom: 20 }}>
+          <AllButton handlePress={() => setShowCount(showCount + 20)}>
+            Load More
+          </AllButton>
         </View>
-        {series?.length > 20 && showCount < series.length ? (
-          <View style={{ marginBottom: 20 }}>
-            <AllButton handlePress={() => setShowCount(showCount + 20)}>
-              Load More
-            </AllButton>
-          </View>
-        ) : null}
-      </ScrollView>
-    </Container>
+      ) : null}
+    </ScrollView>
   );
 }

@@ -8,6 +8,7 @@ import {
   Dimensions,
   StatusBar,
   Platform,
+  Image,
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { Analytics } from '@aws-amplify/analytics';
@@ -17,7 +18,6 @@ import {
   useRoute,
   RouteProp,
 } from '@react-navigation/native';
-import { Image, Button } from 'native-base';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
@@ -205,25 +205,22 @@ export default function Login({ navigation }: Params): JSX.Element {
       >
         <View
           style={{
-            display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: 'black',
-            paddingTop: 20,
+            paddingVertical: 10,
           }}
         >
-          <Button
-            style={{ position: 'absolute', left: '5%' }}
+          <TouchableOpacity
+            style={{ position: 'absolute', left: 16, paddingTop: 4 }}
             onPress={() => navigateHome()}
           >
             <Image
-              alt="close icon"
               accessibilityLabel="Close Button"
               source={Theme.icons.white.closeCancel}
               style={{ width: 24, height: 24 }}
             />
-          </Button>
+          </TouchableOpacity>
           <Text style={style.headerTextActive}>Login</Text>
           <Text
             onPress={() => navigateInAuthStack('SignUpScreen')}

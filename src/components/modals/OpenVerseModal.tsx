@@ -1,9 +1,7 @@
 import React, { useState, useContext } from 'react';
-import {
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
-import { View, Image, Text, Button } from 'native-base';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { View, Image, Text, TouchableOpacity, Touchable } from 'react-native';
+
 import WhiteButton from '../buttons/WhiteButton';
 import Theme from '../../Theme.style';
 import UserContext from '../../contexts/UserContext';
@@ -58,13 +56,12 @@ export default function OpenVerseModal({
         >
           How would you like to open this verse?
         </Text>
-        <Button onPress={closeCallback}>
+        <TouchableOpacity onPress={closeCallback}>
           <Image
-            alt="Cancel Icon"
             source={Theme.icons.black.closeCancel}
             style={{ width: 24, height: 24 }}
           />
-        </Button>
+        </TouchableOpacity>
       </View>
       <TouchableOpacity
         onPress={() => setOpenIn('app')}
@@ -92,7 +89,6 @@ export default function OpenVerseModal({
           <Image
             source={Theme.icons.black.checkMark}
             style={{ width: 24, height: 24 }}
-            alt="Check mark Icon"
           />
         ) : null}
       </TouchableOpacity>
@@ -122,7 +118,6 @@ export default function OpenVerseModal({
           <Image
             source={Theme.icons.black.checkMark}
             style={{ width: 24, height: 24 }}
-            alt="Check mark Icon"
           />
         ) : null}
       </TouchableOpacity>
@@ -150,7 +145,6 @@ export default function OpenVerseModal({
               <Image
                 source={Theme.icons.black.checkMark}
                 style={{ width: 24, height: 24 }}
-                alt="Check mark Icon"
               />
             ) : null}
           </TouchableWithoutFeedback>

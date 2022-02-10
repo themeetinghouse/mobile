@@ -1,7 +1,6 @@
 import React from 'react';
-import { Image } from 'native-base';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { StyleSheet, ImageBackground, View, Text } from 'react-native';
+import { StyleSheet, ImageBackground, View, Text, Image } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Theme, { Style } from '../../Theme.style';
 import { Announcement } from '../../services/AnnouncementService';
@@ -73,11 +72,7 @@ export default function AnnouncementCard({
           style={style.imageCardContainer}
           onPress={handlePress}
         >
-          <Image
-            alt="Announcement Icon"
-            style={style.icon}
-            source={Theme.icons.white.announcement}
-          />
+          <Image style={style.icon} source={Theme.icons.white.announcement} />
           <Text style={style.title}>{announcement.title}</Text>
           <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
             {`${announcement.description}`}
@@ -87,11 +82,7 @@ export default function AnnouncementCard({
     </View>
   ) : (
     <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
-      <Image
-        alt="Announcement Icon"
-        style={style.icon}
-        source={Theme.icons.white.announcement}
-      />
+      <Image style={style.icon} source={Theme.icons.white.announcement} />
       <Text style={style.title}>{announcement?.title}</Text>
       <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
         {`${announcement?.description}`}

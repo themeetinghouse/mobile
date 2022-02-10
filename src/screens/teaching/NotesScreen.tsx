@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { Text, Button, Image } from 'native-base';
 import {
   TextStyle,
+  Text,
+  Image,
   ViewStyle,
   StyleSheet,
   View,
+  TouchableOpacity,
   Linking,
   ScrollView,
 } from 'react-native';
@@ -204,13 +206,16 @@ export default function NotesScreen({
       header: function render() {
         return (
           <Header>
-            <Button onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+              style={{ paddingHorizontal: 16, paddingVertical: 10 }}
+              onPress={() => navigation.goBack()}
+            >
               <Image
                 style={Style.icon}
                 source={Theme.icons.white.arrowLeft}
-                alt="left icon"
+                accessibilityLabel="left icon"
               />
-            </Button>
+            </TouchableOpacity>
 
             <Text
               onPress={() => {
@@ -237,13 +242,16 @@ export default function NotesScreen({
               Questions
             </Text>
 
-            <Button onPress={handleOpenTextOptions}>
+            <TouchableOpacity
+              style={{ paddingHorizontal: 16, paddingVertical: 10 }}
+              onPress={handleOpenTextOptions}
+            >
               <Image
                 style={Style.icon}
                 source={Theme.icons.white.textOptions}
-                alt="text options icon"
+                accessibilityLabel="text options icon"
               />
-            </Button>
+            </TouchableOpacity>
           </Header>
         );
       },

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Text, View } from 'native-base';
 import {
   Image,
   StyleSheet,
+  View,
+  Text,
   Dimensions,
   TouchableWithoutFeedback,
 } from 'react-native';

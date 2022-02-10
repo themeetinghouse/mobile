@@ -62,8 +62,7 @@ const style = StyleSheet.create({
   icon: Style.icon,
   headerButton: {
     backgroundColor: Theme.colors.header,
-    paddingLeft: 20,
-    paddingRight: 20,
+    paddingLeft: 40,
   },
   title: HeaderStyle.title,
   subtitle: HeaderStyle.subtitle,
@@ -389,7 +388,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                         );
                       return null;
                     })}
-                    {events.length > 3 ? (
+                    {events.length < 3 ? (
                       <AllButton
                         handlePress={() => {
                           navigation.navigate('AllEvents', { events });
