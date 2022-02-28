@@ -149,18 +149,16 @@ export default function ChangePass({ navigation }: Params): JSX.Element {
         const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
         await Auth.changePassword(user, currentPass, newPass);
         signOut();
-      } catch (e) {
-        if (e instanceof Error) {
-          if (e.code === 'NotAuthorizedException')
+      } catch (e: any) {
+        if (e?.code === 'NotAuthorizedException')
+          setError('Current password incorrect');
+        else if (e?.code === 'InvalidPasswordException')
+          setError(e?.message?.split(': ')?.[1]);
+        else if (e?.code === 'InvalidParameterException')
+          if (e?.message?.includes('previousPassword'))
             setError('Current password incorrect');
-          else if (e.code === 'InvalidPasswordException')
-            setError(e.message.split(': ')[1]);
-          else if (e.code === 'InvalidParameterException')
-            if (e.message.includes('previousPassword'))
-              setError('Current password incorrect');
-            else setError('Password not long enough');
-          else setError(e.message);
-        }
+          else setError('Password not long enough');
+        else setError(e?.message ?? 'An error occurred');
       }
     };
 

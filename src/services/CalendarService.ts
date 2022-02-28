@@ -48,8 +48,8 @@ export default class CalendarService {
         return defaultCalendar.id;
       }
       return await CalendarService.findTMHCalendar(); // if unable to create tmh-calendar defaults to id 1.
-    } catch (error) {
-      if (error instanceof Error) return error.message;
+    } catch (error: any) {
+      return error?.message ?? 'An error occurred';
     }
     return null;
   };
@@ -190,16 +190,14 @@ export default class CalendarService {
             { cancelable: false }
           );
         }
-      } catch (error) {
-        if (error instanceof Error) {
-          if (error.message.includes('permission')) {
-            Alert.alert(
-              'Permission Error',
-              'Please enable Calendar permissions in settings',
-              [{ text: 'Dismiss' }],
-              { cancelable: false }
-            );
-          }
+      } catch (error: any) {
+        if (error?.message?.includes('permission')) {
+          Alert.alert(
+            'Permission Error',
+            'Please enable Calendar permissions in settings',
+            [{ text: 'Dismiss' }],
+            { cancelable: false }
+          );
         }
       }
     } else {

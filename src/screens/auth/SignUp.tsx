@@ -164,25 +164,20 @@ export default function SignUp({ navigation }: Params): JSX.Element {
       setError('Invalid email address');
       return;
     }
-
     setSending(true);
-
     try {
       await Auth.signUp({
         username: user,
         password: pass,
         attributes: { email: user, 'custom:home_location': site.locationId },
       }).then(() => confirmUser());
-    } catch (e) {
-      if (e instanceof Error) {
-        if (e.code === 'InvalidPasswordException')
-          setError(e.message.split(': ')[1]);
-        else if (e.code === 'InvalidParameterException')
-          setError('Password not long enough');
-        else setError(e.message);
-      }
+    } catch (e: any) {
+      if (e?.code === 'InvalidPasswordException')
+        setError(e?.message?.split(': ')?.[1]);
+      else if (e?.code === 'InvalidParameterException')
+        setError('Password not long enough');
+      else setError(e?.message ?? 'An unknown error occurred');
     }
-
     setSending(false);
   };
 
