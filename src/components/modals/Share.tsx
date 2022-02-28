@@ -8,8 +8,8 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
+import * as Clipboard from 'expo-clipboard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   PanGestureHandler,
