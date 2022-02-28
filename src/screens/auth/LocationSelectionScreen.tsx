@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, Component } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -67,23 +67,34 @@ const style = StyleSheet.create({
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.medium,
     marginLeft: 20,
+    flex: 1,
   },
   searchInputActive: {
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.medium,
     marginLeft: 20,
+    flex: 1,
   },
   listItem: {
-    marginLeft: 0,
-    borderColor: Theme.colors.gray3,
+    flexDirection: 'row',
+    paddingTop: 16,
   },
   listText: {
+    flex: 1,
+    borderColor: '#1A1A1A',
+    borderBottomWidth: 1,
+    paddingBottom: 16,
     fontSize: Theme.fonts.medium,
     color: Theme.colors.white,
     fontFamily: Theme.fonts.fontFamilySemiBold,
   },
-  listCheckIcon: Style.icon,
+  listCheckIcon: {
+    ...Style.icon,
+    position: 'absolute',
+    right: 20,
+    alignSelf: 'center',
+  },
 });
 
 type LocationSelectionScreenInput = {
@@ -168,32 +179,39 @@ export default function LocationSelectionScreen({
   }, []);
 
   return (
-    <Component style={{ backgroundColor: 'black' }}>
-      <ScrollView style={style.content}>
-        <View>
-          <Image style={style.searchIcon} source={Theme.icons.white.search} />
-          <TextInput
-            style={searchText ? style.searchInputActive : style.searchInput}
-            value={searchText}
-            onChangeText={(str) => setSearchText(str)}
-            placeholder="Search locations..."
-          />
-          {searchText ? (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchText('');
-              }}
-            >
-              <Image
-                style={style.searchIcon}
-                accessibilityLabel="Close Location Search"
-                source={Theme.icons.white.closeCancel}
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-        <View style={{ paddingVertical: 24 }}>{renderLocations()}</View>
-      </ScrollView>
-    </Component>
+    <ScrollView style={style.content}>
+      <View
+        style={{
+          flexDirection: 'row',
+          borderBottomColor: '#54565A',
+          borderBottomWidth: 1,
+          paddingBottom: 16,
+          flex: 1,
+        }}
+      >
+        <Image style={style.searchIcon} source={Theme.icons.white.search} />
+        <TextInput
+          style={searchText ? style.searchInputActive : style.searchInput}
+          value={searchText}
+          onChangeText={(str) => setSearchText(str)}
+          placeholderTextColor="#54565A"
+          placeholder="Search locations..."
+        />
+        {searchText ? (
+          <TouchableOpacity
+            onPress={() => {
+              setSearchText('');
+            }}
+          >
+            <Image
+              style={style.searchIcon}
+              accessibilityLabel="Close Location Search"
+              source={Theme.icons.white.closeCancel}
+            />
+          </TouchableOpacity>
+        ) : null}
+      </View>
+      <View style={{ paddingVertical: 24 }}>{renderLocations()}</View>
+    </ScrollView>
   );
 }
