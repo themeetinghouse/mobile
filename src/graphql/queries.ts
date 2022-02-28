@@ -256,7 +256,7 @@ export const getSeries = `
 
 export const getCommentsByOwner = /* GraphQL */ `
   query GetCommentsByOwner(
-    $owner: String
+    $owner: String!
     $noteId: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelCommentFilterInput
