@@ -5,8 +5,8 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View,
   TouchableOpacity,
+  View,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -19,10 +19,7 @@ import { Announcement } from '../../services/AnnouncementService';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      padding: 16,
-    },
+    padding: 16,
   },
   header: Style.header,
   headerLeft: {
@@ -31,7 +28,6 @@ const style = StyleSheet.create({
     flexBasis: 50,
   },
   headerBody: {
-    flexGrow: 3,
     justifyContent: 'center',
   },
   headerRight: {
@@ -123,7 +119,7 @@ export default function AnnouncementDetailScreen({
             source={{ uri: announcementItem?.image }}
           />
           <LinearGradient
-            colors={['rgba(0,0,0, 0.05)', 'rgba(0,0,0, 0.9)']}
+            colors={['rgba(0,0,0, 0.05)', 'rgba(0,0,0, 1)']}
             style={{
               position: 'absolute',
               left: 0,

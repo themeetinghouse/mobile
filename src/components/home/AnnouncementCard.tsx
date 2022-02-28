@@ -7,33 +7,37 @@ import { Announcement } from '../../services/AnnouncementService';
 
 const style = StyleSheet.create({
   cardContainer: {
-    height: 300,
+    height: 375,
     flexWrap: 'nowrap',
     paddingLeft: 16,
     paddingRight: 16,
     paddingBottom: 40,
     paddingTop: 40,
     backgroundColor: Theme.colors.gray1,
-    marginBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#313131',
   },
   imageCardContainer: {
-    height: 300,
+    flexWrap: 'nowrap',
+    height: 375,
     paddingLeft: 16,
     paddingRight: 16,
     paddingBottom: 40,
     paddingTop: 40,
-    marginBottom: 16,
   },
-  title: { ...Style.title, marginBottom: 8, fontSize: 24, lineHeight: 32 },
-  body: { ...Style.body, fontSize: 16 },
+  title: {
+    ...Style.title,
+    marginBottom: 8,
+    fontSize: 24,
+    lineHeight: 32,
+    marginTop: 60,
+  },
+  body: { ...Style.body, fontSize: 16, flex: 1 },
   icon: {
     ...Style.icon,
     ...{
       width: 30,
       height: 30,
-      marginBottom: 56,
     },
   },
 });
@@ -50,6 +54,7 @@ export default function AnnouncementCard({
   return announcement?.image ? (
     <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black }}>
       <ImageBackground
+        progressiveRenderingEnabled
         style={{
           flex: 1,
           backgroundColor: Theme.colors.gray1,
