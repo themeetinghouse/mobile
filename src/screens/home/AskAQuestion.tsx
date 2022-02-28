@@ -25,6 +25,7 @@ const style = StyleSheet.create({
   content: {
     ...Style.cardContainer,
     backgroundColor: Theme.colors.black,
+    paddingTop: 80,
   },
   body: {
     ...Style.body,
@@ -83,7 +84,8 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
     navigation.setOptions({
       headerShown: true,
       title: 'Send In A Question',
-      headerTitleStyle: style.headerTitle,
+      headerTitleStyle: { ...style.headerTitle },
+      headerTransparent: true,
       headerStyle: { backgroundColor: Theme.colors.black },
       headerLeft: function render() {
         return (
@@ -113,8 +115,14 @@ export default function AskAQuestion({ navigation }: Params): JSX.Element {
 
   const submitQuestion = async () => {
     const regex = /\S+@\S+\.\S+/;
-
     if (email && regex.test(email)) {
+      if (question.length < 11) {
+        Alert.alert(
+          'An error occurred',
+          'Question must be longer than 10 characters.'
+        );
+        return;
+      }
       const variables = { email, body: question };
       const response = (await API.graphql(
         graphqlOperation(askQuestion, variables)
