@@ -147,21 +147,25 @@ export default function MoreScreen(): JSX.Element {
               },
             };
           });
-        setMenuItems([
-          ...transformedItems,
-          {
-            id: 'betaTest',
-            text: 'Beta Test',
-            subtext: 'Help us improve this app',
-            icon: Theme.icons.white.volunteer,
-            action: () =>
-              Platform.OS === 'ios'
-                ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-                : Linking.openURL(
-                    'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-                  ),
-          },
-        ]);
+        Platform.OS !== 'ios'
+          ? setMenuItems([
+              ...transformedItems,
+              {
+                id: 'betaTest',
+                text: 'Beta Test',
+                subtext: 'Help us improve this app',
+                icon: Theme.icons.white.volunteer,
+                action: () =>
+                  Platform.OS === 'ios'
+                    ? Linking.openURL(
+                        'https://testflight.apple.com/join/y06dCmo4'
+                      )
+                    : Linking.openURL(
+                        'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+                      ),
+              },
+            ])
+          : null;
       }
     } catch (err) {
       console.log('Error occurred, falls back to default items');
