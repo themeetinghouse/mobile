@@ -304,9 +304,11 @@ export default function SeriesLandingScreen({
   }
   const getTeachingImage = (teaching: any) => {
     const { thumbnails } = teaching?.Youtube?.snippet;
-
-    if (thumbnails?.standard) return thumbnails?.standard?.url;
-    return thumbnails?.maxres?.url;
+    return (
+      thumbnails?.standard?.url ??
+      thumbnails?.maxres?.url ??
+      thumbnails?.high?.url
+    );
   };
   return (
     <>
