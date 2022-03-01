@@ -13,6 +13,8 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import moment from 'moment';
@@ -114,50 +116,54 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      header: function render() {
-        return (
-          <Header>
-            <TouchableOpacity
-              style={[
-                style.headerButton,
-                { flexGrow: 1, alignContent: 'center' },
-              ]}
-              onPress={() =>
-                navigation.navigate('LocationSelectionScreen', {
-                  persist: !emailVerified,
-                })
-              }
-            >
-              <View style={style.buttonContentsContainer}>
-                <Text style={style.title}>Home</Text>
-                <View style={style.locationContainer}>
-                  <Text style={[style.subtitle, style.locationName]}>
-                    {locationName === 'unknown'
-                      ? 'Select Location'
-                      : locationName}
-                  </Text>
-                  <Image
-                    source={Theme.icons.white.caretDown}
-                    style={{ width: 12, height: 24 }}
-                  />
-                </View>
+      headerTitle: (c) => (
+        <>
+          {Platform.OS === 'android' ? (
+            <StatusBar backgroundColor="#111111" />
+          ) : null}
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('LocationSelectionScreen', {
+                persist: !emailVerified,
+              })
+            }
+          >
+            <View style={style.buttonContentsContainer}>
+              <Text style={style.title}>Home</Text>
+              <View style={style.locationContainer}>
+                <Text style={[style.subtitle, style.locationName]}>
+                  {locationName === 'unknown'
+                    ? 'Select Location'
+                    : locationName}
+                </Text>
+                <Image
+                  source={Theme.icons.white.caretDown}
+                  style={{ width: 12, height: 24 }}
+                />
               </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={{ alignContent: 'flex-end' }}
-              onPress={() => navigation.navigate('ProfileScreen')}
-            >
-              <Image
-                source={
-                  emailVerified
-                    ? Theme.icons.white.userLoggedIn
-                    : Theme.icons.white.user
-                }
-                style={[style.icon]}
-              />
-            </TouchableOpacity>
-          </Header>
+            </View>
+          </TouchableOpacity>
+        </>
+      ),
+      headerTitleAlign: 'center',
+      headerTitleStyle: HeaderStyle.title,
+      headerStyle: { backgroundColor: Theme.colors.background },
+      headerLeft: () => null,
+      headerRight: () => {
+        return (
+          <TouchableOpacity
+            style={{ alignContent: 'flex-end', marginRight: 16 }}
+            onPress={() => navigation.navigate('ProfileScreen')}
+          >
+            <Image
+              source={
+                emailVerified
+                  ? Theme.icons.white.userLoggedIn
+                  : Theme.icons.white.user
+              }
+              style={[style.icon]}
+            />
+          </TouchableOpacity>
         );
       },
     });

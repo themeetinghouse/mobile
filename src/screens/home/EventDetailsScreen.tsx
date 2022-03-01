@@ -33,7 +33,7 @@ const style = StyleSheet.create({
     ...Style.cardContainer,
     ...{
       backgroundColor: Theme.colors.black,
-      marginTop: -60,
+      marginTop: 0,
     },
   },
 
