@@ -183,10 +183,8 @@ export default function Login({ navigation }: Params): JSX.Element {
           ),
         });
       navigateHome();
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e.message);
-      }
+    } catch (e: any) {
+      setError(e?.message ?? 'An error occurred');
     }
     setSending(false);
   };

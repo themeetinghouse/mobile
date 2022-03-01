@@ -82,9 +82,6 @@ export default class LiveEventService {
       // console.log("Date fetched is not older. No need to update")
       return false;
     } catch (error) {
-      if (error instanceof Error) {
-        return false;
-      }
       return false;
     }
   };

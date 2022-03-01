@@ -93,11 +93,9 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
     setSending(true);
     try {
       await Auth.confirmSignUp(user, code).then(() => toLogin(true));
-    } catch (e) {
-      if (e instanceof Error) {
-        if (e.code === 'UserNotFoundException') setError('Username not found.');
-        else setError(e.message);
-      }
+    } catch (e: any) {
+      if (e?.code === 'UserNotFoundException') setError('Username not found.');
+      else setError(e?.message ?? 'An error occurred');
     }
     setSending(false);
   };
@@ -109,11 +107,9 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
       setNeedsNewCode(false);
       setCode('');
       setError('');
-    } catch (e) {
-      if (e instanceof Error) {
-        if (e.code === 'UserNotFoundException') setError('Username not found.');
-        else setError(e.message);
-      }
+    } catch (e: any) {
+      if (e?.code === 'UserNotFoundException') setError('Username not found.');
+      else setError(e?.message ?? 'An error occurred');
     }
     setSending(false);
   };
