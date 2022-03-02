@@ -1,4 +1,4 @@
-import React, { useContext, useLayoutEffect, useState } from 'react';
+import React, { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import {
   Image,
   ImageSourcePropType,
@@ -8,6 +8,7 @@ import {
   Text,
   View,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import * as Linking from 'expo-linking';
 import { useNavigation } from '@react-navigation/native';
@@ -22,6 +23,7 @@ import LocationContext from '../../../src/contexts/LocationContext';
 
 const style = StyleSheet.create({
   content: {
+    flex: 1,
     backgroundColor: Theme.colors.black,
   },
   headerTitle: {
@@ -77,6 +79,7 @@ export default function MoreScreen(): JSX.Element {
   const navigation = useNavigation();
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
+  const [isLoading, setIsLoading] = useState(true);
   const [menuItems, setMenuItems] = useState<Array<LinkItem>>([]);
   const fallbackItems = useFallbackItems();
   const getUserType = async () => {
@@ -126,25 +129,32 @@ export default function MoreScreen(): JSX.Element {
               },
             };
           });
-        setMenuItems([
-          ...transformedItems,
-          {
-            id: 'betaTest',
-            text: 'Beta Test',
-            subtext: 'Help us improve this app',
-            icon: Theme.icons.white.volunteer,
-            action: () =>
-              Platform.OS === 'ios'
-                ? Linking.openURL('https://testflight.apple.com/join/y06dCmo4')
-                : Linking.openURL(
-                    'https://play.google.com/store/apps/details?id=org.tmh.takenote'
-                  ),
-          },
-        ]);
+        if (Platform.OS === 'ios') {
+          setMenuItems(transformedItems);
+        } else
+          setMenuItems([
+            ...transformedItems,
+            {
+              id: 'betaTest',
+              text: 'Beta Test',
+              subtext: 'Help us improve this app',
+              icon: Theme.icons.white.volunteer,
+              action: () =>
+                Platform.OS === 'ios'
+                  ? Linking.openURL(
+                      'https://testflight.apple.com/join/y06dCmo4'
+                    )
+                  : Linking.openURL(
+                      'https://play.google.com/store/apps/details?id=org.tmh.takenote'
+                    ),
+            },
+          ]);
       }
     } catch (err) {
       console.log('Error occurred, falls back to default items');
       setMenuItems(fallbackItems);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -185,160 +195,172 @@ export default function MoreScreen(): JSX.Element {
     loadMenu();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [emailVerified, navigation]);
-
   return (
     <View style={style.content}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {menuItems.slice(0, 4).map((item, index) => {
-          return (
-            <TouchableHighlight
-              delayPressIn={100}
-              key={item.id}
-              style={style.listItem}
-              onPress={item.action}
-              underlayColor={Theme.colors.gray3}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'column',
-                    top: 14,
-                  }}
-                >
-                  {item.customIcon ? (
-                    <Image
-                      style={style.listIcon}
-                      source={
-                        { uri: item.icon as string } as ImageSourcePropType
-                      }
-                    />
-                  ) : (
-                    <Image
-                      style={style.listIcon}
-                      source={item.icon as ImageSourcePropType}
-                    />
-                  )}
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'column',
-                  }}
-                >
-                  <View
-                    style={[
-                      {
-                        flexDirection: 'row',
-                        height: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                      },
-                      index !== 3
-                        ? {
-                            borderColor: Theme.colors.gray2,
-                            borderBottomWidth: 2,
-                          }
-                        : {},
-                    ]}
-                  >
-                    <View style={{ flex: 1 }}>
-                      <Text style={style.listText}>{item.text}</Text>
-                      <Text style={style.listSubtext}>{item.subtext}</Text>
-                    </View>
-
-                    <Image
-                      style={style.listArrowIcon}
-                      source={Theme.icons.white.arrow}
-                    />
-                  </View>
-                </View>
-              </View>
-            </TouchableHighlight>
-          );
-        })}
-
+      {isLoading ? (
         <View
           style={{
-            height: 15,
-            backgroundColor: Theme.colors.background,
-            padding: 0,
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-        />
-
-        {menuItems.slice(4).map((item, index) => {
-          return (
-            <TouchableHighlight
-              delayPressIn={100}
-              key={item.id}
-              style={style.listItem}
-              onPress={item.action}
-              underlayColor={Theme.colors.gray6}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  alignItems: 'flex-start',
-                }}
+        >
+          <ActivityIndicator color="#fff" size="large" />
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {menuItems.slice(0, 4).map((item, index) => {
+            return (
+              <TouchableHighlight
+                delayPressIn={50}
+                key={item.id}
+                style={style.listItem}
+                onPress={item.action}
+                underlayColor={Theme.colors.gray3}
               >
                 <View
                   style={{
-                    flexDirection: 'column',
-                    top: 14,
-                  }}
-                >
-                  {item.customIcon ? (
-                    <Image
-                      style={style.listIcon}
-                      source={
-                        { uri: item.icon as string } as ImageSourcePropType
-                      }
-                    />
-                  ) : (
-                    <Image
-                      style={style.listIcon}
-                      source={item.icon as ImageSourcePropType}
-                    />
-                  )}
-                </View>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'column',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
                   }}
                 >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      height: '100%',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderColor: Theme.colors.gray2,
-                      borderBottomWidth: 2,
+                      flexDirection: 'column',
+                      top: 14,
                     }}
                   >
-                    <View style={{ flex: 1 }}>
-                      <Text style={style.listText}>{item.text}</Text>
-                      <Text style={style.listSubtext}>{item.subtext}</Text>
-                    </View>
+                    {item.customIcon ? (
+                      <Image
+                        style={style.listIcon}
+                        source={
+                          { uri: item.icon as string } as ImageSourcePropType
+                        }
+                      />
+                    ) : (
+                      <Image
+                        style={style.listIcon}
+                        source={item.icon as ImageSourcePropType}
+                      />
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <View
+                      style={[
+                        {
+                          flexDirection: 'row',
+                          height: '100%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                        },
+                        index !== 3
+                          ? {
+                              borderColor: Theme.colors.gray2,
+                              borderBottomWidth: 1,
+                            }
+                          : {},
+                      ]}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={style.listText}>{item.text}</Text>
+                        <Text style={style.listSubtext}>{item.subtext}</Text>
+                      </View>
 
-                    <Image
-                      style={style.listArrowIcon}
-                      source={Theme.icons.white.arrow}
-                    />
+                      <Image
+                        style={style.listArrowIcon}
+                        source={Theme.icons.white.arrow}
+                      />
+                    </View>
                   </View>
                 </View>
-              </View>
-            </TouchableHighlight>
-          );
-        })}
-      </ScrollView>
+              </TouchableHighlight>
+            );
+          })}
+          {menuItems.length > 0 ? (
+            <View
+              style={{
+                height: 15,
+                backgroundColor: Theme.colors.background,
+                padding: 0,
+              }}
+            />
+          ) : null}
+
+          {menuItems.slice(4).map((item, index) => {
+            return (
+              <TouchableHighlight
+                delayPressIn={50}
+                key={item.id}
+                style={style.listItem}
+                onPress={item.action}
+                underlayColor={Theme.colors.gray3}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'column',
+                      top: 14,
+                    }}
+                  >
+                    {item.customIcon ? (
+                      <Image
+                        style={style.listIcon}
+                        source={
+                          { uri: item.icon as string } as ImageSourcePropType
+                        }
+                      />
+                    ) : (
+                      <Image
+                        style={style.listIcon}
+                        source={item.icon as ImageSourcePropType}
+                      />
+                    )}
+                  </View>
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        height: '100%',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        borderColor: Theme.colors.gray2,
+                        borderBottomWidth: 1,
+                      }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text style={style.listText}>{item.text}</Text>
+                        <Text style={style.listSubtext}>{item.subtext}</Text>
+                      </View>
+
+                      <Image
+                        style={style.listArrowIcon}
+                        source={Theme.icons.white.arrow}
+                      />
+                    </View>
+                  </View>
+                </View>
+              </TouchableHighlight>
+            );
+          })}
+        </ScrollView>
+      )}
     </View>
   );
 }
