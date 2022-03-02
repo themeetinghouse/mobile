@@ -60,6 +60,15 @@ function useFallbackItems(): Array<LinkItem> {
       action: () =>
         Linking.openURL('https://www.themeetinghouse.com/volunteer'),
     },
+  ];
+  const filteredItems = fallbackMenu.filter(
+    (item) =>
+      location?.locationData?.locationId !== 'unknown' ||
+      (location?.locationData?.locationId === 'unknown' && item.id !== 'parish')
+  );
+  if (Platform.OS === 'ios') return filteredItems;
+  return [
+    ...filteredItems,
     {
       id: 'betaTest',
       text: 'Beta Test',
@@ -73,10 +82,5 @@ function useFallbackItems(): Array<LinkItem> {
             ),
     },
   ];
-  return fallbackMenu.filter(
-    (item) =>
-      location?.locationData?.locationId !== 'unknown' ||
-      (location?.locationData?.locationId === 'unknown' && item.id !== 'parish')
-  );
 }
 export default useFallbackItems;
