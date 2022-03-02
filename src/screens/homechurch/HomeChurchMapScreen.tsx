@@ -90,7 +90,7 @@ export default function HomeChurchMapScreen({
         zoom: 11,
         altitude: 30000,
       },
-      { duration: 300 }
+      { duration: 100 }
     );
   };
   const handleMarkerPress = (index: number) => {
@@ -163,9 +163,7 @@ export default function HomeChurchMapScreen({
           altitude: 30000,
         }}
         onMapReady={async () => getUserLocation()}
-        showsUserLocation
         showsCompass={false}
-        loadingEnabled
         ref={mapRef}
         style={styles.map}
       >
@@ -173,6 +171,7 @@ export default function HomeChurchMapScreen({
           ? homeChurches.map((church, index) => {
               return (
                 <HomeChurchMapMarker
+                  key={church?.id}
                   church={church}
                   index={index}
                   active={selected === index}
