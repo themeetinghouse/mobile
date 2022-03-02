@@ -141,6 +141,8 @@ export default function MainTabNavigator(): JSX.Element {
         style: {
           height: 90,
           backgroundColor: Theme.colors.background,
+          elevation: 0,
+          borderTopColor: Theme.colors.gray2,
           marginTop: media.media.playerType.includes('mini') ? 56 : 0,
         },
       }}

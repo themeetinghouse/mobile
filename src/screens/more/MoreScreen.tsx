@@ -22,33 +22,12 @@ import LocationContext from '../../../src/contexts/LocationContext';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-    },
-  },
-  header: Style.header,
-  headerLeft: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
-  },
-  headerRight: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
+    backgroundColor: Theme.colors.black,
   },
   headerTitle: {
     ...HeaderStyle.title,
     ...{
       width: '100%',
-    },
-  },
-  title: {
-    ...Style.title,
-    ...{
-      marginTop: 130,
-      marginBottom: 16,
     },
   },
   listItem: {
@@ -174,7 +153,13 @@ export default function MoreScreen(): JSX.Element {
       headerShown: true,
       title: 'More',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        elevation: 0,
+        shadowOpacity: 0,
+      },
       headerLeft: function render() {
         return <View style={{ flex: 1 }} />;
       },

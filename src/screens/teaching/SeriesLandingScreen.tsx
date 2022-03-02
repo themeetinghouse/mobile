@@ -212,7 +212,7 @@ export default function SeriesLandingScreen({
               backgroundColor: Theme.colors.background,
               ...StyleSheet.absoluteFillObject,
               opacity: contentFills ? headerOpacity : 0,
-              borderBottomColor: colors.border,
+              borderBottomColor: Theme.colors.gray2,
               borderBottomWidth: StyleSheet.hairlineWidth,
             }}
           />
@@ -256,6 +256,13 @@ export default function SeriesLandingScreen({
             />
           </TouchableOpacity>
         );
+      },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
       },
       headerLeftContainerStyle: { left: 16 },
       headerRightContainerStyle: { right: 16 },

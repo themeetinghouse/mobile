@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import {
   StyleSheet,
   View,
@@ -18,30 +18,26 @@ import * as Location from 'expo-location';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
-import HomeChurchItem from './HomeChurchItem';
+import HomeChurchItem, { HomeChurchExtra } from './HomeChurchItem';
 import { HomeChurchData, locationToGroupType } from './HomeChurchScreen';
 import HomeChurchExtendedModal from './HomeChurchExtendedModal';
+import HomeChurchMapMarker from './HomeChurchMapMarker';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
   },
   map: {
-    width,
-    height: height < 758 ? height * 0.63 : height * 0.66,
-  },
-  marker: {
-    padding: 12,
-    borderRadius: 50,
-    borderWidth: 2,
+    flex: 1.7,
+    width: '100%',
   },
   list: {
     backgroundColor: '#000',
-    width,
+    marginBottom: 8,
+    flex: 1,
     paddingBottom: 4,
   },
   closeButton: {
@@ -94,7 +90,7 @@ export default function HomeChurchMapScreen({
         zoom: 11,
         altitude: 30000,
       },
-      { duration: 400 }
+      { duration: 300 }
     );
   };
   const handleMarkerPress = (index: number) => {
@@ -176,38 +172,12 @@ export default function HomeChurchMapScreen({
         {homeChurches?.length
           ? homeChurches.map((church, index) => {
               return (
-                <Marker
-                  zIndex={selected === index ? 10 : -10}
-                  identifier={church?.id ?? ''}
-                  onPress={() => handleMarkerPress(index)}
-                  key={church?.id}
-                  coordinate={{
-                    latitude: parseFloat(
-                      church?.location?.address?.latitude ?? '43.6532'
-                    ),
-                    longitude: parseFloat(
-                      church?.location?.address?.longitude ?? '-79.3832'
-                    ),
-                  }}
-                >
-                  <View
-                    style={[
-                      styles.marker,
-                      {
-                        backgroundColor: selected === index ? 'black' : 'white',
-                      },
-                    ]}
-                  >
-                    <Image
-                      style={{ width: 18, height: 18 }}
-                      source={
-                        selected === index
-                          ? Theme.icons.white.homeChurch
-                          : Theme.icons.black.homeChurch
-                      }
-                    />
-                  </View>
-                </Marker>
+                <HomeChurchMapMarker
+                  church={church}
+                  index={index}
+                  active={selected === index}
+                  handleMarkerPress={handleMarkerPress}
+                />
               );
             })
           : null}
@@ -242,7 +212,7 @@ export default function HomeChurchMapScreen({
             active
             card
             single
-            item={homeChurches[0]}
+            item={homeChurches[0] as HomeChurchExtra}
           />
         </View>
       ) : (

@@ -18,12 +18,9 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      padding: 16,
-      paddingBottom: 150,
-    },
+    backgroundColor: Theme.colors.black,
+    padding: 16,
+    paddingBottom: 150,
   },
   header: Style.header,
   headerLeft: {
@@ -115,8 +112,14 @@ export default function HomeChurchLocationSelect({
     navigation.setOptions({
       headerShown: true,
       title: 'Site Location',
+      headerTitleAlign: 'center',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity onPress={() => navigation.goBack()}>

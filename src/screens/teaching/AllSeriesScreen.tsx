@@ -24,11 +24,8 @@ import SeriesItem from '../../components/teaching/SeriesItem';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      padding: 16,
-    },
+    backgroundColor: Theme.colors.black,
+    padding: 16,
   },
   header: Style.header,
   headerLeft: {
@@ -164,7 +161,13 @@ export default function AllSeriesScreen({
         ? 'Popular Series'
         : 'All Series',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -184,7 +187,7 @@ export default function AllSeriesScreen({
               style={{
                 color: 'white',
                 fontSize: 16,
-                transform: [{ translateX: -4 }],
+                transform: [{ translateX: -8 }],
               }}
             >
               Teaching

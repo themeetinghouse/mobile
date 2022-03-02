@@ -116,7 +116,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
-      headerTitle: (c) => (
+      headerTitle: () => (
         <>
           {Platform.OS === 'android' ? (
             <StatusBar backgroundColor="#111111" />
@@ -147,7 +147,13 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       ),
       headerTitleAlign: 'center',
       headerTitleStyle: HeaderStyle.title,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: () => null,
       headerRight: () => {
         return (

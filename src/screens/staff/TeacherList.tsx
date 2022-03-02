@@ -13,11 +13,8 @@ import ActivityIndicator from '../../components/ActivityIndicator';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      padding: 16,
-    },
+    backgroundColor: Theme.colors.black,
+    padding: 16,
   },
   header: Style.header,
   headerTitle: HeaderStyle.title,
@@ -38,7 +35,13 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
       headerShown: true,
       title: 'All Teachers',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity

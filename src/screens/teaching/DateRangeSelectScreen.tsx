@@ -119,7 +119,13 @@ export default function DateRangeSelectScreen({
       headerShown: true,
       title: 'Date Range',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity onPress={() => navigation.goBack()}>

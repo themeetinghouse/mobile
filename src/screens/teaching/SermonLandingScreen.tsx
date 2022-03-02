@@ -38,10 +38,7 @@ import { getSeries, getCustomPlaylist } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-    },
+    backgroundColor: Theme.colors.black,
   },
   headerTitle: {
     ...HeaderStyle.title,
@@ -450,7 +447,13 @@ export default function SermonLandingScreen({
     navigation.setOptions({
       headerShown: true,
       title: '',
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       safeAreaInsets: { top: safeArea.top },
       headerLeft: function render() {
         return (

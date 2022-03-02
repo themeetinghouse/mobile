@@ -20,6 +20,7 @@ import openMap from 'react-native-open-maps';
 import * as Linking from 'expo-linking';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Calendar from '../../services/CalendarService';
 import ShareModal from '../../components/modals/Share';
 import { HomeStackParamList } from '../../navigation/MainTabNavigator';
@@ -30,11 +31,8 @@ import Header from '../../components/Header';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      marginTop: 0,
-    },
+    backgroundColor: Theme.colors.black,
+    marginTop: 0,
   },
 
   title: {
@@ -130,13 +128,21 @@ export default function EventDetailsScreen({
   const appState = useRef(AppState.currentState);
   const [setAppStateVisible] = useState(appState.current);
   const [alerts, setAlerts] = useState<any>({ message: '' });
-
+  const safeArea = useSafeAreaInsets();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
       header: function render() {
         return (
-          <Header>
+          <View
+            style={{
+              flexDirection: 'row',
+              paddingTop: safeArea?.top,
+              backgroundColor: Theme.colors.background,
+              borderBottomColor: Theme.colors.gray2,
+              borderBottomWidth: 1,
+            }}
+          >
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={{
@@ -155,6 +161,7 @@ export default function EventDetailsScreen({
             <TouchableOpacity
               style={{
                 paddingVertical: 12,
+                marginRight: 16,
               }}
               onPress={() => setShare(!share)}
             >
@@ -164,11 +171,11 @@ export default function EventDetailsScreen({
                 style={{ width: 24, height: 24 }}
               />
             </TouchableOpacity>
-          </Header>
+          </View>
         );
       },
     });
-  }, [navigation, share]);
+  }, [navigation, share, safeArea?.top]);
 
   const directionsType = () => {
     if (eventItem?.place) {
