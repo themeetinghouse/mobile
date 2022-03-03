@@ -29,7 +29,6 @@ import { allSermonsQuery } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
     ...{
       backgroundColor: Theme.colors.black,
       padding: 16,
@@ -166,7 +165,13 @@ export default function AllSermonsScreen({
       headerShown: true,
       title: 'All Teaching',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity

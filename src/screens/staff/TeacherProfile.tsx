@@ -77,7 +77,8 @@ const style = StyleSheet.create({
   header: Style.header,
   headerTitle: HeaderStyle.title,
   searchBar: {
-    width: Dimensions.get('window').width - 16,
+    marginTop: 30,
+    minWidth: Dimensions.get('window').width - 40,
   },
   listContentContainer: {
     paddingLeft: 16,
@@ -115,7 +116,12 @@ export default function TeacherProfile({
       headerShown: true,
       title: '',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: 'black' },
+      cardShadowEnabled: false,
+      headerStyle: {
+        elevation: 0,
+        shadowOpacity: 0,
+        backgroundColor: 'black',
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -145,7 +151,14 @@ export default function TeacherProfile({
       headerLeftContainerStyle: { left: 16 },
       headerRight: function render() {
         return (
-          <View style={{ flexDirection: 'column', flex: 1 }}>
+          <View
+            style={{
+              flexDirection: 'column',
+              flex: 1,
+              paddingRight: 12,
+              paddingBottom: 12,
+            }}
+          >
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
               {teacherData.Phone !== '' ? (
                 <TouchableOpacity
@@ -285,12 +298,15 @@ export default function TeacherProfile({
           </Text>
           <Text style={style.Position}>{route.params?.staff.Position}</Text>
         </View>
-        <SearchBar
-          style={style.searchBar}
-          searchText={searchText}
-          handleTextChanged={(newStr) => setSearchText(newStr)}
-          placeholderLabel="Search sermons..."
-        />
+        <View style={{ paddingHorizontal: 16 }}>
+          <SearchBar
+            style={style.searchBar}
+            searchText={searchText}
+            handleTextChanged={(newStr) => setSearchText(newStr)}
+            placeholderLabel="Search sermons..."
+          />
+        </View>
+
         <View style={style.listContentContainer}>
           {teachings.items.length > 0
             ? teachings.items

@@ -50,27 +50,9 @@ const isTablet = screenWidth >= 768;
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.gray1,
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
-  },
-  header: Style.header,
-  headerLeft: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
-  },
-  headerBody: {
-    flexGrow: 3,
-    justifyContent: 'center',
-  },
-  headerRight: {
-    flexGrow: 0,
-    flexShrink: 0,
-    flexBasis: 50,
+    backgroundColor: Theme.colors.gray1,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   headerTitle: {
     ...HeaderStyle.title,
@@ -263,7 +245,13 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       headerShown: true,
       title: 'Teaching',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+        elevation: 0,
+      },
       headerLeft: function render() {
         return <View style={{ flex: 1 }} />;
       },

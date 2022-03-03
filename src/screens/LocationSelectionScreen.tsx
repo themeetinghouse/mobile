@@ -80,6 +80,8 @@ const style = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.gray2,
     paddingTop: 16,
   },
   listText: {

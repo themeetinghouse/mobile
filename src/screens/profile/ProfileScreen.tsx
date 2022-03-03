@@ -21,10 +21,7 @@ import UserContext from '../../contexts/UserContext';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.background,
-    },
+    backgroundColor: Theme.colors.background,
   },
   header: {
     backgroundColor: Theme.colors.header,
@@ -104,7 +101,12 @@ export default function Profile({ navigation }: Params): JSX.Element {
       headerShown: true,
       title: 'Profile',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+      },
       headerLeft: function render() {
         return <View style={{ flex: 1 }} />;
       },

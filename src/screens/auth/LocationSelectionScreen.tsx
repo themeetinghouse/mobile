@@ -20,7 +20,8 @@ const style = StyleSheet.create({
     ...Style.cardContainer,
     ...{
       backgroundColor: Theme.colors.black,
-      padding: 16,
+      paddingLeft: 16,
+      paddingVertical: 16,
       paddingBottom: 150,
     },
   },
@@ -78,6 +79,8 @@ const style = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.gray2,
     paddingTop: 16,
   },
   listText: {
@@ -186,6 +189,7 @@ export default function LocationSelectionScreen({
           borderBottomColor: '#54565A',
           borderBottomWidth: 1,
           paddingBottom: 16,
+          marginRight: 16,
           flex: 1,
         }}
       >

@@ -127,7 +127,12 @@ export default function HomeChurchScreen({
       headerShown: true,
       title: 'Home Church Finder',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity

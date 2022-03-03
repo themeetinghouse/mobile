@@ -18,12 +18,10 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      padding: 16,
-      paddingBottom: 150,
-    },
+    backgroundColor: Theme.colors.black,
+    paddingVertical: 16,
+    paddingLeft: 16,
+    paddingBottom: 150,
   },
   header: Style.header,
   headerLeft: {
@@ -75,6 +73,8 @@ const style = StyleSheet.create({
   },
   listItem: {
     flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.colors.gray2,
     paddingTop: 16,
   },
   listText: {
@@ -115,8 +115,14 @@ export default function HomeChurchLocationSelect({
     navigation.setOptions({
       headerShown: true,
       title: 'Site Location',
+      headerTitleAlign: 'center',
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+        borderBottomWidth: 1,
+        borderBottomColor: Theme.colors.gray2,
+        shadowOpacity: 0,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -150,6 +156,7 @@ export default function HomeChurchLocationSelect({
           borderBottomColor: '#54565A',
           borderBottomWidth: 1,
           paddingBottom: 16,
+          marginRight: 16,
         }}
       >
         <Image style={style.searchIcon} source={Theme.icons.white.search} />

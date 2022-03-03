@@ -57,13 +57,12 @@ interface Style {
 
 const style = StyleSheet.create({
   content: {
-    ...Style.cardContainer,
-    ...{
-      paddingLeft: 0,
-      paddingRight: 0,
-    },
+    paddingLeft: 0,
+    paddingRight: 0,
+    borderTopWidth: 1,
+    borderTopColor: Theme.colors.gray2,
   },
-  header: Style.header,
+
   headerLeft: {
     flexGrow: 0,
     flexShrink: 0,
@@ -207,7 +206,10 @@ export default function NotesScreen({
         return (
           <Header>
             <TouchableOpacity
-              style={{ paddingHorizontal: 16, paddingVertical: 10 }}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+              }}
               onPress={() => navigation.goBack()}
             >
               <Image
