@@ -107,110 +107,6 @@ const mockTeaching = [
       'https://media.themeetinghouse.com/vpodcast/2020/2020-12-13-1261-video.mp4',
     viewCount: '511',
   },
-  {
-    Youtube: {
-      snippet: {
-        thumbnails: {
-          default: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/default.jpg',
-          },
-          high: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/hqdefault.jpg',
-          },
-          maxres: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/maxresdefault.jpg',
-          },
-          medium: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/mqdefault.jpg',
-          },
-          standard: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/sddefault.jpg',
-          },
-        },
-      },
-    },
-    YoutubeIdent: 'V_uARB3hhj0',
-    audioURL:
-      'https://media.themeetinghouse.com/podcast/audio/2020/2020-12-24-1263-sermon.mp3',
-    description:
-      'Through carols, art, and stories, we want to explore how this radical idea of God coming to us as a helpless baby changed everything, and how it continues to bring light, hope, and peace when this season of life feels dark.',
-    episodeNumber: 1,
-    episodeTitle: 'Christmas Eve at Home',
-    id: 'V_uARB3hhj0',
-    length: '54',
-    notesURL: null,
-    publishedDate: '2020-12-24',
-    series: {
-      id: 'Christmas Eve at Home',
-      title: 'Christmas Eve at Home',
-    },
-    seriesTitle: 'Christmas Eve at Home',
-    speakers: {
-      items: [
-        {
-          speaker: {
-            id: 'Bruxy Cavey',
-          },
-        },
-      ],
-    },
-    videoTypes: 'adult-sunday',
-    videoURL:
-      'https://media.themeetinghouse.com/vpodcast/2020/2020-12-24-1263-video.mp4',
-    viewCount: '2627',
-  },
-  {
-    Youtube: {
-      snippet: {
-        thumbnails: {
-          default: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/default.jpg',
-          },
-          high: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/hqdefault.jpg',
-          },
-          maxres: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/maxresdefault.jpg',
-          },
-          medium: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/mqdefault.jpg',
-          },
-          standard: {
-            url: 'https://i.ytimg.com/vi/V_uARB3hhj0/sddefault.jpg',
-          },
-        },
-      },
-    },
-    YoutubeIdent: 'V_uARB3hhj0',
-    audioURL:
-      'https://media.themeetinghouse.com/podcast/audio/2020/2020-12-24-1263-sermon.mp3',
-    description:
-      'Through carols, art, and stories, we want to explore how this radical idea of God coming to us as a helpless baby changed everything, and how it continues to bring light, hope, and peace when this season of life feels dark.',
-    episodeNumber: 1,
-    episodeTitle: 'Christmas Eve at Home',
-    id: 'V_uARB3hhj0',
-    length: '54',
-    notesURL: null,
-    publishedDate: '2020-12-24',
-    series: {
-      id: 'Christmas Eve at Home',
-      title: 'Christmas Eve at Home',
-    },
-    seriesTitle: 'Christmas Eve at Home',
-    speakers: {
-      items: [
-        {
-          speaker: {
-            id: 'Bruxy Cavey',
-          },
-        },
-      ],
-    },
-    videoTypes: 'adult-sunday',
-    videoURL:
-      'https://media.themeetinghouse.com/vpodcast/2020/2020-12-24-1263-video.mp4',
-    viewCount: '2627',
-  },
 ];
 
 const mockNotes = [
@@ -220,8 +116,7 @@ const mockNotes = [
       'A message to all Pastors, Overseers, Elders, Leaders, and Disciples of Jesus about how to lead and how to follow.',
     episodeNumber: 39,
     id: '2020-09-06',
-    pdf:
-      'http://media.themeetinghouse.com/podcast/handouts/2020-09-06-1247-notes.pdf',
+    pdf: 'http://media.themeetinghouse.com/podcast/handouts/2020-09-06-1247-notes.pdf',
     seriesId: 'Jesus by John',
     tags: [],
     title: 'Gateway Leadership',
@@ -234,8 +129,7 @@ const mockNotes = [
       'Tapping into joy as a way of living generously helps us and allows us to extend that to others, especially when Christmas can be a hard season.',
     episodeNumber: 2,
     id: '2020-12-13',
-    pdf:
-      'http://media.themeetinghouse.com/podcast/handouts/2020-12-13-1261-notes.pdf',
+    pdf: 'http://media.themeetinghouse.com/podcast/handouts/2020-12-13-1261-notes.pdf',
     seriesId: 'Christmas in 3 Acts',
     tags: [],
     title: 'Comedy & A Posture of Generosity',
@@ -248,8 +142,7 @@ const mockNotes = [
       "As Jesus people, we aren't the ones with all the answers - we're the ones with hope. We partner, wait, labour, and celebrate with the One who doesn't grow tired or weary as He ushers in his kingdom.",
     episodeNumber: 1,
     id: '2020-12-27',
-    pdf:
-      'http://media.themeetinghouse.com/podcast/handouts/2020-12-27-1263-notes.pdf',
+    pdf: 'http://media.themeetinghouse.com/podcast/handouts/2020-12-27-1263-notes.pdf',
     seriesId: '000',
     tags: [],
     title: 'Tired Feet. Hopeful Hearts.',
@@ -262,8 +155,7 @@ const mockNotes = [
       'The Christmas story as fairytale, full of imagery and dramatic action, draws us into the larger narrative of who God is, into a battle being won in beautiful and unexpected ways. ',
     episodeNumber: 3,
     id: '2020-12-20',
-    pdf:
-      'http://media.themeetinghouse.com/podcast/handouts/2020-12-20-1262-notes.pdf',
+    pdf: 'http://media.themeetinghouse.com/podcast/handouts/2020-12-20-1262-notes.pdf',
     seriesId: 'Christmas in 3 Acts',
     tags: [],
     title: 'Fairytale & A Posture of Mission',
