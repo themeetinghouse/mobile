@@ -41,7 +41,6 @@ import AnnouncementBar from '../../components/home/AnnouncementBar';
 import LiveEventService from '../../services/LiveEventService';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import Header from '../../components/Header';
 import QuestionSuccessModal from '../../components/modals/QuestionSuccessModal';
 import {
   GetNotesQuery,
@@ -55,6 +54,17 @@ import { getVideoByVideoType } from '../../graphql/queries';
 import HomeChurchCard from '../../components/home/HomeChurchCard';
 
 const style = StyleSheet.create({
+  container: {
+    backgroundColor: Theme.colors.gray1,
+  },
+  categoryDivider: {
+    backgroundColor: Theme.colors.gray1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    height: 16,
+    borderTopColor: Theme.colors.gray2,
+    borderBottomColor: Theme.colors.gray2,
+  },
   categoryContainer: {
     backgroundColor: Theme.colors.black,
     paddingTop: 32,
@@ -334,7 +344,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
     }
   }, [route.params?.questionResult, navigation]);
   return (
-    <View>
+    <View style={style.container}>
       {preLive || live ? (
         <AnnouncementBar
           message={preLive ? 'We will be going live soon!' : 'We are live now!'}
@@ -346,7 +356,12 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
       <ScrollView style={{ backgroundColor: Theme.colors.background }}>
         <View style={style.categoryContainer}>
           <RecentTeaching teaching={teaching} note={note} />
-          <View style={[style.categoryContainer, { paddingHorizontal: '5%' }]}>
+          <View
+            style={[
+              style.categoryContainer,
+              { paddingHorizontal: 16, paddingBottom: 40 },
+            ]}
+          >
             <WhiteButton
               outlined
               label="Send Question"
@@ -355,9 +370,10 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
             />
           </View>
         </View>
-        <View style={style.categoryContainer}>
-          {announcements.length > 0 ? (
-            announcements.map((announcement: Announcement) => (
+
+        {announcements.length ? (
+          <View style={style.categoryContainer}>
+            {announcements.map((announcement: Announcement) => (
               <AnnouncementCard
                 key={announcement?.id}
                 announcement={announcement}
@@ -367,26 +383,27 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                   })
                 }
               />
-            ))
-          ) : announcements.length === 0 ? null : (
-            <View>
-              <ActivityIndicator />
-            </View>
-          )}
-        </View>
+            ))}
+            <View style={style.categoryDivider} />
+          </View>
+        ) : null}
+
         {locationId !== 'unknown' || locationName !== 'unknown' ? (
-          <View style={style.categoryContainer}>
-            {isLoading ? (
-              <View style={{ height: 500 }}>
-                <ActivityIndicator />
-              </View>
-            ) : (
+          <>
+            {events?.length ? (
               <>
-                {events && events.length ? (
-                  <>
-                    <Text style={style.categoryTitle}>Upcoming Events</Text>
-                    {events.map((event, index: number) => {
-                      if (index < 3)
+                <View style={style.categoryDivider} />
+                <View style={style.categoryContainer}>
+                  <Text style={[style.categoryTitle, { marginBottom: 8 }]}>
+                    Upcoming Events
+                  </Text>
+                  {isLoading ? (
+                    <View style={{ height: 500 }}>
+                      <ActivityIndicator />
+                    </View>
+                  ) : (
+                    <>
+                      {events.slice(0, 3).map((event) => {
                         return (
                           <EventCard
                             key={event?.id}
@@ -398,43 +415,51 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                             }
                           />
                         );
-                      return null;
-                    })}
-                    {events.length > 3 ? (
-                      <AllButton
-                        handlePress={() => {
-                          navigation.navigate('AllEvents', { events });
-                        }}
-                      >
-                        See All Events
-                      </AllButton>
-                    ) : null}
-                  </>
-                ) : (
-                  <Text style={style.categoryTitle}>No Upcoming Events</Text>
-                )}
+                      })}
+                      {events.length > 0 ? (
+                        <AllButton
+                          style={{ borderTopWidth: 0, borderBottomWidth: 0 }}
+                          onPress={() => {
+                            navigation.navigate('AllEvents', { events });
+                          }}
+                        >
+                          See All Events
+                        </AllButton>
+                      ) : null}
+                    </>
+                  )}
+                </View>
               </>
-            )}
-          </View>
+            ) : null}
+          </>
         ) : null}
-
-        <HomeChurchCard />
+        <View style={style.categoryDivider} />
+        <View style={style.categoryContainer}>
+          <HomeChurchCard />
+        </View>
 
         {/* This should fallback to main TMH Site instead */}
         {images && images.length > 1 ? (
-          <View style={style.categoryContainer}>
-            <Text style={style.categoryTitle}>@{instaUsername}</Text>
-            <InstagramFeed images={images} />
-            <AllButton
-              handlePress={() =>
-                Linking.openURL(`https://instagram.com/${instaUsername}`)
-              }
-              icon={Theme.icons.white.instagram}
-            >
-              Follow us on Instagram
-            </AllButton>
-          </View>
+          <>
+            <View style={style.categoryDivider} />
+
+            <View style={style.categoryContainer}>
+              <Text style={style.categoryTitle}>@{instaUsername}</Text>
+              <InstagramFeed images={images} />
+              <AllButton
+                onPress={() =>
+                  Linking.openURL(`https://instagram.com/${instaUsername}`)
+                }
+                icon={Theme.icons.white.instagram}
+              >
+                Follow us on Instagram
+              </AllButton>
+            </View>
+          </>
         ) : null}
+        <View
+          style={[style.categoryDivider, { height: 16, borderBottomWidth: 0 }]}
+        />
       </ScrollView>
     </View>
   );

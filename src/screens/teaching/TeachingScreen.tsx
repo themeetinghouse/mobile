@@ -453,7 +453,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             }
           />
           <AllButton
-            handlePress={() => {
+            onPress={() => {
               navigation.push('AllSeriesScreen');
             }}
           >
@@ -480,7 +480,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               ))}
           </View>
           <AllButton
-            handlePress={() => {
+            onPress={() => {
               navigation.push('AllSermonsScreen');
             }}
           >
@@ -509,7 +509,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               ))}
           </View>
           <AllButton
-            handlePress={() =>
+            onPress={() =>
               navigation.navigate('PopularTeachingScreen', {
                 popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
               })
@@ -550,7 +550,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             })}
           </View>
           <AllButton
-            handlePress={() =>
+            onPress={() =>
               navigation.push('AllSeriesScreen', { popularSeries: true })
             }
           >
@@ -590,7 +590,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             })}
           </View>
           <AllButton
-            handlePress={() =>
+            onPress={() =>
               navigation.push('AllSeriesScreen', { customPlaylists: true })
             }
           >
@@ -649,7 +649,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   speakers.loading ? <ActivityIndicator /> : null
                 }
               />
-              <AllButton handlePress={() => navigation.push('TeacherList')}>
+              <AllButton onPress={() => navigation.push('TeacherList')}>
                 All teachers
               </AllButton>
             </>
