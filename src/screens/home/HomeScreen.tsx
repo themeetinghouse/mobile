@@ -416,7 +416,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
                           />
                         );
                       })}
-                      {events.length > 0 ? (
+                      {events.length > 2 ? (
                         <AllButton
                           style={{ borderTopWidth: 0, borderBottomWidth: 0 }}
                           onPress={() => {
