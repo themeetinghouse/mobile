@@ -1,0 +1,45 @@
+{
+  "screen": {
+    "title": "Button Demo Screen",
+    "config": {
+      "hideBottomNav": false,
+      "hideHeader": false,
+      "backgroundColor": "black",
+      "fontColor": "white",
+      "hideBackButton": false
+    },
+    "content": [
+      {
+        "type": "button",
+        "style": "withArrow",
+        "label": "View Teaching",
+        "navigateTo": "https://themeetinghouse.com/teaching"
+      },
+      {
+        "type": "spacing",
+        "size": 16
+      },
+      {
+        "type": "button",
+        "style": "black",
+        "label": "Give now",
+        "navigateTo": "https://themeetinghouse.com/give"
+      },
+      {
+        "type": "spacing",
+        "size": 16
+      },
+      {
+        "type": "button",
+        "style": "white",
+        "label": "Peacemakers",
+        "navigateTo": "peacemakers"
+      },
+
+      {
+        "type": "spacing",
+        "size": 16
+      }
+    ]
+  }
+}

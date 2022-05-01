@@ -58,6 +58,8 @@ import InstagramWhite from '../assets/images/white/Instagram.png';
 import CommentSmall from '../assets/images/other/Comment-Small.png';
 import Phone from '../assets/images/white/Phone.png';
 import Contact from '../assets/images/white/Contact.png';
+import TMHLogoWhite from '../assets/images/white/TMH-Logo.png';
+import TMHLogoBlack from '../assets/images/black/TMH-Logo.png';
 
 export const Theme = {
   colors: {
@@ -99,6 +101,7 @@ export const Theme = {
     width: 24,
     height: 24,
     white: {
+      tmhlogo: TMHLogoWhite,
       account: AccountWhite,
       arrow: ArrowWhite,
       arrowLeft: ArrowLeftWhite,
@@ -148,6 +151,7 @@ export const Theme = {
       comment: CommentSmall,
     },
     black: {
+      tmhlogo: TMHLogoBlack,
       frame: Frame,
       familyFriendly: FamilyFriendly,
       arrow: Arrow,

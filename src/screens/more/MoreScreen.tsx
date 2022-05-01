@@ -20,6 +20,7 @@ import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import useFallbackItems, { LinkItem } from './useFallbackItems';
 import LocationContext from '../../../src/contexts/LocationContext';
+import ListItem from '../../components/ListItem';
 
 const style = StyleSheet.create({
   content: {
@@ -73,6 +74,16 @@ type JSONMenuLinkItem = {
   icon: string;
   external: boolean;
 };
+export const getUserType = async () => {
+  try {
+    const userType: CognitoUser = await Auth.currentAuthenticatedUser();
+    return userType.getSignInUserSession()?.getAccessToken()?.payload?.[
+      'cognito:groups'
+    ];
+  } catch (err) {
+    return [];
+  }
+};
 export default function MoreScreen(): JSX.Element {
   const location = useContext(LocationContext);
   const user = useContext(UserContext);
@@ -82,16 +93,7 @@ export default function MoreScreen(): JSX.Element {
   const [isLoading, setIsLoading] = useState(true);
   const [menuItems, setMenuItems] = useState<Array<LinkItem>>([]);
   const fallbackItems = useFallbackItems();
-  const getUserType = async () => {
-    try {
-      const userType: CognitoUser = await Auth.currentAuthenticatedUser();
-      return userType.getSignInUserSession()?.getAccessToken()?.payload?.[
-        'cognito:groups'
-      ];
-    } catch (err) {
-      return [];
-    }
-  };
+
   const loadMenu = async () => {
     try {
       const response: any = await fetch(
@@ -211,75 +213,7 @@ export default function MoreScreen(): JSX.Element {
         <ScrollView showsVerticalScrollIndicator={false}>
           {menuItems.slice(0, 4).map((item, index) => {
             return (
-              <TouchableHighlight
-                delayPressIn={50}
-                key={item.id}
-                style={style.listItem}
-                onPress={item.action}
-                underlayColor={Theme.colors.gray3}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      top: 14,
-                    }}
-                  >
-                    {item.customIcon ? (
-                      <Image
-                        style={style.listIcon}
-                        source={
-                          { uri: item.icon as string } as ImageSourcePropType
-                        }
-                      />
-                    ) : (
-                      <Image
-                        style={style.listIcon}
-                        source={item.icon as ImageSourcePropType}
-                      />
-                    )}
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <View
-                      style={[
-                        {
-                          flexDirection: 'row',
-                          height: '100%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                        },
-                        index !== 3
-                          ? {
-                              borderColor: Theme.colors.gray2,
-                              borderBottomWidth: 1,
-                            }
-                          : {},
-                      ]}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text style={style.listText}>{item.text}</Text>
-                        <Text style={style.listSubtext}>{item.subtext}</Text>
-                      </View>
-
-                      <Image
-                        style={style.listArrowIcon}
-                        source={Theme.icons.white.arrow}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </TouchableHighlight>
+              <ListItem hideBorder={index === 3} item={item} key={item.id} />
             );
           })}
           {menuItems.length > 0 ? (
@@ -293,71 +227,7 @@ export default function MoreScreen(): JSX.Element {
           ) : null}
 
           {menuItems.slice(4).map((item, index) => {
-            return (
-              <TouchableHighlight
-                delayPressIn={50}
-                key={item.id}
-                style={style.listItem}
-                onPress={item.action}
-                underlayColor={Theme.colors.gray3}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: 'column',
-                      top: 14,
-                    }}
-                  >
-                    {item.customIcon ? (
-                      <Image
-                        style={style.listIcon}
-                        source={
-                          { uri: item.icon as string } as ImageSourcePropType
-                        }
-                      />
-                    ) : (
-                      <Image
-                        style={style.listIcon}
-                        source={item.icon as ImageSourcePropType}
-                      />
-                    )}
-                  </View>
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        height: '100%',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        borderColor: Theme.colors.gray2,
-                        borderBottomWidth: 1,
-                      }}
-                    >
-                      <View style={{ flex: 1 }}>
-                        <Text style={style.listText}>{item.text}</Text>
-                        <Text style={style.listSubtext}>{item.subtext}</Text>
-                      </View>
-
-                      <Image
-                        style={style.listArrowIcon}
-                        source={Theme.icons.white.arrow}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </TouchableHighlight>
-            );
+            return <ListItem key={item.id} item={item} />;
           })}
         </ScrollView>
       )}

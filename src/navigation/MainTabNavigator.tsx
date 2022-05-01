@@ -1,5 +1,8 @@
 import React, { useContext } from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  TransitionPresets,
+} from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet } from 'react-native';
 import { Announcement } from 'src/services/AnnouncementService';
@@ -9,6 +12,10 @@ import AllSeriesScreen from '../screens/teaching/AllSeriesScreen';
 import AllSermonsScreen from '../screens/teaching/AllSermonsScreen';
 import TabHomeImage from '../../assets/icons/tab-home.png';
 import TabHomeActiveImage from '../../assets/icons/tab-home-active.png';
+import TabSearchImage from '../../assets/icons/tab-search.png';
+import TabSearchActiveImage from '../../assets/icons/tab-search-active.png';
+import TabFeatured from '../../assets/icons/tab-featured.png';
+import TabFeaturedActive from '../../assets/icons/tab-featured-active.png';
 import TabTeachingImage from '../../assets/icons/tab-teaching.png';
 import TabTeachingActiveImage from '../../assets/icons/tab-teaching-active.png';
 import TabMoreImage from '../../assets/icons/tab-more.png';
@@ -23,9 +30,11 @@ import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import { EventQueryResult } from '../services/EventsService';
+import ContentScreen from '../screens/content/ContentScreen';
 
 export type HomeStackParamList = {
   HomeScreen: { questionResult?: boolean };
+  ContentScreen: undefined;
   EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
   AnnouncementDetailsScreen: { item: Announcement };
   LiveStreamScreen: undefined;
@@ -99,6 +108,23 @@ function MoreStack() {
   );
 }
 
+export type FeaturedStackParamList = {
+  ContentScreen: undefined | { screen: string };
+};
+
+const Featured = createStackNavigator<FeaturedStackParamList>();
+
+function FeaturedStack() {
+  return (
+    <Featured.Navigator
+      screenOptions={() => ({
+        ...TransitionPresets.SlideFromRightIOS,
+      })}
+    >
+      <Featured.Screen name="ContentScreen" component={ContentScreen} />
+    </Featured.Navigator>
+  );
+}
 export type TabNavigatorParamList = {
   Home:
     | undefined
@@ -117,6 +143,12 @@ export type TabNavigatorParamList = {
     | {
         screen: keyof MoreStackParamList;
         params: MoreStackParamList[keyof MoreStackParamList];
+      };
+  Featured:
+    | undefined
+    | {
+        screen: keyof FeaturedStackParamList;
+        params: FeaturedStackParamList[keyof FeaturedStackParamList];
       };
 };
 
@@ -156,13 +188,17 @@ export default function MainTabNavigator(): JSX.Element {
             icon = focused ? TabTeachingActiveImage : TabTeachingImage;
           } else if (route.name === 'More') {
             icon = focused ? TabMoreActiveImage : TabMoreImage;
+          } else if (route.name === 'Featured') {
+            icon = focused ? TabFeaturedActive : TabFeatured;
           }
+
           return <Image source={icon} style={style.tabIcon} />;
         },
       })}
     >
       <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Teaching" component={TeachingStack} />
+      <Tab.Screen name="Featured" component={FeaturedStack} />
       <Tab.Screen name="More" component={MoreStack} />
     </Tab.Navigator>
   );

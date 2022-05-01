@@ -3,13 +3,14 @@ import {
   StyleSheet,
   ImageSourcePropType,
   TouchableOpacity,
+  TouchableOpacityProps,
   Text,
   Image,
 } from 'react-native';
 
 import { Theme } from '../../Theme.style';
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     backgroundColor: Theme.colors.black,
     borderColor: Theme.colors.gray2,
@@ -36,21 +37,23 @@ const style = StyleSheet.create({
 });
 
 type Params = {
+  style?: TouchableOpacityProps['style'];
   children: string;
   handlePress?(): void;
   icon?: ImageSourcePropType;
 };
 
 export default function AllButton({
+  style,
   children,
   handlePress,
   icon,
 }: Params): JSX.Element {
   return (
-    <TouchableOpacity style={style.button} onPress={handlePress}>
-      <Text style={style.text}>{children}</Text>
+    <TouchableOpacity style={[styles.button, style]} onPress={handlePress}>
+      <Text style={styles.text}>{children}</Text>
 
-      <Image source={icon ?? Theme.icons.white.arrow} style={style.icon} />
+      <Image source={icon ?? Theme.icons.white.arrow} style={styles.icon} />
     </TouchableOpacity>
   );
 }
