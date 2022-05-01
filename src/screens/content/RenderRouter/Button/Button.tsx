@@ -30,9 +30,8 @@ export default function Button({ item }: { item: ButtonType }) {
         screen: 'non existing',
       });
     } else if (isUrl) {
-      if (isUrl) Linking.openURL(item.navigateTo);
-      else navigation.push('ContentScreen', { screen: item.navigateTo });
-    }
+      Linking.openURL(item.navigateTo);
+    } else navigation.push('ContentScreen', { screen: item.navigateTo });
   };
   switch (item.style) {
     case 'withArrow':

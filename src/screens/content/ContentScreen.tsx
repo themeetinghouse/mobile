@@ -142,7 +142,6 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
   useLayoutEffect(() => {
     const getUser = async () => {
       const userGroupData = await getUserType();
-      console.log(userGroupData);
       setUserGroups(userGroupData);
     };
     getUser();
