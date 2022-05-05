@@ -9,6 +9,7 @@ export type ContentItemType =
   | CustomPlaylistType
   | LinkItemType
   | Divider;
+
 export type CustomPlaylistType = {
   type: 'custom-playlist';
   sortOrder: 'ASC' | 'DESC';
@@ -58,6 +59,7 @@ export type SpacingType = {
 
 type ButtonStyle = 'black' | 'white' | 'withArrow' | 'white-link-with-icon';
 type ScreenBackgroundColor = 'black' | 'white';
+type ScreenFontColor = 'white' | 'black';
 
 export type ButtonType = {
   type: 'button';
@@ -80,7 +82,7 @@ export type ScreenConfig = {
   hideHeader?: boolean;
   backgroundColor?: ScreenBackgroundColor;
   hideBackButton?: boolean;
-  fontColor?: 'black' | 'white';
+  fontColor?: ScreenFontColor;
 };
 
 export type ContentScreenType = {
