@@ -154,14 +154,25 @@ All content items always require a type.
     	"youtubeID": "50Whz4AQfBc"
     }
 
+| field         | allowed values       | purpose                        |
+| ------------- | -------------------- | ------------------------------ |
+| `"youtubeID"` | i.e. `"joarYfcRHEg"` | any youtube id                 |
+| `"style"`     | `"full"`             | optional, added for future use |
+
+## Custom Playlist Carousel
+
+##### { "type": "custom-playlist" } - add a custom playlist carousel
+
+| field         | allowed values              | purpose                       |
+| ------------- | --------------------------- | ----------------------------- |
+| `"subclass"`  | `"compassion"`              | or any custom playlist        |
+| `"header"`    | `"Peacemaker Stories"`      | optional carousel header      |
+| `"subheader"` | `"Description of playlist"` | optional carousel description |
+| `"sortOrder"` | `"ASC"`, `"DESC"`           | optional sort order           |
+
 ## Image
 
 ##### type: "image" - an image with the ability to link externally, and to other screens
-
-| field         | allowed values | purpose |
-| ------------- | -------------- | ------- |
-| `"youtubeID"` |                |         |
-| `"style"`     | `"default"`    |         |
 
     {
     	"type": "image",
@@ -182,11 +193,12 @@ All content items always require a type.
 
     { "type": "button", "style": "white", "label": "White Button" }
 
-| field          | allowed values                                   | purpose                                                  |
-| -------------- | ------------------------------------------------ | -------------------------------------------------------- |
-| `"style"`      | `"white"`, `"black"`                             | select styling for button                                |
-| `"label"`      | `"Give Now"`, any text                           | button label                                             |
-| `"navigateTo"` | `"peacemakers"`, `"https://themeetinghouse.com"` | optional, leave empty for navigating to previous screen` |
+| field          | allowed values                                            | purpose                                                 |
+| -------------- | --------------------------------------------------------- | ------------------------------------------------------- |
+| `"style"`      | `"white"`, `"black"`, `"white-link-with-icon"`            | select styling for button                               |
+| `"label"`      | `"Give Now"`, any text                                    | button label                                            |
+| `"navigateTo"` | `"peacemakers"`, `"https://themeetinghouse.com"`          | optional, leave empty for navigating to previous screen |
+| `"icon"`       | `https://www.themeetinghouse.com/static/icons/Frame.png`, | optional url to icon, may not work for all styles       |
 
 ## List
 
