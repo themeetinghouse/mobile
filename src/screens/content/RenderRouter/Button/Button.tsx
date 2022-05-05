@@ -1,23 +1,38 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import Theme from '../../../../../src/Theme.style';
+import IconButton from '../../../../../src/components/buttons/IconButton';
 import AllButton from '../../../../../src/components/buttons/AllButton';
 import { ButtonType } from '../../ContentTypes';
 import WhiteButton from '../../../../../src/components/buttons/WhiteButton';
-import { ContentThemeContext } from '../../ContentScreen';
+import { useContentContext } from '../../../../../src/contexts/ContentScreenContext/ContentScreenContext';
 
 const styles = StyleSheet.create({
   buttonStyle: {
     marginHorizontal: 16,
     height: 56,
-    borderWidth: 5,
+  },
+  whiteAllButtonStyle: {
+    backgroundColor: '#fff',
+  },
+  whiteAllButtonLabelStyle: {
+    color: '#000',
+  },
+  whiteOutlineButtonStyle: {
     borderColor: '#000',
+    backgroundColor: '#fff',
+  },
+  blackOutlineButtonStyle: {
+    borderColor: '#fff',
+    backgroundColor: '#000',
   },
 });
 export default function Button({ item }: { item: ButtonType }) {
-  const { backgroundColor } = useContext(ContentThemeContext);
+  const { state } = useContentContext();
+  const { backgroundColor } = state;
   const navigation =
     useNavigation<StackNavigationProp<FeaturedStackParamList>>();
   const handlePress = () => {
@@ -26,9 +41,7 @@ export default function Button({ item }: { item: ButtonType }) {
       item.navigateTo?.includes('http://') ||
       item.navigateTo?.includes('www.');
     if (!item.navigateTo) {
-      navigation.push('ContentScreen', {
-        screen: 'non existing',
-      });
+      navigation.goBack();
     } else if (isUrl) {
       Linking.openURL(item.navigateTo);
     } else navigation.push('ContentScreen', { screen: item.navigateTo });
@@ -36,35 +49,47 @@ export default function Button({ item }: { item: ButtonType }) {
   switch (item.style) {
     case 'withArrow':
       return (
-        <AllButton
-          style={{
-            borderTopWidth: 0,
-            borderBottomWidth: 0,
-          }}
-          handlePress={handlePress}
-        >
+        <AllButton type="white" handlePress={handlePress}>
           {item.label}
         </AllButton>
       );
-    case 'white':
+    case 'white': {
+      const bttStyle = { borderWidth: backgroundColor === 'white' ? 3 : 0 };
       return (
         <WhiteButton
           outlined={false}
           label={item.label}
-          style={styles.buttonStyle}
+          style={[styles.buttonStyle, styles.whiteOutlineButtonStyle, bttStyle]}
           onPress={handlePress}
         />
       );
-    case 'black':
+    }
+    case 'black': {
+      const isBlack = {
+        borderWidth: backgroundColor === 'white' ? 0 : 3,
+        borderColor: '#fff',
+      };
       return (
         <WhiteButton
-          outlined
+          solidBlack
           label={item.label}
-          style={styles.buttonStyle}
+          style={[styles.buttonStyle, styles.blackOutlineButtonStyle, isBlack]}
+          onPress={handlePress}
+        />
+      );
+    }
+    case 'white-link-with-icon':
+      return (
+        <IconButton
+          icon={{
+            uri: item.icon,
+          }}
+          style={{ marginLeft: 16 }}
+          label={item.label}
           onPress={handlePress}
         />
       );
     default:
-      return <></>;
+      return null;
   }
 }

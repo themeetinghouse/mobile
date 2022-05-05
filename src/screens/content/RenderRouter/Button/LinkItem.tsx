@@ -1,4 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import {
   View,
@@ -6,8 +7,11 @@ import {
   Image,
   TouchableHighlight,
   StyleSheet,
+  Linking,
 } from 'react-native';
-import Theme, { Style } from '../../Theme.style';
+import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
+import Theme, { Style } from '../../../../Theme.style';
+import { LinkItemType } from '../../ContentTypes';
 
 const ListItemStyle = StyleSheet.create({
   listItem: {
@@ -38,24 +42,30 @@ const ListItemStyle = StyleSheet.create({
 });
 
 type ListItemProps = {
-  item: ContentListItemType;
+  item: LinkItemType;
   hideBorder?: boolean;
 };
 
-type ContentListItemType = {
-  screen: string;
-  icon: string;
-  text: string;
-  subtext?: string;
-};
 export default function ContentListItem(props: ListItemProps) {
   const { item, hideBorder } = props;
-  const navigation = useNavigation<any>();
+  const navigation =
+    useNavigation<StackNavigationProp<FeaturedStackParamList>>();
+  const handlePress = () => {
+    const isUrl =
+      item.navigateTo?.includes('https://') ||
+      item.navigateTo?.includes('http://') ||
+      item.navigateTo?.includes('www.');
+    if (!item.navigateTo) {
+      navigation.goBack();
+    } else if (isUrl) {
+      Linking.openURL(item.navigateTo);
+    } else navigation.push('ContentScreen', { screen: item.navigateTo });
+  };
   return (
     <TouchableHighlight
       delayPressIn={50}
       style={ListItemStyle.listItem}
-      onPress={() => navigation.push('ContentScreen', { screen: item.screen })}
+      onPress={handlePress}
       underlayColor={Theme.colors.gray3}
     >
       <View

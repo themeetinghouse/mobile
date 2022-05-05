@@ -75,7 +75,7 @@ function getStyles(
 }
 
 interface Params {
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
   label: string;
   onPress?: () => void;
   outlined?: boolean;

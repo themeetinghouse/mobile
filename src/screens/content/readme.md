@@ -2,12 +2,21 @@
 
 ## Featured Screen - featured.json
 
-Add link-item to link-list in featured.json to add more pages to show to users.
-"screen" field should match json file of page to point the link to.
-Refer to "List" section for instructions
+Add `link-item` in featured.json `content: []` field to add more screens to show to users.
+
+`"navigateTo`" field should match json file name of the screen to point the link to, or optionally an external URL.
+
+Include an optional `"groups"` field matching Cognito groups that will be allowed to see links.
+
+i.e.
+`"groups": ["Elder"]` will show link only to users who belong to `Elder` Cognito group.
+`"groups": []`, or not including a `"groups"` field will show the link to all users
+`"groups": ["Elder", "Admin"]` will show links to users in groups `Elder` and `Admin`
+
+Refer to `"link-item"` content component for instructions
 
     {
-    	"screen":  {
+    	"screen": {
     		"title": "Starred",
     		"config": {
     			"hideBottomNav": false,
@@ -18,60 +27,59 @@ Refer to "List" section for instructions
     		},
     		"content": [
     			{
-    				"type": "list",
-    				"style": "link-list",
-    				"items": [
-    					{
-    						"type": "link-item",
-    						"screen": "textdemo1",
-    						"groups": ["default"],
-    						"text": "Black Text Demo",
-    						"subtext": "Navigate to text demo",
-    						"hideBorder": true,
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					},
-    					{
-    						"type": "link-item",
-    						"screen": "textdemo2",
-    						"groups": ["default"],
-    						"text": "White Text Demo",
-    						"subtext": "Navigate to text demo",
-    						"hideBorder": true,
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					},
-    					{
-    						"type": "link-item",
-    						"screen": "button",
-    						"groups": ["default"],
-    						"text": "Button Demo",
-    						"subtext": "Navigate to button demo",
-    						"hideBorder": true,
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					},
-    					{ "type": "divider" },
-    					{
-    						"type": "link-item",
-    						"screen": "peacemakers",
-    						"text": "Peacemakers",
-    						"subtext": "Is peace impossible?",
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					},
-    					{
-    						"type": "link-item",
-    						"screen": "peacemakers2",
-    						"text": "Error Demo",
-    						"subtext": "404",
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					},
-    					{
-    						"type": "link-item",
-    						"screen": "random",
-    						"groups": ["default"],
-    						"text": "Random Screen",
-    						"subtext": "Navigate to random screen",
-    						"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    					}
-    				]
+    				"type": "link-item",
+    				"navigateTo": "textdemo1",
+    				"text": "Test Group",
+    				"subtext": "Test Group",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{
+    				"type": "link-item",
+    				"navigateTo": "textdemo2",
+    				"groups": [],
+    				"text": "White Text Demo",
+    				"subtext": "Navigate to text demo",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{
+    				"type": "link-item",
+    				"navigateTo": "elder",
+    				"groups": ["Elder"],
+    				"text": "Elder",
+    				"subtext": "Navigate to elder",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{
+    				"type": "link-item",
+    				"navigateTo": "button",
+    				"groups": [],
+    				"text": "Button Demo",
+    				"subtext": "Navigate to button demo",
+    				"hideBorder": true,
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{ "type": "divider" },
+    			{
+    				"type": "link-item",
+    				"navigateTo": "peacemakers",
+    				"text": "Peacemakers",
+    				"subtext": "Is peace impossible?",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{
+    				"type": "link-item",
+    				"navigateTo": "peacemakers2",
+    				"text": "Error Demo",
+    				"subtext": "404",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
+    			},
+    			{
+    				"type": "link-item",
+    				"navigateTo": "random",
+    				"groups": [],
+    				"text": "Random Screen",
+    				"subtext": "Navigate to random screen",
+    				"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
     			}
     		]
     	}
@@ -100,6 +108,7 @@ Configure screen options - background color, hide bottom nav, hide header etc..
 # Content Components
 
 These components go inside `"content": []`
+
 All content items always require a type.
 
 ## Text
@@ -169,63 +178,21 @@ All content items always require a type.
 
 ## Button
 
-##### type: "button" - button to navigate to url
+##### { "type": "button" } - button to navigate to url
 
     { "type": "button", "style": "white", "label": "White Button" }
 
-| field     | allowed values         | purpose                   |
-| --------- | ---------------------- | ------------------------- |
-| `"style"` | `"white"`, `"black"`   | select styling for button |
-| `"label"` | `"Give Now"`, any text | button label              |
-|           |                        |
+| field          | allowed values                                   | purpose                                                  |
+| -------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| `"style"`      | `"white"`, `"black"`                             | select styling for button                                |
+| `"label"`      | `"Give Now"`, any text                           | button label                                             |
+| `"navigateTo"` | `"peacemakers"`, `"https://themeetinghouse.com"` | optional, leave empty for navigating to previous screen` |
 
 ## List
 
-##### type: "list" - potentially different styles of lists here
+## Link Item
 
-    {
-    	"type": "list",
-    	"style": "link-list",
-    	"items": [
-    		{
-    			"type": "link-item",
-    			"screen": "home",
-    			"text": "Demo Screen",
-    			"subtext": "Navigate to demo screen",
-    			"hideBorder": true,
-    			"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    		},
-    		{
-    			"type": "divider"
-    		},
-    		{
-    			"type": "link-item",
-    			"screen": "peacemakers",
-    			"text": "Peacemaker",
-    			"subtext": "Navigate to peacemakers",
-    			"hideBorder": false,
-    			"icon": "https://www.themeetinghouse.com/static/icons/Frame.png"
-    		},
-    	]
-    }
-
-| field     | allowed values | purpose                            |
-| --------- | -------------- | ---------------------------------- |
-| `"style"` | `"link-list"`  | a list of links including external |
-| `"items"` | `[]` see below | accepted list item types           |
-|           |                |
-
-## List Items
-
-These components go inside `"items": []`in list types  
-All list items always require a type.
-| type | allowed values | purpose |
-|--|--| -- |
-| `"divider"` | `{ "type": "divider" }` | optional spacing to put in-between list items |
-| `"link-item"`| `see below` | links to external or other app screens |
-| | |
-
-##### link-item:
+##### { "type": "link-item" } - button to link to other screens or external resources
 
     {
     	"type": "link-item",
@@ -239,7 +206,7 @@ All list items always require a type.
 
 | field          | allowed values                                             | purpose                                                                                                                               |
 | -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `"screen"`     | `"home"`                                                   | name of the content json file                                                                                                         |
+| `"navigateTo"` | `"home"`, `"https://themeetinghouse.com"`                  | optional, name of json file or URL. empty navigates to previous screen                                                                |
 | `"hideBorder"` | `true, false`                                              | optional, hide bottom border                                                                                                          |
 | `"text"`       | `"Home"`                                                   | link text description                                                                                                                 |
 | `"subtext"`    | `"Navigate to home screen"`                                | optional sub text                                                                                                                     |
@@ -248,21 +215,19 @@ All list items always require a type.
 
 $~$
 
-##### divider
+##### { "type": "divider"} - divider can be used as a separator for styling purposes, primarily in screens with links such as More Screen.
 
-    {
-    	"type": "divider",
-    }
+    { "type": "divider" }
 
 ## Other
 
-##### type: "spacing" - add extra spacing in-between components
+##### { "type" : "spacing" } - add extra spacing in-between components
 
     { "type": "spacing", "size": 16 }
 
 recommend using multiples of 8
 
-##### type: "logo" - the meeting house logo
+##### { "type": "logo" } - the meeting house logo
 
     { "type": "logo", "style": "black", "centered": false }
 

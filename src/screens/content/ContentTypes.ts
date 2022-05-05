@@ -3,11 +3,19 @@ export type ContentItemType =
   | ImageType
   | BodyType
   | SpacingType
-  | ListType
   | ButtonType
   | VideoType
-  | TMHLogoType;
-
+  | TMHLogoType
+  | CustomPlaylistType
+  | LinkItemType
+  | Divider;
+export type CustomPlaylistType = {
+  type: 'custom-playlist';
+  sortOrder: 'ASC' | 'DESC';
+  subclass: string;
+  header?: string;
+  subheader?: string;
+};
 export type TMHLogoType = {
   type: 'logo';
   style: 'white' | 'black';
@@ -27,37 +35,36 @@ export type BodyType = {
 
 export type VideoType = {
   type: 'video';
-  style: 'full';
+  style?: 'full';
   youtubeID: string;
 };
 
-export type ListItemType = {
+export type LinkItemType = {
   type: 'link-item';
-  screen: string;
+  navigateTo?: string;
   text: string;
-  groups: string[];
+  groups?: string[];
   subtext: string;
   hideBorder?: boolean;
   icon: string;
 };
-export type ListType = {
-  type: 'list';
-  style: 'link-list' | unknown;
-  items: ListItemType[];
+export type Divider = {
+  type: 'divider';
 };
 export type SpacingType = {
   type: 'spacing';
   size: number;
 };
 
-type ButtonStyle = 'black' | 'white' | 'withArrow';
+type ButtonStyle = 'black' | 'white' | 'withArrow' | 'white-link-with-icon';
 type ScreenBackgroundColor = 'black' | 'white';
 
 export type ButtonType = {
   type: 'button';
   style: ButtonStyle;
   label: string;
-  navigateTo: string;
+  icon?: string;
+  navigateTo?: string;
 };
 
 export type ImageType = {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import { ContentScreenType, ScreenConfig } from './ContentTypes';
-import ErrorScreen from '../../../assets/json/error';
+import ErrorScreen from './error';
 
 const defaultScreenConfig: ScreenConfig = {
   hideBottomNav: false,
@@ -9,17 +9,23 @@ const defaultScreenConfig: ScreenConfig = {
   hideBackButton: false,
   fontColor: 'white',
 };
+type ContentState = {
+  content: ContentScreenType | undefined;
+  isLoading: boolean;
+};
 export default function useContent(screen: string | undefined) {
-  const [content, setContent] = useState<ContentScreenType>();
-  const [isLoading, setIsLoading] = useState(false);
-  const items = content?.screen?.content;
-  const screenTitle = content?.screen?.title ?? '';
-  const screenConfig = content?.screen?.config ?? defaultScreenConfig;
-  useEffect(() => {
+  const [contentState, setContentState] = useState<ContentState>({
+    isLoading: false,
+    content: undefined,
+  });
+  useLayoutEffect(() => {
     const loadJson = async () => {
-      if (!isLoading) setIsLoading(true);
+      if (!contentState?.isLoading) {
+        setContentState((prev) => ({ ...prev, isLoading: true }));
+      }
       let fileLoc = screen;
       if (!fileLoc) fileLoc = 'featured';
+
       try {
         const jsonData = await fetch(
           `http://192.168.50.249/json/${fileLoc}.json`,
@@ -33,16 +39,25 @@ export default function useContent(screen: string | undefined) {
           } as RequestInit & { cache?: string } // why?
         );
         const data = await jsonData.json();
-        setIsLoading(false);
-        setContent(data);
+        setContentState({ content: data, isLoading: false });
       } catch (error) {
-        setContent(ErrorScreen as ContentScreenType);
-        setIsLoading(false);
+        setContentState({
+          content: ErrorScreen as ContentScreenType,
+          isLoading: false,
+        });
       }
     };
+
     loadJson();
+
     // isLoading might be stale, TODO: look at this effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen]);
-  return { content, items, isLoading, screenConfig, screenTitle };
+  return {
+    content: contentState.content,
+    items: contentState?.content?.screen?.content,
+    isLoading: contentState.isLoading,
+    screenConfig: contentState?.content?.screen?.config ?? defaultScreenConfig,
+    screenTitle: contentState?.content?.screen?.title ?? '',
+  };
 }

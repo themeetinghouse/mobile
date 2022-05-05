@@ -74,7 +74,7 @@ type JSONMenuLinkItem = {
   icon: string;
   external: boolean;
 };
-export const getUserType = async () => {
+export const getUserType = async (): Promise<string[]> => {
   try {
     const userType: CognitoUser = await Auth.currentAuthenticatedUser();
     return userType.getSignInUserSession()?.getAccessToken()?.payload?.[

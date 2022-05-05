@@ -46,7 +46,6 @@ export default {
         type: 'button',
         style: 'white',
         label: 'Go back',
-        navigateTo: 'featured',
       },
     ],
   },

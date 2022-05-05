@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useContext, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -10,21 +10,29 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useIsFocused } from '@react-navigation/native';
+import { ContentScreenActionType } from '../../../src/contexts/ContentScreenContext/ContentScreenTypes';
+import { useContentContext } from '../../../src/contexts/ContentScreenContext/ContentScreenContext';
 import Theme from '../../../src/Theme.style';
-import ContentListItem from './ContentListItem';
-import { ContentItemType, ScreenConfig } from './ContentTypes';
+import ContentListItem from './RenderRouter/Button/LinkItem';
+import { ContentItemType } from './ContentTypes';
 import TextHeader from './RenderRouter/Text/TextHeader';
 import TextBody from './RenderRouter/Text/TextBody';
 import useContent from './useContent';
 import Button from './RenderRouter/Button/Button';
 import Video from './RenderRouter/Video/Video';
-import TMHLogo from './RenderRouter/TMHLogo';
-import { getUserType } from '../more/MoreScreen';
+import TMHLogo from './RenderRouter/TMHLogo/TMHLogo';
+import CustomPlaylistCarousel from './RenderRouter/VideoCarousels/CustomPlaylistCarousel';
+import TMHImage from './RenderRouter/Image/TMHImage';
 
 const styles = StyleSheet.create({
-  image: {
-    height: 200,
+  spinnerContainer: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'transparent',
+    zIndex: 1000,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   goBackButton: {
     flexDirection: 'row',
@@ -32,23 +40,16 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     paddingTop: 12,
   },
+  divider: {
+    height: 15,
+    backgroundColor: Theme.colors.background,
+    padding: 0,
+  },
 });
 
-type ContentThemeContextType = {
-  fontColor: ScreenConfig['fontColor'];
-  backgroundColor: ScreenConfig['backgroundColor'];
-  groups: string[];
-};
-export const ContentThemeContext = React.createContext<ContentThemeContextType>(
-  {
-    fontColor: 'white',
-    backgroundColor: 'black',
-    groups: [],
-  }
-);
-
 const RenderRouter = ({ item }: { item: ContentItemType }) => {
-  const { groups } = useContext(ContentThemeContext);
+  const { state } = useContentContext();
+  const { groups } = state;
   switch (item.type) {
     case 'header':
       return <TextHeader item={item} />;
@@ -59,58 +60,25 @@ const RenderRouter = ({ item }: { item: ContentItemType }) => {
     case 'logo':
       return <TMHLogo item={item} />;
     case 'image': {
-      const imageStyle =
-        item.style === 'full' ? { marginLeft: 0 } : { marginLeft: 16 };
-      return (
-        <Image
-          style={[styles.image, imageStyle]}
-          resizeMode="cover"
-          source={{ uri: item.imageUrl }}
-        />
-      );
+      return <TMHImage item={item} />;
     }
-
+    case 'custom-playlist':
+      return <CustomPlaylistCarousel item={item} />;
     case 'video':
       return <Video item={item} />;
-    case 'list':
-      switch (item.style) {
-        case 'link-list':
-          return (
-            <>
-              {item.items.map((listItem: any, index: number) => {
-                switch (listItem.type) {
-                  case 'link-item':
-                    return (
-                      <ContentListItem
-                        hideBorder={listItem.hideBorder}
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`link-item-${index}`}
-                        item={listItem}
-                      />
-                    );
-                  case 'divider':
-                    return (
-                      <View
-                        key={`divider-${index}`}
-                        style={{
-                          height: 15,
-                          backgroundColor: Theme.colors.background,
-                          padding: 0,
-                        }}
-                      />
-                    );
-                  default:
-                    console.error('Unknown list item type', item.type, item);
-                    return null;
-                }
-              })}
-            </>
-          );
-        default:
-          console.error('Unknown list type', item.type, item);
-          return null;
+    case 'link-item': {
+      if (item.groups?.length) {
+        const findGroup = groups.find(
+          (group) => group === item?.groups?.find((group2) => group2 === group)
+        );
+        if (findGroup) {
+          <ContentListItem hideBorder={item.hideBorder} item={item} />;
+        } else return null;
       }
-
+      return <ContentListItem hideBorder={item.hideBorder} item={item} />;
+    }
+    case 'divider':
+      return <View style={styles.divider} />;
     case 'spacing':
       return <View style={{ height: item.size }} />;
     default:
@@ -123,28 +91,17 @@ type ContentPageProps = {
 };
 
 export default function ContentPage({ navigation, route }: ContentPageProps) {
-  const { content, items, isLoading, screenConfig, screenTitle } = useContent(
+  const { content, items, isLoading, screenTitle } = useContent(
     route?.params?.screen
   );
-  const [userGroups, setUserGroups] = useState([]);
-  const {
-    hideBottomNav,
-    hideHeader,
-    hideBackButton,
-    backgroundColor,
-    fontColor,
-  } = screenConfig;
+  const { state, dispatch } = useContentContext();
+  const { hideBottomNav, hideHeader, hideBackButton } = state;
   const hideBottomNavigation = () => {
     navigation.getParent()?.setOptions({
       tabBarVisible: !hideBottomNav,
     });
   };
   useLayoutEffect(() => {
-    const getUser = async () => {
-      const userGroupData = await getUserType();
-      setUserGroups(userGroupData);
-    };
-    getUser();
     hideBottomNavigation();
     navigation.setOptions({
       headerShown: !hideHeader,
@@ -187,21 +144,40 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
       });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigation, content]);
+  }, [navigation, state]);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      dispatch({
+        type: ContentScreenActionType.UPDATE_STATE,
+        payload: {
+          hideBottomNav: content?.screen?.config?.hideBottomNav ?? false,
+          hideHeader: content?.screen?.config?.hideHeader ?? false,
+          hideBackButton: content?.screen?.config?.hideBackButton ?? false,
+          backgroundColor: content?.screen?.config?.backgroundColor ?? 'black',
+          fontColor: content?.screen?.config?.fontColor ?? 'white',
+        },
+      });
+    }
+  }, [isFocused, dispatch, content]);
   return (
-    <ScrollView style={{ backgroundColor }}>
-      {isLoading ? <ActivityIndicator size="large" /> : null}
-      <ContentThemeContext.Provider
-        value={{
-          backgroundColor,
-          fontColor,
-          groups: userGroups,
-        }}
-      >
-        {items?.map((item, index: number) => (
-          <RenderRouter key={`${item.type} + ${index}`} item={item} />
-        ))}
-      </ContentThemeContext.Provider>
+    <ScrollView
+      contentContainerStyle={{
+        flexGrow: 1,
+      }}
+      style={{
+        backgroundColor: content?.screen.config.backgroundColor,
+      }}
+    >
+      {isLoading && isFocused ? (
+        <View style={styles.spinnerContainer}>
+          <ActivityIndicator color="#fff" size="large" />
+        </View>
+      ) : null}
+
+      {items?.map((item, index: number) => (
+        <RenderRouter key={`${item.type} + ${index}`} item={item} />
+      ))}
     </ScrollView>
   );
 }

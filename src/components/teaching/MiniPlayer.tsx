@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Theme } from '../../Theme.style';
 import MediaContext from '../../contexts/MediaContext';
 import MiniPlayerStyleContext from '../../contexts/MiniPlayerStyleContext';
+import { useContentContext } from '../../contexts/ContentScreenContext/ContentScreenContext';
 
 interface Params {
   currentScreen: string;
@@ -92,7 +93,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
       color: Theme.colors.grey5,
     },
   });
-
+  const { state } = useContentContext();
   useEffect(() => {
     const bottomTabHidden = [
       'NotesScreen',
@@ -104,12 +105,12 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
       'SermonLandingScreen',
     ];
 
-    if (bottomTabHidden.includes(currentScreen)) {
+    if (bottomTabHidden.includes(currentScreen) || state.hideBottomNav) {
       setBottomPos(0);
     } else {
       setBottomPos(90);
     }
-  }, [currentScreen]);
+  }, [currentScreen, state]);
 
   useEffect(() => {
     async function updateTime() {

@@ -29,6 +29,7 @@ import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import MediaContext, { MediaData } from './contexts/MediaContext';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
+import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
 
 initSentry({
   dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
@@ -311,8 +312,10 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
                   ref={navRef}
                   onStateChange={handleRouteChange}
                 >
-                  <AppNavigator />
-                  <MiniPlayer currentScreen={currentScreen} />
+                  <ContentScreenProvider>
+                    <AppNavigator />
+                    <MiniPlayer currentScreen={currentScreen} />
+                  </ContentScreenProvider>
                 </NavigationContainer>
               </SafeAreaProvider>
             </UserContext.Provider>
