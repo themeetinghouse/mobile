@@ -1,4 +1,4 @@
-import { ScreenConfig } from '../../../src/screens/content/ContentTypes';
+import { ScreenConfig } from '../../components/RenderRouter/ContentTypes';
 
 export enum ContentScreenActionType {
   UPDATE_STATE = 'UPDATE_STATE',

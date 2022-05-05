@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
-import Theme from '../../../../../src/Theme.style';
-import { TMHLogoType } from '../../ContentTypes';
+import Theme from '../../../Theme.style';
+import { TMHLogoType } from '../ContentTypes';
 
 const LogoStyle = StyleSheet.create({
   logo: {

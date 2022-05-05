@@ -5,9 +5,9 @@ import { GetVideoByVideoTypeQuery } from 'src/services/API';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
-import { popularTeachingQuery } from '../../../../graphql/queries';
-import GenericCarousel from '../../../../components/GenericCarousel';
-import { CustomPlaylistType } from '../../ContentTypes';
+import { popularTeachingQuery } from '../../../graphql/queries';
+import GenericCarousel from '../../GenericCarousel';
+import { CustomPlaylistType } from '../ContentTypes';
 
 export default function CustomPlaylistCarousel({
   item,

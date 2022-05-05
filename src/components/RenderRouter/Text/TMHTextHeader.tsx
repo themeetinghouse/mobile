@@ -1,8 +1,8 @@
 import { Text, StyleSheet } from 'react-native';
 import React from 'react';
-import Theme from '../../../../Theme.style';
-import { HeaderType } from '../../ContentTypes';
-import { useContentContext } from '../../../../../src/contexts/ContentScreenContext/ContentScreenContext';
+import Theme from '../../../Theme.style';
+import { HeaderType } from '../ContentTypes';
+import { useContentContext } from '../../../contexts/ContentScreenContext/ContentScreenContext';
 
 const TextHeaderStyles = StyleSheet.create({
   header1: {
@@ -42,7 +42,7 @@ const TextHeaderStyles = StyleSheet.create({
   },
 });
 
-export default function TextHeader({ item }: { item: HeaderType }) {
+export default function TMHTextHeader({ item }: { item: HeaderType }) {
   const { state } = useContentContext();
   const { fontColor } = state;
   const style = { ...TextHeaderStyles[item.style], color: fontColor };

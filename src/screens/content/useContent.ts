@@ -1,6 +1,9 @@
 import { useLayoutEffect, useState } from 'react';
-import { ContentScreenType, ScreenConfig } from './ContentTypes';
-import ErrorScreen from './error';
+import {
+  ContentScreenType,
+  ScreenConfig,
+} from '../../components/RenderRouter/ContentTypes';
+import ErrorScreen from '../../components/RenderRouter/error';
 
 export const controllerWithOptionalTimeout = (timeoutInSeconds = 0) => {
   const controller = new AbortController();

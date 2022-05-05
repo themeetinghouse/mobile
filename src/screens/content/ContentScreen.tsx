@@ -11,19 +11,11 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { RouteProp, useIsFocused } from '@react-navigation/native';
+import RenderRouter from '../../../src/components/RenderRouter/RenderRouter';
 import { ContentScreenActionType } from '../../../src/contexts/ContentScreenContext/ContentScreenTypes';
 import { useContentContext } from '../../../src/contexts/ContentScreenContext/ContentScreenContext';
 import Theme from '../../../src/Theme.style';
-import ContentListItem from './RenderRouter/Button/LinkItem';
-import { ContentItemType } from './ContentTypes';
-import TextHeader from './RenderRouter/Text/TextHeader';
-import TextBody from './RenderRouter/Text/TextBody';
 import useContent from './useContent';
-import Button from './RenderRouter/Button/Button';
-import Video from './RenderRouter/Video/Video';
-import TMHLogo from './RenderRouter/TMHLogo/TMHLogo';
-import CustomPlaylistCarousel from './RenderRouter/VideoCarousels/CustomPlaylistCarousel';
-import TMHImage from './RenderRouter/Image/TMHImage';
 
 const styles = StyleSheet.create({
   spinnerContainer: {
@@ -47,44 +39,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const RenderRouter = ({ item }: { item: ContentItemType }) => {
-  const { state } = useContentContext();
-  const { groups } = state;
-  switch (item.type) {
-    case 'header':
-      return <TextHeader item={item} />;
-    case 'body':
-      return <TextBody item={item} />;
-    case 'button':
-      return <Button item={item} />;
-    case 'logo':
-      return <TMHLogo item={item} />;
-    case 'image': {
-      return <TMHImage item={item} />;
-    }
-    case 'custom-playlist':
-      return <CustomPlaylistCarousel item={item} />;
-    case 'video':
-      return <Video item={item} />;
-    case 'link-item': {
-      if (item.groups?.length) {
-        const findGroup = groups.find(
-          (group) => group === item?.groups?.find((group2) => group2 === group)
-        );
-        if (findGroup) {
-          <ContentListItem hideBorder={item.hideBorder} item={item} />;
-        } else return null;
-      }
-      return <ContentListItem hideBorder={item.hideBorder} item={item} />;
-    }
-    case 'divider':
-      return <View style={styles.divider} />;
-    case 'spacing':
-      return <View style={{ height: item.size }} />;
-    default:
-      return null;
-  }
-};
 type ContentPageProps = {
   navigation: StackNavigationProp<FeaturedStackParamList>;
   route: RouteProp<FeaturedStackParamList, 'ContentScreen'>;
@@ -162,12 +116,8 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
   }, [isFocused, dispatch, content]);
   return (
     <ScrollView
-      contentContainerStyle={{
-        flexGrow: 1,
-      }}
-      style={{
-        backgroundColor: content?.screen.config.backgroundColor,
-      }}
+      contentContainerStyle={{ flexGrow: 1 }}
+      style={{ backgroundColor: content?.screen.config.backgroundColor }}
     >
       {isLoading && isFocused ? (
         <View style={styles.spinnerContainer}>

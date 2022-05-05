@@ -57,7 +57,12 @@ export type SpacingType = {
   size: number;
 };
 
-type ButtonStyle = 'black' | 'white' | 'withArrow' | 'white-link-with-icon';
+type ButtonStyle =
+  | 'black'
+  | 'white'
+  | 'white-with-arrow'
+  | 'black-with-arrow'
+  | 'white-link-with-icon';
 type ScreenBackgroundColor = 'black' | 'white';
 type ScreenFontColor = 'white' | 'black';
 

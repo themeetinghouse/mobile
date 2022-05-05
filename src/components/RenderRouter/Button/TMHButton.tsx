@@ -3,12 +3,11 @@ import { Linking, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
-import Theme from '../../../../../src/Theme.style';
-import IconButton from '../../../../../src/components/buttons/IconButton';
-import AllButton from '../../../../../src/components/buttons/AllButton';
-import { ButtonType } from '../../ContentTypes';
-import WhiteButton from '../../../../../src/components/buttons/WhiteButton';
-import { useContentContext } from '../../../../../src/contexts/ContentScreenContext/ContentScreenContext';
+import IconButton from '../../buttons/IconButton';
+import AllButton from '../../buttons/AllButton';
+import { ButtonType } from '../ContentTypes';
+import WhiteButton from '../../buttons/WhiteButton';
+import { useContentContext } from '../../../contexts/ContentScreenContext/ContentScreenContext';
 
 const styles = StyleSheet.create({
   buttonStyle: {
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
 });
-export default function Button({ item }: { item: ButtonType }) {
+export default function TMHButton({ item }: { item: ButtonType }) {
   const { state } = useContentContext();
   const { backgroundColor } = state;
   const navigation =
@@ -47,9 +46,15 @@ export default function Button({ item }: { item: ButtonType }) {
     } else navigation.push('ContentScreen', { screen: item.navigateTo });
   };
   switch (item.style) {
-    case 'withArrow':
+    case 'white-with-arrow':
       return (
         <AllButton type="white" handlePress={handlePress}>
+          {item.label}
+        </AllButton>
+      );
+    case 'black-with-arrow':
+      return (
+        <AllButton type="black" handlePress={handlePress}>
           {item.label}
         </AllButton>
       );

@@ -10,8 +10,8 @@ import {
   Linking,
 } from 'react-native';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
-import Theme, { Style } from '../../../../Theme.style';
-import { LinkItemType } from '../../ContentTypes';
+import Theme, { Style } from '../../../Theme.style';
+import { LinkItemType } from '../ContentTypes';
 
 const ListItemStyle = StyleSheet.create({
   listItem: {
@@ -46,7 +46,7 @@ type ListItemProps = {
   hideBorder?: boolean;
 };
 
-export default function ContentListItem(props: ListItemProps) {
+export default function TMHLinkItem(props: ListItemProps) {
   const { item, hideBorder } = props;
   const navigation =
     useNavigation<StackNavigationProp<FeaturedStackParamList>>();

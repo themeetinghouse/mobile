@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Dimensions } from 'react-native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { VideoType } from '../../ContentTypes';
+import { VideoType } from '../ContentTypes';
 
 export default function Video({ item }: { item: VideoType }) {
   const playerRef = useRef<YoutubeIframeRef>(null);

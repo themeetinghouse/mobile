@@ -3,7 +3,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Image, Linking, StyleSheet, TouchableOpacity } from 'react-native';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
-import { ImageType } from '../../ContentTypes';
+import { ImageType } from '../ContentTypes';
 
 const styles = StyleSheet.create({
   image: {

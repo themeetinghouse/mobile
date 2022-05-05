@@ -36,6 +36,7 @@ export const ContentScreenProvider = ({
   const [state, dispatch] = useReducer(contentScreenReducer, initialState);
   React.useEffect(() => {
     const getUser = async () => {
+      // this should probably live in userContext
       const userGroupData = await getUserType();
       dispatch({
         type: ContentScreenActionType.UPDATE_STATE,
