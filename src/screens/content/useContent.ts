@@ -2,6 +2,15 @@ import { useLayoutEffect, useState } from 'react';
 import { ContentScreenType, ScreenConfig } from './ContentTypes';
 import ErrorScreen from './error';
 
+export const controllerWithOptionalTimeout = (timeoutInSeconds = 0) => {
+  const controller = new AbortController();
+  const signalWithTimeout = () => {
+    setTimeout(() => controller.abort(), timeoutInSeconds * 1000);
+    return controller;
+  };
+  return { controller, signalWithTimeout };
+};
+
 const defaultScreenConfig: ScreenConfig = {
   hideBottomNav: false,
   hideHeader: false,
@@ -19,24 +28,23 @@ export default function useContent(screen: string | undefined) {
     content: undefined,
   });
   useLayoutEffect(() => {
+    const { controller, signalWithTimeout } = controllerWithOptionalTimeout(5);
     const loadJson = async () => {
-      if (!contentState?.isLoading) {
-        setContentState((prev) => ({ ...prev, isLoading: true }));
-      }
+      setContentState((prev) => ({ ...prev, isLoading: true }));
       let fileLoc = screen;
       if (!fileLoc) fileLoc = 'featured';
-
       try {
         const jsonData = await fetch(
-          `http://192.168.50.249/json/${fileLoc}.json`,
+          `https://www.themeetinghouse.com/static/app/content/${fileLoc}.json`,
           {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               'cache-control': 'no-cache',
             },
+            signal: signalWithTimeout().signal,
             cache: 'no-cache',
-          } as RequestInit & { cache?: string } // why?
+          } as RequestInit
         );
         const data = await jsonData.json();
         setContentState({ content: data, isLoading: false });
@@ -49,9 +57,9 @@ export default function useContent(screen: string | undefined) {
     };
 
     loadJson();
-
-    // isLoading might be stale, TODO: look at this effect
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return () => {
+      controller.abort();
+    };
   }, [screen]);
   return {
     content: contentState.content,
