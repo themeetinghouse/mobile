@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { ReactNode, useEffect, useLayoutEffect, useState } from 'react';
 import {
   View,
   ScrollView,
@@ -7,15 +7,45 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { RouteProp, useIsFocused } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import RenderRouter from '../../../src/components/RenderRouter/RenderRouter';
 import { ContentScreenActionType } from '../../../src/contexts/ContentScreenContext/ContentScreenTypes';
 import { useContentContext } from '../../../src/contexts/ContentScreenContext/ContentScreenContext';
 import Theme from '../../../src/Theme.style';
 import useContent from './useContent';
+
+const ContentIOSWrapper = ({
+  headerHidden,
+  headerHeight,
+  children,
+}: {
+  headerHidden: boolean | undefined;
+  headerHeight: number;
+  children: ReactNode;
+}) => {
+  if (Platform.OS === 'ios') {
+    return (
+      <SafeAreaView
+        edges={['top']}
+        style={[
+          { flex: 1 },
+          !headerHidden && Platform.OS === 'ios'
+            ? { marginTop: -headerHeight - 6 }
+            : {},
+        ]}
+      >
+        {children}
+      </SafeAreaView>
+    );
+  }
+
+  return <>{children}</>;
+};
 
 const styles = StyleSheet.create({
   spinnerContainer: {
@@ -55,6 +85,7 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
       tabBarVisible: !hideBottomNav,
     });
   };
+  const [headerHeight, setHeaderHeight] = useState(0);
   useLayoutEffect(() => {
     hideBottomNavigation();
     navigation.setOptions({
@@ -89,7 +120,12 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
       headerLeftContainerStyle: { left: 16 },
       headerRight: function render() {
         if (hideBackButton) return null;
-        return <View style={{ flex: 1 }} />;
+        return (
+          <View
+            onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height ?? 40)}
+            style={{ flex: 1 }}
+          />
+        );
       },
     });
     return () => {
@@ -115,19 +151,21 @@ export default function ContentPage({ navigation, route }: ContentPageProps) {
     }
   }, [isFocused, dispatch, content]);
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      style={{ backgroundColor: content?.screen.config.backgroundColor }}
-    >
-      {isLoading && isFocused ? (
-        <View style={styles.spinnerContainer}>
-          <ActivityIndicator color="#fff" size="large" />
-        </View>
-      ) : null}
+    <ContentIOSWrapper headerHidden={hideHeader} headerHeight={headerHeight}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        style={{ backgroundColor: content?.screen.config.backgroundColor }}
+      >
+        {isLoading && isFocused ? (
+          <View style={styles.spinnerContainer}>
+            <ActivityIndicator color="#fff" size="large" />
+          </View>
+        ) : null}
 
-      {items?.map((item, index: number) => (
-        <RenderRouter key={`${item.type} + ${index}`} item={item} />
-      ))}
-    </ScrollView>
+        {items?.map((item, index: number) => (
+          <RenderRouter key={`${item.type} + ${index}`} item={item} />
+        ))}
+      </ScrollView>
+    </ContentIOSWrapper>
   );
 }
