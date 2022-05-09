@@ -44,7 +44,7 @@ const ContentIOSWrapper = ({
     );
   }
 
-  return <>{children}</>;
+  return children;
 };
 
 const styles = StyleSheet.create({
