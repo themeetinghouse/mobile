@@ -26,7 +26,7 @@ const ContentIOSWrapper = ({
 }: {
   headerHidden: boolean | undefined;
   headerHeight: number;
-  children: ReactNode;
+  children: JSX.Element;
 }) => {
   if (Platform.OS === 'ios') {
     return (
