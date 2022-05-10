@@ -4,6 +4,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
 import FallbackImage from '../FallbackImage';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
+import useDebounce from '../../../src/hooks/useDebounce';
 
 const { width } = Dimensions.get('screen');
 
@@ -44,15 +45,18 @@ export default function SeriesItem({
   year,
   customPlaylist,
 }: Params): JSX.Element {
+  const { debounce } = useDebounce();
   return (
     <TouchableOpacity
-      onPress={() => {
-        navigation.push('SeriesLandingScreen', {
-          item: seriesData,
-          seriesId: seriesData.id,
-          customPlaylist,
-        });
-      }}
+      onPress={() =>
+        debounce(() =>
+          navigation.push('SeriesLandingScreen', {
+            item: seriesData,
+            seriesId: seriesData.id,
+            customPlaylist,
+          })
+        )
+      }
       style={style.seriesItem}
     >
       <FallbackImage

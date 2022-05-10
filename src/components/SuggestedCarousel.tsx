@@ -1,12 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
+import useDebounce from '../../src/hooks/useDebounce';
 import { MainStackParamList } from '../navigation/AppNavigator';
 import SeriesService from '../services/SeriesService';
 import GenericCarousel from './GenericCarousel';
 
 export default function HighlightCarousel(): JSX.Element {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+  const { debounce } = useDebounce();
   const [suggestedVideos, setSuggestedVideos] = useState({
     items: [],
     loading: true,
@@ -35,7 +37,7 @@ export default function HighlightCarousel(): JSX.Element {
   }, []);
   return (
     <GenericCarousel
-      handleNavigation={(item) => handleNavigation(item)}
+      handleNavigation={(item) => debounce(() => handleNavigation(item))}
       data={{
         items: suggestedVideos.items,
         loading: suggestedVideos.loading,

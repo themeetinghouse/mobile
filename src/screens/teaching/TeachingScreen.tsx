@@ -18,6 +18,7 @@ import SideSwipe from 'react-native-sideswipe';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
+import useDebounce from '../../../src/hooks/useDebounce';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AllButton from '../../components/buttons/AllButton';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
@@ -211,6 +212,7 @@ interface PopularSeriesData {
 export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const { pageConfig } = useTeachingConfig();
   const user = useContext(UserContext);
+  const { debounce } = useDebounce();
   const [recentTeaching, setRecentTeaching] = useState({
     loading: true,
     items: [],
@@ -390,7 +392,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     return (
       <TouchableWithoutFeedback
         key={item.id}
-        onPress={() => navigation.push('SeriesLandingScreen', { item })}
+        onPress={() =>
+          debounce(() => navigation.push('SeriesLandingScreen', { item }))
+        }
       >
         <View style={style.seriesThumbnailContainer}>
           <AnimatedFallbackImage
@@ -427,6 +431,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     if (!a?.viewCount || !b?.viewCount) return -1;
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
+
   return (
     <ScrollView
       style={style.content}
@@ -454,7 +459,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           />
           <AllButton
             handlePress={() => {
-              navigation.push('AllSeriesScreen');
+              debounce(() => navigation.push('AllSeriesScreen'));
             }}
           >
             All series
@@ -474,14 +479,18 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   key={teaching.id}
                   teaching={teaching}
                   handlePress={() =>
-                    navigation.push('SermonLandingScreen', { item: teaching })
+                    debounce(() =>
+                      navigation.push('SermonLandingScreen', {
+                        item: teaching,
+                      })
+                    )
                   }
                 />
               ))}
           </View>
           <AllButton
             handlePress={() => {
-              navigation.push('AllSermonsScreen');
+              debounce(() => navigation.push('AllSermonsScreen'));
             }}
           >
             All sermons
@@ -503,7 +512,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   key={video?.id}
                   teaching={video}
                   handlePress={() =>
-                    navigation.push('SermonLandingScreen', { item: video })
+                    debounce(() =>
+                      navigation.push('SermonLandingScreen', { item: video })
+                    )
                   }
                 />
               ))}
@@ -551,7 +562,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </View>
           <AllButton
             handlePress={() =>
-              navigation.push('AllSeriesScreen', { popularSeries: true })
+              debounce(() =>
+                navigation.push('AllSeriesScreen', { popularSeries: true })
+              )
             }
           >
             More Popular Series
@@ -591,7 +604,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </View>
           <AllButton
             handlePress={() =>
-              navigation.push('AllSeriesScreen', { customPlaylists: true })
+              debounce(() =>
+                navigation.push('AllSeriesScreen', { customPlaylists: true })
+              )
             }
           >
             More Teaching Topics
@@ -649,7 +664,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                   speakers.loading ? <ActivityIndicator /> : null
                 }
               />
-              <AllButton handlePress={() => navigation.push('TeacherList')}>
+              <AllButton
+                handlePress={() =>
+                  debounce(() => navigation.push('TeacherList'))
+                }
+              >
                 All teachers
               </AllButton>
             </>

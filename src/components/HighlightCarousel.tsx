@@ -2,6 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
+import useDebounce from '../../src/hooks/useDebounce';
 import SermonsService from '../services/SermonsService';
 import loadSomeAsync from '../utils/loading';
 import GenericCarousel from './GenericCarousel';
@@ -13,7 +14,7 @@ export default function HighlightCarousel(): JSX.Element {
     loading: true,
     nextToken: undefined,
   });
-
+  const { debounce } = useDebounce();
   const loadHighlights = async () => {
     loadSomeAsync(
       SermonsService.loadHighlightsList,
@@ -37,7 +38,9 @@ export default function HighlightCarousel(): JSX.Element {
   }, []);
   return (
     <GenericCarousel
-      handleNavigation={(item, index) => handleNavigation(item, index ?? -1)}
+      handleNavigation={(item, index) =>
+        debounce(() => handleNavigation(item, index ?? -1))
+      }
       loadMore={loadHighlights}
       data={{
         items: highlights.items,
