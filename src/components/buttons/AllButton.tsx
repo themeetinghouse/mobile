@@ -5,11 +5,12 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  TouchableOpacityProps,
 } from 'react-native';
 
 import { Theme } from '../../Theme.style';
 
-const style = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     backgroundColor: Theme.colors.black,
     borderColor: Theme.colors.gray2,
@@ -35,22 +36,21 @@ const style = StyleSheet.create({
   },
 });
 
-type Params = {
-  children: string;
-  handlePress?(): void;
+type AllButtonProps = {
   icon?: ImageSourcePropType;
-};
+} & TouchableOpacityProps;
 
 export default function AllButton({
   children,
-  handlePress,
+  style,
   icon,
-}: Params): JSX.Element {
+  ...props
+}: AllButtonProps): JSX.Element {
   return (
-    <TouchableOpacity style={style.button} onPress={handlePress}>
-      <Text style={style.text}>{children}</Text>
+    <TouchableOpacity {...props} style={[styles.button, style]}>
+      <Text style={styles.text}>{children}</Text>
 
-      <Image source={icon ?? Theme.icons.white.arrow} style={style.icon} />
+      <Image source={icon ?? Theme.icons.white.arrow} style={styles.icon} />
     </TouchableOpacity>
   );
 }

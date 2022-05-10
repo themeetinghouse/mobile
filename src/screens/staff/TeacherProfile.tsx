@@ -361,7 +361,7 @@ export default function TeacherProfile({
                 .includes(searchText.toLowerCase())
           ).length ? (
           <View style={{ marginBottom: 10 }}>
-            <AllButton handlePress={() => setShowCount(showCount + 20)}>
+            <AllButton onPress={() => setShowCount(showCount + 20)}>
               Load More
             </AllButton>
           </View>

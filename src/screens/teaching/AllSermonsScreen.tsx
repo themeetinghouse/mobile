@@ -252,7 +252,7 @@ export default function AllSermonsScreen({
         )}
         {filteredSermons?.length > 20 && showCount < filteredSermons.length ? (
           <View style={{ marginBottom: 20 }}>
-            <AllButton handlePress={() => setShowCount(showCount + 20)}>
+            <AllButton onPress={() => setShowCount(showCount + 20)}>
               Load More
             </AllButton>
           </View>

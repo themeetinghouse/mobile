@@ -1,23 +1,19 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import moment from 'moment';
-import {
-  StyleSheet,
-  TouchableHighlight,
-  Text,
-  View,
-  Image,
-} from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { EventQueryResult } from '../../services/EventsService';
 import { Style, Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
   container: {
-    ...Style.cardContainer,
-    ...{
-      backgroundColor: Theme.colors.black,
-      padding: 16,
-    },
+    backgroundColor: Theme.colors.black,
+    padding: 16,
+    paddingLeft: 0,
+
+    borderColor: Theme.colors.gray2,
+    marginLeft: 16,
+    borderBottomWidth: 1,
   },
   dateTitleContainer: {
     ...Style.title,
@@ -87,10 +83,7 @@ export default function EventCard({
     return startTime;
   };
   return (
-    <TouchableHighlight
-      underlayColor={Theme.colors.grey5}
-      onPress={handlePress}
-    >
+    <TouchableOpacity activeOpacity={0.45} onPress={handlePress}>
       <View style={style.container}>
         <Text style={style.dateTitleContainer}>
           {moment(event?.start_time ?? undefined).format('MMM D')}
@@ -99,11 +92,11 @@ export default function EventCard({
           <Text style={style.title}>{event?.name}</Text>
           <Image style={style.icon} source={Theme.icons.white.arrow} />
         </View>
-        <Text style={style.descriptionContainer} numberOfLines={4}>
-          {event?.description
-            ? event?.description.replace(/(\r?\n)\s*\1+/g, '$1')
-            : null}
-        </Text>
+        {event?.description ? (
+          <Text style={style.descriptionContainer} numberOfLines={4}>
+            {event?.description.replace(/(\r?\n)\s*\1+/g, '$1')}
+          </Text>
+        ) : null}
         {event?.place?.name || event?.place?.location?.street ? (
           <Text style={style.locationContainer}>
             {event?.place?.name ? event.place.name.split(',')[0] : null}
@@ -116,6 +109,6 @@ export default function EventCard({
           <Text style={style.dateTimeContainer}>{formatDate()}</Text>
         ) : null}
       </View>
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 }

@@ -348,7 +348,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         <View style={style.tagContainer}>
           {item?.comment?.tags?.map((tag, index) => {
             return (
-              <Text key={index.toString()} style={style.tagText}>
+              <Text key={tag + index.toString()} style={style.tagText}>
                 {tag}
               </Text>
             );
@@ -376,7 +376,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           ListFooterComponent={
             comments.length > showCount ? (
               <View style={{ marginBottom: 10 }}>
-                <AllButton handlePress={() => setShowCount(showCount + 20)}>
+                <AllButton onPress={() => setShowCount(showCount + 20)}>
                   Load More
                 </AllButton>
               </View>
@@ -438,7 +438,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
           ListFooterComponent={
             sectionList.length > showCount ? (
               <View style={{ marginBottom: 10 }}>
-                <AllButton handlePress={() => setShowCount(showCount + 3)}>
+                <AllButton onPress={() => setShowCount(showCount + 3)}>
                   Load More
                 </AllButton>
               </View>
