@@ -35,6 +35,7 @@ import ShareModal from '../../components/modals/Share';
 import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
 import NotesService from '../../services/NotesService';
 import { getSeries, getCustomPlaylist } from '../../graphql/queries';
+import useDebounce from '../../../src/hooks/useDebounce';
 
 const style = StyleSheet.create({
   content: {
@@ -136,6 +137,7 @@ export default function SermonLandingScreen({
   navigation,
   route,
 }: Params): JSX.Element {
+  const { debounce } = useDebounce();
   const sermon = route.params?.item;
   const mediaContext = useContext(MediaContext);
   const [sermonsInSeries, setSermonsInSeries] = useState<VideoData>();
@@ -522,11 +524,13 @@ export default function SermonLandingScreen({
                           key={video?.video?.id}
                           teaching={video.video}
                           handlePress={() =>
-                            navigation.push('SermonLandingScreen', {
-                              customPlaylist: true,
-                              seriesId: route.params?.seriesId,
-                              item: video.video,
-                            })
+                            debounce(() =>
+                              navigation.push('SermonLandingScreen', {
+                                customPlaylist: true,
+                                seriesId: route.params?.seriesId,
+                                item: video.video,
+                              })
+                            )
                           }
                         />
                       );
@@ -544,9 +548,11 @@ export default function SermonLandingScreen({
                         key={seriesSermon?.id}
                         teaching={seriesSermon}
                         handlePress={() =>
-                          navigation.push('SermonLandingScreen', {
-                            item: seriesSermon,
-                          })
+                          debounce(() =>
+                            navigation.push('SermonLandingScreen', {
+                              item: seriesSermon,
+                            })
+                          )
                         }
                       />
                     ) : null
@@ -770,7 +776,7 @@ export default function SermonLandingScreen({
               rightArrow
               icon={Theme.icons.white.notes}
               label="Notes"
-              onPress={navigateToNotes}
+              onPress={() => debounce(navigateToNotes)}
               data-testID="notes-button"
             />
           )}

@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { Theme } from '../../Theme.style';
+import useDebounce from '../../../src/hooks/useDebounce';
 
 interface Props {
   message: string;
@@ -12,6 +13,7 @@ interface Props {
 
 export default function AnnouncementBar({ message }: Props): JSX.Element {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+  const { debounce } = useDebounce();
   const style = StyleSheet.create({
     container: {
       backgroundColor: Theme.colors.yellow,
@@ -34,7 +36,7 @@ export default function AnnouncementBar({ message }: Props): JSX.Element {
   return (
     <TouchableOpacity
       style={style.container}
-      onPress={() => navigation.push('LiveStreamScreen')}
+      onPress={() => debounce(() => navigation.push('LiveStreamScreen'))}
     >
       <Text style={style.message}>{message}</Text>
     </TouchableOpacity>

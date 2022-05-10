@@ -21,6 +21,7 @@ import { RouteProp, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import useDebounce from '../../../src/hooks/useDebounce';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import SeriesService, { SeriesHighlights } from '../../services/SeriesService';
 import ActivityIndicator from '../../components/ActivityIndicator';
@@ -170,6 +171,7 @@ export default function SeriesLandingScreen({
   navigation,
   route,
 }: Params): JSX.Element {
+  const { debounce } = useDebounce();
   const seriesParam = route.params?.item;
   const { seriesId, customPlaylist } = route.params;
   const safeArea = useSafeAreaInsets();
@@ -402,16 +404,18 @@ export default function SeriesLandingScreen({
                           key={seriesSermon?.id}
                           teaching={seriesSermon as any}
                           handlePress={() =>
-                            navigation.push(
-                              'SermonLandingScreen',
-                              route?.params?.customPlaylist
-                                ? {
-                                    item: seriesSermon,
-                                    customPlaylist:
-                                      route?.params?.customPlaylist,
-                                    seriesId,
-                                  }
-                                : { item: seriesSermon }
+                            debounce(() =>
+                              navigation.push(
+                                'SermonLandingScreen',
+                                route?.params?.customPlaylist
+                                  ? {
+                                      item: seriesSermon,
+                                      customPlaylist:
+                                        route?.params?.customPlaylist,
+                                      seriesId,
+                                    }
+                                  : { item: seriesSermon }
+                              )
                             )
                           }
                         />
