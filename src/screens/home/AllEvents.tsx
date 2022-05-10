@@ -26,7 +26,6 @@ const style = StyleSheet.create({
 interface Props {
   navigation: StackNavigationProp<MainStackParamList>;
   route: RouteProp<MainStackParamList, 'AllEvents'>;
-  events: any;
 }
 
 function AllEvents({ navigation, route }: Props): JSX.Element {
@@ -60,33 +59,30 @@ function AllEvents({ navigation, route }: Props): JSX.Element {
     });
   }, [navigation]);
   return (
-    <View style={style.container}>
-      <ScrollView>
-        <View style={style.listContentContainer}>
-          {route?.params?.events
-            ? route.params.events.map((event) => {
-                return (
-                  <EventCard
-                    key={event?.id}
-                    event={event}
-                    handlePress={() =>
-                      navigation.push('Main', {
-                        screen: 'Home',
-                        params: {
-                          screen: 'EventDetailsScreen',
-                          params: {
-                            item: event,
-                          },
-                        },
-                      })
-                    }
-                  />
-                );
-              })
-            : null}
-        </View>
-      </ScrollView>
-    </View>
+    <ScrollView>
+      {route?.params?.events
+        ? route.params.events.map((event) => {
+            return (
+              <EventCard
+                key={event?.id}
+                event={event}
+                handlePress={() =>
+                  navigation.push('Main', {
+                    screen: 'Home',
+                    params: {
+                      screen: 'EventDetailsScreen',
+                      params: {
+                        item: event,
+                      },
+                    },
+                  })
+                }
+              />
+            );
+          })
+        : null}
+      <View style={{ height: 82, backgroundColor: Theme.colors.black }} />
+    </ScrollView>
   );
 }
 
