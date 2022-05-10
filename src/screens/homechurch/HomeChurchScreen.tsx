@@ -387,7 +387,7 @@ export default function HomeChurchScreen({
         !isLoading &&
         showCount !== homeChurches.length ? (
           <AllButton
-            handlePress={() => {
+            onPress={() => {
               if (showCount + 20 >= homeChurches.length)
                 setShowCount(homeChurches.length);
               else setShowCount(showCount + 20);
