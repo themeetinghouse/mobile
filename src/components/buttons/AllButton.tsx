@@ -6,7 +6,6 @@ import {
   TouchableOpacityProps,
   Text,
   Image,
-  TextProps,
 } from 'react-native';
 
 import { Theme } from '../../Theme.style';
@@ -36,24 +35,24 @@ const styles = StyleSheet.create({
   },
 });
 
-type Params = {
+type AllButtonProps = {
   type?: 'white' | 'black';
+  handlePress: () => void;
   children: string;
-  handlePress?(): void;
   icon?: ImageSourcePropType;
-};
+} & TouchableOpacityProps;
 
 export default function AllButton({
   type,
   children,
   handlePress,
   icon,
-}: Params): JSX.Element {
+}: AllButtonProps): JSX.Element {
   const isWhite = type === 'white';
   return (
     <TouchableOpacity
-      style={[styles.button, isWhite && { backgroundColor: '#FFF' }]}
       onPress={handlePress}
+      style={[styles.button, isWhite && { backgroundColor: '#FFF' }]}
     >
       <Text style={[styles.text, isWhite ? { color: '#000' } : {}]}>
         {children}
