@@ -398,14 +398,18 @@ export default function SermonLandingScreen({
         )) as GraphQLResult<GetCustomPlaylistQuery>;
         const videos = json.data?.getCustomPlaylist?.videos?.items;
         setVideosInPlaylist(videos);
-      } else {
+      } else if (sermon.seriesTitle) {
         const json = (await API.graphql(
           graphqlOperation(getSeries, { id: sermon.seriesTitle })
         )) as GraphQLResult<GetSeriesQuery>;
         setSermonsInSeries(json.data?.getSeries?.videos?.items);
-      }
+      } else setSermonsInSeries([]);
     };
-    loadSermonsInSeriesAsync();
+    try {
+      loadSermonsInSeriesAsync();
+    } catch (error) {
+      console.error({ loadSermonsInSeriesAsync: error });
+    }
   }, [route, sermon.seriesTitle]);
 
   useEffect(() => {
