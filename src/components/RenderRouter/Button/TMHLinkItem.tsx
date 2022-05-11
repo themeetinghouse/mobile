@@ -9,7 +9,8 @@ import {
   StyleSheet,
   Linking,
 } from 'react-native';
-import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
+import useDebounce from '../../../../src/hooks/useDebounce';
+import { FeaturedStackParamList } from '../../../../src/navigation/MainTabNavigator';
 import Theme, { Style } from '../../../Theme.style';
 import { LinkItemType } from '../ContentTypes';
 
@@ -50,6 +51,7 @@ export default function TMHLinkItem(props: ListItemProps) {
   const { item, hideBorder } = props;
   const navigation =
     useNavigation<StackNavigationProp<FeaturedStackParamList>>();
+  const { debounce } = useDebounce();
   const handlePress = () => {
     const isUrl =
       item.navigateTo?.includes('https://') ||
@@ -63,9 +65,8 @@ export default function TMHLinkItem(props: ListItemProps) {
   };
   return (
     <TouchableHighlight
-      delayPressIn={50}
       style={ListItemStyle.listItem}
-      onPress={handlePress}
+      onPress={() => debounce(() => handlePress())}
       underlayColor={Theme.colors.gray3}
     >
       <View

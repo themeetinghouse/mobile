@@ -14,7 +14,7 @@ afterEach(() => {
 describe('Snapshot and functional tests for button components', () => {
   test('All button, default props', () => {
     const { getByText, toJSON } = render(
-      <AllButton handlePress={mockPress}>Test</AllButton>
+      <AllButton onPress={mockPress}>Test</AllButton>
     );
 
     const button = getByText('Test');

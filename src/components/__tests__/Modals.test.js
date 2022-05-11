@@ -1,6 +1,6 @@
 import React from 'react';
 import { Share, Platform } from 'react-native';
-import Clipboard from 'expo-clipboard';
+import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
 import { render, fireEvent } from '@testing-library/react-native';
 import NeedsSignUpModal from '../modals/NeedsSignUpModal';
@@ -8,7 +8,7 @@ import ShareModal from '../modals/Share';
 
 const mockPush = jest.fn();
 const mockGoBack = jest.fn();
-
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 jest.mock('@react-navigation/native', () => {
   return {
     ...jest.requireActual('@react-navigation/native'),
