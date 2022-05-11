@@ -217,7 +217,7 @@ describe('Recent Teaching component on Home Screen', () => {
   });
 
   // One day after Christmas Eve
-  // need data new for this
+  // need new data for this
   // test('On Friday Dec 25, expect video from Christmas Eve, but no notes button', () => {
   //   const { queryByTestId } = render(
   //     <RecentTeaching teaching={mockTeaching[3]} note={mockNotes[3]} />
