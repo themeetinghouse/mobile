@@ -20,6 +20,7 @@ import { Subscription } from '@unimodules/core';
 import { Analytics } from 'aws-amplify';
 import { registerRootComponent } from 'expo';
 import { DevicePushToken } from 'expo-notifications';
+import { InitialProps } from 'expo/build/launch/withExpoRoot.types';
 import MiniPlayer from './components/teaching/MiniPlayer';
 import { version } from '../version';
 import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
@@ -30,6 +31,7 @@ import MediaContext, { MediaData } from './contexts/MediaContext';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
+import AnimatedSplashScreen from './AnimatedSplashScreen';
 
 initSentry({
   dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
@@ -288,42 +290,44 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
     );
   }
   return (
-    <CommentContext.Provider value={{ comments, setComments }}>
-      <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
-        <MediaContext.Provider
-          value={{
-            media,
-            setMedia,
-            setVideoTime,
-            closeAudio,
-            setAudioNull,
-            closeVideo,
-            setPlayerTypeNone,
-          }}
-        >
-          <LocationContext.Provider value={{ locationData, setLocationData }}>
-            <UserContext.Provider value={{ userData, setUserData }}>
-              <SafeAreaProvider style={{ backgroundColor: 'black' }}>
-                {Platform.OS === 'ios' && (
-                  <StatusBar animated barStyle="light-content" />
-                )}
-                <NavigationContainer
-                  theme={CustomTheme}
-                  ref={navRef}
-                  onStateChange={handleRouteChange}
-                >
-                  <ContentScreenProvider>
-                    <AppNavigator />
-                    <MiniPlayer currentScreen={currentScreen} />
-                  </ContentScreenProvider>
-                </NavigationContainer>
-              </SafeAreaProvider>
-            </UserContext.Provider>
-          </LocationContext.Provider>
-        </MediaContext.Provider>
-      </MiniPlayerStyleContext.Provider>
-    </CommentContext.Provider>
+    <AnimatedSplashScreen>
+      <CommentContext.Provider value={{ comments, setComments }}>
+        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
+          <MediaContext.Provider
+            value={{
+              media,
+              setMedia,
+              setVideoTime,
+              closeAudio,
+              setAudioNull,
+              closeVideo,
+              setPlayerTypeNone,
+            }}
+          >
+            <LocationContext.Provider value={{ locationData, setLocationData }}>
+              <UserContext.Provider value={{ userData, setUserData }}>
+                <SafeAreaProvider style={{ backgroundColor: 'black' }}>
+                  {Platform.OS === 'ios' && (
+                    <StatusBar animated barStyle="light-content" />
+                  )}
+                  <NavigationContainer
+                    theme={CustomTheme}
+                    ref={navRef}
+                    onStateChange={handleRouteChange}
+                  >
+                    <ContentScreenProvider>
+                      <AppNavigator />
+                      <MiniPlayer currentScreen={currentScreen} />
+                    </ContentScreenProvider>
+                  </NavigationContainer>
+                </SafeAreaProvider>
+              </UserContext.Provider>
+            </LocationContext.Provider>
+          </MediaContext.Provider>
+        </MiniPlayerStyleContext.Provider>
+      </CommentContext.Provider>
+    </AnimatedSplashScreen>
   );
 }
 
-registerRootComponent(App);
+registerRootComponent<InitialProps & { skipLoadingScreen: boolean }>(App);
