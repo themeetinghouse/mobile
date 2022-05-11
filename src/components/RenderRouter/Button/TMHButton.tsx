@@ -3,6 +3,7 @@ import { Linking, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import useDebounce from '../../../../src/hooks/useDebounce';
 import IconButton from '../../buttons/IconButton';
 import AllButton from '../../buttons/AllButton';
 import { ButtonType } from '../ContentTypes';
@@ -30,6 +31,7 @@ const styles = StyleSheet.create({
   },
 });
 export default function TMHButton({ item }: { item: ButtonType }) {
+  const { debounce } = useDebounce();
   const { state } = useContentContext();
   const { backgroundColor } = state;
   const navigation =
@@ -48,13 +50,13 @@ export default function TMHButton({ item }: { item: ButtonType }) {
   switch (item.style) {
     case 'white-with-arrow':
       return (
-        <AllButton type="white" handlePress={handlePress}>
+        <AllButton type="white" onPress={() => debounce(() => handlePress())}>
           {item.label}
         </AllButton>
       );
     case 'black-with-arrow':
       return (
-        <AllButton type="black" handlePress={handlePress}>
+        <AllButton type="black" onPress={() => debounce(() => handlePress())}>
           {item.label}
         </AllButton>
       );
@@ -65,7 +67,7 @@ export default function TMHButton({ item }: { item: ButtonType }) {
           outlined={false}
           label={item.label}
           style={[styles.buttonStyle, styles.whiteOutlineButtonStyle, bttStyle]}
-          onPress={handlePress}
+          onPress={() => debounce(() => handlePress())}
         />
       );
     }
@@ -79,7 +81,7 @@ export default function TMHButton({ item }: { item: ButtonType }) {
           solidBlack
           label={item.label}
           style={[styles.buttonStyle, styles.blackOutlineButtonStyle, isBlack]}
-          onPress={handlePress}
+          onPress={() => debounce(() => handlePress())}
         />
       );
     }
@@ -91,7 +93,7 @@ export default function TMHButton({ item }: { item: ButtonType }) {
           }}
           style={{ marginLeft: 16 }}
           label={item.label}
-          onPress={handlePress}
+          onPress={() => debounce(() => handlePress())}
         />
       );
     default:

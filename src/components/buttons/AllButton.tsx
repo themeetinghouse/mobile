@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
 
 type AllButtonProps = {
   type?: 'white' | 'black';
-  handlePress: () => void;
   children: string;
   icon?: ImageSourcePropType;
 } & TouchableOpacityProps;
@@ -45,13 +44,13 @@ type AllButtonProps = {
 export default function AllButton({
   type,
   children,
-  handlePress,
   icon,
+  ...props
 }: AllButtonProps): JSX.Element {
   const isWhite = type === 'white';
   return (
     <TouchableOpacity
-      onPress={handlePress}
+      {...props}
       style={[styles.button, isWhite && { backgroundColor: '#FFF' }]}
     >
       <Text style={[styles.text, isWhite ? { color: '#000' } : {}]}>
