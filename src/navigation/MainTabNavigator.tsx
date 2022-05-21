@@ -1,11 +1,14 @@
 import React, { useContext } from 'react';
 import {
+  CardStyleInterpolators,
   createStackNavigator,
   TransitionPresets,
 } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Image, StyleSheet } from 'react-native';
-import { Announcement } from 'src/services/AnnouncementService';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Announcement } from '../../src/services/AnnouncementService';
+import LocationContext from '../../src/contexts/LocationContext';
+import UserContext from '../../src/contexts/UserContext';
 import HomeScreen from '../screens/home/HomeScreen';
 import TeachingScreen from '../screens/teaching/TeachingScreen';
 import AllSeriesScreen from '../screens/teaching/AllSeriesScreen';
@@ -25,13 +28,52 @@ import AnnouncementDetailsScreen from '../screens/home/AnnouncementDetailsScreen
 import MoreScreen from '../screens/more/MoreScreen';
 import SeriesLandingScreen from '../screens/teaching/SeriesLandingScreen';
 import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
-import { Theme } from '../Theme.style';
+import { HeaderStyle, Style, Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
 import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import { EventQueryResult } from '../services/EventsService';
 import ContentScreen from '../screens/content/ContentScreen';
 
+const homeStyle = StyleSheet.create({
+  container: {
+    backgroundColor: Theme.colors.gray1,
+  },
+  categoryDivider: {
+    backgroundColor: Theme.colors.gray1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    height: 16,
+    borderTopColor: Theme.colors.gray2,
+    borderBottomColor: Theme.colors.gray2,
+  },
+  categoryContainer: {
+    backgroundColor: Theme.colors.black,
+    paddingTop: 32,
+  },
+  categoryTitle: Style.categoryTitle,
+  headerTitle: HeaderStyle.title,
+  icon: Style.icon,
+  headerButton: {
+    backgroundColor: Theme.colors.header,
+    paddingLeft: 40,
+  },
+  title: HeaderStyle.title,
+  subtitle: HeaderStyle.subtitle,
+  locationContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonContentsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  locationName: {
+    marginRight: 5,
+  },
+});
 export type HomeStackParamList = {
   HomeScreen: { questionResult?: boolean };
   ContentScreen: undefined;
@@ -41,11 +83,73 @@ export type HomeStackParamList = {
 };
 
 const Home = createStackNavigator<HomeStackParamList>();
-
 function HomeStack() {
+  const user = useContext(UserContext);
+  const location = useContext(LocationContext);
   return (
     <Home.Navigator screenOptions={{ headerShown: false }}>
-      <Home.Screen name="HomeScreen" component={HomeScreen} />
+      <Home.Screen
+        options={({ navigation }) => ({
+          title: 'Home',
+          headerShown: true,
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          headerTitle: () => (
+            <>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('LocationSelectionScreen', {
+                    persist: !user?.userData?.email_verified,
+                  })
+                }
+              >
+                <View style={homeStyle.buttonContentsContainer}>
+                  <Text style={homeStyle.title}>Home</Text>
+                  <View style={homeStyle.locationContainer}>
+                    <Text style={[homeStyle.subtitle, homeStyle.locationName]}>
+                      {location?.locationData?.locationName === 'unknown'
+                        ? 'Select Location'
+                        : location?.locationData?.locationName}
+                    </Text>
+                    <Image
+                      source={Theme.icons.white.caretDown}
+                      style={{ width: 12, height: 24 }}
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </>
+          ),
+          headerTitleAlign: 'center',
+          headerTitleStyle: HeaderStyle.title,
+          headerStyle: {
+            backgroundColor: Theme.colors.background,
+            borderBottomWidth: 1,
+            borderBottomColor: Theme.colors.gray2,
+            shadowOpacity: 0,
+            elevation: 0,
+          },
+          headerLeft: () => null,
+          headerRight: () => {
+            return (
+              <TouchableOpacity
+                style={{ alignContent: 'flex-end', marginRight: 16 }}
+                onPress={() => navigation.navigate('ProfileScreen')}
+              >
+                <Image
+                  source={
+                    user?.userData?.email_verified
+                      ? Theme.icons.white.userLoggedIn
+                      : Theme.icons.white.user
+                  }
+                  style={[homeStyle.icon]}
+                />
+              </TouchableOpacity>
+            );
+          },
+        })}
+        name="HomeScreen"
+        component={HomeScreen}
+      />
       <Home.Screen name="EventDetailsScreen" component={EventDetailsScreen} />
       <Home.Screen
         name="AnnouncementDetailsScreen"
