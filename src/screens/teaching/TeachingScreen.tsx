@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useLayoutEffect,
+  useMemo,
+} from 'react';
 import moment from 'moment';
 import {
   ScrollView,
@@ -23,7 +29,6 @@ import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AllButton from '../../components/buttons/AllButton';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
-import SermonsService from '../../services/SermonsService';
 import SeriesService, {
   CustomPlaylist,
   LoadPlaylistData,
@@ -38,6 +43,7 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import {
   GetVideoByVideoTypeQueryVariables,
   GetVideoByVideoTypeQuery,
+  Series,
 } from '../../services/API';
 import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
@@ -46,6 +52,8 @@ import TeacherListPicture from '../../components/teaching/TeacherListPicture';
 import HighlightCarousel from '../../components/HighlightCarousel';
 import SuggestedCarousel from '../../components/SuggestedCarousel';
 import { useTeachingConfig } from './useTeachingConfig';
+import useSermons from '../../../src/hooks/useSermons';
+import useRecentSeries from '../../../src/hooks/useRecentSeries';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -213,16 +221,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const { pageConfig } = useTeachingConfig();
   const user = useContext(UserContext);
   const { debounce } = useDebounce();
-  const [recentTeaching, setRecentTeaching] = useState({
-    loading: true,
-    items: [],
-    nextToken: null,
-  });
-  const [recentSeries, setRecentSeries] = useState<SeriesData>({
-    loading: true,
-    items: [],
-    nextToken: null,
-  });
   const [customPlaylists, setCustomPlaylists] = useState<PlaylistData>({
     loading: true,
     items: [],
@@ -278,15 +276,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     });
   }, [navigation, emailVerified]);
 
-  const loadRecentSermons = async () => {
-    loadSomeAsync(
-      SermonsService.loadRecentSermonsList,
-      recentTeaching,
-      setRecentTeaching,
-      6
-    );
-  };
-
   const loadSpeakers = async () => {
     loadSomeAsync(SpeakersService.loadSpeakersList, speakers, setSpeakers);
   };
@@ -296,15 +285,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       SeriesService.loadCustomPlaylists,
       customPlaylists,
       setCustomPlaylists,
-      10
-    );
-  };
-
-  const loadRecentSeries = async () => {
-    loadSomeAsync(
-      SeriesService.loadSeriesList,
-      recentSeries,
-      setRecentSeries,
       10
     );
   };
@@ -356,10 +336,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       console.log({ popularTeaching: err });
     }
   };
+  const { sermons, sermonsLoaded } = useSermons();
+  const { recentSeries, recentSeriesLoaded, loadMore } = useRecentSeries();
   useEffect(() => {
     if (pageConfig && !pageConfig?.hidePopularSeries) loadPopularSeries();
-    if (pageConfig && !pageConfig?.hideSeries) loadRecentSeries();
-    if (pageConfig && !pageConfig?.hideRecentTeaching) loadRecentSermons();
+    if (pageConfig && !pageConfig?.hideSeries) null;
+    if (pageConfig && !pageConfig?.hideRecentTeaching) null;
     if (pageConfig && !pageConfig?.hideTeachersCarousel) loadSpeakers();
     if (pageConfig && !pageConfig?.hideTeachingByTopic) loadCustomPlaylists();
     if (pageConfig && !pageConfig?.hidePopularTeachings) getPopularTeaching();
@@ -431,7 +413,38 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     if (!a?.viewCount || !b?.viewCount) return -1;
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
-
+  // if (
+  //   recentSeries.loading ||
+  //   speakers.loading ||
+  //   customPlaylists.loading ||
+  //   popularSeries.loading
+  // ) {
+  //   return (
+  //     <View
+  //       style={{
+  //         flexGrow: 1,
+  //         justifyContent: 'center',
+  //         alignItems: 'center',
+  //       }}
+  //     >
+  //       <ActivityIndicator />
+  //     </View>
+  //   );
+  // }
+  const finishedLoading = useMemo(() => sermonsLoaded, [sermonsLoaded]);
+  if (!finishedLoading) {
+    return (
+      <View
+        style={{
+          flexGrow: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <ActivityIndicator />
+      </View>
+    );
+  }
   return (
     <ScrollView
       style={style.content}
@@ -443,15 +456,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         <View style={style.categorySection}>
           <SideSwipe
             contentContainerStyle={style.horizontalListContentContainer}
-            data={recentSeries?.items?.concat({ loading: true }) ?? []}
+            data={recentSeries as Array<Series>}
             itemWidth={
               isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10
             }
+            onEndReachedThreshold={0.2}
+            onEndReached={loadMore}
             threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
             style={{ width: '100%' }}
             contentOffset={contentOffset}
-            onEndReachedThreshold={0.2}
-            onEndReached={loadRecentSeries}
             useVelocityForIndex
             renderItem={({ item, itemIndex, animatedValue }) =>
               renderSeriesSwipeItem(item, itemIndex, animatedValue)
@@ -470,23 +483,19 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         <View style={style.categorySection}>
           <Text style={style.categoryTitle}>Recent Teaching</Text>
           <View style={style.listContentContainer}>
-            {recentTeaching.loading && (
-              <ActivityIndicator animating={recentTeaching.loading} />
-            )}
-            {!recentTeaching.loading &&
-              recentTeaching.items.map((teaching: any) => (
-                <TeachingListItem
-                  key={teaching.id}
-                  teaching={teaching}
-                  handlePress={() =>
-                    debounce(() =>
-                      navigation.push('SermonLandingScreen', {
-                        item: teaching,
-                      })
-                    )
-                  }
-                />
-              ))}
+            {sermons.map((teaching: any) => (
+              <TeachingListItem
+                key={teaching.id}
+                teaching={teaching}
+                handlePress={() =>
+                  debounce(() =>
+                    navigation.push('SermonLandingScreen', {
+                      item: teaching,
+                    })
+                  )
+                }
+              />
+            ))}
           </View>
           <AllButton
             onPress={() => {
