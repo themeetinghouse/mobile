@@ -448,33 +448,42 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const speakersLoaded = !speakers.loading || pageConfig?.hideTeachersCarousel;
   const popularTeachingsLoaded =
     !popularTeachings.loading || pageConfig?.hidePopularTeachings;
-
+  const [tripTimeout, setTripTimeout] = useState(false);
+  useEffect(function disableSpinnerAfterTimeout() {
+    const spinnerTimeout = 5000;
+    setTimeout(() => {
+      setTripTimeout(true);
+    }, spinnerTimeout);
+  }, []);
   return (
     <>
-      {!recentSeriesLoaded ||
-      !sermonsLoaded ||
-      !highlightsLoaded ||
-      !customPlaylistsLoaded ||
-      !popularSeriesLoaded ||
-      !popularTeachingsLoaded ||
-      !speakersLoaded ? (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            justifyContent: 'center',
+      {!tripTimeout ? (
+        <>
+          {!recentSeriesLoaded ||
+          !sermonsLoaded ||
+          !highlightsLoaded ||
+          !customPlaylistsLoaded ||
+          !popularSeriesLoaded ||
+          !popularTeachingsLoaded ||
+          !speakersLoaded ? (
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                justifyContent: 'center',
 
-            height: screenHeight,
-            width: Dimensions.get('window').width,
-            zIndex: 10000,
-            backgroundColor: '#000',
-          }}
-        >
-          <ActivityIndicator />
-        </View>
+                height: screenHeight,
+                width: Dimensions.get('window').width,
+                zIndex: 10000,
+                backgroundColor: '#000',
+              }}
+            >
+              <ActivityIndicator />
+            </View>
+          ) : null}
+        </>
       ) : null}
-
       <ScrollView
         style={style.content}
         bounces={bounce}
@@ -508,7 +517,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             </AllButton>
           </View>
         ) : null}
-        {pageConfig && !pageConfig?.hideRecentTeaching ? (
+        {pageConfig && !pageConfig?.hideRecentTeaching && sermonsLoaded ? (
           <View style={style.categorySection}>
             <Text style={style.categoryTitle}>Recent Teaching</Text>
             <View style={style.listContentContainer}>
@@ -540,7 +549,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             setLoaded={(value) => setHighlightsLoaded(value)}
           />
         ) : null}
-        {pageConfig && !pageConfig?.hidePopularTeachings ? (
+        {pageConfig &&
+        !pageConfig?.hidePopularTeachings &&
+        !popularTeachings.loading ? (
           <View style={style.categorySection}>
             <Text style={style.categoryTitle}>Popular Teaching</Text>
             <View style={style.listContentContainer}>
@@ -572,23 +583,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             </AllButton>
           </View>
         ) : null}
-        {pageConfig && !pageConfig?.hidePopularSeries ? (
+        {pageConfig &&
+        !pageConfig?.hidePopularSeries &&
+        !popularSeries.loading &&
+        Boolean(popularSeries?.items?.length) ? (
           <View style={style.categorySection}>
             <Text style={style.categoryTitle}>Popular Series</Text>
             <Text style={style.highlightsText}>
               A collection of our favourite and most popular series
             </Text>
-            {customPlaylists.loading && (
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <ActivityIndicator />
-              </View>
-            )}
             <View style={style.seriesListContainer}>
               {popularSeries?.items?.map((s: any, key: any) => {
                 if (key < 4)
@@ -658,63 +661,60 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         {pageConfig && !pageConfig?.hideSuggestedVideos ? (
           <SuggestedCarousel />
         ) : null}
-        {pageConfig && !pageConfig?.hideTeachersCarousel ? (
+        {pageConfig &&
+        !pageConfig?.hideTeachersCarousel &&
+        !speakers.loading ? (
           <View style={style.categorySectionLast}>
             <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
               Teachers
             </Text>
-            {!speakers.loading ? (
-              <>
-                <FlatList
-                  contentContainerStyle={[
-                    style.horizontalListContentContainer,
-                    { marginBottom: 2 },
-                  ]}
-                  horizontal
-                  data={speakers.items}
-                  renderItem={({ item }: any) =>
-                    !item.hidden ? (
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate('TeacherProfile', {
-                            staff: {
-                              ...item,
-                              uri: item.image,
-                              idFromTeaching: item.name,
-                            },
-                          })
-                        }
+
+            <FlatList
+              contentContainerStyle={[
+                style.horizontalListContentContainer,
+                { marginBottom: 2 },
+              ]}
+              horizontal
+              data={speakers.items}
+              renderItem={({ item }: any) =>
+                !item.hidden ? (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('TeacherProfile', {
+                        staff: {
+                          ...item,
+                          uri: item.image,
+                          idFromTeaching: item.name,
+                        },
+                      })
+                    }
+                  >
+                    <View style={style.teacherContainer}>
+                      <View
+                        style={[
+                          style.teacherThumbnailContainer,
+                          {
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          },
+                        ]}
                       >
-                        <View style={style.teacherContainer}>
-                          <View
-                            style={[
-                              style.teacherThumbnailContainer,
-                              {
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                              },
-                            ]}
-                          >
-                            <TeacherListPicture item={item} />
-                          </View>
-                          <Text style={style.teacherDetail1}>{item.name}</Text>
-                        </View>
-                      </TouchableOpacity>
-                    ) : null
-                  }
-                  ListFooterComponent={() =>
-                    speakers.loading ? <ActivityIndicator /> : null
-                  }
-                />
-                <AllButton
-                  onPress={() => debounce(() => navigation.push('TeacherList'))}
-                >
-                  All teachers
-                </AllButton>
-              </>
-            ) : (
-              <ActivityIndicator />
-            )}
+                        <TeacherListPicture item={item} />
+                      </View>
+                      <Text style={style.teacherDetail1}>{item.name}</Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : null
+              }
+              ListFooterComponent={() =>
+                speakers.loading ? <ActivityIndicator /> : null
+              }
+            />
+            <AllButton
+              onPress={() => debounce(() => navigation.push('TeacherList'))}
+            >
+              All teachers
+            </AllButton>
           </View>
         ) : null}
       </ScrollView>
