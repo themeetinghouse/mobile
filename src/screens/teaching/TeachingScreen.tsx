@@ -19,9 +19,10 @@ import {
   TouchableWithoutFeedback,
   Text,
   View,
+  Platform,
 } from 'react-native';
 import SideSwipe from 'react-native-sideswipe';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
 import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import useDebounce from '../../../src/hooks/useDebounce';
@@ -238,9 +239,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   });
   const [bounce, setBounce] = useState(false);
   const [popular, setPopular] = useState<PopularVideoData>([]);
-  const [headerHeight, setHeaderHeight] = useState(0);
-  // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
+  const [androidHeaderHeight, setAndroidHeaderHeight] = useState(0);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -256,8 +256,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       headerLeft: function render() {
         return (
           <View
-            onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height ?? 40)}
             style={{ flex: 1 }}
+            onLayout={(e) =>
+              setAndroidHeaderHeight(e.nativeEvent.layout.height ?? 50)
+            }
           />
         );
       },
@@ -423,6 +425,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     if (!a?.viewCount || !b?.viewCount) return -1;
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
+  const headerHeightIOS = useHeaderHeight();
+  const bottomNavHeight = 90;
+  const headerHeight =
+    Platform.OS === 'ios' ? headerHeightIOS : androidHeaderHeight;
+  const screenHeight =
+    Dimensions.get('window').height - headerHeight - bottomNavHeight;
   return (
     <>
       {!recentSeriesLoaded || !sermonsLoaded || !highlightsLoaded ? (
@@ -433,7 +441,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             left: 0,
             justifyContent: 'center',
 
-            height: Dimensions.get('window').height - headerHeight - 90,
+            height: screenHeight,
             width: Dimensions.get('window').width,
             zIndex: 10000,
             backgroundColor: '#000',
