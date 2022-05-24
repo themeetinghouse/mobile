@@ -191,19 +191,18 @@ const style = StyleSheet.create({
   },
 });
 
-type PopularVideoData = NonNullable<
-  NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']
->;
+type PopularVideoData = {
+  items: NonNullable<
+    NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items']
+  >;
+  loading: boolean;
+};
 
 interface Params {
   navigation: CompositeNavigationProp<
     StackNavigationProp<MainStackParamList>,
     StackNavigationProp<TeachingStackParamList>
   >;
-}
-
-interface SeriesData extends LoadSeriesListData {
-  loading: boolean;
 }
 
 interface PlaylistData extends LoadPlaylistData {
@@ -238,7 +237,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     nextToken: null,
   });
   const [bounce, setBounce] = useState(false);
-  const [popular, setPopular] = useState<PopularVideoData>([]);
+  const [popularTeachings, setPopularTeachings] = useState<PopularVideoData>({
+    items: [],
+    loading: true,
+  });
+
   const emailVerified = user?.userData?.email_verified;
   const [androidHeaderHeight, setAndroidHeaderHeight] = useState(0);
   useLayoutEffect(() => {
@@ -318,8 +321,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   };
   const getPopularTeaching = async () => {
     try {
-      const { numberOfDays = 120, minViews = 900 } =
-        await fetchPopularVideoParams();
+      const params = await fetchPopularVideoParams();
+      const numberOfDays = params?.numberOfDays || 120;
+      const minViews = params?.minViews || 900;
       const startDate = moment()
         .subtract(numberOfDays, 'days')
         .format('YYYY-MM-DD');
@@ -338,7 +342,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       const popularTeaching = items.filter((item) =>
         item?.viewCount ? parseInt(item?.viewCount, 10) >= minViews : false
       );
-      setPopular(popularTeaching);
+      setPopularTeachings({ items: popularTeaching, loading: false });
     } catch (err) {
       console.log({ popularTeaching: err });
     }
@@ -351,7 +355,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     6,
     pageConfig?.hideSeries
   );
-  const [highlightsLoaded, setHighlightsLoaded] = useState(false);
+  const [highlightsLoaded, setHighlightsLoaded] = useState(
+    pageConfig && pageConfig?.hideHighlightsCarousel
+  );
   useEffect(() => {
     if (pageConfig && !pageConfig?.hidePopularSeries) loadPopularSeries();
     if (pageConfig && !pageConfig?.hideTeachersCarousel) loadSpeakers();
@@ -421,7 +427,10 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     );
   };
 
-  function sortByViews(a: PopularVideoData[0], b: PopularVideoData[0]) {
+  function sortByViews(
+    a: PopularVideoData['items'][0],
+    b: PopularVideoData['items'][0]
+  ) {
     if (!a?.viewCount || !b?.viewCount) return -1;
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
@@ -431,9 +440,24 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     Platform.OS === 'ios' ? headerHeightIOS : androidHeaderHeight;
   const screenHeight =
     Dimensions.get('window').height - headerHeight - bottomNavHeight;
+
+  const customPlaylistsLoaded =
+    !customPlaylists.loading || pageConfig?.hidePopularSeries;
+  const popularSeriesLoaded =
+    !popularSeries.loading || pageConfig?.hidePopularSeries;
+  const speakersLoaded = !speakers.loading || pageConfig?.hideTeachersCarousel;
+  const popularTeachingsLoaded =
+    !popularTeachings.loading || pageConfig?.hidePopularTeachings;
+
   return (
     <>
-      {!recentSeriesLoaded || !sermonsLoaded || !highlightsLoaded ? (
+      {!recentSeriesLoaded ||
+      !sermonsLoaded ||
+      !highlightsLoaded ||
+      !customPlaylistsLoaded ||
+      !popularSeriesLoaded ||
+      !popularTeachingsLoaded ||
+      !speakersLoaded ? (
         <View
           style={{
             position: 'absolute',
@@ -520,7 +544,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           <View style={style.categorySection}>
             <Text style={style.categoryTitle}>Popular Teaching</Text>
             <View style={style.listContentContainer}>
-              {popular
+              {popularTeachings.items
                 .sort((a, b) => sortByViews(a, b))
                 .slice(0, 6)
                 .map((video) => (
@@ -538,7 +562,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             <AllButton
               onPress={() =>
                 navigation.navigate('PopularTeachingScreen', {
-                  popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
+                  popularTeaching: popularTeachings.items.sort((a, b) =>
+                    sortByViews(a, b)
+                  ),
                 })
               }
             >
