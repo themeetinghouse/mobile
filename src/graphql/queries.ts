@@ -294,7 +294,7 @@ export const getCommentsByOwner = /* GraphQL */ `
 
 export const commentExistsQuery = /* GraphQL */ `
   query GetCommentsByOwner(
-    $owner: String
+    $owner: String!
     $noteId: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelCommentFilterInput
@@ -376,7 +376,7 @@ export const listSpeakersQuery = `
 
 export const getTagsByOwner = /* GraphQL */ `
   query GetCommentsByOwner(
-    $owner: String
+    $owner: String!
     $noteId: ModelStringKeyConditionInput
     $sortDirection: ModelSortDirection
     $filter: ModelCommentFilterInput
