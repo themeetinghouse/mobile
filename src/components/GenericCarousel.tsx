@@ -3,12 +3,12 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Image,
   View,
   Text,
 } from 'react-native';
 import ActivityIndicator from './ActivityIndicator';
 import { Theme, Style } from '../Theme.style';
+import FallbackImage from './FallbackImage';
 
 const style = StyleSheet.create({
   categoryTitle: {
@@ -63,13 +63,10 @@ export default function GenericCarousel({
   const getImage = (item: any) => {
     const { thumbnails } =
       item?.video?.Youtube?.snippet ?? item?.Youtube?.snippet;
-    return (
-      thumbnails?.standard?.url ??
-      thumbnails?.maxres?.url ??
-      thumbnails?.high?.url
-    );
+    const { url } =
+      thumbnails?.standard ?? thumbnails?.high ?? thumbnails?.maxres;
+    return url;
   };
-
   return (
     <View style={style.categorySection}>
       {header ? <Text style={style.categoryTitle}>{header}</Text> : null}
@@ -80,11 +77,10 @@ export default function GenericCarousel({
         data={data.items}
         renderItem={({ item, index }) => (
           <TouchableOpacity onPress={() => handleNavigation(item, index)}>
-            <Image
-              style={style?.highlightsThumbnail}
-              source={{
-                uri: getImage(item),
-              }}
+            <FallbackImage
+              style={style.highlightsThumbnail}
+              uri={getImage(item)}
+              catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
             />
           </TouchableOpacity>
         )}
