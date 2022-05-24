@@ -7,7 +7,14 @@ import SermonsService from '../services/SermonsService';
 import loadSomeAsync from '../utils/loading';
 import GenericCarousel from './GenericCarousel';
 
-export default function HighlightCarousel(): JSX.Element {
+type HighlightCarouselProps = {
+  setLoaded: (value: boolean) => void;
+};
+
+export default function HighlightCarousel(
+  props: HighlightCarouselProps
+): JSX.Element {
+  const { setLoaded } = props;
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [highlights, setHighlights] = useState({
     items: [],
@@ -36,6 +43,10 @@ export default function HighlightCarousel(): JSX.Element {
     loadHighlights();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setLoaded(!highlights.loading);
+  }, [highlights.loading, setLoaded]);
   return (
     <GenericCarousel
       handleNavigation={(item, index) =>

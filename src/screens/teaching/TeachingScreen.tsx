@@ -238,7 +238,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   });
   const [bounce, setBounce] = useState(false);
   const [popular, setPopular] = useState<PopularVideoData>([]);
-
+  const [headerHeight, setHeaderHeight] = useState(0);
   // eslint-disable-next-line camelcase
   const emailVerified = user?.userData?.email_verified;
   useLayoutEffect(() => {
@@ -254,7 +254,12 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         elevation: 0,
       },
       headerLeft: function render() {
-        return <View style={{ flex: 1 }} />;
+        return (
+          <View
+            onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height ?? 40)}
+            style={{ flex: 1 }}
+          />
+        );
       },
       headerRight: function render() {
         return (
@@ -336,12 +341,17 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       console.log({ popularTeaching: err });
     }
   };
-  const { sermons, sermonsLoaded } = useSermons();
-  const { recentSeries, recentSeriesLoaded, loadMore } = useRecentSeries();
+  const { sermons, sermonsLoaded } = useSermons(
+    10,
+    pageConfig?.hideRecentTeaching
+  );
+  const { recentSeries, recentSeriesLoaded, loadMore } = useRecentSeries(
+    6,
+    pageConfig?.hideSeries
+  );
+  const [highlightsLoaded, setHighlightsLoaded] = useState(false);
   useEffect(() => {
     if (pageConfig && !pageConfig?.hidePopularSeries) loadPopularSeries();
-    if (pageConfig && !pageConfig?.hideSeries) null;
-    if (pageConfig && !pageConfig?.hideRecentTeaching) null;
     if (pageConfig && !pageConfig?.hideTeachersCarousel) loadSpeakers();
     if (pageConfig && !pageConfig?.hideTeachingByTopic) loadCustomPlaylists();
     if (pageConfig && !pageConfig?.hidePopularTeachings) getPopularTeaching();
@@ -413,277 +423,267 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     if (!a?.viewCount || !b?.viewCount) return -1;
     return parseInt(b.viewCount, 10) - parseInt(a.viewCount, 10);
   }
-  // if (
-  //   recentSeries.loading ||
-  //   speakers.loading ||
-  //   customPlaylists.loading ||
-  //   popularSeries.loading
-  // ) {
-  //   return (
-  //     <View
-  //       style={{
-  //         flexGrow: 1,
-  //         justifyContent: 'center',
-  //         alignItems: 'center',
-  //       }}
-  //     >
-  //       <ActivityIndicator />
-  //     </View>
-  //   );
-  // }
-  const finishedLoading = useMemo(() => sermonsLoaded, [sermonsLoaded]);
-  if (!finishedLoading) {
-    return (
-      <View
-        style={{
-          flexGrow: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <ActivityIndicator />
-      </View>
-    );
-  }
   return (
-    <ScrollView
-      style={style.content}
-      bounces={bounce}
-      onScroll={(e) => handleScroll(e)}
-      scrollEventThrottle={6}
-    >
-      {pageConfig && !pageConfig?.hideSeries ? (
-        <View style={style.categorySection}>
-          <SideSwipe
-            contentContainerStyle={style.horizontalListContentContainer}
-            data={recentSeries as Array<Series>}
-            itemWidth={
-              isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10
-            }
-            onEndReachedThreshold={0.2}
-            onEndReached={loadMore}
-            threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
-            style={{ width: '100%' }}
-            contentOffset={contentOffset}
-            useVelocityForIndex
-            renderItem={({ item, itemIndex, animatedValue }) =>
-              renderSeriesSwipeItem(item, itemIndex, animatedValue)
-            }
-          />
-          <AllButton
-            onPress={() => {
-              debounce(() => navigation.push('AllSeriesScreen'));
-            }}
-          >
-            All series
-          </AllButton>
+    <>
+      {!recentSeriesLoaded || !sermonsLoaded || !highlightsLoaded ? (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            justifyContent: 'center',
+
+            height: Dimensions.get('window').height - headerHeight - 90,
+            width: Dimensions.get('window').width,
+            zIndex: 10000,
+            backgroundColor: '#000',
+          }}
+        >
+          <ActivityIndicator />
         </View>
       ) : null}
-      {pageConfig && !pageConfig?.hideRecentTeaching ? (
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Recent Teaching</Text>
-          <View style={style.listContentContainer}>
-            {sermons.map((teaching: any) => (
-              <TeachingListItem
-                key={teaching.id}
-                teaching={teaching}
-                handlePress={() =>
-                  debounce(() =>
-                    navigation.push('SermonLandingScreen', {
-                      item: teaching,
-                    })
-                  )
-                }
-              />
-            ))}
+
+      <ScrollView
+        style={style.content}
+        bounces={bounce}
+        onScroll={(e) => handleScroll(e)}
+        scrollEventThrottle={6}
+      >
+        {pageConfig && !pageConfig?.hideSeries ? (
+          <View style={style.categorySection}>
+            <SideSwipe
+              contentContainerStyle={style.horizontalListContentContainer}
+              data={recentSeries as Array<Series>}
+              itemWidth={
+                isTablet ? 0.33 * screenWidth + 10 : 0.7867 * screenWidth + 10
+              }
+              onEndReachedThreshold={0.2}
+              onEndReached={loadMore}
+              threshold={isTablet ? 0.25 * screenWidth : 0.38 * screenWidth}
+              style={{ width: '100%' }}
+              contentOffset={contentOffset}
+              useVelocityForIndex
+              renderItem={({ item, itemIndex, animatedValue }) =>
+                renderSeriesSwipeItem(item, itemIndex, animatedValue)
+              }
+            />
+            <AllButton
+              onPress={() => {
+                debounce(() => navigation.push('AllSeriesScreen'));
+              }}
+            >
+              All series
+            </AllButton>
           </View>
-          <AllButton
-            onPress={() => {
-              debounce(() => navigation.push('AllSermonsScreen'));
-            }}
-          >
-            All sermons
-          </AllButton>
-        </View>
-      ) : null}
-      {pageConfig && !pageConfig?.hideHighlightsCarousel ? (
-        <HighlightCarousel />
-      ) : null}
-      {pageConfig && !pageConfig?.hidePopularTeachings ? (
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Popular Teaching</Text>
-          <View style={style.listContentContainer}>
-            {popular
-              .sort((a, b) => sortByViews(a, b))
-              .slice(0, 6)
-              .map((video) => (
+        ) : null}
+        {pageConfig && !pageConfig?.hideRecentTeaching ? (
+          <View style={style.categorySection}>
+            <Text style={style.categoryTitle}>Recent Teaching</Text>
+            <View style={style.listContentContainer}>
+              {sermons.map((teaching: any) => (
                 <TeachingListItem
-                  key={video?.id}
-                  teaching={video}
+                  key={teaching.id}
+                  teaching={teaching}
                   handlePress={() =>
                     debounce(() =>
-                      navigation.push('SermonLandingScreen', { item: video })
+                      navigation.push('SermonLandingScreen', {
+                        item: teaching,
+                      })
                     )
                   }
                 />
               ))}
-          </View>
-          <AllButton
-            onPress={() =>
-              navigation.navigate('PopularTeachingScreen', {
-                popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
-              })
-            }
-          >
-            More popular teaching
-          </AllButton>
-        </View>
-      ) : null}
-      {pageConfig && !pageConfig?.hidePopularSeries ? (
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Popular Series</Text>
-          <Text style={style.highlightsText}>
-            A collection of our favourite and most popular series
-          </Text>
-          {customPlaylists.loading && (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
+            </View>
+            <AllButton
+              onPress={() => {
+                debounce(() => navigation.push('AllSermonsScreen'));
               }}
             >
-              <ActivityIndicator />
-            </View>
-          )}
-          <View style={style.seriesListContainer}>
-            {popularSeries?.items?.map((s: any, key: any) => {
-              if (key < 4)
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    navigation={navigation as any}
-                    seriesData={s}
-                  />
-                );
-              return null;
-            })}
+              All sermons
+            </AllButton>
           </View>
-          <AllButton
-            onPress={() =>
-              debounce(() =>
-                navigation.push('AllSeriesScreen', { popularSeries: true })
-              )
-            }
-          >
-            More Popular Series
-          </AllButton>
-        </View>
-      ) : null}
-      {pageConfig && !pageConfig?.hideTeachingByTopic ? (
-        <View style={style.categorySection}>
-          <Text style={style.categoryTitle}>Teaching by Topic</Text>
-          <Text style={style.highlightsText}>
-            A collection of our favourite and most popular teachings by topic
-          </Text>
-          {customPlaylists.loading && (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+        ) : null}
+        {pageConfig && !pageConfig?.hideHighlightsCarousel ? (
+          <HighlightCarousel
+            setLoaded={(value) => setHighlightsLoaded(value)}
+          />
+        ) : null}
+        {pageConfig && !pageConfig?.hidePopularTeachings ? (
+          <View style={style.categorySection}>
+            <Text style={style.categoryTitle}>Popular Teaching</Text>
+            <View style={style.listContentContainer}>
+              {popular
+                .sort((a, b) => sortByViews(a, b))
+                .slice(0, 6)
+                .map((video) => (
+                  <TeachingListItem
+                    key={video?.id}
+                    teaching={video}
+                    handlePress={() =>
+                      debounce(() =>
+                        navigation.push('SermonLandingScreen', { item: video })
+                      )
+                    }
+                  />
+                ))}
+            </View>
+            <AllButton
+              onPress={() =>
+                navigation.navigate('PopularTeachingScreen', {
+                  popularTeaching: popular.sort((a, b) => sortByViews(a, b)),
+                })
+              }
             >
-              <ActivityIndicator />
-            </View>
-          )}
-          <View style={style.seriesListContainer}>
-            {customPlaylists?.items?.map((s: any, key: any) => {
-              if (key < 4)
-                return (
-                  <SeriesItem
-                    key={s.id}
-                    customPlaylist
-                    navigation={navigation as any}
-                    seriesData={s}
-                  />
-                );
-              return null;
-            })}
+              More popular teaching
+            </AllButton>
           </View>
-          <AllButton
-            onPress={() =>
-              debounce(() =>
-                navigation.push('AllSeriesScreen', { customPlaylists: true })
-              )
-            }
-          >
-            More Teaching Topics
-          </AllButton>
-        </View>
-      ) : null}
-      {pageConfig && !pageConfig?.hideSuggestedVideos ? (
-        <SuggestedCarousel />
-      ) : null}
-      {pageConfig && !pageConfig?.hideTeachersCarousel ? (
-        <View style={style.categorySectionLast}>
-          <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
-            Teachers
-          </Text>
-          {!speakers.loading ? (
-            <>
-              <FlatList
-                contentContainerStyle={[
-                  style.horizontalListContentContainer,
-                  { marginBottom: 2 },
-                ]}
-                horizontal
-                data={speakers.items}
-                renderItem={({ item }: any) =>
-                  !item.hidden ? (
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate('TeacherProfile', {
-                          staff: {
-                            ...item,
-                            uri: item.image,
-                            idFromTeaching: item.name,
-                          },
-                        })
-                      }
-                    >
-                      <View style={style.teacherContainer}>
-                        <View
-                          style={[
-                            style.teacherThumbnailContainer,
-                            {
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            },
-                          ]}
-                        >
-                          <TeacherListPicture item={item} />
-                        </View>
-                        <Text style={style.teacherDetail1}>{item.name}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ) : null
-                }
-                ListFooterComponent={() =>
-                  speakers.loading ? <ActivityIndicator /> : null
-                }
-              />
-              <AllButton
-                onPress={() => debounce(() => navigation.push('TeacherList'))}
+        ) : null}
+        {pageConfig && !pageConfig?.hidePopularSeries ? (
+          <View style={style.categorySection}>
+            <Text style={style.categoryTitle}>Popular Series</Text>
+            <Text style={style.highlightsText}>
+              A collection of our favourite and most popular series
+            </Text>
+            {customPlaylists.loading && (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
               >
-                All teachers
-              </AllButton>
-            </>
-          ) : (
-            <ActivityIndicator />
-          )}
-        </View>
-      ) : null}
-    </ScrollView>
+                <ActivityIndicator />
+              </View>
+            )}
+            <View style={style.seriesListContainer}>
+              {popularSeries?.items?.map((s: any, key: any) => {
+                if (key < 4)
+                  return (
+                    <SeriesItem
+                      key={s.id}
+                      navigation={navigation as any}
+                      seriesData={s}
+                    />
+                  );
+                return null;
+              })}
+            </View>
+            <AllButton
+              onPress={() =>
+                debounce(() =>
+                  navigation.push('AllSeriesScreen', { popularSeries: true })
+                )
+              }
+            >
+              More Popular Series
+            </AllButton>
+          </View>
+        ) : null}
+        {pageConfig && !pageConfig?.hideTeachingByTopic ? (
+          <View style={style.categorySection}>
+            <Text style={style.categoryTitle}>Teaching by Topic</Text>
+            <Text style={style.highlightsText}>
+              A collection of our favourite and most popular teachings by topic
+            </Text>
+            {customPlaylists.loading && (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <ActivityIndicator />
+              </View>
+            )}
+            <View style={style.seriesListContainer}>
+              {customPlaylists?.items?.map((s: any, key: any) => {
+                if (key < 4)
+                  return (
+                    <SeriesItem
+                      key={s.id}
+                      customPlaylist
+                      navigation={navigation as any}
+                      seriesData={s}
+                    />
+                  );
+                return null;
+              })}
+            </View>
+            <AllButton
+              onPress={() =>
+                debounce(() =>
+                  navigation.push('AllSeriesScreen', { customPlaylists: true })
+                )
+              }
+            >
+              More Teaching Topics
+            </AllButton>
+          </View>
+        ) : null}
+        {pageConfig && !pageConfig?.hideSuggestedVideos ? (
+          <SuggestedCarousel />
+        ) : null}
+        {pageConfig && !pageConfig?.hideTeachersCarousel ? (
+          <View style={style.categorySectionLast}>
+            <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
+              Teachers
+            </Text>
+            {!speakers.loading ? (
+              <>
+                <FlatList
+                  contentContainerStyle={[
+                    style.horizontalListContentContainer,
+                    { marginBottom: 2 },
+                  ]}
+                  horizontal
+                  data={speakers.items}
+                  renderItem={({ item }: any) =>
+                    !item.hidden ? (
+                      <TouchableOpacity
+                        onPress={() =>
+                          navigation.navigate('TeacherProfile', {
+                            staff: {
+                              ...item,
+                              uri: item.image,
+                              idFromTeaching: item.name,
+                            },
+                          })
+                        }
+                      >
+                        <View style={style.teacherContainer}>
+                          <View
+                            style={[
+                              style.teacherThumbnailContainer,
+                              {
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                              },
+                            ]}
+                          >
+                            <TeacherListPicture item={item} />
+                          </View>
+                          <Text style={style.teacherDetail1}>{item.name}</Text>
+                        </View>
+                      </TouchableOpacity>
+                    ) : null
+                  }
+                  ListFooterComponent={() =>
+                    speakers.loading ? <ActivityIndicator /> : null
+                  }
+                />
+                <AllButton
+                  onPress={() => debounce(() => navigation.push('TeacherList'))}
+                >
+                  All teachers
+                </AllButton>
+              </>
+            ) : (
+              <ActivityIndicator />
+            )}
+          </View>
+        ) : null}
+      </ScrollView>
+    </>
   );
 }
