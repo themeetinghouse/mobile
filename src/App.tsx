@@ -2,7 +2,7 @@
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 import React, { useEffect, useState, createRef, useRef } from 'react';
-import { Platform, StatusBar, ViewStyle } from 'react-native';
+import { LogBox, Platform, StatusBar, ViewStyle } from 'react-native';
 
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
@@ -32,6 +32,8 @@ import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
 import AnimatedSplashScreen from './AnimatedSplashScreen';
+
+LogBox.ignoreAllLogs(true);
 
 initSentry({
   dsn: 'https://1063e7581bd847c686c2482a582c9e45@o390245.ingest.sentry.io/5397756',
