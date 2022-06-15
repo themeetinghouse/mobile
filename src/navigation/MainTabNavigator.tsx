@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useLayoutEffect, useState } from 'react';
 import {
   CardStyleInterpolators,
   createStackNavigator,
@@ -6,6 +6,7 @@ import {
 } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { locale, locales } from 'moment';
 import { Announcement } from '../../src/services/AnnouncementService';
 import LocationContext from '../../src/contexts/LocationContext';
 import UserContext from '../../src/contexts/UserContext';
@@ -25,7 +26,7 @@ import TabMoreImage from '../../assets/icons/tab-more.png';
 import TabMoreActiveImage from '../../assets/icons/tab-more-active.png';
 import EventDetailsScreen from '../screens/home/EventDetailsScreen';
 import AnnouncementDetailsScreen from '../screens/home/AnnouncementDetailsScreen';
-import MoreScreen from '../screens/more/MoreScreen';
+import MoreScreen, { getUserType } from '../screens/more/MoreScreen';
 import SeriesLandingScreen from '../screens/teaching/SeriesLandingScreen';
 import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
 import { HeaderStyle, Style, Theme } from '../Theme.style';
@@ -34,6 +35,7 @@ import { GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import { EventQueryResult } from '../services/EventsService';
 import ContentScreen from '../screens/content/ContentScreen';
+import useFallbackTabs, { TabItem } from './useFallbackTabs';
 
 const homeStyle = StyleSheet.create({
   container: {
@@ -258,7 +260,54 @@ export type TabNavigatorParamList = {
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();
 
+type JSONTabLinkItem = {
+  name: string;
+  visible: boolean;
+  groups: Array<string>;
+};
+
 export default function MainTabNavigator(): JSX.Element {
+  const [isLoading, setIsLoading] = useState(true);
+  const [tabItems, setTabItems] = useState<Array<TabItem>>([]);
+  const fallbackTabs = useFallbackTabs();
+
+  const loadMenu = async () => {
+    try {
+      const response: any = await fetch(
+        'https://www.themeetinghouse.com/static/app/data/tabs.json'
+      ); // this returns status 200 even when fail
+      if (response?.headers?.map?.['content-type'] === 'application/json') {
+        const jsonItems: Array<JSONTabLinkItem> = await response.json();
+        const groups: Array<string> = await getUserType();
+        groups.push('default');
+        const transformedItems: Array<TabItem> = jsonItems
+          .filter((linkItem) => {
+            for (let i = 0; i < linkItem.groups.length; i++) {
+              return groups.includes(linkItem.groups[i]);
+            }
+            return false;
+          })
+          .map((a: JSONTabLinkItem) => {
+            return {
+              name: a.name,
+              visible: a.visible,
+              groups: a.groups,
+            };
+          });
+
+        setTabItems(transformedItems);
+      }
+    } catch (err) {
+      console.log('Error occurred, falls back to default items');
+      setTabItems(fallbackTabs);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useLayoutEffect(() => {
+    loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   type TabBarProps = { focused: boolean };
 
   const media = useContext(MediaContext);
@@ -269,6 +318,21 @@ export default function MainTabNavigator(): JSX.Element {
       height: 45,
     },
   });
+
+  const getTabComponent = (name: string) => {
+    switch (name) {
+      case 'Home':
+        return HomeStack;
+      case 'Teaching':
+        return TeachingStack;
+      case 'Featured':
+        return FeaturedStack;
+      case 'More':
+        return MoreStack;
+      default:
+        return HomeStack;
+    }
+  };
 
   return (
     <Tab.Navigator
@@ -300,10 +364,19 @@ export default function MainTabNavigator(): JSX.Element {
         },
       })}
     >
-      <Tab.Screen name="Home" component={HomeStack} />
-      <Tab.Screen name="Teaching" component={TeachingStack} />
-      <Tab.Screen name="Featured" component={FeaturedStack} />
-      <Tab.Screen name="More" component={MoreStack} />
+      {!isLoading ? (
+        tabItems.map((item) => {
+          return item.visible ? (
+            <Tab.Screen
+              key={item.name}
+              name={item.name as keyof TabNavigatorParamList}
+              component={getTabComponent(item.name)}
+            />
+          ) : null;
+        })
+      ) : (
+        <Tab.Screen name="Home" component={HomeStack} />
+      )}
     </Tab.Navigator>
   );
 }

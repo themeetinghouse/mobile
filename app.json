@@ -32,7 +32,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.tmh.takenote",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "config": {
         "googleMapsApiKey": "AIzaSyDQi7MSFW1DumNy0zpUkyVWXA2NhhtjEvE",
         "usesNonExemptEncryption": false
@@ -55,7 +55,7 @@
       },
       "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
-      "versionCode": 20191,
+      "versionCode": 20192,
       "intentFilters": [
         {
           "action": "VIEW",
