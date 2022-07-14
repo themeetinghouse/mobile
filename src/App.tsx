@@ -1,9 +1,4 @@
 /* eslint-disable global-require */
-import AppLoading from 'expo-app-loading';
-import * as Font from 'expo-font';
-import React, { useEffect, useState, createRef, useRef } from 'react';
-import { LogBox, Platform, StatusBar, ViewStyle } from 'react-native';
-
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
 import {
@@ -11,27 +6,37 @@ import {
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import * as SecureStore from 'expo-secure-store';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { init as initSentry } from 'sentry-expo';
-import * as Notifications from 'expo-notifications';
-import * as Constants from 'expo-constants';
 import { Subscription } from '@unimodules/core';
 import { Analytics } from 'aws-amplify';
-import { registerRootComponent } from 'expo';
+import Application from 'expo-application';
+import * as Constants from 'expo-constants';
+import * as Font from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import { DevicePushToken } from 'expo-notifications';
-import { InitialProps } from 'expo/build/launch/withExpoRoot.types';
+import * as SecureStore from 'expo-secure-store';
+import * as SplashScreen from 'expo-splash-screen';
+import React, {
+  createRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { LogBox, Platform, StatusBar, ViewStyle } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { init as initSentry } from 'sentry-expo';
+import AnimatedSplashScreen from './AnimatedSplashScreen';
+import ActivityIndicator from './components/ActivityIndicator';
 import MiniPlayer from './components/teaching/MiniPlayer';
-import { version } from '../version';
-import UserContext, { UserData, TMHCognitoUser } from './contexts/UserContext';
 import CommentContext, { CommentContextType } from './contexts/CommentContext';
+import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
-import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import MediaContext, { MediaData } from './contexts/MediaContext';
+import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
+import UserContext, { TMHCognitoUser, UserData } from './contexts/UserContext';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
-import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
-import AnimatedSplashScreen from './AnimatedSplashScreen';
 
 LogBox.ignoreAllLogs(true);
 
@@ -40,7 +45,10 @@ initSentry({
   enableInExpoDevelopment: true,
   debug: false,
   environment: 'prod',
-  release: version.git,
+  release:
+    Application?.nativeApplicationVersion ??
+    `-${Application?.nativeBuildVersion}` ??
+    '',
 });
 Amplify.configure({
   aws_project_region: 'us-east-1',
@@ -75,7 +83,7 @@ Amplify.configure({
   aws_user_files_s3_bucket_region: 'us-east-1',
 });
 
-interface Props {
+export interface Props {
   skipLoadingScreen?: boolean;
 }
 
@@ -87,23 +95,7 @@ const CustomTheme = {
   },
 };
 
-async function loadResourcesAsync() {
-  await Promise.all([
-    /* Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
-    ]), */
-    Font.loadAsync({
-      'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
-      'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
-      'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
-      'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
-      'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
-    }),
-  ]);
-}
-
-function App({ skipLoadingScreen }: Props): JSX.Element {
+export function App({ skipLoadingScreen }: Props): JSX.Element {
   const [isLoadingComplete, setLoadingComplete] = useState(false);
   const [userData, setUserData] = useState<UserData>(null);
   const [locationData, setLocationData] = useState<LocationData>(null);
@@ -124,6 +116,26 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
   const notificationListener = useRef() as React.MutableRefObject<Subscription>;
 
   const navRef = createRef<NavigationContainerRef>();
+
+  async function loadResourcesAsync() {
+    await SplashScreen.preventAutoHideAsync();
+    await Promise.all([
+      /* Asset.loadAsync([
+      require('./assets/images/robot-dev.png'),
+      require('./assets/images/robot-prod.png'),
+    ]), */
+
+      Font.loadAsync({
+        'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
+        'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
+        'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
+        'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
+        'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
+      }),
+    ]);
+    setLoadingComplete(true);
+  }
+
   async function registerForPushNotificationsAsync(): Promise<DevicePushToken | null> {
     let token;
     if (Constants.default.isDevice) {
@@ -189,24 +201,6 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
     const screen = navRef.current?.getCurrentRoute()?.name;
     setCurrentScreen(screen ?? 'unknown');
   };
-  useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      if (token) setExpoPushToken(token);
-    });
-
-    // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener(
-        (notification: Notifications.Notification) => {
-          setNotification(notification);
-        }
-      );
-    return () => {
-      Notifications.removeNotificationSubscription(
-        notificationListener.current
-      );
-    };
-  }, []);
 
   useEffect(() => {
     const mapObj = (f: any) => (obj: any) =>
@@ -237,7 +231,6 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
         console.log(error);
       }
     };
-
     async function checkForUser() {
       try {
         const user: TMHCognitoUser = await Auth.currentAuthenticatedUser();
@@ -277,37 +270,71 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
         }
       }
     }
+    loadResourcesAsync();
     checkForUser();
+    registerForPushNotificationsAsync().then((token) => {
+      if (token) setExpoPushToken(token);
+    });
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(
+        (notification: Notifications.Notification) => {
+          setNotification(notification);
+        }
+      );
+
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+    };
   }, []);
+  const commentContext = useMemo(() => {
+    return { comments, setComments };
+  }, [comments]);
+  const displayContext = useMemo(() => {
+    return { display, setDisplay };
+  }, [display]);
+  const locationContext = useMemo(() => {
+    return { locationData, setLocationData };
+  }, [locationData]);
+  const userContext = useMemo(() => {
+    return { userData, setUserData };
+  }, [userData]);
+  const mediaContext = useMemo(() => {
+    return {
+      media,
+      setMedia,
+      setVideoTime,
+      closeAudio,
+      setAudioNull,
+      closeVideo,
+      setPlayerTypeNone,
+    };
+  }, [media]);
+  const onLayoutRootView = useCallback(async () => {
+    if (isLoadingComplete || skipLoadingScreen) {
+      // This tells the splash screen to hide immediately! If we call this after
+      // `setAppIsReady`, then we may see a blank screen while the app is
+      // loading its initial state and rendering its first pixels. So instead,
+      // we hide the splash screen once we know the root view has already
+      // performed layout.
+      await SplashScreen.hideAsync();
+    }
+  }, [skipLoadingScreen, isLoadingComplete]);
 
   if (!isLoadingComplete && !skipLoadingScreen) {
-    return (
-      <AppLoading
-        onError={(error) => {
-          console.log(error);
-        }}
-        startAsync={loadResourcesAsync}
-        onFinish={() => setLoadingComplete(true)}
-      />
-    );
+    return <ActivityIndicator />;
   }
+
   return (
     <AnimatedSplashScreen>
-      <CommentContext.Provider value={{ comments, setComments }}>
-        <MiniPlayerStyleContext.Provider value={{ display, setDisplay }}>
-          <MediaContext.Provider
-            value={{
-              media,
-              setMedia,
-              setVideoTime,
-              closeAudio,
-              setAudioNull,
-              closeVideo,
-              setPlayerTypeNone,
-            }}
-          >
-            <LocationContext.Provider value={{ locationData, setLocationData }}>
-              <UserContext.Provider value={{ userData, setUserData }}>
+      <CommentContext.Provider value={commentContext}>
+        <MiniPlayerStyleContext.Provider value={displayContext}>
+          <MediaContext.Provider value={mediaContext}>
+            <LocationContext.Provider value={locationContext}>
+              <UserContext.Provider value={userContext}>
                 <SafeAreaProvider style={{ backgroundColor: 'black' }}>
                   {Platform.OS === 'ios' && (
                     <StatusBar animated barStyle="light-content" />
@@ -331,5 +358,3 @@ function App({ skipLoadingScreen }: Props): JSX.Element {
     </AnimatedSplashScreen>
   );
 }
-
-registerRootComponent<InitialProps & { skipLoadingScreen: boolean }>(App);
