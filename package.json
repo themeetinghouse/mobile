@@ -70,7 +70,7 @@
     "react-native-keyboard-aware-scroll-view": "^0.9.2",
     "react-native-maps": "0.30.2",
     "react-native-open-maps": "^0.3.5",
-    "react-native-reanimated": "~2.8.0",
+    "react-native-reanimated": "~2.10.0",
     "react-native-safe-area-context": "4.2.4",
     "react-native-screens": "~3.11.1",
     "react-native-sideswipe": "^1.5.0",
