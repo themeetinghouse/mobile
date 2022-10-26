@@ -13,7 +13,7 @@ export interface Location {
   serviceTimes: string[];
 }
 
-const locations: { [key: string]: string } = {
+export const locations: { [key: string]: string } = {
   alliston: 'Alliston',
   sandbanks: 'Sandbanks',
   ancaster: 'Ancaster',

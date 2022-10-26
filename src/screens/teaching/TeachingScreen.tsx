@@ -36,7 +36,7 @@ import SeriesService, {
   LoadSeriesListData,
   SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
-import SpeakersService from '../../services/SpeakersService';
+import StaffDirectoryService from '../../services/StaffDirectoryService';
 import loadSomeAsync from '../../utils/loading';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import UserContext from '../../contexts/UserContext';
@@ -45,6 +45,7 @@ import {
   GetVideoByVideoTypeQueryVariables,
   GetVideoByVideoTypeQuery,
   Series,
+  Speaker,
 } from '../../services/API';
 import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
@@ -287,7 +288,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   }, [navigation, emailVerified]);
 
   const loadSpeakers = async () => {
-    loadSomeAsync(SpeakersService.loadSpeakersList, speakers, setSpeakers);
+    loadSomeAsync(
+      StaffDirectoryService.loadSpeakersList,
+      speakers,
+      setSpeakers
+    );
   };
 
   const loadCustomPlaylists = async () => {
@@ -306,8 +311,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     const data = await res.json();
     // TODO: does this need typing?
     const params = data?.page?.content
-      ?.filter((a) => a?.minViews)
-      .find((b) => b.header1 === 'Popular Teaching');
+      ?.filter((a: any) => a?.minViews)
+      .find((b: any) => b.header1 === 'Popular Teaching');
     return params;
   };
 
@@ -369,7 +374,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const contentOffset =
     (screenWidth - (style.seriesThumbnailContainer.width + 10)) / 2;
 
-  const getSeriesDate = (series: any) => {
+  const getSeriesDate = (series: Series) => {
     return moment(series.startDate || moment()).format('YYYY');
   };
 
@@ -458,31 +463,29 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   return (
     <>
       {!tripTimeout ? (
-        <>
-          {!recentSeriesLoaded ||
-          !sermonsLoaded ||
-          !highlightsLoaded ||
-          !customPlaylistsLoaded ||
-          !popularSeriesLoaded ||
-          !popularTeachingsLoaded ||
-          !speakersLoaded ? (
-            <View
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                justifyContent: 'center',
+        !recentSeriesLoaded ||
+        !sermonsLoaded ||
+        !highlightsLoaded ||
+        !customPlaylistsLoaded ||
+        !popularSeriesLoaded ||
+        !popularTeachingsLoaded ||
+        !speakersLoaded ? (
+          <View
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              justifyContent: 'center',
 
-                height: screenHeight,
-                width: Dimensions.get('window').width,
-                zIndex: 10000,
-                backgroundColor: '#000',
-              }}
-            >
-              <ActivityIndicator />
-            </View>
-          ) : null}
-        </>
+              height: screenHeight,
+              width: Dimensions.get('window').width,
+              zIndex: 10000,
+              backgroundColor: '#000',
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        ) : null
       ) : null}
       <ScrollView
         style={style.content}
@@ -521,9 +524,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           <View style={style.categorySection}>
             <Text style={style.categoryTitle}>Recent Teaching</Text>
             <View style={style.listContentContainer}>
-              {sermons.map((teaching: any) => (
+              {sermons.map((teaching) => (
                 <TeachingListItem
-                  key={teaching.id}
+                  key={teaching?.id}
                   teaching={teaching}
                   handlePress={() =>
                     debounce(() =>
@@ -661,9 +664,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         {pageConfig && !pageConfig?.hideSuggestedVideos ? (
           <SuggestedCarousel />
         ) : null}
-        {pageConfig &&
-        !pageConfig?.hideTeachersCarousel &&
-        !speakers.loading ? (
+        {pageConfig && !pageConfig.hideTeachersCarousel && !speakers.loading ? (
           <View style={style.categorySectionLast}>
             <Text style={[style.categoryTitle, { marginBottom: 4 }]}>
               Teachers
@@ -676,14 +677,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               ]}
               horizontal
               data={speakers.items}
-              renderItem={({ item }: any) =>
-                !item.hidden ? (
+              renderItem={({ item }: any) => {
+                console.log({ item });
+                return !item.hidden ? (
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate('TeacherProfile', {
                         staff: {
                           ...item,
-                          uri: item.image,
+                          image: item.image,
                           idFromTeaching: item.name,
                         },
                       })
@@ -704,9 +706,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                       <Text style={style.teacherDetail1}>{item.name}</Text>
                     </View>
                   </TouchableOpacity>
-                ) : null
-              }
-              ListFooterComponent={() =>
+                ) : null;
+              }}
+              ListFooterComponent={
                 speakers.loading ? <ActivityIndicator /> : null
               }
             />

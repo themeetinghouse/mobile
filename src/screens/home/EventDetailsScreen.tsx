@@ -126,7 +126,7 @@ export default function EventDetailsScreen({
   const [eventItem] = useState(route.params?.item);
   // Needed to check if app is in the background or foreground.
   const appState = useRef(AppState.currentState);
-  const [setAppStateVisible] = useState(appState.current);
+  const [, setAppStateVisible] = useState(appState.current);
   const [alerts, setAlerts] = useState<any>({ message: '' });
   const safeArea = useSafeAreaInsets();
   useLayoutEffect(() => {
@@ -315,10 +315,13 @@ export default function EventDetailsScreen({
   };
   /* This handles checking if app is in background or active */
   useEffect(() => {
-    AppState.addEventListener('change', handleAppStateChange);
+    const appStateListener = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
 
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      appStateListener.remove();
     };
   });
   /* If the app is in the background and an alert has been delivered, it will not show the alert until it is in the foreground. */

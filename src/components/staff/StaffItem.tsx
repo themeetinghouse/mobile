@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
+import { TMHPerson } from '../../../src/services/API';
 
 const style = StyleSheet.create({
   container: {
@@ -62,6 +63,7 @@ const style = StyleSheet.create({
     maxWidth: '65%',
     minWidth: '65%',
     color: 'white',
+    lineHeight: 16,
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: 12,
   },
@@ -81,24 +83,13 @@ const style = StyleSheet.create({
 });
 
 interface Props {
-  staff: {
-    FirstName: string;
-    LastName: string;
-    Email: string;
-    Position: string;
-    Phone: string;
-    sites: Array<string | null>;
-    Location: string | null;
-    Coordinator: boolean | null;
-    Teacher: boolean | null;
-    uri: string;
-  };
+  staff: TMHPerson;
 }
 
 function StaffItem({ staff }: Props): JSX.Element {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [isLoading, setIsLoading] = useState(true);
-  const [uri, setUri] = useState(staff.uri);
+  const [uri, setUri] = useState(staff.image);
   const uriError = () => {
     setUri(Theme.icons.white.user);
   };
@@ -156,21 +147,21 @@ function StaffItem({ staff }: Props): JSX.Element {
         {renderStaffImage()}
       </View>
       <View style={{ flexDirection: 'column' }}>
-        {staff.FirstName && staff.LastName ? (
+        {staff.firstName && staff.lastName ? (
           <Text testID="staff-name" style={style.Name}>
-            {staff.FirstName} {staff.LastName}
+            {staff.firstName} {staff.lastName}
           </Text>
         ) : null}
-        {staff.Position ? (
+        {staff.position ? (
           <Text testID="staff-position" style={style.Position}>
-            {staff.Position}
+            {staff.position}
           </Text>
         ) : null}
-        {staff.Teacher ? (
+        {staff.isTeacher === 'true' ? (
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('TeacherProfile', {
-                staff: { ...staff },
+                staff: staff,
               });
             }}
           >
@@ -180,19 +171,25 @@ function StaffItem({ staff }: Props): JSX.Element {
       </View>
       <View style={{ flexDirection: 'column', flex: 1 }}>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-          {staff.Phone ? (
+          {staff.phone ? (
             <TouchableOpacity
               testID="tel-btn"
-              onPress={() => Linking.openURL(`tel:${staff.Phone}`)}
+              onPress={() =>
+                Linking.openURL(
+                  `tel:${staff.phone}${
+                    staff?.extension ? `,${staff.extension}` : ''
+                  }`
+                )
+              }
               style={style.iconContainer}
             >
               <Image style={style.icon} source={Theme.icons.white.phone} />
             </TouchableOpacity>
           ) : null}
-          {staff.Email ? (
+          {staff.email ? (
             <TouchableOpacity
               testID="email-btn"
-              onPress={() => Linking.openURL(`mailto:${staff.Email}`)}
+              onPress={() => Linking.openURL(`mailto:${staff.email}`)}
               style={style.iconContainer}
             >
               <Image style={style.icon} source={Theme.icons.white.contact} />

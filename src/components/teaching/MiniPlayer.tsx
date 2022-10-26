@@ -103,6 +103,14 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
       'LocationSelectionScreen',
       'DateRangeSelectScreen',
       'SermonLandingScreen',
+      'StaffList',
+      'ParishTeam',
+      'TeacherList',
+      'TeacherProfile',
+      'HomeChurchScreen',
+      'HomeChurchMapScreen',
+      'AskAQuestion',
+      'AllEvents',
     ];
 
     if (bottomTabHidden.includes(currentScreen) || state.hideBottomNav) {

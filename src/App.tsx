@@ -1,12 +1,12 @@
 /* eslint-disable global-require */
 import { Auth } from '@aws-amplify/auth';
-import Amplify from '@aws-amplify/core';
+import { Amplify } from '@aws-amplify/core';
 import {
   DefaultTheme,
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 import { Analytics } from 'aws-amplify';
 import Application from 'expo-application';
 import * as Constants from 'expo-constants';
@@ -120,11 +120,6 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
   async function loadResourcesAsync() {
     await SplashScreen.preventAutoHideAsync();
     await Promise.all([
-      /* Asset.loadAsync([
-      require('./assets/images/robot-dev.png'),
-      require('./assets/images/robot-prod.png'),
-    ]), */
-
       Font.loadAsync({
         'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
         'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
@@ -134,6 +129,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
       }),
     ]);
     setLoadingComplete(true);
+    await SplashScreen.hideAsync();
   }
 
   async function registerForPushNotificationsAsync(): Promise<DevicePushToken | null> {

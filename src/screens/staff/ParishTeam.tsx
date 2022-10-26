@@ -6,6 +6,7 @@ import {
   SectionList,
   TouchableOpacity,
   Image,
+  FlatList,
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -17,6 +18,7 @@ import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import LocationContext from '../../contexts/LocationContext';
 import ActivityIndicator from '../../components/ActivityIndicator';
+import { TMHPerson } from '../../../src/services/API';
 
 const style = StyleSheet.create({
   content: {
@@ -36,7 +38,7 @@ interface Params {
 
 export default function ParishTeam({ navigation }: Params): JSX.Element {
   const location = useContext(LocationContext);
-  const [staffByLocation, setStaffByLocation] = useState([]);
+  const [staffByLocation, setStaffByLocation] = useState<TMHPerson[]>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -90,15 +92,15 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
     const loadStaff = async () => {
       setIsLoading(true);
       const staffByLocationResults =
-        await StaffDirectoryService.loadStaffListByLocation(location as any);
+        await StaffDirectoryService.loadStaffListByLocation(
+          location?.locationData?.locationId ?? ''
+        );
       setStaffByLocation(staffByLocationResults);
       setIsLoading(false);
     };
-    loadStaff();
-
-    return () => {
-      console.log('Cleanup');
-    };
+    if (location?.locationData?.locationId) {
+      loadStaff();
+    }
   }, [location]);
 
   return (
@@ -116,74 +118,50 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
           <ActivityIndicator animating={isLoading} />
         </View>
       ) : null}
-      <SectionList
-        stickySectionHeadersEnabled={false}
-        sections={staffByLocation}
+
+      <FlatList
+        ListHeaderComponentStyle={style.header}
         ListHeaderComponent={
           <View style={style.content}>
             <SearchBar
               style={style.searchBar}
               searchText={searchText}
               handleTextChanged={(newStr) => setSearchText(newStr)}
-              placeholderLabel="Search by name"
+              placeholderLabel="Search by name..."
             />
+            <Text
+              style={{
+                marginBottom: 4,
+                color: '#646469',
+                fontSize: 14,
+
+                fontFamily: Theme.fonts.fontFamilyBold,
+              }}
+            >
+              Your Home Parish
+            </Text>
+            <View style={{ flexDirection: 'row' }}>
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 24,
+                  lineHeight: 32,
+                  fontFamily: Theme.fonts.fontFamilyBold,
+                }}
+              >
+                {location?.locationData?.locationName}
+              </Text>
+            </View>
           </View>
         }
-        renderSectionHeader={({ section: { title, data } }) => {
-          if (
-            data.filter(
-              (a) =>
-                a.LastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                a.FirstName.toLowerCase().includes(searchText.toLowerCase())
-            ).length > 0
-          ) {
-            return (
-              <>
-                <Text
-                  style={{
-                    left: 16,
-                    marginBottom: 4,
-                    color: '#646469',
-                    fontSize: 14,
-                    lineHeight: 18,
-                    fontFamily: Theme.fonts.fontFamilyBold,
-                  }}
-                >
-                  Your Home Parish
-                </Text>
-                <View style={{ flexDirection: 'row' }}>
-                  <Text
-                    style={{
-                      left: 16,
-                      color: 'white',
-                      fontSize: 24,
-                      lineHeight: 32,
-                      fontFamily: Theme.fonts.fontFamilyBold,
-                    }}
-                  >
-                    {title}
-                  </Text>
-                </View>
-              </>
-            );
-          }
-          return null; // no results message here
-        }}
-        renderSectionFooter={({ section: { data } }) => {
-          if (data.length === 0) return null;
-          return <View style={{ marginBottom: 15 }} />;
-        }}
-        renderItem={({ item }) => {
-          if (
-            item.FirstName.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.LastName.toLowerCase().includes(searchText.toLowerCase())
-          )
-            return <StaffItem staff={item} />;
-
-          return null;
-        }}
-        keyExtractor={(item: any) => item.FirstName + item.LastName}
-        progressViewOffset={300}
+        data={staffByLocation.filter(
+          (item) =>
+            item?.firstName?.toLowerCase().includes(searchText.toLowerCase()) ||
+            item?.lastName?.toLowerCase().includes(searchText.toLowerCase()) ||
+            searchText === ''
+        )}
+        renderItem={({ item }: any) => <StaffItem staff={item} />}
+        initialNumToRender={10}
       />
     </>
   );

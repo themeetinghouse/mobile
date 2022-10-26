@@ -1,288 +1,200 @@
-import SpeakersService from './SpeakersService';
+import { GraphQLResult } from '@aws-amplify/api';
+import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
+import { API } from 'aws-amplify';
+import {
+  tMHPersonByIsCoordinator,
+  tMHPersonByIsStaff,
+} from '../../src/graphql/queries';
+import {
+  TMHPerson,
+  TMHPersonByIsCoordinatorQuery,
+  TMHPersonByIsStaffQuery,
+  TMHPersonByIsTeacherQuery,
+} from './API';
+import { ListSpeakersQuery } from './API';
+import { listSpeakersQuery } from './queries';
 
-export type Coordinator = {
-  Coordinator: boolean | undefined | null;
-  Email: string;
-  FirstName: string;
-  LastName: string;
-  Position: string;
-  sites: Array<string>;
-  Teacher: boolean | null;
-  Location: string;
+export type loadSpeakersListData = {
+  items: NonNullable<ListSpeakersQuery['listSpeakers']>['items'];
+  nextToken: NonNullable<ListSpeakersQuery['listSpeakers']>['nextToken'];
+};
+
+type MapToLocation = {
+  title: string;
+  code: string;
+  locationID: string;
 };
 
 export default class StaffDirectoryService {
-  static mapToLocation(code: string): string {
+  static loadSpeakersList = async (
+    limit = 9999,
+    nextToken = null
+  ): Promise<loadSpeakersListData> => {
+    const speakersResult = (await API.graphql({
+      query: listSpeakersQuery,
+      variables: { limit, nextToken },
+      authMode: GRAPHQL_AUTH_MODE.API_KEY,
+    })) as GraphQLResult<ListSpeakersQuery>;
+
+    //const staff = await StaffDirectoryService.loadStaffList();
+    const speakersNext = speakersResult.data?.listSpeakers?.nextToken ?? '';
+    const speakersItems = speakersResult?.data?.listSpeakers?.items ?? [];
+    // speakersItems.map((speaker, index: number) => {
+    //   for (let x = 0; x < staff.length; x++) {
+    //     if (`${staff[x].firstName} ${staff[x].lastName}` === speaker?.name) {
+    //       //if (!speaker.hidden) console.log(speaker.name);
+    //     }
+    //   }
+    // });
+    return {
+      items: speakersItems.filter((a) => a?.videos?.items.length !== 0),
+      nextToken: speakersNext,
+    };
+  };
+  static mapToLocation(code: string): MapToLocation {
     switch (code) {
       case 'HMAN':
-        return 'Ancaster';
+        return { title: 'Ancaster', code: 'HMAN', locationID: 'ancaster' };
       case 'ALLI':
-        return 'Alliston';
+        return { title: 'Alliston', code: 'HMAN', locationID: 'alliston' };
       case 'BRAM':
-        return 'Brampton';
+        return { title: 'Brampton', code: 'BRAM', locationID: 'brampton' };
       case 'BRFD':
-        return 'Brantford';
+        return { title: 'Brantford', code: 'BRFD', locationID: 'brantford' };
       case 'BURL':
-        return 'Burlington';
+        return { title: 'Burlington', code: 'BURL', locationID: 'burlington' };
       case 'HMMT':
-        return 'Hamilton Mountain';
+        return {
+          title: 'Hamilton Mountain',
+          code: 'HMMT',
+          locationID: 'hamilton-mountain',
+        };
       case 'HMDT':
-        return 'Hamilton - Downtown';
+        return {
+          title: 'Hamilton - Downtown',
+          code: 'HMDT',
+          locationID: 'hamilton-downtown',
+        };
       case 'KIT':
-        return 'Kitchener';
+        return { title: 'Kitchener', code: 'KIT', locationID: 'kitchener' };
       case 'LOND':
-        return 'London';
+        return { title: 'London', code: 'LOND', locationID: 'london' };
       case 'NMKT':
-        return 'Newmarket';
+        return { title: 'Newmarket', code: 'NMKT', locationID: 'newmarket' };
       case 'OAKV':
-        return 'Oakville';
+        return { title: 'Oakville', code: 'OAKV', locationID: 'oakville' };
       case 'OTTA':
-        return 'Ottawa';
+        return { title: 'Ottawa', code: 'OTTA', locationID: 'ottawa' };
       case 'OWSN':
-        return 'Owen Sound';
+        return { title: 'Owen Sound', code: 'OWSN', locationID: 'owen-sound' };
       case 'PRSN':
-        return 'Parry Sound';
+        return {
+          title: 'Parry Sound',
+          code: 'PRSN',
+          locationID: 'parry-sound',
+        };
       case 'RHLL':
-        return 'Richmond Hill';
+        return {
+          title: 'Richmond Hill',
+          code: 'RHLL',
+          locationID: 'richmond-hill',
+        };
       case 'SAND':
-        return 'Sandbanks';
+        return { title: 'Sandbanks', code: 'SAND', locationID: 'Sandbanks' };
       case 'TODT':
-        return 'Toronto - Downtown';
+        return {
+          title: 'Toronto - Downtown',
+          code: 'TODT',
+          locationID: 'toronto-downtown',
+        };
       case 'TOBC':
-        return 'Toronto - East';
+        return {
+          title: 'Toronto - East',
+          code: 'TOBC',
+          locationID: 'toronto-east',
+        };
       case 'TOHP':
-        return 'Toronto - High Park';
+        return {
+          title: 'Toronto - High Park',
+          code: 'TOHP',
+          locationID: 'toronto-high-park',
+        };
       case 'TOUP':
-        return 'Toronto - Uptown';
+        return {
+          title: 'Toronto - Uptown',
+          code: 'TOUP',
+          locationID: 'toronto-uptown',
+        };
       case 'WAT':
-        return 'Waterloo';
+        return { title: 'Waterloo', code: 'WAT', locationID: 'waterloo' };
       default:
-        return 'unknown';
+        return { title: 'unknown', code: '', locationID: 'unknown' };
     }
   }
-
-  static parseTelephone = (tel: string): string | undefined => {
-    const telephone = tel.split(',')[0].replace(/\D/g, '');
-    const extension = tel.split(',')[1]
-      ? tel.split(',')[1].replace(/\D/g, '')
-      : '';
-    if (telephone && extension) return `${telephone},${extension}`;
-    return telephone;
+  static loadStaffTeachersList = async (): Promise<TMHPerson[]> => {
+    const staffData = (await API.graphql({
+      query: tMHPersonByIsStaff,
+      variables: { isTeacher: 'true', limit: 200 },
+      authMode: GRAPHQL_AUTH_MODE.API_KEY,
+    })) as GraphQLResult<TMHPersonByIsTeacherQuery>;
+    return staffData?.data?.TMHPersonByIsTeacher?.items as TMHPerson[];
   };
-
-  static loadStaffJson = async (): Promise<any> => {
-    try {
-      const getSiteData: any = await fetch(
-        `https://www.themeetinghouse.com/static/data/staff.json`
-      );
-      const pageContent = await getSiteData.json();
-      return pageContent.map((staff: any) => {
-        return {
-          ...staff,
-          Phone: StaffDirectoryService.parseTelephone(staff.Phone),
-        };
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  static loadStaffList = async (): Promise<any> => {
-    try {
-      const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly();
-      const staffJson: any = await StaffDirectoryService.loadStaffJson();
-      const staff: any = [];
-      staffJson.map((staffItem: any) => {
-        for (let x = 0; x < staffItem.sites.length; x++) {
-          if (
-            StaffDirectoryService.mapToLocation(staffItem.sites[x]) !==
-            'unknown'
-          ) {
-            staff.push({
-              ...staffItem,
-              Location: StaffDirectoryService.mapToLocation(staffItem.sites[x]),
-            });
-            break;
-          }
-          if (
-            x === staffItem.sites.length - 1 &&
-            StaffDirectoryService.mapToLocation(staffItem.sites[x]) ===
-              'unknown'
-          ) {
-            staff.push({
-              ...staffItem,
-              Location: StaffDirectoryService.mapToLocation(staffItem.sites[x]),
-            });
-          }
-        }
-      });
-      for (let i = 0; i < staff.length; i++) {
-        staff[i] = {
-          ...staff[i],
-          id: i.toString(),
-          uri: `https://themeetinghouse.com/cache/320/static/photos/staff/${staff[i].FirstName}_${staff[i].LastName}_app.jpg`,
-        };
-      }
-      let staffName = '';
-      for (let x = 0; x < staff.length; x++) {
-        for (let i = 0; i < listOfSpeakers.items.length; i++) {
-          staffName = `${staff[x].FirstName} ${staff[x].LastName}`;
-          if (staffName === listOfSpeakers.items[i].name)
-            staff[x] = { ...staff[x], Teacher: true };
-        }
-      }
-      return staff;
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   static loadStaffListByLocation = async (
-    selectedLocation: any | null
-  ): Promise<any> => {
-    // takes the users selected (location) parish
+    locationID: string
+  ): Promise<TMHPerson[]> => {
     try {
       const staff = await StaffDirectoryService.loadStaffList();
       const coordinators = await StaffDirectoryService.loadCoordinatorsList();
-      const sectionedList: any = [
-        { locationid: 'ancaster', code: 'HMAN', title: 'Ancaster', data: [] },
-        { locationid: 'alliston', code: 'ALLI', title: 'Alliston', data: [] },
-        { locationid: 'brampton', code: 'BRAM', title: 'Brampton', data: [] },
-        { locationid: 'brantford', code: 'BRFD', title: 'Brantford', data: [] },
-        {
-          locationid: 'burlington',
-          code: 'BURL',
-          title: 'Burlington',
-          data: [],
-        },
-        {
-          locationid: 'hamilton-mountain',
-          code: 'HMMT',
-          title: 'Hamilton Mountain',
-          data: [],
-        },
-        {
-          locationid: 'hamilton-downtown',
-          code: 'HMDT',
-          title: 'Hamilton - Downtown',
-          data: [],
-        },
-        { locationid: 'kitchener', code: 'KIT', title: 'Kitchener', data: [] },
-        { locationid: 'london', code: 'LOND', title: 'London', data: [] },
-        { locationid: 'newmarket', code: 'NMKT', title: 'Newmarket', data: [] },
-        { locationid: 'oakville', code: 'OAKV', title: 'Oakville', data: [] },
-        { locationid: 'ottawa', code: 'OTTA', title: 'Ottawa', data: [] },
-        {
-          locationid: 'owen-sound',
-          code: 'OWSN',
-          title: 'Owen Sound',
-          data: [],
-        },
-        {
-          locationid: 'parry-sound',
-          code: 'PRSN',
-          title: 'Parry Sound',
-          data: [],
-        },
-        {
-          locationid: 'richmond-hill',
-          code: 'RHLL',
-          title: 'Richmond Hill',
-          data: [],
-        },
-        { locationid: 'sandbanks', code: 'SAND', title: 'Sandbanks', data: [] },
-        {
-          locationid: 'toronto-downtown',
-          code: 'TODT',
-          title: 'Toronto - Downtown',
-          data: [],
-        },
-        {
-          locationid: 'toronto-east',
-          code: 'TOBC',
-          title: 'Toronto - East',
-          data: [],
-        },
-        {
-          locationid: 'toronto-high-park',
-          code: 'TOHP',
-          title: 'Toronto - High Park',
-          data: [],
-        },
-        {
-          locationid: 'toronto-uptown',
-          code: 'TOUP',
-          title: 'Toronto - Uptown',
-          data: [],
-        },
-        { locationid: 'waterloo', code: 'WAT', title: 'Waterloo', data: [] },
-      ].filter((a) => {
-        return a.locationid === selectedLocation?.locationData?.locationId;
-      });
-
-      const staffTeam = staff
-        .map((staffItem: any) => {
-          for (let x = 0; x < staffItem.sites.length; x++) {
-            for (let i = 0; i < sectionedList.length; i++) {
-              if (staffItem.sites[x] === sectionedList[i].code) {
-                return { ...staffItem, Location: sectionedList[i].title };
-              }
-              return null;
-            }
-          }
-        })
-        .filter((a: any) => a !== null)
-        .sort((a: any, b: any) => a.LastName.localeCompare(b.LastName));
-
-      const coordinatorTeam = coordinators
-        .map((coordinatorItem: Coordinator) => {
-          for (let x = 0; x < coordinatorItem.sites.length; x++) {
-            for (let i = 0; i < sectionedList.length; i++) {
-              if (coordinatorItem.sites[x] === sectionedList[i].code) {
-                return {
-                  ...coordinatorItem,
-                  Location: sectionedList[i].title,
-                  uri: `https://themeetinghouse.com/cache/320/static/photos/coordinators/${coordinatorItem.sites[x]}_${coordinatorItem.FirstName}_${coordinatorItem.LastName}_app.jpg`,
-                };
-              }
-              return null;
-            }
-          }
-        })
-        .filter((a: any) => a !== null)
-        .sort((a: any, b: any) => a.LastName.localeCompare(b.LastName));
-
-      sectionedList[0].data = [...staffTeam, ...coordinatorTeam];
-      const listOfSpeakers: any = await SpeakersService.loadSpeakersListOnly();
-      let staffName = '';
-      for (let x = 0; x < sectionedList[0].data.length; x++) {
-        for (let i = 0; i < listOfSpeakers.items.length; i++) {
-          staffName = `${sectionedList[0].data[x].FirstName} ${sectionedList[0].data[x].LastName}`;
-          if (staffName === listOfSpeakers.items[i].name)
-            sectionedList[0].data[x] = {
-              ...sectionedList[0].data[x],
-              Teacher: true,
-            };
+      const filteredByLocation = [...staff, ...coordinators].filter(
+        (person) => {
+          const personSite =
+            person.sites?.find((site) => {
+              return this.mapToLocation(site ?? '').locationID !== 'unknown';
+            }) ?? '';
+          return this.mapToLocation(personSite).locationID === locationID;
         }
-      }
-      return sectionedList;
+      );
+      return filteredByLocation;
     } catch (error) {
-      console.log(error);
+      return [];
+    }
+  };
+  static loadStaffList = async (): Promise<TMHPerson[]> => {
+    try {
+      const staffData = (await API.graphql({
+        query: tMHPersonByIsStaff,
+        variables: { isStaff: 'true', limit: 200 },
+        authMode: GRAPHQL_AUTH_MODE.API_KEY,
+      })) as GraphQLResult<TMHPersonByIsStaffQuery>;
+      const staff =
+        (staffData?.data?.TMHPersonByIsStaff?.items as TMHPerson[]) ?? [];
+      return staff.sort((personA, personB) =>
+        (personA?.lastName ?? '').localeCompare(personB?.lastName ?? '')
+      );
+    } catch (error) {
+      console.error('There was an error loading staff.');
+      console.log({ error });
+      return [];
     }
   };
 
-  static loadCoordinatorsList = async (): Promise<any> => {
+  static loadCoordinatorsList = async (): Promise<TMHPerson[]> => {
     try {
-      const getSiteData: any = await fetch(
-        `https://www.themeetinghouse.com/static/data/coordinators.json`
+      const coordinatorData = (await API.graphql({
+        query: tMHPersonByIsCoordinator,
+        variables: { isCoordinator: 'true', limit: 200 },
+        authMode: GRAPHQL_AUTH_MODE.API_KEY,
+      })) as GraphQLResult<TMHPersonByIsCoordinatorQuery>;
+      const coordinators =
+        (coordinatorData?.data?.TMHPersonByIsCoordinator
+          ?.items as TMHPerson[]) ?? [];
+      return coordinators.sort((personA, personB) =>
+        (personA?.lastName ?? '').localeCompare(personB?.lastName ?? '')
       );
-      const pageContent = await getSiteData.json();
-      const transformed = pageContent.map((coordinator: any) => {
-        return { ...coordinator, Coordinator: true };
-      });
-      return transformed;
     } catch (error) {
-      console.log(error);
+      console.error('There was an error loading coordinators.');
+      console.log({ error });
+      return [];
     }
   };
 }
