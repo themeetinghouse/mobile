@@ -1,3 +1,127 @@
+export const getSpeaker = /* GraphQL */ `
+  query GetSpeaker($id: ID!) {
+    getSpeaker(id: $id) {
+      id
+      name
+      image
+      videos(limit: 9999) {
+        items {
+          id
+          video {
+            publishedDate
+            description
+            audioURL
+            YoutubeIdent
+            id
+            episodeTitle
+            episodeNumber
+            seriesTitle
+            Youtube {
+              snippet {
+                thumbnails {
+                  default {
+                    url
+                  }
+                  medium {
+                    url
+                  }
+                  high {
+                    url
+                  }
+                  standard {
+                    url
+                  }
+                  maxres {
+                    url
+                  }
+                }
+              }
+              contentDetails {
+                videoId
+              }
+            }
+          }
+        }
+      }
+      hidden
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const tMHPersonByIsCoordinator = /* GraphQL */ `
+  query TMHPersonByIsCoordinator(
+    $isCoordinator: String!
+    $sortDirection: ModelSortDirection
+    $filter: ModelTMHPersonFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TMHPersonByIsCoordinator(
+      isCoordinator: $isCoordinator
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        email
+        firstName
+        lastName
+        image
+        phone
+        extension
+        sites
+        position
+        isTeacher
+        isStaff
+        isCoordinator
+        isOverseer
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
+export const tMHPersonByIsStaff = /* GraphQL */ `
+  query TMHPersonByIsStaff(
+    $isStaff: String!
+    $sortDirection: ModelSortDirection
+    $filter: ModelTMHPersonFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    TMHPersonByIsStaff(
+      isStaff: $isStaff
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        email
+        firstName
+        lastName
+        image
+        phone
+        extension
+        sites
+        position
+        isTeacher
+        isStaff
+        isCoordinator
+        isOverseer
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const popularTeachingQuery = `query GetVideoByVideoType(
     $videoTypes: String!
     $publishedDate: ModelStringKeyConditionInput

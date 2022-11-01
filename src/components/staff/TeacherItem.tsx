@@ -164,24 +164,24 @@ function TeacherItem({ teacher }: Props): JSX.Element {
             </Text>
           ) : null}
 
-          <Text style={style.Position}>{teacher.Position ?? 'Friend'}</Text>
+          <Text style={style.Position}>{teacher.position ?? 'Friend'}</Text>
           <Text style={style.footerText}>View Teaching</Text>
         </View>
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            {teacher.Phone ? (
+            {teacher.phone ? (
               <TouchableOpacity
                 testID="tel-btn"
-                onPress={() => Linking.openURL(`tel:${teacher.Phone}`)}
+                onPress={() => Linking.openURL(`tel:${teacher.phone}`)}
                 style={style.iconContainer}
               >
                 <Image style={style.icon} source={Theme.icons.white.phone} />
               </TouchableOpacity>
             ) : null}
-            {teacher.Email ? (
+            {teacher.email ? (
               <TouchableOpacity
                 testID="email-btn"
-                onPress={() => Linking.openURL(`mailto:${teacher.Email}`)}
+                onPress={() => Linking.openURL(`mailto:${teacher.email}`)}
                 style={style.iconContainer}
               >
                 <Image style={style.icon} source={Theme.icons.white.contact} />

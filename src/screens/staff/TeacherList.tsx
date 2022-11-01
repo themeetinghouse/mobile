@@ -4,9 +4,9 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import TeacherItem from '../../components/staff/TeacherItem';
-import SpeakersService, {
+import StaffDirectoryService, {
   loadSpeakersListData,
-} from '../../services/SpeakersService';
+} from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import ActivityIndicator from '../../components/ActivityIndicator';
@@ -80,14 +80,11 @@ export default function TeacherList({ navigation }: Params): JSX.Element {
   useEffect(() => {
     const loadTeachers = async () => {
       setIsLoading(true);
-      const speakerData = await SpeakersService.loadSpeakersListOnly();
+      const speakerData = await StaffDirectoryService.loadSpeakersList();
       setSpeakers(speakerData.items);
       setIsLoading(false);
     };
     loadTeachers();
-    return () => {
-      console.log('Cleanup'); // cancel async stuff here
-    };
   }, []);
 
   return (

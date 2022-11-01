@@ -89,10 +89,13 @@ export default function useLiveStreams(reload: boolean) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [appStateVisible, liveStreams, preLive]);
   useEffect(() => {
-    AppState.addEventListener('change', handleAppStateChange);
+    const appStateListener = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
 
     return () => {
-      AppState.removeEventListener('change', handleAppStateChange);
+      appStateListener.remove();
     };
   }, [reload]);
   return { liveStreams, liveStreamsLoaded: isLoaded, live, preLive };

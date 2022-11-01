@@ -19,8 +19,10 @@ import { MainStackParamList } from '../../navigation/AppNavigator';
 import { runGraphQLQuery } from '../../services/ApiService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import AllButton from '../../components/buttons/AllButton';
-import StaffDirectoryService from '../../services/StaffDirectoryService';
-import { listSpeakersQuery } from '../../graphql/queries';
+import { getSpeaker, listSpeakersQuery } from '../../graphql/queries';
+import { API } from 'aws-amplify';
+import { GraphQLResult } from '@aws-amplify/api';
+import { GetSpeakerQuery, ListSpeakersQuery } from 'src/services/API';
 
 const style = StyleSheet.create({
   container: {
@@ -104,12 +106,7 @@ export default function TeacherProfile({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showCount, setShowCount] = useState(20);
-  const [nextToken, setNextToken] = useState(null);
   const [uri, setUri] = useState(route.params?.staff?.uri);
-  const [teacherData, setTeacherData] = useState({
-    Phone: '',
-    Email: '',
-  });
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -160,17 +157,21 @@ export default function TeacherProfile({
             }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-              {teacherData.Phone !== '' ? (
+              {route?.params?.staff?.phone !== '' ? (
                 <TouchableOpacity
-                  onPress={() => Linking.openURL(`tel:${teacherData.Phone}`)}
+                  onPress={() =>
+                    Linking.openURL(`tel:${route.params?.staff.phone}`)
+                  }
                   style={style.iconContainer}
                 >
                   <Image style={style.icon} source={Theme.icons.white.phone} />
                 </TouchableOpacity>
               ) : null}
-              {teacherData.Email !== '' ? (
+              {route?.params?.staff?.email !== '' ? (
                 <TouchableOpacity
-                  onPress={() => Linking.openURL(`mailto:${teacherData.Email}`)}
+                  onPress={() =>
+                    Linking.openURL(`mailto:${route.params?.staff.email}`)
+                  }
                   style={style.iconContainer}
                 >
                   <Image
@@ -184,59 +185,42 @@ export default function TeacherProfile({
         );
       },
     });
-  }, [navigation, teacherData.Email, teacherData.Phone]);
+  }, [navigation, route?.params?.staff?.email, route?.params?.staff?.phone]);
 
   const uriError = () => {
     setUri(Theme.icons.white.user);
   };
 
   useEffect(() => {
-    const nameOrId = () => {
+    const nameOrId = (): string => {
       if (route.params?.staff.idFromTeaching)
-        return route.params?.staff.idFromTeaching.toString();
-      return `${route.params?.staff.FirstName} ${route.params?.staff.LastName}`.toString();
+        return route.params?.staff.idFromTeaching;
+      return `${route.params?.staff.firstName} ${route.params?.staff.lastName}`;
     };
 
-    const loadSpeakerData = async () => {
-      try {
-        const staffData = await StaffDirectoryService.loadStaffJson();
-        const teacher = staffData.filter(
-          (a: any) => `${a.FirstName} ${a.LastName}` === nameOrId()
-        )?.[0];
-        if (teacher)
-          setTeacherData({
-            Email: teacher.Email,
-            Phone: teacher.Phone,
-          });
-      } catch (error) {
-        console.log(error);
-      }
-    };
     const loadSpeakerVideos = async () => {
       setIsLoading(true);
       try {
-        const queryResult = await runGraphQLQuery({
-          query: listSpeakersQuery,
-          variables: { nextToken, filter: { id: { eq: nameOrId() } } },
-        });
+        const speakersData = (await API.graphql({
+          query: getSpeaker,
+          variables: { id: nameOrId() },
+        })) as GraphQLResult<GetSpeakerQuery>;
+        const speakerItems = speakersData.data?.getSpeaker?.videos?.items ?? [];
         setTeachings({
-          items: teachings.items.concat(
-            queryResult.listSpeakers.items[0].videos.items
-          ),
+          items: teachings.items.concat(speakerItems),
         });
-        setUri(queryResult.listSpeakers.items[0].image);
-        setNextToken(queryResult.listSpeakers.items[0].videos.nextToken);
-        setIsLoading(false);
+        setUri(speakersData.data?.getSpeaker?.image);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
     loadSpeakerVideos();
-    loadSpeakerData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    route.params?.staff.FirstName,
-    route.params?.staff.LastName,
+    route.params?.staff.firstName,
+    route.params?.staff.lastName,
     route.params?.staff.idFromTeaching,
   ]);
 
@@ -274,7 +258,6 @@ export default function TeacherProfile({
       </View>
     );
   };
-
   return (
     <View style={style.container}>
       <View
@@ -291,12 +274,11 @@ export default function TeacherProfile({
         <View>
           <View style={style.pictureContainer}>{renderImage()}</View>
           <Text style={style.Name}>
-            {route.params?.staff.idFromTeaching
-              ? route.params?.staff.idFromTeaching
-              : route.params?.staff.FirstName}{' '}
-            {route.params?.staff.LastName}
+            {route.params?.staff.idFromTeaching ??
+              route.params?.staff.firstName}{' '}
+            {route.params?.staff.lastName}
           </Text>
-          <Text style={style.Position}>{route.params?.staff.Position}</Text>
+          <Text style={style.Position}>{route.params?.staff.position}</Text>
         </View>
         <View style={{ paddingHorizontal: 16 }}>
           <SearchBar

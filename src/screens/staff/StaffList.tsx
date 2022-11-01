@@ -8,6 +8,7 @@ import StaffDirectoryService from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import ActivityIndicator from '../../components/ActivityIndicator';
+import { TMHPerson } from '../../../src/services/API';
 
 const style = StyleSheet.create({
   content: {
@@ -22,19 +23,8 @@ const style = StyleSheet.create({
 interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
-export type Staff = {
-  FirstName: string;
-  LastName: string;
-  Email: string;
-  Position: string;
-  Phone: string;
-  sites: Array<string | null>;
-  Location: string | null;
-  Coordinator: boolean | null;
-  Teacher: boolean | null;
-};
 export default function StaffList({ navigation }: Params): JSX.Element {
-  const [staff, setStaffByName] = useState([]);
+  const [staff, setStaffByName] = useState<TMHPerson[]>([]);
   const [searchText, setSearchText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,18 +78,11 @@ export default function StaffList({ navigation }: Params): JSX.Element {
   useEffect(() => {
     const loadStaff = async () => {
       setIsLoading(true);
-      const staffResults = await StaffDirectoryService.loadStaffList();
-      setStaffByName(
-        staffResults.sort((a: any, b: any) =>
-          (a?.lastName ?? '').localeCompare(b?.lastName ?? '')
-        )
-      );
+      const staff = await StaffDirectoryService.loadStaffList();
+      setStaffByName(staff);
       setIsLoading(false);
     };
     loadStaff();
-    return () => {
-      console.log('Cleanup'); // cancel async stuff here
-    };
   }, []);
 
   return (
@@ -130,11 +113,10 @@ export default function StaffList({ navigation }: Params): JSX.Element {
           </View>
         }
         data={staff.filter(
-          (item: any) =>
-            item.FirstName.toLowerCase().includes(searchText.toLowerCase()) ||
-            item.LastName.toLowerCase().includes(searchText.toLowerCase()) ||
-            searchText === '' ||
-            item.Location.toLowerCase().includes(searchText.toLowerCase())
+          (item) =>
+            item?.firstName?.toLowerCase().includes(searchText.toLowerCase()) ||
+            item?.lastName?.toLowerCase().includes(searchText.toLowerCase()) ||
+            searchText === ''
         )}
         renderItem={({ item }: any) => <StaffItem staff={item} />}
         initialNumToRender={10}
