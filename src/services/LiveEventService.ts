@@ -34,7 +34,7 @@ export default class LiveEventService {
   };
 
   static fetchLiveEventData = async (): Promise<void> => {
-    const today = moment().format('2022-11-13');
+    const today = moment().format('YYYY-MM-DD');
     try {
       const { data } = (await API.graphql({
         query: listLivestreams,
