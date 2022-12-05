@@ -141,12 +141,14 @@ export default function EventDetailsScreen({
               backgroundColor: Theme.colors.background,
               borderBottomColor: Theme.colors.gray2,
               borderBottomWidth: 1,
+              justifyContent: 'space-between',
             }}
           >
             <TouchableOpacity
+              accessibilityLabel="Navigate back"
+              accessibilityRole="button"
               onPress={() => navigation.goBack()}
               style={{
-                flex: 1,
                 flexDirection: 'row',
                 paddingHorizontal: 16,
                 paddingVertical: 12,
@@ -161,12 +163,13 @@ export default function EventDetailsScreen({
             <TouchableOpacity
               style={{
                 paddingVertical: 12,
-                marginRight: 16,
+                paddingHorizontal: 16,
+                marginRight: 8,
               }}
               onPress={() => setShare(!share)}
             >
               <Image
-                accessibilityLabel="Share"
+                accessibilityLabel="Share this event"
                 source={Theme.icons.white.share}
                 style={{ width: 24, height: 24 }}
               />
@@ -485,6 +488,7 @@ export default function EventDetailsScreen({
               <WhiteButton
                 style={{ height: 56, marginBottom: 20, marginTop: 20 }}
                 label="Register"
+                accessibilityLabel="Register for this event"
                 onPress={() => {
                   Linking.openURL(
                     eventItem.ticket_uri ??

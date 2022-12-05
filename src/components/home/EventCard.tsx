@@ -83,7 +83,13 @@ export default function EventCard({
     return startTime;
   };
   return (
-    <TouchableOpacity activeOpacity={0.45} onPress={handlePress}>
+    <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityLabel={`Learn more about ${event.name}`}
+      accessibilityHint={`Navigate to the ${event.name} details screen`}
+      activeOpacity={0.45}
+      onPress={handlePress}
+    >
       <View style={style.container}>
         <Text style={style.dateTitleContainer}>
           {moment(event?.start_time ?? undefined).format('MMM D')}

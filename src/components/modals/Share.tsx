@@ -116,6 +116,8 @@ export default function ShareModal({
           />
         </View>
         <TouchableOpacity
+          accessibilityRole="button"
+          accessibilityLabel="Copy link to clipboard"
           style={{
             padding: 16,
             flexDirection: 'row',
@@ -125,7 +127,7 @@ export default function ShareModal({
             backgroundColor: Theme.colors.background,
           }}
           onPress={() => {
-            Clipboard.setString(link);
+            Clipboard.setStringAsync(link);
             setCopyLinkText('Copied');
           }}
         >
@@ -155,6 +157,8 @@ export default function ShareModal({
         >
           <TouchableOpacity
             testID="twitter"
+            accessibilityRole="button"
+            accessibilityLabel="Share to Twitter"
             style={{
               padding: 12,
 
@@ -176,6 +180,8 @@ export default function ShareModal({
           </TouchableOpacity>
           <TouchableOpacity
             testID="share"
+            accessibilityRole="button"
+            accessibilityLabel="Share pop-up"
             style={{
               padding: 12,
 

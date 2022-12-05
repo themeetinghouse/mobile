@@ -85,14 +85,14 @@ const style = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: Theme.fonts.fontFamilyBold,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   headerTextInactive: {
     color: Theme.colors.grey4,
     fontSize: 16,
     lineHeight: 24,
     fontFamily: Theme.fonts.fontFamilyBold,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   forgotPassText: {
     color: Theme.colors.grey5,
@@ -199,13 +199,12 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingVertical: 10,
             backgroundColor: 'black',
           }}
         >
           <TouchableOpacity
             style={{ position: 'absolute', left: '5%', paddingTop: 4 }}
-            onPress={() => navigateHome()}
+            onPress={() => navigation.goBack()}
           >
             <Image
               accessibilityLabel="Close Button"
@@ -213,12 +212,10 @@ export default function SignUp({ navigation }: Params): JSX.Element {
               style={{ width: 24, height: 24 }}
             />
           </TouchableOpacity>
-          <Text
-            onPress={() => navigateInAuthStack('LoginScreen')}
-            style={style.headerTextInactive}
-          >
-            Login
-          </Text>
+          <TouchableOpacity onPress={() => navigateInAuthStack('LoginScreen')}>
+            <Text style={style.headerTextInactive}>Login</Text>
+          </TouchableOpacity>
+
           <Text style={style.headerTextActive}>Sign Up</Text>
         </View>
         <View
@@ -287,7 +284,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
           />
           <TouchableOpacity
             onPress={() => navigateInAuthStack('ConfirmSignUpScreen')}
-            style={{ alignSelf: 'flex-end' }}
+            style={{ alignSelf: 'flex-end', padding: 16, paddingTop: 4 }}
           >
             <Text style={style.forgotPassText}>Verify a Code</Text>
           </TouchableOpacity>

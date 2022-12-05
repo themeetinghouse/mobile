@@ -102,7 +102,7 @@ export default function TeachingListItem({
   }, [teaching?.publishedDate]);
 
   return (
-    <TouchableOpacity onPress={handlePress}>
+    <TouchableOpacity accessibilityRole="button" onPress={handlePress}>
       <View style={style.container}>
         <Image
           style={style.thumbnail}

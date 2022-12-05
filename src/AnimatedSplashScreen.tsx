@@ -50,6 +50,8 @@ export default function AnimatedSplashScreen({
   }
   return (
     <View
+      accessibilityRole="image"
+      accessibilityLabel="Splash Screen"
       style={{
         flex: 1,
         backgroundColor: Constants.manifest?.splash?.backgroundColor as string,

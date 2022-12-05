@@ -17,11 +17,13 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomLeftRadius: 25,
+    borderBottomColor: '#1a1a1a',
     borderColor: 'gray',
   },
   pictureContainer: {
     marginTop: 0,
-    marginHorizontal: 16,
+    marginLeft: 0,
+    marginRight: 16,
     borderRadius: 100,
     width: 48,
     height: 48,
@@ -161,7 +163,7 @@ function StaffItem({ staff }: Props): JSX.Element {
           <TouchableOpacity
             onPress={() => {
               navigation.navigate('TeacherProfile', {
-                staff: staff,
+                staff,
               });
             }}
           >
@@ -174,6 +176,8 @@ function StaffItem({ staff }: Props): JSX.Element {
           {staff.phone ? (
             <TouchableOpacity
               testID="tel-btn"
+              accessibilityRole="button"
+              accessibilityLabel={`Call ${staff.firstName} ${staff.lastName}, open phone dialer`}
               onPress={() =>
                 Linking.openURL(
                   `tel:${staff.phone}${
@@ -189,6 +193,7 @@ function StaffItem({ staff }: Props): JSX.Element {
           {staff.email ? (
             <TouchableOpacity
               testID="email-btn"
+              accessibilityLabel={`Email ${staff.firstName} ${staff.lastName}, open email client`}
               onPress={() => Linking.openURL(`mailto:${staff.email}`)}
               style={style.iconContainer}
             >

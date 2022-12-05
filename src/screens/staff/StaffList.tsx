@@ -12,12 +12,15 @@ import { TMHPerson } from '../../../src/services/API';
 
 const style = StyleSheet.create({
   content: {
-    backgroundColor: Theme.colors.black,
-    padding: 16,
+    backgroundColor: '#000',
   },
-  header: Style.header,
   headerTitle: HeaderStyle.title,
-  searchBar: {},
+  searchBar: {
+    marginBottom: 8,
+    marginTop: 18,
+    marginLeft: 16,
+    marginRight: 16,
+  },
 });
 
 interface Params {
@@ -101,16 +104,13 @@ export default function StaffList({ navigation }: Params): JSX.Element {
         </View>
       ) : null}
       <FlatList
-        ListHeaderComponentStyle={style.header}
         ListHeaderComponent={
-          <View style={style.content}>
-            <SearchBar
-              style={style.searchBar}
-              searchText={searchText}
-              handleTextChanged={(newStr) => setSearchText(newStr)}
-              placeholderLabel="Search by name or location..."
-            />
-          </View>
+          <SearchBar
+            style={style.searchBar}
+            searchText={searchText}
+            handleTextChanged={(newStr) => setSearchText(newStr)}
+            placeholderLabel="Search by name or location..."
+          />
         }
         data={staff.filter(
           (item) =>

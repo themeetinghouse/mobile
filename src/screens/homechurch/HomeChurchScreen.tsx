@@ -336,9 +336,10 @@ export default function HomeChurchScreen({
               label="Map"
               style={{
                 alignSelf: 'flex-end',
-                paddingLeft: 12,
                 marginRight: 16,
                 backgroundColor: '#fff',
+                width: 100,
+                padding: 12,
               }}
               onPress={() =>
                 navigation.navigate('HomeChurchMapScreen', { items: filtered })
