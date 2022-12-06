@@ -144,7 +144,10 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
               }`}
               accessibilityHint={`Navigate to the teacher screen for ${teaching?.speakers?.items?.[0]?.speaker?.id}`}
               accessibilityRole="button"
-              style={style.subtitle}
+              style={[
+                style.subtitle,
+                { padding: 34, paddingTop: 0, paddingLeft: 0 },
+              ]}
               onPress={() =>
                 navigation.navigate('TeacherProfile', {
                   staff: {
@@ -183,6 +186,9 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
         {moment(teaching.publishedDate).isSame(moment(note?.id)) && (
           <View testID="notes-button">
             <IconButton
+              style={{
+                padding: 12,
+              }}
               icon={Theme.icons.white.notes}
               label="Notes"
               onPress={openNotes}
