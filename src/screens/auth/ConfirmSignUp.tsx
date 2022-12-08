@@ -146,7 +146,6 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
             <TextInput
               accessibilityLabel="Email Address"
               keyboardAppearance="dark"
-              autoCompleteType="email"
               textContentType="emailAddress"
               keyboardType="email-address"
               style={style.input}
@@ -187,7 +186,6 @@ export default function ConfirmSignUp({ navigation }: Params): JSX.Element {
             <TextInput
               accessibilityLabel="Email Address"
               keyboardAppearance="dark"
-              autoCompleteType="email"
               textContentType="emailAddress"
               keyboardType="email-address"
               style={style.input}

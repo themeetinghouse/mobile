@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import moment from 'moment';
 import {
   ScrollView,
@@ -678,7 +672,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               horizontal
               data={speakers.items}
               renderItem={({ item }: any) => {
-                console.log({ item });
                 return !item.hidden ? (
                   <TouchableOpacity
                     onPress={() =>

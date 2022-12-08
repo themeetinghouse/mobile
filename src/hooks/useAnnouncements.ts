@@ -15,8 +15,8 @@ export default function useAnnouncements(reload: boolean) {
         setIsLoaded(false);
         const announcementsResult = await AnnouncementService.loadAnnouncements(
           {
-            id: location?.locationData?.locationId,
-            name: location?.locationData?.locationName,
+            id: location?.locationData?.id,
+            name: location?.locationData?.name,
           } as Location
         );
         if (announcementsResult) setAnnouncements(announcementsResult);
@@ -27,10 +27,6 @@ export default function useAnnouncements(reload: boolean) {
       }
     };
     loadAnnouncements();
-  }, [
-    location?.locationData?.locationId,
-    location?.locationData?.locationName,
-    reload,
-  ]);
+  }, [location?.locationData?.id, location?.locationData?.name, reload]);
   return { announcements, announcementsLoaded: isLoaded };
 }

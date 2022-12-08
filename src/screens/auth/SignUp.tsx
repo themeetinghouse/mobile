@@ -20,6 +20,7 @@ import {
   CompositeNavigationProp,
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LocationData } from 'src/contexts/LocationContext';
 import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
@@ -113,37 +114,37 @@ interface Params {
 export default function SignUp({ navigation }: Params): JSX.Element {
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
-  const [site, setSite] = useState({
-    locationName: 'unknown',
-    locationId: 'unknown',
+  const [site, setSite] = useState<LocationData>({
+    name: 'unknown',
+    id: 'unknown',
   });
   const [error, setError] = useState('');
   const route = useRoute<RouteProp<AuthStackParamList, 'SignUpScreen'>>();
   const safeArea = useSafeAreaInsets();
   const [sending, setSending] = useState(false);
 
-  const locationName = route.params?.locationName;
-  const locationId = route.params?.locationId;
+  const name = route.params?.name;
+  const id = route.params?.id;
 
   useEffect(() => {
-    if (locationName && locationId)
+    if (name && id)
       setSite({
-        locationName,
-        locationId,
+        name,
+        id,
       });
-  }, [locationName, locationId]);
+  }, [name, id]);
 
   function navigateInAuthStack(screen: keyof AuthStackParamList): void {
     setUser('');
     setPass('');
-    setSite({ locationName: 'unknown', locationId: 'unknown' });
+    setSite({ name: 'unknown', id: 'unknown' });
     setError('');
     navigation.push(screen);
   }
 
   function confirmUser(): void {
     setPass('');
-    setSite({ locationName: 'unknown', locationId: 'unknown' });
+    setSite({ name: 'unknown', id: 'unknown' });
     setError('');
     navigation.push('ConfirmSignUpScreen', { email: user });
   }
@@ -151,7 +152,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
   function navigateHome() {
     setUser('');
     setPass('');
-    setSite({ locationName: 'unknown', locationId: 'unknown' });
+    setSite({ name: 'unknown', id: 'unknown' });
     setError('');
     navigation.push('Main', {
       screen: 'Home',
@@ -169,7 +170,7 @@ export default function SignUp({ navigation }: Params): JSX.Element {
       await Auth.signUp({
         username: user,
         password: pass,
-        attributes: { email: user, 'custom:home_location': site.locationId },
+        attributes: { email: user, 'custom:home_location': site?.id },
       }).then(() => confirmUser());
     } catch (e: any) {
       if (e?.code === 'InvalidPasswordException')
@@ -234,7 +235,6 @@ export default function SignUp({ navigation }: Params): JSX.Element {
           <TextInput
             accessibilityLabel="Email Address"
             keyboardAppearance="dark"
-            autoCompleteType="email"
             textContentType="emailAddress"
             keyboardType="email-address"
             autoCapitalize="none"
@@ -261,8 +261,8 @@ export default function SignUp({ navigation }: Params): JSX.Element {
             onPress={() => navigation.push('LocationSelectionScreen')}
           >
             <Text style={style.locationText}>
-              {site.locationName && site.locationName !== 'unknown'
-                ? site.locationName
+              {site?.name && site?.name !== 'unknown'
+                ? site?.name
                 : 'None Selected'}
             </Text>
             <AntDesign name="caretdown" size={8} color="white" />

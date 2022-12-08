@@ -167,20 +167,22 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
         </View>
 
         {announcements.length ? (
-          <View style={style.categoryContainer}>
-            {announcements.map((announcement) => (
-              <AnnouncementCard
-                key={announcement?.id}
-                announcement={announcement}
-                handlePress={() =>
-                  navigation.push('AnnouncementDetailsScreen', {
-                    item: announcement,
-                  })
-                }
-              />
-            ))}
+          <>
             <View style={style.categoryDivider} />
-          </View>
+            <View style={[style.categoryContainer, { paddingTop: 0 }]}>
+              {announcements.map((announcement) => (
+                <AnnouncementCard
+                  key={announcement?.id}
+                  announcement={announcement}
+                  handlePress={() =>
+                    navigation.push('AnnouncementDetailsScreen', {
+                      item: announcement,
+                    })
+                  }
+                />
+              ))}
+            </View>
+          </>
         ) : null}
         {events?.length ? (
           <>
@@ -224,7 +226,6 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
         {images && images.length > 1 ? (
           <>
             <View style={style.categoryDivider} />
-
             <View style={style.categoryContainer}>
               <Text style={style.categoryTitle}>@{instaUsername}</Text>
               <InstagramFeed images={images} />

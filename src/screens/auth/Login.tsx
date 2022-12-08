@@ -170,18 +170,22 @@ export default function Login({ navigation }: Params): JSX.Element {
       await trackUserId(userSignedIn);
       Analytics.record({
         name: 'login',
-      }).catch((e) => {
+      }).catch((e: any) => {
         console.log({ error: e });
       });
 
       userContext?.setUserData(userSignedIn.attributes);
-      if (userSignedIn.attributes)
-        location?.setLocationData({
-          locationId: userSignedIn.attributes['custom:home_location'] ?? '',
-          locationName: LocationsService.mapLocationIdToName(
-            userSignedIn.attributes['custom:home_location'] ?? ''
-          ),
-        });
+      if (userSignedIn.attributes) {
+        const usersLocation = await LocationsService.getLocationById(
+          userSignedIn.attributes['custom:home_location'] ?? ''
+        );
+        if (usersLocation && location)
+          location.setLocationData({
+            id: usersLocation.id,
+            name: usersLocation.name,
+          });
+      }
+
       navigateHome();
     } catch (e: any) {
       setError(e?.message ?? 'An error occurred');
@@ -240,7 +244,6 @@ export default function Login({ navigation }: Params): JSX.Element {
           <TextInput
             accessibilityLabel="Email Address"
             keyboardAppearance="dark"
-            autoCompleteType="email"
             textContentType="emailAddress"
             keyboardType="email-address"
             style={style.input}
@@ -252,7 +255,6 @@ export default function Login({ navigation }: Params): JSX.Element {
           <TextInput
             accessibilityLabel="Password"
             keyboardAppearance="dark"
-            autoCompleteType="password"
             textContentType="password"
             onSubmitEditing={signIn}
             value={pass}

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { LocationData } from 'src/contexts/LocationContext';
+import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
 import MainTabNavigator, {
   TabNavigatorParamList,
   HomeStackParamList,
@@ -30,7 +31,6 @@ import { EventQueryResult } from '../services/EventsService';
 import MyComments from '../screens/comments/MyComments';
 import HomeChurchScreen, {
   HomeChurch,
-  HomeChurchData,
 } from '../screens/homechurch/HomeChurchScreen';
 import HomeChurchMapScreen from '../screens/homechurch/HomeChurchMapScreen';
 import HomeChurchLocationSelect from '../screens/homechurch/HomeChurchLocationSelect';
@@ -74,7 +74,7 @@ export type MainStackParamList = {
   AllEvents: { events: NonNullable<EventQueryResult> };
   LiveStreamScreen: undefined;
   TeacherList: undefined;
-  HomeChurchScreen: { loc?: LocationData };
+  HomeChurchScreen: { location?: LocationData };
   CommentScreen:
     | {
         key: string;
@@ -93,7 +93,10 @@ export type MainStackParamList = {
         commentType: CommentDataType;
         noteId: string;
       };
-  HomeChurchMapScreen: { items: HomeChurchData; selection?: HomeChurch };
+  HomeChurchMapScreen: {
+    items: F1HomeChurchInfoWithLocation[];
+    selection?: HomeChurch;
+  };
 };
 
 const Main = createStackNavigator<MainStackParamList>();

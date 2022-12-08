@@ -1,10 +1,10 @@
 import { runGraphQLQuery } from './ApiService';
 import LocationService, { Location } from './LocationsService';
-import { GetFbEventsQuery } from './API';
+import { GetFBEventsQuery } from './API';
 import { getFbEvents } from './queries';
 
 export type EventQueryResult = NonNullable<
-  GetFbEventsQuery['getFBEvents']
+  GetFBEventsQuery['getFBEvents']
 >['data'];
 
 function parseFBDate(date: string): Date {

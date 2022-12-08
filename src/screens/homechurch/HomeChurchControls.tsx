@@ -89,9 +89,9 @@ const HomeChurchControls = ({
   setLoc,
 }: Params): JSX.Element => {
   const [selectedLocation, setSelectedLocation] = useState<LocationData>(
-    loc?.locationName === 'unknown' || !loc?.locationName
-      ? { locationName: 'All Locations', locationId: '' }
-      : { locationName: loc?.locationName, locationId: loc?.locationId }
+    loc?.name === 'unknown' || !loc?.name
+      ? { name: 'All Locations', id: '' }
+      : { name: loc?.name, id: loc?.id }
   );
   const [weekday, setWeekDay] = useState('All Days');
   const days = [
@@ -115,8 +115,8 @@ const HomeChurchControls = ({
   const handleClearButton = () => {
     handleDrop('All Days');
     setLoc({
-      locationName: 'All Locations',
-      locationId: 'all',
+      name: 'All Locations',
+      id: 'all',
     });
   };
 
@@ -141,7 +141,7 @@ const HomeChurchControls = ({
               source={Theme.icons.white.location}
             />
             <Text style={style.locationSelectText}>
-              {selectedLocation?.locationName}
+              {selectedLocation?.name}
             </Text>
           </View>
         </TouchableWithoutFeedback>

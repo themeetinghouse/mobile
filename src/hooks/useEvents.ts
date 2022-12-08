@@ -14,8 +14,8 @@ export default function useEvents(reload: boolean) {
       try {
         setIsLoaded(false);
         const eventsResult = await EventsService.loadEventsList({
-          id: location?.locationData?.locationId,
-          name: location?.locationData?.locationName,
+          id: location?.locationData?.id,
+          name: location?.locationData?.name,
         } as Location);
         setEvents(eventsResult);
       } catch (error) {
@@ -25,17 +25,13 @@ export default function useEvents(reload: boolean) {
       }
     };
     if (
-      location?.locationData?.locationId !== 'unknown' ||
-      location?.locationData?.locationName !== 'unknown'
+      location?.locationData?.id !== 'unknown' ||
+      location?.locationData?.name !== 'unknown'
     )
       loadEvents();
     else {
       setIsLoaded(true);
     }
-  }, [
-    location?.locationData?.locationId,
-    location?.locationData?.locationName,
-    reload,
-  ]);
+  }, [location?.locationData?.id, location?.locationData?.name, reload]);
   return { events, eventsLoaded: isLoaded };
 }

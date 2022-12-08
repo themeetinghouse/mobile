@@ -52,7 +52,7 @@ export default function AnnouncementCard({
   handlePress,
 }: AnnouncementCardInput): JSX.Element {
   return announcement?.image ? (
-    <View style={{ paddingBottom: 16, backgroundColor: Theme.colors.black }}>
+    <>
       <ImageBackground
         progressiveRenderingEnabled
         style={{
@@ -84,7 +84,7 @@ export default function AnnouncementCard({
           </Text>
         </TouchableWithoutFeedback>
       </ImageBackground>
-    </View>
+    </>
   ) : (
     <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
       <Image style={style.icon} source={Theme.icons.white.announcement} />

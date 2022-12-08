@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  SectionList,
   TouchableOpacity,
   Image,
   FlatList,
@@ -93,12 +92,12 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
       setIsLoading(true);
       const staffByLocationResults =
         await StaffDirectoryService.loadStaffListByLocation(
-          location?.locationData?.locationId ?? ''
+          location?.locationData?.id ?? ''
         );
       setStaffByLocation(staffByLocationResults);
       setIsLoading(false);
     };
-    if (location?.locationData?.locationId) {
+    if (location?.locationData?.id) {
       loadStaff();
     }
   }, [location]);
@@ -149,7 +148,7 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
                   fontFamily: Theme.fonts.fontFamilyBold,
                 }}
               >
-                {location?.locationData?.locationName}
+                {location?.locationData?.name}
               </Text>
             </View>
           </View>

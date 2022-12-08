@@ -12,17 +12,12 @@ import {
   TMHPersonByIsTeacherQuery,
 } from './API';
 import { ListSpeakersQuery } from './API';
+import LocationsService from './LocationsService';
 import { listSpeakersQuery } from './queries';
 
 export type loadSpeakersListData = {
   items: NonNullable<ListSpeakersQuery['listSpeakers']>['items'];
   nextToken: NonNullable<ListSpeakersQuery['listSpeakers']>['nextToken'];
-};
-
-type MapToLocation = {
-  title: string;
-  code: string;
-  locationID: string;
 };
 
 export default class StaffDirectoryService {
@@ -51,86 +46,6 @@ export default class StaffDirectoryService {
       nextToken: speakersNext,
     };
   };
-  static mapToLocation(code: string): MapToLocation {
-    switch (code) {
-      case 'HMAN':
-        return { title: 'Ancaster', code: 'HMAN', locationID: 'ancaster' };
-      case 'ALLI':
-        return { title: 'Alliston', code: 'HMAN', locationID: 'alliston' };
-      case 'BRAM':
-        return { title: 'Brampton', code: 'BRAM', locationID: 'brampton' };
-      case 'BRFD':
-        return { title: 'Brantford', code: 'BRFD', locationID: 'brantford' };
-      case 'BURL':
-        return { title: 'Burlington', code: 'BURL', locationID: 'burlington' };
-      case 'HMMT':
-        return {
-          title: 'Hamilton Mountain',
-          code: 'HMMT',
-          locationID: 'hamilton-mountain',
-        };
-      case 'HMDT':
-        return {
-          title: 'Hamilton - Downtown',
-          code: 'HMDT',
-          locationID: 'hamilton-downtown',
-        };
-      case 'KIT':
-        return { title: 'Kitchener', code: 'KIT', locationID: 'kitchener' };
-      case 'LOND':
-        return { title: 'London', code: 'LOND', locationID: 'london' };
-      case 'NMKT':
-        return { title: 'Newmarket', code: 'NMKT', locationID: 'newmarket' };
-      case 'OAKV':
-        return { title: 'Oakville', code: 'OAKV', locationID: 'oakville' };
-      case 'OTTA':
-        return { title: 'Ottawa', code: 'OTTA', locationID: 'ottawa' };
-      case 'OWSN':
-        return { title: 'Owen Sound', code: 'OWSN', locationID: 'owen-sound' };
-      case 'PRSN':
-        return {
-          title: 'Parry Sound',
-          code: 'PRSN',
-          locationID: 'parry-sound',
-        };
-      case 'RHLL':
-        return {
-          title: 'Richmond Hill',
-          code: 'RHLL',
-          locationID: 'richmond-hill',
-        };
-      case 'SAND':
-        return { title: 'Sandbanks', code: 'SAND', locationID: 'Sandbanks' };
-      case 'TODT':
-        return {
-          title: 'Toronto - Downtown',
-          code: 'TODT',
-          locationID: 'toronto-downtown',
-        };
-      case 'TOBC':
-        return {
-          title: 'Toronto - East',
-          code: 'TOBC',
-          locationID: 'toronto-east',
-        };
-      case 'TOHP':
-        return {
-          title: 'Toronto - High Park',
-          code: 'TOHP',
-          locationID: 'toronto-high-park',
-        };
-      case 'TOUP':
-        return {
-          title: 'Toronto - Uptown',
-          code: 'TOUP',
-          locationID: 'toronto-uptown',
-        };
-      case 'WAT':
-        return { title: 'Waterloo', code: 'WAT', locationID: 'waterloo' };
-      default:
-        return { title: 'unknown', code: '', locationID: 'unknown' };
-    }
-  }
   static loadStaffTeachersList = async (): Promise<TMHPerson[]> => {
     const staffData = (await API.graphql({
       query: tMHPersonByIsStaff,
@@ -145,14 +60,13 @@ export default class StaffDirectoryService {
     try {
       const staff = await StaffDirectoryService.loadStaffList();
       const coordinators = await StaffDirectoryService.loadCoordinatorsList();
+      const locations = await LocationsService.loadLocations();
+      const location = locations.find((location) => location.id === locationID);
+
       const filteredByLocation = [...staff, ...coordinators].filter(
-        (person) => {
-          const personSite =
-            person.sites?.find((site) => {
-              return this.mapToLocation(site ?? '').locationID !== 'unknown';
-            }) ?? '';
-          return this.mapToLocation(personSite).locationID === locationID;
-        }
+        (person) =>
+          location?.abbreviation &&
+          person.sites?.includes(location?.abbreviation)
       );
       return filteredByLocation;
     } catch (error) {
