@@ -1,102 +1,99 @@
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Livestream } from '../../src/services/API';
 import LiveEventService from '../../src/services/LiveEventService';
 
-export default function useLiveStreams(reload: boolean) {
-  const [liveStreams, setLiveStreams] = useState<any>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+export const getInLocalTime = (
+  dateInEst: string | undefined | null,
+  timeInEST: string | undefined | null
+) => {
+  const dateTimeInEST = moment.tz(
+    `${dateInEst} ${timeInEST}`,
+    'YYYY-MM-DD HH:mm',
+    'America/Toronto'
+  );
+  return dateTimeInEST.local();
+};
+const isEventLive = (livestream: Livestream) => {
+  const currentTime = moment();
+  const eventStartTime = getInLocalTime(
+    livestream.date,
+    livestream.videoStartTime
+  );
+  const eventEndTime = getInLocalTime(livestream.date, livestream.endTime);
+  const isLive = currentTime.isBetween(eventStartTime, eventEndTime);
+  return isLive;
+};
+
+const isEventUpcoming = (livestream: Livestream) => {
+  const currentTime = moment();
+  const eventStartTime = getInLocalTime(livestream.date, livestream.startTime);
+  const eventEndTime = getInLocalTime(livestream.date, livestream.endTime);
+  const isUpcoming = currentTime.isBetween(eventStartTime, eventEndTime);
+  return isUpcoming;
+};
+
+const isEventInFuture = (livestream: Livestream) => {
+  const currentTime = moment();
+  const eventEndTime = getInLocalTime(livestream.date, livestream.endTime);
+  return currentTime.isBefore(eventEndTime);
+};
+
+export default function useLiveStreams() {
   const navigation = useNavigation();
+  const [liveStreams, setLiveStreams] = useState<Livestream[]>([]);
+  const [isLive, setIsLive] = useState(false);
+  const [isPreLive, setIsPreLive] = useState(false);
+  const [isLiveStreamsLoaded, setIsLiveStreamsLoaded] = useState(false);
+  const [currentLiveEvents, setCurrentLiveEvents] = useState<Livestream[]>([]);
+  const [currentUpcomingEvents, setCurrentUpcomingEvents] = useState<
+    Livestream[]
+  >([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<Livestream[]>([]);
   useEffect(() => {
     const loadLiveStreams = async () => {
       try {
-        setIsLoaded(false);
-        const liveStreamsResult =
-          await LiveEventService.startLiveEventService();
-        if (liveStreamsResult?.liveEvents)
-          setLiveStreams(liveStreamsResult?.liveEvents);
+        setIsLiveStreamsLoaded(false);
+        const liveStreamsResult = await LiveEventService.fetchLiveEventData();
+        if (liveStreamsResult) {
+          setLiveStreams(liveStreamsResult);
+          const futureEvents = liveStreamsResult.filter(isEventInFuture);
+          setUpcomingEvents(futureEvents);
+          const eventsThatAreLive = liveStreamsResult.filter(isEventLive);
+          setCurrentLiveEvents(eventsThatAreLive);
+        }
       } catch (error) {
         console.log(error);
       } finally {
-        setIsLoaded(true);
+        setIsLiveStreamsLoaded(true);
       }
     };
     loadLiveStreams();
-  }, [reload]);
-  const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current);
-  const [preLive, setPreLive] = useState(false);
-  const [live, setLive] = useState(false);
-  const handleAppStateChange = (nextAppState: any) => {
-    appState.current = nextAppState;
-    setAppStateVisible(appState.current);
-  };
+  }, []);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (appStateVisible === 'active' && liveStreams && liveStreams.length > 0) {
-      interval = setInterval(() => {
-        if (!navigation.isFocused()) {
-          clearInterval(interval); // clears interval on navigate away
-          return;
-        }
-        const rightNow = moment()
-          .utcOffset(moment().isDST() ? '-0400' : '-0500')
-          .format('HH:mm');
-        const current = liveStreams.filter((event: any) => {
-          return (
-            event?.startTime &&
-            event?.endTime &&
-            rightNow >= event.startTime &&
-            rightNow <= event.endTime
-          );
-        })[0];
-        if (current?.id.includes('After Party')) {
-          /* More logic is required to include After Party message in banner */
-          clearInterval(interval);
-          setLive(false);
-          setPreLive(false);
-          return;
-        }
-        if (current && rightNow <= current.endTime) {
-          if (
-            rightNow >= current.startTime &&
-            rightNow < current.videoStartTime
-          ) {
-            setPreLive(true);
-          } else {
-            setPreLive(false);
-          }
-          const start = current?.videoStartTime;
-          const end = current?.endTime;
-          const showTime = rightNow >= start && rightNow <= end;
-          if (showTime) {
-            if (preLive) setPreLive(false);
-            setLive(true);
-          }
-        } else {
-          setLive(false);
-          setPreLive(false);
-          if (rightNow > liveStreams[liveStreams.length - 1]?.endTime) {
-            // Ends for the day
-            clearInterval(interval);
-          }
-        }
-      }, 2000);
-    }
-    return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appStateVisible, liveStreams, preLive]);
-  useEffect(() => {
-    const appStateListener = AppState.addEventListener(
-      'change',
-      handleAppStateChange
-    );
-
+    const interval = setInterval(() => {
+      const eventsThatAreLive = liveStreams.filter(isEventLive);
+      const futureEvents = liveStreams.filter(isEventInFuture);
+      const currentUpcomingEvents = liveStreams.filter(isEventUpcoming);
+      setCurrentUpcomingEvents(currentUpcomingEvents);
+      setCurrentLiveEvents(eventsThatAreLive);
+      setUpcomingEvents(futureEvents);
+      setIsLive(eventsThatAreLive.length > 0);
+      setIsPreLive(currentUpcomingEvents.length > 0);
+    }, 1000);
     return () => {
-      appStateListener.remove();
+      clearInterval(interval);
     };
-  }, [reload]);
-  return { liveStreams, liveStreamsLoaded: isLoaded, live, preLive };
+  }, [liveStreams, navigation, isLiveStreamsLoaded, upcomingEvents]);
+  return {
+    currentUpcomingEvents,
+    liveStreams,
+    isLiveStreamsLoaded,
+    isLive,
+    isPreLive,
+    currentLiveEvents,
+    upcomingEvents,
+  };
 }
