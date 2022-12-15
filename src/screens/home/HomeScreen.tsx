@@ -11,6 +11,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
+import LiveEventBar from '../../components/home/LiveEventBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AnnouncementCard from '../../components/home/AnnouncementCard';
 import EventCard from '../../components/home/EventCard';
@@ -20,12 +21,10 @@ import { HomeStackParamList } from '../../navigation/MainTabNavigator';
 import WhiteButton from '../../components/buttons/WhiteButton';
 import InstagramFeed from '../../components/home/InstagramFeed';
 import AllButton from '../../components/buttons/AllButton';
-import AnnouncementBar from '../../components/home/AnnouncementBar';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import QuestionSuccessModal from '../../components/modals/QuestionSuccessModal';
 
 import HomeChurchCard from '../../components/home/HomeChurchCard';
-import useLiveStreams from '../../hooks/useLiveStreams';
 import useEvents from '../../hooks/useEvents';
 import useAnnouncements from '../../hooks/useAnnouncements';
 import useInstagram from '../../hooks/useInstagram';
@@ -84,23 +83,11 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   const { events, eventsLoaded } = useEvents(reload);
   const { images, instaUsername, instaLoaded } = useInstagram(reload);
   const { announcements, announcementsLoaded } = useAnnouncements(reload);
-  const { live, preLive, liveStreamsLoaded } = useLiveStreams(reload);
   const { teaching, note, teachingLoaded } = useTeaching(reload);
   const [showQuestionModal, setShowQuestionModal] = useState(false);
   const finishedLoading = useMemo(
-    () =>
-      announcementsLoaded &&
-      liveStreamsLoaded &&
-      eventsLoaded &&
-      teachingLoaded &&
-      instaLoaded,
-    [
-      announcementsLoaded,
-      liveStreamsLoaded,
-      eventsLoaded,
-      teachingLoaded,
-      instaLoaded,
-    ]
+    () => announcementsLoaded && eventsLoaded && teachingLoaded && instaLoaded,
+    [announcementsLoaded, eventsLoaded, teachingLoaded, instaLoaded]
   );
   const sendQuestion = () => {
     navigation.navigate('AskAQuestion');
@@ -132,11 +119,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   }
   return (
     <View style={style.container}>
-      {preLive || live ? (
-        <AnnouncementBar
-          message={preLive ? 'We will be going live soon!' : 'We are live now!'}
-        />
-      ) : null}
+      <LiveEventBar />
       {showQuestionModal ? (
         <QuestionSuccessModal setShow={setShowQuestionModal} />
       ) : null}
