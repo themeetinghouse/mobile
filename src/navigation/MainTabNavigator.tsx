@@ -98,6 +98,9 @@ function HomeStack() {
           headerTitle: () => (
             <>
               <TouchableOpacity
+                style={{ paddingHorizontal: 20, paddingVertical: 5 }}
+                accessibilityRole="button"
+                accessibilityLabel="Select a location"
                 onPress={() =>
                   navigation.navigate('LocationSelectionScreen', {
                     persist: !user?.userData?.email_verified,
@@ -134,7 +137,13 @@ function HomeStack() {
           headerRight: () => {
             return (
               <TouchableOpacity
-                style={{ alignContent: 'flex-end', marginRight: 16 }}
+                accessibilityRole="button"
+                accessibilityLabel="Make changes to your profile screen"
+                style={{
+                  alignContent: 'flex-end',
+                  paddingVertical: 12,
+                  paddingHorizontal: 16,
+                }}
                 onPress={() => navigation.navigate('ProfileScreen')}
               >
                 <Image

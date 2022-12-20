@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Text,
   Image,
-  TextInput,
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -14,6 +13,7 @@ import LocationsService from '../../services/LocationsService';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { LocationData } from '../../contexts/LocationContext';
+import SearchBar from '../../components/SearchBar';
 
 const style = StyleSheet.create({
   content: {
@@ -183,38 +183,12 @@ export default function LocationSelectionScreen({
 
   return (
     <ScrollView style={style.content}>
-      <View
-        style={{
-          flexDirection: 'row',
-          borderBottomColor: '#54565A',
-          borderBottomWidth: 1,
-          paddingBottom: 16,
-          marginRight: 16,
-          flex: 1,
-        }}
-      >
-        <Image style={style.searchIcon} source={Theme.icons.white.search} />
-        <TextInput
-          style={searchText ? style.searchInputActive : style.searchInput}
-          value={searchText}
-          onChangeText={(str) => setSearchText(str)}
-          placeholderTextColor="#54565A"
-          placeholder="Search locations..."
-        />
-        {searchText ? (
-          <TouchableOpacity
-            onPress={() => {
-              setSearchText('');
-            }}
-          >
-            <Image
-              style={style.searchIcon}
-              accessibilityLabel="Close Location Search"
-              source={Theme.icons.white.closeCancel}
-            />
-          </TouchableOpacity>
-        ) : null}
-      </View>
+      <SearchBar
+        style={{ marginRight: 16 }}
+        searchText={searchText}
+        handleTextChanged={(newStr) => setSearchText(newStr)}
+        placeholderLabel="Search by name or location..."
+      />
       <View style={{ paddingVertical: 24 }}>{renderLocations()}</View>
     </ScrollView>
   );

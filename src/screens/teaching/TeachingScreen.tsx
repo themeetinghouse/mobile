@@ -271,6 +271,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         return (
           <TouchableOpacity
             onPress={() => navigation.navigate('ProfileScreen')}
+            style={{ padding: 12 }}
           >
             <Image
               source={
@@ -283,7 +284,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           </TouchableOpacity>
         );
       },
-      headerRightContainerStyle: { right: 16 },
+      headerRightContainerStyle: { right: 0 },
     });
   }, [navigation, emailVerified]);
 
@@ -396,6 +397,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
     }
     return (
       <TouchableWithoutFeedback
+        accessibilityRole="button"
         key={item.id}
         onPress={() =>
           debounce(() => navigation.push('SeriesLandingScreen', { item }))
@@ -512,6 +514,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               }
             />
             <AllButton
+              accessibilityLabel="View all series"
               onPress={() => {
                 debounce(() => navigation.push('AllSeriesScreen'));
               }}
@@ -678,7 +681,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               horizontal
               data={speakers.items}
               renderItem={({ item }: any) => {
-                console.log({ item });
                 return !item.hidden ? (
                   <TouchableOpacity
                     onPress={() =>

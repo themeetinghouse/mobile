@@ -52,7 +52,6 @@ export default function HomeChurchCard(): JSX.Element {
         <Image
           resizeMode="contain"
           style={style.picture}
-          accessibilityLabel="Home Church Image"
           source={{
             uri: 'https://www.themeetinghouse.com/static/images/homechurch-2-1.jpg',
             cache: 'default',

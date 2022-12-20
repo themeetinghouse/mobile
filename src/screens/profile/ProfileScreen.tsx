@@ -112,12 +112,19 @@ export default function Profile({ navigation }: Params): JSX.Element {
       },
       headerRight: function render() {
         return (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={{
+              height: 48,
+              justifyContent: 'center',
+              paddingHorizontal: 16,
+            }}
+            onPress={() => navigation.goBack()}
+          >
             <Text style={style.headerButtonText}>Done</Text>
           </TouchableOpacity>
         );
       },
-      headerRightContainerStyle: { right: 16 },
+      headerRightContainerStyle: { right: 0 },
     });
   }, [navigation]);
 

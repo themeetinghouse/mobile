@@ -50,6 +50,7 @@ export default function AllButton({
   const isWhite = type === 'white';
   return (
     <TouchableOpacity
+      accessibilityRole="button"
       {...props}
       style={[styles.button, isWhite && { backgroundColor: '#FFF' }]}
     >

@@ -74,6 +74,9 @@ export default function AnnouncementCard({
           }}
         />
         <TouchableWithoutFeedback
+          accessibilityRole="button"
+          accessibilityLabel={`${announcement.title}`}
+          accessibilityHint={`Navigate to the ${announcement.title} details screen`}
           style={style.imageCardContainer}
           onPress={handlePress}
         >
@@ -86,7 +89,13 @@ export default function AnnouncementCard({
       </ImageBackground>
     </View>
   ) : (
-    <TouchableWithoutFeedback style={style.cardContainer} onPress={handlePress}>
+    <TouchableWithoutFeedback
+      accessibilityRole="button"
+      accessibilityLabel={announcement?.title}
+      accessibilityHint={`Navigate to the ${announcement?.title} details screen`}
+      style={style.cardContainer}
+      onPress={handlePress}
+    >
       <Image style={style.icon} source={Theme.icons.white.announcement} />
       <Text style={style.title}>{announcement?.title}</Text>
       <Text numberOfLines={4} ellipsizeMode="tail" style={style.body}>
