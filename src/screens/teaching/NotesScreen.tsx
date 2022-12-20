@@ -83,8 +83,6 @@ const style = StyleSheet.create({
   headerTitle: {
     ...HeaderStyle.title,
     ...{
-      marginLeft: 16,
-      marginRight: 16,
       color: Theme.colors.gray4,
     },
   },
@@ -209,7 +207,7 @@ export default function NotesScreen({
             <TouchableOpacity
               style={{
                 paddingHorizontal: 16,
-                paddingVertical: 10,
+                paddingVertical: 12,
               }}
               onPress={() => navigation.goBack()}
             >
@@ -219,34 +217,56 @@ export default function NotesScreen({
                 accessibilityLabel="left icon"
               />
             </TouchableOpacity>
-
-            <Text
-              onPress={() => {
-                setNotesMode('notes');
-                ref.current?.scrollTo(0);
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+                justifyContent: 'center',
               }}
-              style={[
-                style.headerTitle,
-                notesMode === 'notes' ? style.headerTitleSelected : {},
-              ]}
             >
-              Notes
-            </Text>
-            <Text
-              onPress={() => {
-                setNotesMode('questions');
-                ref.current?.scrollTo(1);
-              }}
-              style={[
-                style.headerTitle,
-                notesMode === 'questions' ? style.headerTitleSelected : {},
-              ]}
-            >
-              Questions
-            </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setNotesMode('notes');
+                  ref.current?.scrollTo(0);
+                }}
+                style={{
+                  padding: 16,
+                }}
+              >
+                <Text
+                  style={[
+                    style.headerTitle,
+                    notesMode === 'notes' ? style.headerTitleSelected : {},
+                  ]}
+                >
+                  Notes
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setNotesMode('questions');
+                  ref.current?.scrollTo(1);
+                }}
+                style={{
+                  padding: 16,
+                }}
+              >
+                <Text
+                  style={[
+                    style.headerTitle,
+                    notesMode === 'questions' ? style.headerTitleSelected : {},
+                  ]}
+                >
+                  Questions
+                </Text>
+              </TouchableOpacity>
+            </View>
 
             <TouchableOpacity
-              style={{ paddingHorizontal: 16, paddingVertical: 10 }}
+              style={{
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+              }}
               onPress={handleOpenTextOptions}
             >
               <Image

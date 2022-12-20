@@ -75,15 +75,23 @@ export default function GenericCarousel({
         contentContainerStyle={style.horizontalListContentContainer}
         horizontal
         data={data.items}
-        renderItem={({ item, index }) => (
-          <TouchableOpacity onPress={() => handleNavigation(item, index)}>
-            <FallbackImage
-              style={style.highlightsThumbnail}
-              uri={getImage(item)}
-              catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
-            />
-          </TouchableOpacity>
-        )}
+        renderItem={({ item, index }) => {
+          return (
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Navigate to ${header?.slice(0, -1)} ${
+                item?.episodeTitle
+              }`}
+              onPress={() => handleNavigation(item, index)}
+            >
+              <FallbackImage
+                style={style.highlightsThumbnail}
+                uri={getImage(item)}
+                catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+              />
+            </TouchableOpacity>
+          );
+        }}
         onEndReached={loadMore ?? null}
         onEndReachedThreshold={0.1}
         ListFooterComponent={() =>

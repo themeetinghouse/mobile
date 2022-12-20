@@ -31,6 +31,8 @@ function InstagramImage({
     return (
       <TouchableHighlight
         accessibilityRole="imagebutton"
+        accessibilityLabel="View in instagram"
+        accessibilityHint={`Navigate to the instagram post ${image.caption}`}
         style={style.imageContainer}
         onPress={() => Linking.openURL(image.permalink ?? '')}
       >
@@ -38,7 +40,6 @@ function InstagramImage({
           onError={() => setValidImage(false)}
           style={style.image}
           source={{ uri: image.media_url ?? '' }}
-          accessibilityLabel={image.caption ?? 'tap to view on Instagram'}
         />
       </TouchableHighlight>
     );

@@ -48,6 +48,8 @@ export default function SeriesItem({
   const { debounce } = useDebounce();
   return (
     <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityLabel={`Navigate to ${seriesData.title} series screen ${seriesData.videos.items.length} episodes`}
       onPress={() =>
         debounce(() =>
           navigation.push('SeriesLandingScreen', {

@@ -17,7 +17,7 @@ const style = StyleSheet.create({
   textWrapper: {
     width: 96,
     margin: 2,
-    height: 32,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 50,
@@ -25,7 +25,7 @@ const style = StyleSheet.create({
   textWrapper2: {
     width: 146,
     margin: 2,
-    height: 32,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 50,
@@ -133,7 +133,7 @@ export default function TextOpts({
         <View
           style={{
             width: 300,
-            height: 36,
+            height: 48,
             backgroundColor: Theme.colors.grey2,
             borderRadius: 50,
             marginBottom: 16,
@@ -186,7 +186,7 @@ export default function TextOpts({
         <View
           style={{
             width: 300,
-            height: 36,
+            height: 48,
             backgroundColor: Theme.colors.grey2,
             borderRadius: 50,
             marginBottom: 16,

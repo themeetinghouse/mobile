@@ -80,6 +80,7 @@ interface Params {
   onPress?: () => void;
   outlined?: boolean;
   solidBlack?: boolean;
+  accessibilityLabel?: string;
 }
 
 export default function WhiteButton({
@@ -88,12 +89,18 @@ export default function WhiteButton({
   onPress,
   outlined,
   solidBlack,
+  accessibilityLabel,
 }: Params): JSX.Element {
   const { buttonStyle, labelStyle } = getStyles(outlined, solidBlack);
 
   return (
     <View style={style}>
-      <TouchableOpacity style={buttonStyle} onPress={onPress}>
+      <TouchableOpacity
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
+        style={buttonStyle}
+        onPress={onPress}
+      >
         <Text style={labelStyle}>{label}</Text>
       </TouchableOpacity>
     </View>
@@ -111,12 +118,15 @@ export function WhiteButtonAsync({
   outlined,
   solidBlack,
   isLoading,
+  accessibilityLabel,
 }: AsyncParams): JSX.Element {
   const { buttonStyle, labelStyle } = getStyles(outlined, solidBlack);
 
   return (
     <View style={style}>
       <TouchableOpacity
+        accessibilityLabel={accessibilityLabel}
+        accessibilityRole="button"
         disabled={isLoading}
         style={buttonStyle}
         onPress={onPress}

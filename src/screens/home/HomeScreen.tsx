@@ -137,7 +137,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
           <View
             style={[
               style.categoryContainer,
-              { paddingHorizontal: 16, paddingBottom: 40 },
+              { paddingHorizontal: 16, paddingBottom: 40, paddingTop: 28 },
             ]}
           >
             <WhiteButton

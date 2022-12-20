@@ -6,6 +6,7 @@ import {
   Text,
   Dimensions,
   TouchableWithoutFeedback,
+  TouchableOpacity,
 } from 'react-native';
 import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
@@ -56,14 +57,13 @@ const style = StyleSheet.create({
   subtitle: {
     color: Theme.colors.gray5,
     fontSize: Theme.fonts.small,
-    marginBottom: 14,
+    marginBottom: 0,
   },
   description: {
     ...Style.cardDescription,
     ...{
       color: Theme.colors.gray5,
       fontSize: Theme.fonts.medium,
-      marginBottom: 32,
       textAlign: 'center',
     },
   },
@@ -139,7 +139,15 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
             </Text>
             <TouchableHighlight
               testID="go-to-teacher"
-              style={style.subtitle}
+              accessibilityLabel={`All teachings by ${
+                teaching?.speakers?.items?.[0]?.speaker?.id ?? ''
+              }`}
+              accessibilityHint={`Navigate to the teacher screen for ${teaching?.speakers?.items?.[0]?.speaker?.id}`}
+              accessibilityRole="button"
+              style={[
+                style.subtitle,
+                { padding: 34, paddingTop: 0, paddingLeft: 0 },
+              ]}
               onPress={() =>
                 navigation.navigate('TeacherProfile', {
                   staff: {
@@ -157,19 +165,30 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
               </Text>
             </TouchableHighlight>
           </View>
-          <Text
-            testID="description"
-            style={style.description}
-            numberOfLines={fullDescription ? undefined : 2}
-            ellipsizeMode="tail"
+          <TouchableOpacity
             onPress={() => setFullDescription(!fullDescription)}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
           >
-            {teaching.description}
-          </Text>
+            <Text
+              testID="description"
+              style={style.description}
+              numberOfLines={fullDescription ? undefined : 2}
+              ellipsizeMode="tail"
+              onPress={() => setFullDescription(!fullDescription)}
+            >
+              {teaching.description}
+            </Text>
+          </TouchableOpacity>
         </View>
         {moment(teaching.publishedDate).isSame(moment(note?.id)) && (
           <View testID="notes-button">
             <IconButton
+              style={{
+                padding: 12,
+              }}
               icon={Theme.icons.white.notes}
               label="Notes"
               onPress={openNotes}
@@ -194,23 +213,33 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
           uri={seriesImageUri}
           catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
         />
-        <View style={{ marginHorizontal: 16, alignItems: 'center' }}>
+        <View style={{ alignItems: 'center' }}>
           <Text style={style.title}>{note.title}</Text>
           <Text style={style.subtitle}>
             {moment(note.id).format('MMMM D, YYYY')}
           </Text>
-          <Text
-            testID="description"
-            style={style.description}
-            numberOfLines={fullDescription ? undefined : 2}
-            ellipsizeMode="tail"
+          <TouchableOpacity
             onPress={() => setFullDescription(!fullDescription)}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+            }}
           >
-            {note.episodeDescription}
-          </Text>
+            <Text
+              testID="description"
+              style={style.description}
+              numberOfLines={fullDescription ? undefined : 2}
+              ellipsizeMode="tail"
+            >
+              {note.episodeDescription}
+            </Text>
+          </TouchableOpacity>
         </View>
         <View testID="notes-button">
           <IconButton
+            style={{
+              padding: 12,
+            }}
             icon={Theme.icons.white.notes}
             label="Notes"
             onPress={openNotes}

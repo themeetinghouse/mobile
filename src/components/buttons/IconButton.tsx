@@ -48,6 +48,7 @@ interface Props {
   label: string;
   rightArrow?: boolean;
   disabled?: boolean;
+  accessibilityHint?: string;
 }
 
 export default function IconButton({
@@ -58,44 +59,46 @@ export default function IconButton({
   label,
   rightArrow,
   disabled,
+  accessibilityHint,
 }: Props): JSX.Element {
   return (
-    <View style={[buttonStyle.container, style]}>
-      <TouchableOpacity
-        disabled={!!disabled}
-        style={buttonStyle.button}
-        onPress={onPress}
-      >
-        {icon && (
-          <Image
-            accessibilityLabel="icon"
-            source={icon}
-            style={[
-              Style.icon,
-              buttonStyle.icon,
-              disabled ? { opacity: 0.5 } : {},
-            ]}
-          />
-        )}
-
-        <Text
+    <TouchableOpacity
+      disabled={!!disabled}
+      style={[buttonStyle.button, style]}
+      onPress={onPress}
+      accessibilityHint={accessibilityHint}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      {icon && (
+        <Image
+          accessibilityLabel="icon"
+          source={icon}
           style={[
-            buttonStyle.label,
-            (style && labelStyle) || {},
+            Style.icon,
+            buttonStyle.icon,
             disabled ? { opacity: 0.5 } : {},
           ]}
-        >
-          {label}
-        </Text>
-        <View style={{ flex: 1 }} />
-        {rightArrow && (
-          <Image
-            accessibilityLabel="Right Arrow"
-            source={Theme.icons.white.arrow}
-            style={buttonStyle.iconRight}
-          />
-        )}
-      </TouchableOpacity>
-    </View>
+        />
+      )}
+
+      <Text
+        style={[
+          buttonStyle.label,
+          (style && labelStyle) || {},
+          disabled ? { opacity: 0.5 } : {},
+        ]}
+      >
+        {label}
+      </Text>
+      <View style={{ flex: 1 }} />
+      {rightArrow && (
+        <Image
+          accessibilityLabel="Right Arrow"
+          source={Theme.icons.white.arrow}
+          style={buttonStyle.iconRight}
+        />
+      )}
+    </TouchableOpacity>
   );
 }

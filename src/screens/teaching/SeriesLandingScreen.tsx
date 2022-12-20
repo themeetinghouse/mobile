@@ -230,6 +230,8 @@ export default function SeriesLandingScreen({
               display: 'flex',
               flexDirection: 'row',
               alignItems: 'center',
+              padding: 12,
+              marginLeft: 8,
             }}
           >
             <Image
@@ -250,7 +252,10 @@ export default function SeriesLandingScreen({
       },
       headerRight: function render() {
         return (
-          <TouchableOpacity onPress={() => setShare(!share)}>
+          <TouchableOpacity
+            style={{ padding: 12 }}
+            onPress={() => setShare(!share)}
+          >
             <Image
               accessibilityLabel="Share"
               source={Theme.icons.white.share}
@@ -266,8 +271,6 @@ export default function SeriesLandingScreen({
         shadowOpacity: 0,
         elevation: 0,
       },
-      headerLeftContainerStyle: { left: 16 },
-      headerRightContainerStyle: { right: 16 },
     });
   }, [
     colors.border,
