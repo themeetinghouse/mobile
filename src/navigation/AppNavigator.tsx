@@ -22,6 +22,7 @@ import DateRangeSelectScreen from '../screens/teaching/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
 import { CommentDataType, FBEvent } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
+import LiveStreamsScreen from '../screens/home/LiveStreamsScreen';
 import TeacherList from '../screens/staff/TeacherList';
 import StaffList from '../screens/staff/StaffList';
 import ParishTeam from '../screens/staff/ParishTeam';
@@ -72,6 +73,7 @@ export type MainStackParamList = {
   };
   AllEvents: { events: FBEvent[] };
   LiveStreamScreen: undefined;
+  LiveStreamsScreen: undefined;
   TeacherList: undefined;
   HomeChurchScreen: { location?: LocationData };
   CommentScreen:
@@ -139,6 +141,7 @@ export default function NavigationRoot(): JSX.Element {
         component={HomeChurchLocationSelect}
       />
       <Main.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
+      <Main.Screen name="LiveStreamsScreen" component={LiveStreamsScreen} />
       <Main.Screen name="TeacherList" component={TeacherList} />
       <Main.Screen name="HomeChurchMapScreen" component={HomeChurchMapScreen} />
     </Main.Navigator>

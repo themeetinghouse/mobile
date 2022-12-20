@@ -160,6 +160,7 @@ export default function NotesScreen({
 }: Params): JSX.Element {
   const date = route?.params?.date || today;
   const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
+  const [isLoading, setIsLoading] = useState(true);
   const [questions, setQuestions] = useState({ blocks: [], entityMap: {} });
   const [notesMode, setNotesMode] = useState('notes');
   const [verses, setVerses] = useState<VerseType>([]);
@@ -301,7 +302,7 @@ export default function NotesScreen({
   useEffect(() => {
     const load = async () => {
       const queryNotes = await NotesService.loadNotes(date);
-
+      console.log({ date: queryNotes });
       try {
         const font = await SecureStore.getItemAsync('fontScale');
         const displayMode = await SecureStore.getItemAsync('theme');
@@ -344,7 +345,11 @@ export default function NotesScreen({
         }
       }
     };
-    load();
+    const loadAsync = async () => {
+      await load();
+      setIsLoading(false);
+    };
+    loadAsync();
   }, [date]);
 
   useEffect(() => {
@@ -495,9 +500,9 @@ export default function NotesScreen({
             />
           </ScrollView>
         </Swiper>
-      ) : (
+      ) : isLoading ? (
         <ActivityIndicator />
-      )}
+      ) : null}
       {openVerse ? (
         <OpenVerseModal
           closeCallback={() => {

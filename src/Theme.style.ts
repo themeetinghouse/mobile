@@ -60,6 +60,7 @@ import Phone from '../assets/images/white/Phone.png';
 import Contact from '../assets/images/white/Contact.png';
 import TMHLogoWhite from '../assets/images/white/TMH-Logo.png';
 import TMHLogoBlack from '../assets/images/black/TMH-Logo.png';
+import Clock from '../assets/icons/clock.png';
 
 export const Theme = {
   colors: {
@@ -101,6 +102,7 @@ export const Theme = {
     width: 24,
     height: 24,
     white: {
+      clock: Clock,
       tmhlogo: TMHLogoWhite,
       account: AccountWhite,
       arrow: ArrowWhite,

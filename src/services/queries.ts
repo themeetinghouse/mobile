@@ -389,6 +389,9 @@ export const listLivestreams = /* GraphQL */ `
         id
         date
         startTime
+        externalEventUrl
+        eventTitle
+        homepageLink
         videoStartTime
         endTime
         prerollYoutubeId
