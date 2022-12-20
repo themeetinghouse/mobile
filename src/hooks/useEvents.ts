@@ -1,22 +1,19 @@
 import { useContext, useEffect, useState } from 'react';
+import { FBEvent } from 'src/services/API';
 import LocationContext from '../../src/contexts/LocationContext';
-import EventsService, {
-  EventQueryResult,
-} from '../../src/services/EventsService';
-import { Location } from '../../src/services/LocationsService';
+import EventsService from '../../src/services/EventsService';
 
 export default function useEvents(reload: boolean) {
-  const [events, setEvents] = useState<EventQueryResult>([]);
+  const [events, setEvents] = useState<FBEvent[]>([]);
   const location = useContext(LocationContext);
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     const loadEvents = async () => {
       try {
         setIsLoaded(false);
-        const eventsResult = await EventsService.loadEventsList({
-          id: location?.locationData?.id,
-          name: location?.locationData?.name,
-        } as Location);
+        const eventsResult = await EventsService.loadEventsList(
+          location?.locationData
+        );
         setEvents(eventsResult);
       } catch (error) {
         console.log(error);
@@ -32,6 +29,11 @@ export default function useEvents(reload: boolean) {
     else {
       setIsLoaded(true);
     }
-  }, [location?.locationData?.id, location?.locationData?.name, reload]);
+  }, [
+    location?.locationData,
+    location?.locationData?.id,
+    location?.locationData?.name,
+    reload,
+  ]);
   return { events, eventsLoaded: isLoaded };
 }

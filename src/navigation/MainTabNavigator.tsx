@@ -31,9 +31,8 @@ import SeriesLandingScreen from '../screens/teaching/SeriesLandingScreen';
 import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
 import { HeaderStyle, Style, Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
-import { GetVideoByVideoTypeQuery } from '../services/API';
+import { FBEvent, GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
-import { EventQueryResult } from '../services/EventsService';
 import ContentScreen from '../screens/content/ContentScreen';
 import useFallbackTabs, { TabItem } from './useFallbackTabs';
 
@@ -79,7 +78,7 @@ const homeStyle = StyleSheet.create({
 export type HomeStackParamList = {
   HomeScreen: { questionResult?: boolean };
   ContentScreen: undefined;
-  EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
+  EventDetailsScreen: { item: FBEvent };
   AnnouncementDetailsScreen: { item: Announcement };
   LiveStreamScreen: undefined;
 };

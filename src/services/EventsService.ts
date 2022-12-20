@@ -1,11 +1,7 @@
-import { runGraphQLQuery } from './ApiService';
+import API, { GraphQLResult } from '@aws-amplify/api';
 import LocationService, { Location } from './LocationsService';
-import { GetFBEventsQuery } from './API';
+import { FBEvent, GetFBEventsQuery } from './API';
 import { getFbEvents } from './queries';
-
-export type EventQueryResult = NonNullable<
-  GetFBEventsQuery['getFBEvents']
->['data'];
 
 function parseFBDate(date: string): Date {
   const st = `${date.substring(0, date.length - 2)}:${date.substring(
@@ -14,8 +10,8 @@ function parseFBDate(date: string): Date {
   return new Date(st);
 }
 export default class EventsService {
-  static filterEvents = (events: any) => {
-    return events.filter((item: any) => {
+  static filterEvents = (events: FBEvent[]) => {
+    return events.filter((item) => {
       if (!item?.start_time) {
         return false;
       }
@@ -24,29 +20,36 @@ export default class EventsService {
   };
 
   static loadEventsList = async (
-    location: Location | null
-  ): Promise<EventQueryResult> => {
-    const locations = await LocationService.loadLocations();
-    const currentLocation = locations?.filter((loc) => {
-      return loc.id === location?.id;
-    });
-    const getSiteData: any = await fetch(
-      `https://www.themeetinghouse.com/static/content/${
-        currentLocation && currentLocation?.length > 0
-          ? currentLocation[0]?.id
-          : 'oakville'
-      }.json`
-    );
-    const pageContent = await getSiteData.json();
-    const selectedLocation: any = await pageContent?.page?.content.filter(
-      (entry: any) => {
-        return entry.class === 'events';
-      }
-    );
-    const queryResult = await runGraphQLQuery({
-      query: getFbEvents,
-      variables: { pageId: selectedLocation[0].facebookEvents[0] },
-    });
-    return this.filterEvents(queryResult.getFBEvents.data.reverse());
+    location: Location | undefined | null
+  ): Promise<Array<FBEvent>> => {
+    const getEvents = async (ids: string[]) => {
+      const eventPromises: Array<GraphQLResult<GetFBEventsQuery>> = [];
+      ids.forEach((id: string) => {
+        const requestForID = API.graphql({
+          query: getFbEvents,
+          variables: { pageId: id },
+        }) as GraphQLResult<GetFBEventsQuery>;
+        eventPromises.push(requestForID);
+      });
+      const results = await Promise.all(eventPromises);
+      return results
+        .map((result) => {
+          return result.data?.getFBEvents?.data;
+        })
+        .flat();
+    };
+    if (!location?.id || location?.id === 'unknown') {
+      // get oakville events
+      const locations = await LocationService.loadLocations();
+      const defaultLocation = locations?.filter((loc) => {
+        return loc.id === 'oakville';
+      });
+      const idsToFetch: string[] = defaultLocation?.[0]?.facebookEvents ?? [];
+      const events = await getEvents(idsToFetch);
+      return events as FBEvent[];
+    }
+    const events = await getEvents(location?.facebookEvents ?? []);
+    console.log({ events });
+    return events as FBEvent[];
   };
 }

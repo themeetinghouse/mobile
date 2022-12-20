@@ -20,14 +20,13 @@ import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 import HighlightScreen from '../screens/teaching/HighlightScreen';
 import DateRangeSelectScreen from '../screens/teaching/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
-import { CommentDataType } from '../services/API';
+import { CommentDataType, FBEvent } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import TeacherList from '../screens/staff/TeacherList';
 import StaffList from '../screens/staff/StaffList';
 import ParishTeam from '../screens/staff/ParishTeam';
 import TeacherProfile from '../screens/staff/TeacherProfile';
 import AskAQuestion from '../screens/home/AskAQuestion';
-import { EventQueryResult } from '../services/EventsService';
 import MyComments from '../screens/comments/MyComments';
 import HomeChurchScreen, {
   HomeChurch,
@@ -71,7 +70,7 @@ export type MainStackParamList = {
     customPlaylist?: boolean;
     seriesId?: string;
   };
-  AllEvents: { events: NonNullable<EventQueryResult> };
+  AllEvents: { events: FBEvent[] };
   LiveStreamScreen: undefined;
   TeacherList: undefined;
   HomeChurchScreen: { location?: LocationData };
