@@ -1,11 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, AppStateStatus } from 'react-native';
+import { Livestream } from 'src/services/API';
 import LiveEventService from '../../src/services/LiveEventService';
 
 export default function useLiveStreams(reload: boolean) {
-  const [liveStreams, setLiveStreams] = useState<any>([]);
+  const [liveStreams, setLiveStreams] = useState<Livestream[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const navigation = useNavigation();
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function useLiveStreams(reload: boolean) {
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const [preLive, setPreLive] = useState(false);
   const [live, setLive] = useState(false);
-  const handleAppStateChange = (nextAppState: any) => {
+  const handleAppStateChange = (nextAppState: AppStateStatus) => {
     appState.current = nextAppState;
     setAppStateVisible(appState.current);
   };
@@ -44,7 +45,7 @@ export default function useLiveStreams(reload: boolean) {
         const rightNow = moment()
           .utcOffset(moment().isDST() ? '-0400' : '-0500')
           .format('HH:mm');
-        const current = liveStreams.filter((event: any) => {
+        const current = liveStreams.filter((event) => {
           return (
             event?.startTime &&
             event?.endTime &&
@@ -59,7 +60,13 @@ export default function useLiveStreams(reload: boolean) {
           setPreLive(false);
           return;
         }
-        if (current && rightNow <= current.endTime) {
+        if (
+          current &&
+          current?.endTime &&
+          current?.startTime &&
+          current?.videoStartTime &&
+          rightNow <= current?.endTime
+        ) {
           if (
             rightNow >= current.startTime &&
             rightNow < current.videoStartTime
@@ -78,7 +85,9 @@ export default function useLiveStreams(reload: boolean) {
         } else {
           setLive(false);
           setPreLive(false);
-          if (rightNow > liveStreams[liveStreams.length - 1]?.endTime) {
+          const lastLiveStreamEndTime =
+            liveStreams[liveStreams.length - 1]?.endTime;
+          if (lastLiveStreamEndTime && rightNow > lastLiveStreamEndTime) {
             // Ends for the day
             clearInterval(interval);
           }
