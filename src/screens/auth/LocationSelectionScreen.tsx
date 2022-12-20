@@ -107,7 +107,7 @@ export default function LocationSelectionScreen({
   navigation,
 }: LocationSelectionScreenInput): JSX.Element {
   const [locations, setLocations] = useState<LocationData[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<LocationData>();
+  const [selectedLocation, setSelectedLocation] = useState<LocationData>(null);
   const [searchText, setSearchText] = useState('');
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -127,10 +127,10 @@ export default function LocationSelectionScreen({
         return (
           <TouchableOpacity
             onPress={() => {
-              if (selectedLocation?.locationId)
+              if (selectedLocation?.id)
                 navigation.navigate('SignUpScreen', {
-                  locationId: selectedLocation.locationId,
-                  locationName: selectedLocation.locationName,
+                  id: selectedLocation.id,
+                  name: selectedLocation.name,
                 });
               else navigation.goBack();
             }}
@@ -141,42 +141,12 @@ export default function LocationSelectionScreen({
       },
       headerRightContainerStyle: { right: 16 },
     });
-  }, [
-    selectedLocation?.locationId,
-    selectedLocation?.locationName,
-    navigation,
-  ]);
-  const renderLocations = (): Element[] => {
-    const z = locations.map((location) =>
-      location?.locationName
-        .toLowerCase()
-        .includes(searchText.toLowerCase()) ? (
-        <TouchableOpacity
-          key={location.locationId}
-          style={style.listItem}
-          onPress={() => setSelectedLocation(location)}
-        >
-          <Text style={style.listText}>{location.locationName}</Text>
-          {selectedLocation?.locationId === location.locationId && (
-            <Image
-              style={style.listCheckIcon}
-              source={Theme.icons.white.check}
-            />
-          )}
-        </TouchableOpacity>
-      ) : null
-    );
-    return z.filter((x) => x != null) as Element[];
-  };
+  }, [selectedLocation?.id, selectedLocation?.name, navigation]);
 
   useEffect(() => {
-    const loadLocations = () => {
-      const locationsResult = LocationsService.loadLocationDataForContext();
-      setLocations(
-        locationsResult.sort((a, b) =>
-          (a?.locationName ?? '').localeCompare(b?.locationName ?? '')
-        )
-      );
+    const loadLocations = async () => {
+      const locationsData = await LocationsService.loadLocations();
+      setLocations(locationsData);
     };
     loadLocations();
   }, []);

@@ -63,8 +63,8 @@ function useFallbackItems(): Array<LinkItem> {
   ];
   const filteredItems = fallbackMenu.filter(
     (item) =>
-      location?.locationData?.locationId !== 'unknown' ||
-      (location?.locationData?.locationId === 'unknown' && item.id !== 'parish')
+      location?.locationData?.id !== 'unknown' ||
+      (location?.locationData?.id === 'unknown' && item.id !== 'parish')
   );
   if (Platform.OS === 'ios') return filteredItems;
   return [

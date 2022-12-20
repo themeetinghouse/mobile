@@ -1,9 +1,7 @@
 import { createContext } from 'react';
+import { Location } from 'src/services/LocationsService';
 
-export type LocationData =
-  | { locationId: string; locationName: string }
-  | null
-  | undefined;
+export type LocationData = Location | null;
 
 type LocationContext = {
   locationData: LocationData;

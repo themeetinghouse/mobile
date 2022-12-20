@@ -12,7 +12,7 @@ export default function useInstagram(reload: boolean) {
       try {
         setIsLoaded(false);
         const data = await InstagramService.getInstagramByLocation(
-          location?.locationData?.locationId ?? ''
+          location?.locationData?.id ?? ''
         );
         setImages(data.images);
         setInstaUsername(data.username);
@@ -23,6 +23,6 @@ export default function useInstagram(reload: boolean) {
       }
     };
     loadInstagramImages();
-  }, [location?.locationData?.locationId, reload]);
+  }, [location?.locationData?.id, reload]);
   return { images, instaUsername, instaLoaded: isLoaded };
 }

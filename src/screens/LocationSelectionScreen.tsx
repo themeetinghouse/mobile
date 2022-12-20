@@ -15,7 +15,7 @@ import * as SecureStore from 'expo-secure-store';
 import { RouteProp } from '@react-navigation/native';
 import UserContext, { TMHCognitoUser, UserData } from '../contexts/UserContext';
 import LocationContext, { LocationData } from '../contexts/LocationContext';
-import LocationsService from '../services/LocationsService';
+import LocationsService, { Location } from '../services/LocationsService';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { MainStackParamList } from '../navigation/AppNavigator';
 import SearchBar from '../components/SearchBar';
@@ -116,10 +116,8 @@ export default function LocationSelectionScreen({
   const location = useContext(LocationContext);
   const userContext = useContext(UserContext);
 
-  const [locations, setLocations] = useState<LocationData[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState(
-    location?.locationData
-  );
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<LocationData>(null);
   const [searchText, setSearchText] = useState('');
 
   const { setUserData } = userContext;
@@ -176,7 +174,7 @@ export default function LocationSelectionScreen({
             accessibilityLabel="Save location, and navigate back to home screen"
             onPress={() => {
               location?.setLocationData(selectedLocation);
-              if (persist) updateUser(selectedLocation?.locationId);
+              if (persist) updateUser(selectedLocation?.id);
               navigation.goBack();
             }}
           >
@@ -196,13 +194,9 @@ export default function LocationSelectionScreen({
   ]);
 
   useEffect(() => {
-    const loadLocations = () => {
-      const locationsResult = LocationsService.loadLocationDataForContext();
-      setLocations(
-        locationsResult.sort((a, b) =>
-          (a?.locationName as string).localeCompare(b?.locationName as string)
-        )
-      );
+    const loadLocations = async () => {
+      const locationsData = await LocationsService.loadLocations();
+      setLocations(locationsData);
     };
     loadLocations();
   }, []);
@@ -218,18 +212,16 @@ export default function LocationSelectionScreen({
         />
         <View style={{ paddingVertical: 24 }}>
           {locations.map((item) =>
-            item?.locationName
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) ? (
+            item?.name.toLowerCase().includes(searchText.toLowerCase()) ? (
               <TouchableOpacity
+                key={item.id}
                 accessibilityRole="button"
-                key={item.locationId}
                 style={style.listItem}
                 onPress={() => setSelectedLocation(item)}
               >
-                <Text style={style.listText}>{item.locationName}</Text>
+                <Text style={style.listText}>{item.name}</Text>
 
-                {selectedLocation?.locationId === item.locationId && (
+                {selectedLocation?.id === item.id && (
                   <Image
                     style={style.listCheckIcon}
                     source={Theme.icons.white.check}

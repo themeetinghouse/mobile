@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-} from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import moment from 'moment';
 import {
   ScrollView,

@@ -18,8 +18,7 @@ import * as Location from 'expo-location';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
-import HomeChurchItem, { HomeChurchExtra } from './HomeChurchItem';
-import { HomeChurchData, locationToGroupType } from './HomeChurchScreen';
+import HomeChurchItem from './HomeChurchItem';
 import HomeChurchExtendedModal from './HomeChurchExtendedModal';
 import HomeChurchMapMarker from './HomeChurchMapMarker';
 
@@ -59,7 +58,7 @@ export default function HomeChurchMapScreen({
   navigation,
 }: Params): JSX.Element {
   const cardLength = width - 80 + 16;
-  const homeChurches: HomeChurchData = route?.params?.items;
+  const homeChurches = route?.params?.items;
   const selectedChurch = homeChurches.findIndex(
     (hm) => hm?.id === route?.params?.selection?.id
   );
@@ -184,7 +183,6 @@ export default function HomeChurchMapScreen({
 
       {showModal ? (
         <HomeChurchExtendedModal
-          locationToGroupType={locationToGroupType}
           setShowModal={() => {
             setShowModal(!showModal);
           }}
@@ -203,7 +201,6 @@ export default function HomeChurchMapScreen({
           }}
         >
           <HomeChurchItem
-            locationToGroupType={locationToGroupType}
             openModal={() => {
               setSelected(0);
               setShowModal(true);
@@ -211,12 +208,15 @@ export default function HomeChurchMapScreen({
             active
             card
             single
-            item={homeChurches[0] as HomeChurchExtra}
+            item={homeChurches[0]}
           />
         </View>
       ) : (
         <FlatList
           onMomentumScrollEnd={handleListScroll}
+          onLayout={() =>
+            listRef.current?.scrollToIndex({ index: selectedChurch })
+          }
           ref={listRef}
           showsHorizontalScrollIndicator={false}
           snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
@@ -226,6 +226,7 @@ export default function HomeChurchMapScreen({
           })}
           decelerationRate={0.88}
           disableIntervalMomentum
+          // eslint-disable-next-line react/no-unstable-nested-components
           ItemSeparatorComponent={() => <View style={{ width: 16 }} />}
           contentContainerStyle={{ padding: 16 }}
           getItemLayout={(data, index) => {
@@ -243,7 +244,6 @@ export default function HomeChurchMapScreen({
           data={homeChurches}
           renderItem={({ item, index }) => (
             <HomeChurchItem
-              locationToGroupType={locationToGroupType}
               openModal={() => {
                 setSelected(index);
                 setShowModal(true);

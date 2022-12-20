@@ -2,13 +2,16 @@ import React, { useLayoutEffect } from 'react';
 import {
   Dimensions,
   Image,
+  Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RouteProp } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -50,9 +53,9 @@ const style = StyleSheet.create({
   },
   body: {
     ...Style.body,
-    ...{
-      marginBottom: 40,
-    },
+
+    marginBottom: 40,
+    lineHeight: 26,
   },
 });
 
@@ -69,8 +72,11 @@ export default function AnnouncementDetailScreen({
     navigation.setOptions({
       headerShown: true,
       title: 'Announcement',
+      headerTransparent: true,
       headerTitleStyle: style.headerTitle,
-      headerStyle: { backgroundColor: Theme.colors.background },
+      headerStyle: {
+        backgroundColor: Theme.colors.background,
+      },
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -109,14 +115,25 @@ export default function AnnouncementDetailScreen({
     <>
       {announcementItem?.image ? (
         <>
+          {Platform.OS === 'android' ? <StatusBar /> : null}
           <Image
             style={{
               top: 0,
               position: 'absolute',
-              height: 200,
+              height: 300,
               width: Dimensions.get('window').width,
             }}
             source={{ uri: announcementItem?.image }}
+          />
+          <LinearGradient
+            colors={['rgba(0,0,0, 1)', 'rgba(0,0,0, 0.01)']}
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              height: 200,
+            }}
           />
           <LinearGradient
             colors={['rgba(0,0,0, 0.05)', 'rgba(0,0,0, 1)']}
@@ -125,7 +142,7 @@ export default function AnnouncementDetailScreen({
               left: 0,
               right: 0,
               top: 0,
-              height: 200,
+              height: 300,
             }}
           />
         </>

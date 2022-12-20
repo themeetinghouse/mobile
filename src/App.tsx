@@ -237,29 +237,24 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
           }
 
           if (user.attributes['custom:home_location']) {
-            const selectedLocation = LocationsService.mapLocationIdToName(
+            const selectedLocation = await LocationsService.getLocationById(
               user.attributes['custom:home_location']
             );
-            setLocationData({
-              locationId: user.attributes['custom:home_location'],
-              locationName: selectedLocation,
-            });
+            if (selectedLocation) setLocationData(selectedLocation);
           }
         }
 
         await trackUserId(user);
       } catch (e) {
         console.debug(e);
-        setLocationData({ locationId: 'unknown', locationName: 'unknown' });
+        setLocationData({ id: 'unknown', name: 'unknown' });
         try {
           const location = await SecureStore.getItemAsync('location');
           if (location) {
-            const selectedLocation =
-              LocationsService.mapLocationIdToName(location);
-            setLocationData({
-              locationId: location,
-              locationName: selectedLocation,
-            });
+            const selectedLocation = await LocationsService.getLocationById(
+              location
+            );
+            if (selectedLocation) setLocationData(selectedLocation);
           }
         } catch (err) {
           console.debug(err);

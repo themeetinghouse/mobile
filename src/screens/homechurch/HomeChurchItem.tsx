@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 import moment from 'moment-timezone';
 import {
   View,
@@ -6,34 +6,22 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  TouchableHighlight,
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { HomeChurchInfo, ListHomeChurchInfosQuery } from 'src/services/API';
+import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
 import { Theme, Style } from '../../Theme.style';
-import { HomeChurch, HomeChurchData } from './HomeChurchScreen';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 import { getTimeStamp, getDayOfWeek } from './HomeChurchUtils';
 
-export type HomeChurchExtra = HomeChurch & {
-  homeChurchInfoData?: NonNullable<
-    NonNullable<
-      NonNullable<
-        NonNullable<ListHomeChurchInfosQuery>['listHomeChurchInfos']
-      >['items']
-    >[0]
-  >;
-};
 interface Params {
-  item: HomeChurchExtra;
+  item: F1HomeChurchInfoWithLocation;
   card?: boolean;
   modal?: boolean;
   active?: boolean;
   openModal?: () => void;
-  locationToGroupType: (a: string) => string;
   single?: boolean;
-  homeChurches?: HomeChurchData;
+  homeChurches?: F1HomeChurchInfoWithLocation[];
 }
 const { width, height } = Dimensions.get('window');
 
@@ -43,7 +31,6 @@ const HomeChurchItem = ({
   card,
   modal,
   openModal,
-  locationToGroupType,
   single,
   homeChurches,
 }: Params): JSX.Element => {
@@ -155,39 +142,87 @@ const HomeChurchItem = ({
   const badgeHelper = (keyName: string) => {
     switch (keyName) {
       case 'vaccinationRequired':
-        return 'Vaccination Required';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Vaccination Required</Text>
+          </View>
+        );
       case 'isFamilyFriendly':
-        return 'Family Friendly';
+        return (
+          <View
+            key={keyName}
+            style={[
+              style.locationBadge,
+              {
+                paddingHorizontal: 12,
+                backgroundColor: 'rgb(160, 226, 186)',
+              },
+            ]}
+          >
+            <Image
+              source={Theme.icons.black.familyFriendly}
+              style={{ width: 16, height: 16 }}
+            />
+          </View>
+        );
       case 'isOnline':
-        return 'Online';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Online</Text>
+          </View>
+        );
       case 'isHybrid':
-        return 'Hybrid';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Hybrid</Text>
+          </View>
+        );
       case 'petFree':
-        return 'Pet Free';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Pet Free</Text>
+          </View>
+        );
       case 'transitAccessible':
-        return 'Transit Accessible';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Transit Accessible</Text>
+          </View>
+        );
       case 'isYoungAdult':
-        return 'Young Adult';
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>Young Adult</Text>
+          </View>
+        );
       default:
-        return keyName;
+        return (
+          <View key={keyName} style={style.locationBadge}>
+            <Text style={style.locationBadgeText}>{keyName}</Text>
+          </View>
+        );
     }
   };
-  const Badges = (props: { hmData: HomeChurchExtra['homeChurchInfoData'] }) => {
+  // Need to move styles out of this component in order to move <Badges/> out of this component
+  // Not a priority since does not keep its own state
+  // eslint-disable-next-line react/no-unstable-nested-components
+  const Badges = (props: {
+    hmData: F1HomeChurchInfoWithLocation['homeChurchInfoData'];
+  }) => {
     const { hmData } = props;
     if (hmData)
       return (
         <>
+          {badgeHelper(hmData.siteName)}
           {Object.keys(hmData)
             .filter((value: string) => {
-              return hmData?.[value as keyof HomeChurchInfo] === 'Yes';
+              return (
+                hmData?.[
+                  value as keyof F1HomeChurchInfoWithLocation['homeChurchInfoData']
+                ] === 'Yes'
+              );
             })
-            .map((homeChurchKey) => (
-              <View key={homeChurchKey} style={style.locationBadge}>
-                <Text style={style.locationBadgeText}>
-                  {badgeHelper(homeChurchKey)}
-                </Text>
-              </View>
-            ))}
+            .map(badgeHelper)}
         </>
       );
     return null;
@@ -213,7 +248,7 @@ const HomeChurchItem = ({
                 {item?.location?.address?.address1}
               </Text>
             ) : (
-              <TouchableHighlight
+              <TouchableOpacity
                 onPress={() =>
                   navigation.navigate('HomeChurchMapScreen', {
                     items: homeChurches,
@@ -224,7 +259,7 @@ const HomeChurchItem = ({
                 <Text style={style.hmAddress}>
                   {item?.location?.address?.address1}
                 </Text>
-              </TouchableHighlight>
+              </TouchableOpacity>
             )
           ) : null}
           <Text style={style.hmDate}>
@@ -275,38 +310,11 @@ const HomeChurchItem = ({
           <Text style={style.openDrawerModalText}>See More</Text>
         </TouchableOpacity>
       ) : null}
-      {item?.location?.address?.city ||
-      item?.location?.name ||
-      item?.groupType?.id === '65432' ||
-      item?.name?.includes('Family Friendly') ? (
+      {item?.location?.address?.city || item?.location?.name ? (
         <View style={style.badgesContainer}>
-          <View style={style.locationBadge}>
-            <Text style={style.locationBadgeText}>
-              {locationToGroupType(item?.groupType?.id ?? '')?.replace(
-                '-',
-                ' '
-              )}
-            </Text>
-          </View>
           {!card && item?.homeChurchInfoData ? (
-            <Badges hmData={item?.homeChurchInfoData} />
+            <Badges hmData={item.homeChurchInfoData} />
           ) : null}
-          {item?.name?.includes('Family Friendly') && (
-            <View
-              style={[
-                style.locationBadge,
-                {
-                  paddingHorizontal: 12,
-                  backgroundColor: 'rgb(160, 226, 186)',
-                },
-              ]}
-            >
-              <Image
-                source={Theme.icons.black.familyFriendly}
-                style={{ width: 16, height: 16 }}
-              />
-            </View>
-          )}
         </View>
       ) : null}
       {!card && !modal ? (
@@ -322,4 +330,4 @@ const HomeChurchItem = ({
     </View>
   );
 };
-export default HomeChurchItem;
+export default memo(HomeChurchItem);

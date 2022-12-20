@@ -2,7 +2,7 @@
 import React from 'react';
 import moment from 'moment';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { EventQueryResult } from '../../services/EventsService';
+import { FBEvent } from 'src/services/API';
 import { Style, Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({
@@ -52,7 +52,7 @@ const style = StyleSheet.create({
 });
 
 type EventCardInput = {
-  event: NonNullable<EventQueryResult>[0];
+  event: FBEvent;
   handlePress?(): void;
 };
 

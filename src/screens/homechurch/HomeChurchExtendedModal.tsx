@@ -4,21 +4,19 @@ import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
+import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
 import HomeChurchItem from './HomeChurchItem';
-import { HomeChurch } from './HomeChurchScreen';
 
 const { height } = Dimensions.get('window');
 
 interface Params {
-  selected: HomeChurch;
+  selected: F1HomeChurchInfoWithLocation;
   setShowModal: (a: boolean) => void;
-  locationToGroupType: (a: string) => string;
 }
 
 export default function HomeChurchExtendedModal({
   selected,
   setShowModal,
-  locationToGroupType,
 }: Params): JSX.Element {
   const translateY = new Animated.Value(height * 0.4);
   const handleGesture = Animated.event(
@@ -72,11 +70,7 @@ export default function HomeChurchExtendedModal({
           ],
         }}
       >
-        <HomeChurchItem
-          locationToGroupType={locationToGroupType}
-          item={selected}
-          modal
-        />
+        <HomeChurchItem item={selected} modal />
       </Animated.View>
     </PanGestureHandler>
   );

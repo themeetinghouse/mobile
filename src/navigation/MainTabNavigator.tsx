@@ -31,9 +31,8 @@ import SeriesLandingScreen from '../screens/teaching/SeriesLandingScreen';
 import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
 import { HeaderStyle, Style, Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
-import { GetVideoByVideoTypeQuery } from '../services/API';
+import { FBEvent, GetVideoByVideoTypeQuery } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
-import { EventQueryResult } from '../services/EventsService';
 import ContentScreen from '../screens/content/ContentScreen';
 import useFallbackTabs, { TabItem } from './useFallbackTabs';
 
@@ -79,7 +78,7 @@ const homeStyle = StyleSheet.create({
 export type HomeStackParamList = {
   HomeScreen: { questionResult?: boolean };
   ContentScreen: undefined;
-  EventDetailsScreen: { item: NonNullable<EventQueryResult>[0] };
+  EventDetailsScreen: { item: FBEvent };
   AnnouncementDetailsScreen: { item: Announcement };
   LiveStreamScreen: undefined;
 };
@@ -111,9 +110,9 @@ function HomeStack() {
                   <Text style={homeStyle.title}>Home</Text>
                   <View style={homeStyle.locationContainer}>
                     <Text style={[homeStyle.subtitle, homeStyle.locationName]}>
-                      {location?.locationData?.locationName === 'unknown'
+                      {location?.locationData?.name === 'unknown'
                         ? 'Select Location'
-                        : location?.locationData?.locationName}
+                        : location?.locationData?.name}
                     </Text>
                     <Image
                       source={Theme.icons.white.caretDown}

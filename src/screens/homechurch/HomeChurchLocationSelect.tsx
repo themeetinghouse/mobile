@@ -104,9 +104,9 @@ export default function HomeChurchLocationSelect({
   route,
 }: Params): JSX.Element {
   const [locations, setLocations] = useState<LocationData[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState({
-    locationName: route?.params?.location?.locationName ?? '',
-    locationId: route?.params?.location?.locationId ?? '',
+  const [selectedLocation, setSelectedLocation] = useState<LocationData>({
+    name: route?.params?.location?.name ?? '',
+    id: route?.params?.location?.id ?? '',
   });
   const [searchText, setSearchText] = useState('');
   // eslint-disable-next-line camelcase
@@ -123,6 +123,7 @@ export default function HomeChurchLocationSelect({
         borderBottomColor: Theme.colors.gray2,
         shadowOpacity: 0,
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -135,13 +136,12 @@ export default function HomeChurchLocationSelect({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
-    const loadLocations = () => {
-      const locationsResult = LocationsService.loadLocationDataForContext();
+    const loadLocations = async () => {
+      const locationsResult = await LocationsService.loadLocations();
       setLocations([
-        { locationName: 'All Locations', locationId: 'all' },
-        { locationName: 'Global', locationId: 'global' },
+        { name: 'All Locations', id: 'all' },
         ...locationsResult.sort((a, b) =>
-          (a?.locationName as string).localeCompare(b?.locationName as string)
+          (a?.name as string).localeCompare(b?.name as string)
         ),
       ]);
     };
@@ -183,21 +183,19 @@ export default function HomeChurchLocationSelect({
       <View style={{ paddingVertical: 24 }}>
         {locations.map((item) => {
           return (
-            item?.locationName
-              .toLowerCase()
-              .includes(searchText.toLowerCase()) && (
+            item?.name.toLowerCase().includes(searchText.toLowerCase()) && (
               <TouchableOpacity
-                key={item.locationId}
+                key={item.id}
                 onPress={async () => {
                   await setSelectedLocation(item);
                   navigation.navigate('HomeChurchScreen', {
-                    loc: item,
+                    location: item,
                   });
                 }}
                 style={style.listItem}
               >
-                <Text style={style.listText}>{item.locationName}</Text>
-                {selectedLocation?.locationId === item.locationId && (
+                <Text style={style.listText}>{item.name}</Text>
+                {selectedLocation?.id === item.id && (
                   <Image
                     style={style.listCheckIcon}
                     source={Theme.icons.white.check}
