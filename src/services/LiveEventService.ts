@@ -1,14 +1,21 @@
 import moment from 'moment';
 import * as SecureStore from 'expo-secure-store';
-import { runGraphQLQuery } from './ApiService';
+import { API } from 'aws-amplify';
+import { GraphQLResult } from '@aws-amplify/api';
 import { listLivestreams } from './queries';
+import { ListLivestreamsQuery, Livestream } from './API';
+
+type StoredLiveEvents = {
+  dateFetched: string;
+  liveEvents: Livestream[];
+};
 
 export default class LiveEventService {
-  static startLiveEventService = async (): Promise<any> => {
+  static startLiveEventService = async (): Promise<StoredLiveEvents | null> => {
     try {
       const currentEventData = await LiveEventService.getLiveEventData();
       if (currentEventData) {
-        // console.log("Event data is set.")
+        console.log('Event data is set.');
         const needToUpdate = await LiveEventService.shouldUpdate(
           currentEventData
         );
@@ -22,29 +29,31 @@ export default class LiveEventService {
       return await LiveEventService.getLiveEventData();
     } catch (error) {
       console.log(error);
+      return null;
     }
-    return null;
   };
 
-  static fetchLiveEventData = async (): Promise<any> => {
-    // console.log("Fetching event data.")
+  static fetchLiveEventData = async (): Promise<void> => {
     const today = moment().format('YYYY-MM-DD');
     try {
-      const liveStreamsResult = await runGraphQLQuery({
+      const { data } = (await API.graphql({
         query: listLivestreams,
         variables: { filter: { date: { eq: today } } },
-      });
-      const filteredLiveEvents =
-        liveStreamsResult?.listLivestreams?.items.filter(
-          (a: any) => a.liveYoutubeId || !a.id.includes('CustomEvent')
-        );
-      await LiveEventService.storeLiveEventData(filteredLiveEvents);
+      })) as GraphQLResult<ListLivestreamsQuery>;
+      const allEvents = data?.listLivestreams?.items ?? [];
+      const onlyLiveEvents = allEvents.filter(
+        (liveEvent) =>
+          liveEvent?.liveYoutubeId || !liveEvent?.id.includes('CustomEvent')
+      ) as Livestream[];
+      await LiveEventService.storeLiveEventData(onlyLiveEvents);
     } catch (error) {
       console.log(error);
     }
   };
 
-  static storeLiveEventData = async (liveEvents: any): Promise<any> => {
+  static storeLiveEventData = async (
+    liveEvents: Livestream[]
+  ): Promise<void> => {
     try {
       await SecureStore.setItemAsync(
         'liveEventData',
@@ -58,17 +67,20 @@ export default class LiveEventService {
     }
   };
 
-  static getLiveEventData = async (): Promise<any> => {
-    const eventDataInStorage = await SecureStore.getItemAsync('liveEventData');
+  static getLiveEventData = async (): Promise<StoredLiveEvents> => {
+    const eventDataInStorage =
+      (await SecureStore.getItemAsync('liveEventData')) ?? '';
     return LiveEventService.parseStorageItem(eventDataInStorage);
   };
 
-  static parseStorageItem = (liveEventsData: any): any => {
+  static parseStorageItem = (liveEventsData: string): StoredLiveEvents => {
     const obj = JSON.parse(liveEventsData);
     return { ...obj, dateFetched: obj?.dateFetched };
   };
 
-  static shouldUpdate = async (liveEventsData: any): Promise<boolean> => {
+  static shouldUpdate = async (
+    liveEventsData: StoredLiveEvents
+  ): Promise<boolean> => {
     try {
       // console.log("Last fetched date " + liveEventsData.dateFetched)
       // console.log("Current date " + moment().format('YYYY-MM-DD'))

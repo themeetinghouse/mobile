@@ -48,9 +48,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
     containerAudioInner: {
       height: 56,
       width: Dimensions.get('window').width,
-      display: 'flex',
+      display: display.display,
+      backgroundColor: '#111111',
       flexDirection: 'row',
       alignItems: 'center',
+      position: bottomPos ? 'absolute' : 'relative',
+      bottom: bottomPos,
+      marginBottom: bottomPos ? 0 : safeArea.bottom,
     },
     containerAudioOuter: {
       height: 58,
@@ -246,7 +250,16 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
             >
               <TouchableOpacity
                 onPress={pauseAudio}
-                style={{ width: 56, height: 56 }}
+                style={{
+                  width: 56,
+                  height: 56,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                accessibilityRole="button"
+                accessibilityLabel={
+                  mediaContext.media.playing ? 'Pause ' : 'Play Button'
+                }
               >
                 <Image
                   accessibilityLabel={
@@ -262,10 +275,16 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={closeAudio}
-                style={{ width: 56, height: 56 }}
+                style={{
+                  width: 56,
+                  height: 56,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                accessibilityRole="button"
+                accessibilityLabel="Close Mini-player"
               >
                 <Image
-                  accessibilityLabel="Close Mini-player"
                   source={Theme.icons.white.closeCancel}
                   style={{ width: 24, height: 24 }}
                 />
@@ -304,7 +323,7 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
               play={
                 mediaContext.media.playing && Boolean(mediaContext.media.video)
               }
-              initialPlayerParams={{ controls: false, modestbranding: true }}
+              initialPlayerParams={{ controls: false, modestBranding: true }}
             />
             <Image
               source={{
@@ -336,11 +355,17 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
           <View
             style={{ display: 'flex', flexDirection: 'row', flexBasis: 112 }}
           >
-            <TouchableOpacity onPress={pauseVideo} style={{ padding: 16 }}>
+            <TouchableOpacity
+              accessibilityLabel={
+                mediaContext.media.playing
+                  ? 'Pause Mini-player'
+                  : 'Play Mini-player'
+              }
+              accessibilityRole="button"
+              onPress={pauseVideo}
+              style={{ padding: 16 }}
+            >
               <Image
-                accessibilityLabel={
-                  mediaContext.media.playing ? 'Pause Button' : 'Play Button'
-                }
                 source={
                   mediaContext.media.playing
                     ? Theme.icons.white.pauseMiniPlayer
@@ -349,9 +374,13 @@ export default function MediaPlayer({ currentScreen }: Params): JSX.Element {
                 style={{ width: 24, height: 24 }}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={closeVideo} style={{ padding: 16 }}>
+            <TouchableOpacity
+              accessibilityLabel="Close Mini-player"
+              accessibilityRole="button"
+              onPress={closeVideo}
+              style={{ padding: 16 }}
+            >
               <Image
-                accessibilityLabel="Close Mini-player"
                 source={Theme.icons.white.closeCancel}
                 style={{ width: 24, height: 24 }}
               />

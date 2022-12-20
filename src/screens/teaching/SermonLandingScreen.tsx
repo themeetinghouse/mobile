@@ -463,7 +463,7 @@ export default function SermonLandingScreen({
       safeAreaInsets: { top: safeArea.top },
       headerLeft: function render() {
         return (
-          <TouchableOpacity onPress={handleMinimize}>
+          <TouchableOpacity style={{ padding: 12 }} onPress={handleMinimize}>
             <Image
               accessibilityLabel="Close Mini-player"
               source={
@@ -479,7 +479,12 @@ export default function SermonLandingScreen({
       },
       headerRight: function render() {
         return (
-          <TouchableOpacity onPress={() => setShare(!share)}>
+          <TouchableOpacity
+            style={{
+              padding: 12,
+            }}
+            onPress={() => setShare(!share)}
+          >
             <Image
               accessibilityLabel="Share"
               source={Theme.icons.white.share}
@@ -488,8 +493,8 @@ export default function SermonLandingScreen({
           </TouchableOpacity>
         );
       },
-      headerLeftContainerStyle: { left: 16 },
-      headerRightContainerStyle: { right: 16 },
+      headerLeftContainerStyle: { left: 0 },
+      headerRightContainerStyle: { right: 0 },
     });
   });
 
@@ -645,7 +650,7 @@ export default function SermonLandingScreen({
                 flexDirection: 'row',
                 width: '100%',
                 justifyContent: 'space-around',
-                marginTop: 20,
+                marginTop: 8,
               }}
             >
               <TouchableOpacity
@@ -654,7 +659,11 @@ export default function SermonLandingScreen({
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
+                  paddingHorizontal: 16,
+                  marginTop: 12,
                 }}
+                accessibilityLabel="Skip Back 15 Seconds"
+                accessibilityRole="button"
               >
                 <Image
                   source={Theme.icons.grey.skipBack}
@@ -669,9 +678,18 @@ export default function SermonLandingScreen({
                   alignItems: 'center',
                 }}
               >
-                <TouchableOpacity onPress={pauseAudio}>
+                <TouchableOpacity
+                  onPress={pauseAudio}
+                  accessibilityRole="button"
+                  style={{
+                    padding: 12,
+                  }}
+                  accessibilityLabel={
+                    mediaContext.media.playing ? 'Pause' : 'Play'
+                  }
+                >
                   <Image
-                    style={{ width: 40, height: 40, marginBottom: 24 }}
+                    style={{ width: 40, height: 40 }}
                     source={
                       mediaContext.media.playing
                         ? Theme.icons.white.pauseAudio
@@ -679,7 +697,13 @@ export default function SermonLandingScreen({
                     }
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={setPlaybackSpeed}>
+                <TouchableOpacity
+                  onPress={setPlaybackSpeed}
+                  style={{
+                    padding: 12,
+                  }}
+                  accessibilityLabel={`${audioSpeed.toString()}x playback speed`}
+                >
                   <Text style={style.speedText}>{audioSpeed.toString()}x</Text>
                 </TouchableOpacity>
               </View>
@@ -689,7 +713,10 @@ export default function SermonLandingScreen({
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
+                  paddingHorizontal: 16,
+                  marginTop: 12,
                 }}
+                accessibilityLabel="Skip Forward 30 Seconds"
               >
                 <Image
                   source={Theme.icons.grey.skipForward}
@@ -744,18 +771,21 @@ export default function SermonLandingScreen({
           <View style={style.detailsContainer}>
             <View style={[style.detailsContainerItem, { paddingRight: 8 }]}>
               <Text style={style.detailsTitle}>Series</Text>
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{ flexDirection: 'row', height: 48 }}>
                 <Text style={style.detailsText}>E{sermon.episodeNumber},</Text>
                 <IconButton
                   onPress={() => loadAndNavigateToSeries()}
-                  style={{
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                  }}
+                  accessibilityHint="Navigates to series"
                   labelStyle={{
+                    alignItems: 'flex-start',
+                    justifyContent: 'flex-start',
                     marginLeft: 8,
                     paddingTop: 0,
                     fontSize: Theme.fonts.smallMedium,
+                    height: '100%',
+                  }}
+                  style={{
+                    alignItems: 'flex-start',
                   }}
                   label={sermon.seriesTitle}
                 />
@@ -774,6 +804,9 @@ export default function SermonLandingScreen({
           {notesExist && (
             <IconButton
               rightArrow
+              style={{
+                height: 48,
+              }}
               icon={Theme.icons.white.notes}
               label="Notes"
               onPress={() => debounce(navigateToNotes)}

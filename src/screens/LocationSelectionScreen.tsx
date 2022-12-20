@@ -18,6 +18,7 @@ import LocationContext, { LocationData } from '../contexts/LocationContext';
 import LocationsService, { Location } from '../services/LocationsService';
 import Theme, { Style, HeaderStyle } from '../Theme.style';
 import { MainStackParamList } from '../navigation/AppNavigator';
+import SearchBar from '../components/SearchBar';
 
 const style = StyleSheet.create({
   content: {
@@ -70,10 +71,12 @@ const style = StyleSheet.create({
     color: Theme.colors.grey3,
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.medium,
+    flex: 1,
     marginLeft: 20,
   },
   searchInputActive: {
     color: Theme.colors.white,
+    flex: 1,
     fontFamily: Theme.fonts.fontFamilyBold,
     fontSize: Theme.fonts.medium,
     marginLeft: 20,
@@ -154,7 +157,11 @@ export default function LocationSelectionScreen({
       headerStyle: { backgroundColor: Theme.colors.background },
       headerLeft: function render() {
         return (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            accessibilityLabel="Cancel and navigate back to the home screen"
+            accessibilityRole="button"
+            onPress={() => navigation.goBack()}
+          >
             <Text style={style.headerButtonText}>Cancel</Text>
           </TouchableOpacity>
         );
@@ -163,6 +170,8 @@ export default function LocationSelectionScreen({
       headerRight: function render() {
         return (
           <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Save location, and navigate back to home screen"
             onPress={() => {
               location?.setLocationData(selectedLocation);
               if (persist) updateUser(selectedLocation?.id);
@@ -195,41 +204,18 @@ export default function LocationSelectionScreen({
   return (
     <View style={{ backgroundColor: 'black' }}>
       <ScrollView style={style.content}>
-        <View
-          style={{
-            flexDirection: 'row',
-            borderBottomColor: '#54565A',
-            borderBottomWidth: 1,
-            paddingBottom: 16,
-            marginRight: 16,
-          }}
-        >
-          <Image style={style.searchIcon} source={Theme.icons.white.search} />
-          <TextInput
-            style={searchText ? style.searchInputActive : style.searchInput}
-            value={searchText}
-            onChangeText={(str) => setSearchText(str)}
-            placeholder="Search locations..."
-            placeholderTextColor="#54565A"
-          />
-          {searchText ? (
-            <TouchableOpacity
-              onPress={() => {
-                setSearchText('');
-              }}
-            >
-              <Image
-                style={style.searchIcon}
-                source={Theme.icons.white.closeCancel}
-              />
-            </TouchableOpacity>
-          ) : null}
-        </View>
+        <SearchBar
+          style={{ marginRight: 16 }}
+          searchText={searchText}
+          handleTextChanged={(newStr) => setSearchText(newStr)}
+          placeholderLabel="Search by name or location..."
+        />
         <View style={{ paddingVertical: 24 }}>
           {locations.map((item) =>
             item?.name.toLowerCase().includes(searchText.toLowerCase()) ? (
               <TouchableOpacity
                 key={item.id}
+                accessibilityRole="button"
                 style={style.listItem}
                 onPress={() => setSelectedLocation(item)}
               >

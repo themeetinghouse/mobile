@@ -71,21 +71,20 @@ const style = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     fontFamily: Theme.fonts.fontFamilyBold,
-    paddingHorizontal: 16,
+    padding: 16,
   },
   headerTextInactive: {
     color: Theme.colors.grey4,
     fontSize: 16,
     lineHeight: 24,
     fontFamily: Theme.fonts.fontFamilyBold,
-    paddingHorizontal: 16,
+
+    padding: 16,
   },
   forgotPassText: {
     color: Theme.colors.grey5,
     fontFamily: Theme.fonts.fontFamilyRegular,
     fontSize: 12,
-    lineHeight: 20,
-    marginTop: 8,
   },
 });
 
@@ -210,11 +209,12 @@ export default function Login({ navigation }: Params): JSX.Element {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingVertical: 10,
           }}
         >
           <TouchableOpacity
-            style={{ position: 'absolute', left: 16, paddingTop: 4 }}
+            accessibilityRole="button"
+            accessibilityLabel="Navigate home"
+            style={{ position: 'absolute', left: 16, padding: 12 }}
             onPress={() => navigateHome()}
           >
             <Image
@@ -223,13 +223,17 @@ export default function Login({ navigation }: Params): JSX.Element {
               style={{ width: 24, height: 24 }}
             />
           </TouchableOpacity>
-          <Text style={style.headerTextActive}>Login</Text>
-          <Text
+          <TouchableOpacity>
+            <Text style={style.headerTextActive}>Login</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityLabel="Navigate to sign up"
             onPress={() => navigateInAuthStack('SignUpScreen')}
-            style={style.headerTextInactive}
           >
-            Sign Up
-          </Text>
+            <Text style={style.headerTextInactive}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{
@@ -242,7 +246,7 @@ export default function Login({ navigation }: Params): JSX.Element {
         >
           <Text style={style.title}>Email</Text>
           <TextInput
-            accessibilityLabel="Email Address"
+            accessibilityLabel="Enter email address"
             keyboardAppearance="dark"
             textContentType="emailAddress"
             keyboardType="email-address"
@@ -253,7 +257,8 @@ export default function Login({ navigation }: Params): JSX.Element {
           />
           <Text style={style.title}>Password</Text>
           <TextInput
-            accessibilityLabel="Password"
+            accessibilityLabel="Enter password"
+            accessibilityRole="text"
             keyboardAppearance="dark"
             textContentType="password"
             onSubmitEditing={signIn}
@@ -264,7 +269,12 @@ export default function Login({ navigation }: Params): JSX.Element {
           />
           <TouchableOpacity
             onPress={() => navigateInAuthStack('ForgotPasswordScreen')}
-            style={{ alignSelf: 'flex-end' }}
+            style={{
+              alignSelf: 'flex-end',
+              padding: 32,
+              paddingTop: 8,
+              paddingRight: 0,
+            }}
           >
             <Text style={style.forgotPassText}>Forgot Password?</Text>
           </TouchableOpacity>

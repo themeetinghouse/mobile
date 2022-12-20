@@ -22,12 +22,14 @@ import { TMHPerson } from '../../../src/services/API';
 const style = StyleSheet.create({
   content: {
     backgroundColor: Theme.colors.black,
-    padding: 16,
   },
   header: Style.header,
   headerTitle: HeaderStyle.title,
   searchBar: {
-    marginBottom: 16,
+    marginBottom: 24,
+    marginTop: 18,
+    marginLeft: 16,
+    marginRight: 16,
   },
 });
 
@@ -133,6 +135,7 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
                 marginBottom: 4,
                 color: '#646469',
                 fontSize: 14,
+                marginLeft: 16,
 
                 fontFamily: Theme.fonts.fontFamilyBold,
               }}
@@ -144,6 +147,7 @@ export default function ParishTeam({ navigation }: Params): JSX.Element {
                 style={{
                   color: 'white',
                   fontSize: 24,
+                  marginLeft: 16,
                   lineHeight: 32,
                   fontFamily: Theme.fonts.fontFamilyBold,
                 }}

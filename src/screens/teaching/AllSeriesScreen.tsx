@@ -52,6 +52,7 @@ const style = StyleSheet.create({
   },
   searchBar: {
     marginBottom: 16,
+    height: 48,
   },
   dateSelectBar: {
     flexDirection: 'row',
@@ -213,37 +214,40 @@ export default function AllSeriesScreen({
         />
       ) : null}
       {!route?.params?.customPlaylists && !route?.params?.popularSeries ? (
-        <>
-          <View style={style.dateSelectBar}>
-            <FlatList
-              style={style.horizontalListContentContainer}
-              horizontal
-              data={seriesYears}
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <TouchableHighlight
-                  underlayColor={Theme.colors.grey3}
-                  onPress={() => setSelectedYear(item)}
-                  style={{
-                    borderRadius: 50,
-                    overflow: 'hidden',
-                    marginRight: 8,
-                  }}
+        <View style={style.dateSelectBar}>
+          <FlatList
+            style={style.horizontalListContentContainer}
+            horizontal
+            data={seriesYears}
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableHighlight
+                accessibilityRole="button"
+                accessibilityLabel={`Filter by ${item}`}
+                accessibilityState={{
+                  selected: selectedYear === item,
+                }}
+                underlayColor={Theme.colors.grey3}
+                onPress={() => setSelectedYear(item)}
+                style={{
+                  borderRadius: 50,
+                  overflow: 'hidden',
+                  marginRight: 8,
+                }}
+              >
+                <Text
+                  style={[
+                    style.dateSelectYear,
+                    item === selectedYear ? style.dateSelectYearSelected : {},
+                  ]}
                 >
-                  <Text
-                    style={[
-                      style.dateSelectYear,
-                      item === selectedYear ? style.dateSelectYearSelected : {},
-                    ]}
-                  >
-                    {item}
-                  </Text>
-                </TouchableHighlight>
-              )}
-            />
-          </View>
-        </>
+                  {item}
+                </Text>
+              </TouchableHighlight>
+            )}
+          />
+        </View>
       ) : null}
       <View style={style.seriesListContainer}>
         {allSeries.loading && (

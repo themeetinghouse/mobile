@@ -135,7 +135,7 @@ export default function HighlightScreen({
             <TouchableOpacity
               style={{
                 alignSelf: 'flex-start',
-                paddingTop: 6,
+                paddingVertical: 16,
                 paddingLeft: 16,
                 paddingRight: 30,
               }}
