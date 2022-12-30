@@ -16,6 +16,12 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "george.bell@themeetinghouse.com",
+        "ascAppId": "917315049",
+        "appleTeamId": "WJUK92YX68"
+      }
+    }
   }
 }
