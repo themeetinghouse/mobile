@@ -106,7 +106,7 @@ export default function MoreScreen(): JSX.Element {
         const transformedItems: Array<LinkItem> = jsonItems
           .filter((linkItem) => {
             if (
-              location?.locationData?.locationId === 'unknown' &&
+              location?.locationData?.id === 'unknown' &&
               linkItem.location === 'ParishTeam'
             )
               return false;
