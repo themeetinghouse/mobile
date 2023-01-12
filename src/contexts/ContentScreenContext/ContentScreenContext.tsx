@@ -45,8 +45,9 @@ export const ContentScreenProvider = ({
     };
     getUser();
   }, []);
+  const memoizedValue = React.useMemo(() => ({ state, dispatch }), [state]);
   return (
-    <ContentScreenContext.Provider value={{ state, dispatch }}>
+    <ContentScreenContext.Provider value={memoizedValue}>
       {children}
     </ContentScreenContext.Provider>
   );

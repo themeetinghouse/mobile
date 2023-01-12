@@ -37,6 +37,7 @@ import MiniPlayerStyleContext from './contexts/MiniPlayerStyleContext';
 import UserContext, { TMHCognitoUser, UserData } from './contexts/UserContext';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
+import { ModalContextProvider } from './contexts/ModalContext/ModalContext';
 
 LogBox.ignoreAllLogs(true);
 
@@ -336,8 +337,9 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
                     onStateChange={handleRouteChange}
                   >
                     <ContentScreenProvider>
-                      <AppNavigator />
-                      <MiniPlayer currentScreen={currentScreen} />
+                      <ModalContextProvider>
+                        <AppNavigator />
+                      </ModalContextProvider>
                     </ContentScreenProvider>
                   </NavigationContainer>
                 </SafeAreaProvider>
