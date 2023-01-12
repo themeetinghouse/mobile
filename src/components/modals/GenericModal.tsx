@@ -69,7 +69,7 @@ export default function GenericModal(): JSX.Element {
             <View style={Styles.DismissButtonContainer}>
               <WhiteButton
                 label={state.dismissActionLabel ?? 'Back'}
-                onPress={dismissModal}
+                onPress={state.dismiss}
               />
             </View>
           ) : null}
