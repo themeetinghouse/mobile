@@ -292,6 +292,20 @@ export default function Login({ navigation }: Params): JSX.Element {
             >
               {error}
             </Text>
+            <Text
+              style={{
+                marginTop: 10,
+                marginBottom: 10,
+                color: Theme.colors.grey5,
+                alignSelf: 'center',
+                fontSize: 16,
+                fontFamily: Theme.fonts.fontFamilyRegular,
+              }}
+            >
+              On January 16 we migrated to a signin system and passwords were
+              reset. To login please follow the Forgot Password prompts to
+              receive a new password.
+            </Text>
           </View>
           <WhiteButtonAsync
             isLoading={sending}
