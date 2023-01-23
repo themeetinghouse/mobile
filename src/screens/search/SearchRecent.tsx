@@ -1,11 +1,22 @@
 import React from 'react';
 import { ScrollView, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Auth } from 'aws-amplify';
 import SearchTags from './SearchTags';
 import Theme from '../../../src/Theme.style';
 import { SearchItemRouter } from './SearchScreen';
 import { useSearchContext } from './SearchContext';
-import { SearchScreenActionType } from './SearchScreenTypes';
+import { SearchResult, SearchScreenActionType } from './SearchScreenTypes';
+
+const getUser = async () => {
+  try {
+    const user = await Auth.currentAuthenticatedUser();
+    return Boolean(user);
+  } catch (error) {
+    console.error({ error });
+    return false;
+  }
+};
 
 export default function SearchRecent() {
   const { dispatch, state } = useSearchContext();
@@ -15,6 +26,16 @@ export default function SearchRecent() {
         const recentSearchItemsString = await AsyncStorage.getItem(
           'recentSearches'
         );
+        const parsedRecentSearches = JSON.parse(
+          recentSearchItemsString ?? '[]'
+        );
+        const isAuthenticated = await getUser();
+        const filtered = parsedRecentSearches.filter(
+          (searchItem: SearchResult) =>
+            isAuthenticated || searchItem.searchResultType !== 'comments'
+        );
+
+        console.log({ filtered });
         const lastSearchUpdate =
           (await AsyncStorage.getItem('lastSearchUpdate')) ??
           new Date().toISOString().split('T')[0];
@@ -33,7 +54,7 @@ export default function SearchRecent() {
         if (recentSearchItemsString) {
           dispatch({
             type: SearchScreenActionType.SET_INITIAL_RECENT_SEARCHES,
-            payload: JSON.parse(recentSearchItemsString),
+            payload: filtered,
           });
         }
       })();
