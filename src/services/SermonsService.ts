@@ -23,9 +23,16 @@ export default class SermonsService {
         limit: 100,
         videoTypes: 'adult-sunday',
         filter: {
-          or: [
-            { episodeTitle: { match: searchTerm } },
-            { seriesTitle: { match: searchTerm } },
+          and: [
+            {
+              publishedDate: { gte: '2021-12-01' },
+            },
+            {
+              or: [
+                { episodeTitle: { match: searchTerm } },
+                { seriesTitle: { match: searchTerm } },
+              ],
+            },
           ],
         },
       },

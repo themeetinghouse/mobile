@@ -39,9 +39,16 @@ export default class NotesService {
         variables: {
           limit: 200,
           filter: {
-            or: [
-              { title: { match: searchTerm } },
-              { content: { match: searchTerm } },
+            and: [
+              {
+                id: { gte: '2021-12-01' },
+              },
+              {
+                or: [
+                  { title: { match: searchTerm } },
+                  { content: { match: searchTerm } },
+                ],
+              },
             ],
           },
         },
