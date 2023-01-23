@@ -6,6 +6,8 @@ import {
   GetSeriesBySeriesTypeQuery,
   GetSeriesQuery,
   ListCustomPlaylistsQuery,
+  SearchSeriesQuery,
+  Series,
 } from './API';
 import {
   listCustomPlaylists,
@@ -15,6 +17,7 @@ import {
   getSeries,
   listCustomPlaylistsForRandom,
 } from './queries';
+import { searchSeries } from '../graphql/queries';
 
 type SeriesByTypeQueryResult = NonNullable<
   GetSeriesBySeriesTypeQuery['getSeriesBySeriesType']
@@ -178,7 +181,8 @@ export default class SeriesService {
       })
     )) as GraphQLResult<GetSeriesBySeriesTypeQuery>;
 
-    const items = queryResult?.data?.getSeriesBySeriesType?.items;
+    const items = queryResult?.data?.getSeriesBySeriesType?.items ?? [];
+    console.log({ series: items });
     if (items) {
       for (let i = 0; i < items.length; i++) {
         items[i] = SeriesService.updateSeriesImage(items[i] as SeriesData);
@@ -237,6 +241,31 @@ export default class SeriesService {
         'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
     }
     return series2;
+  };
+
+  static searchForSeries = async (searchTerm: string): Promise<Series[]> => {
+    try {
+      const response = (await API.graphql({
+        query: searchSeries,
+        variables: {
+          limit: 200,
+          filter: {
+            title: { match: searchTerm },
+            seriesType: { eq: 'adult-sunday' },
+          },
+          sortDirection: 'DESC',
+        },
+      })) as GraphQLResult<SearchSeriesQuery>;
+      const series = response?.data?.searchSeries?.items ?? [];
+      const seriesWithImages = series.map((serie) => {
+        return SeriesService.updateSeriesImage(serie as SeriesData);
+      });
+      // console.log({ searchForSeries: seriesWithImages });
+      return seriesWithImages as Series[];
+    } catch (error) {
+      console.error({ searchForSeries: error });
+      return [];
+    }
   };
 
   static updateSeriesImageFromPlaylist = (
