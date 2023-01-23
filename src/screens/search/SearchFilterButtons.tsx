@@ -61,6 +61,7 @@ export default function SearchFilterButtons() {
         const containerStyle = isActive ? Styles.ButtonContainerActive : {};
         return (
           <TouchableOpacity
+            disabled={state.isLoading}
             style={[Styles.ButtonContainer, containerStyle]}
             onPress={() => handleCategorySelection(item)}
             key={item}

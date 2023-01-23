@@ -3,7 +3,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Text,
-  ScrollView,
   SectionList,
 } from 'react-native';
 import React from 'react';
@@ -20,6 +19,37 @@ import Theme from '../../Theme.style';
 import SearchTeaching from './SearchTeaching';
 import AllButton from '../../components/buttons/AllButton';
 
+const SeparatorComponent = ({
+  item,
+  searchCategory,
+  dispatch,
+}: {
+  item: any;
+  searchCategory: string;
+  dispatch: any;
+}) => {
+  let label = ``;
+  if (searchCategory === 'Series & Sermons') label = 'Series & Sermons';
+  else if (searchCategory === 'Notes') label = 'Notes';
+  else if (searchCategory === 'My Comments') label = 'Comments';
+  else label = 'Results';
+  if (searchCategory !== 'Everything') return null;
+  if (!item.leadingItem) return null;
+  if (item.section.data.length < 9) return null;
+
+  return (
+    <AllButton
+      onPress={() =>
+        dispatch({
+          type: SearchScreenActionType.SET_SEARCH_CATEGORY,
+          payload: item.section.title,
+        })
+      }
+    >
+      {`More ${label}`}
+    </AllButton>
+  );
+};
 const Styles = StyleSheet.create({
   Container: {
     flex: 1,
@@ -111,8 +141,11 @@ function Search() {
   );
   const emptySectionComponent = () => {
     let emptyLabel = ``;
-    if (state.searchCategory === 'Everything') emptyLabel = 'results';
-    else emptyLabel = state.searchCategory.replace('&', 'or').toLowerCase();
+    if (state.searchCategory === 'Series & Sermons')
+      emptyLabel = 'series or sermons';
+    else if (state.searchCategory === 'Notes') emptyLabel = 'notes';
+    else if (state.searchCategory === 'My Comments') emptyLabel = 'comments';
+    else emptyLabel = 'results';
     return !state.isLoading ? (
       <Text
         style={{
@@ -126,25 +159,6 @@ function Search() {
         No {emptyLabel} found
       </Text>
     ) : null;
-  };
-  const SeparatorComponent = (item) => {
-    if (
-      item.leadingItem &&
-      state.searchCategory === 'Everything' &&
-      item.section.data.length >= 9
-    )
-      return (
-        <AllButton
-          onPress={() =>
-            dispatch({
-              type: SearchScreenActionType.SET_SEARCH_CATEGORY,
-              payload: item.section.title,
-            })
-          }
-        >
-          More {item.section.title.toLowerCase().replace('&', 'and')}
-        </AllButton>
-      );
   };
   return (
     <View style={Styles.Container}>
@@ -164,7 +178,13 @@ function Search() {
           ) : null}
           <SectionList
             ListEmptyComponent={emptySectionComponent}
-            SectionSeparatorComponent={SeparatorComponent}
+            SectionSeparatorComponent={(item) =>
+              SeparatorComponent({
+                item,
+                searchCategory: state.searchCategory,
+                dispatch,
+              })
+            }
             stickySectionHeadersEnabled={false}
             style={{ width: '100%' }}
             renderSectionHeader={({ section: { title } }) => (
