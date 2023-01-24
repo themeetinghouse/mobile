@@ -11,6 +11,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import { CompositeNavigationProp, RouteProp } from '@react-navigation/native';
+import useModal from '../../hooks/useModal';
 import LiveEventBar from '../../components/home/LiveEventBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AnnouncementCard from '../../components/home/AnnouncementCard';
@@ -89,6 +90,7 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
     () => announcementsLoaded && eventsLoaded && teachingLoaded && instaLoaded,
     [announcementsLoaded, eventsLoaded, teachingLoaded, instaLoaded]
   );
+  useModal(finishedLoading);
   const sendQuestion = () => {
     navigation.navigate('AskAQuestion');
   };
