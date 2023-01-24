@@ -59,7 +59,10 @@ const style = StyleSheet.create({
   },
   mapButton: {
     alignSelf: 'flex-end',
-    paddingLeft: 12,
+    width: 123,
+    padding: 16,
+    paddingHorizontal: 24,
+    textAlign: 'center',
     marginRight: 16,
     backgroundColor: '#fff',
   },
@@ -173,6 +176,7 @@ export default function HomeChurchScreen({
               labelStyle={{
                 color: 'black',
                 fontFamily: Theme.fonts.fontFamilyBold,
+                textAlign: 'center',
               }}
               icon={Theme.icons.black.map}
               label="Map"

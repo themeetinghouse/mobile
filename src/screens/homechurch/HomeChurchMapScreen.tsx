@@ -214,9 +214,10 @@ export default function HomeChurchMapScreen({
       ) : (
         <FlatList
           onMomentumScrollEnd={handleListScroll}
-          onLayout={() =>
-            listRef.current?.scrollToIndex({ index: selectedChurch })
-          }
+          onLayout={() => {
+            if (selectedChurch >= 0)
+              listRef.current?.scrollToIndex({ index: selectedChurch });
+          }}
           ref={listRef}
           showsHorizontalScrollIndicator={false}
           snapToOffsets={[...Array(homeChurches.length)].map((x, index) => {
