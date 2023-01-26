@@ -119,7 +119,7 @@ export default class SeriesService {
   static loadCustomPlaylists = async (
     limit: number,
     nextToken?: string
-  ): Promise<CustomPlaylist> => {
+  ): Promise<{ items: any; nextToken: string | undefined }> => {
     const queryResult = (await API.graphql(
       graphqlOperation(listCustomPlaylists, {
         sortDirection: 'DESC',

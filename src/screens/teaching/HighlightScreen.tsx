@@ -11,13 +11,13 @@ import {
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { Video } from 'src/services/API';
 import Header from '../../components/Header';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import SermonsService from '../../services/SermonsService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import NoMedia from '../../components/NoMedia';
-import loadSomeAsync from '../../utils/loading';
 
 interface Params {
   navigation: StackNavigationProp<MainStackParamList, 'HighlightScreen'>;
@@ -66,23 +66,31 @@ export default function HighlightScreen({
 }: Params): JSX.Element {
   const screenWidth = Dimensions.get('screen').width;
   const playerRef = useRef<YoutubeIframeRef>(null);
-  const [highlight, setHighlight] = useState(route.params?.highlights[0]);
-  const [highlights, setHighlights] = useState({
-    loading: false,
-    items: [...route.params?.highlights],
-    nextToken: route?.params?.nextToken,
-  });
+  const [highlight, setHighlight] = useState<Video>(
+    route.params?.highlights[0]
+  );
+  const [highlights, setHighlights] = useState<Video[]>(
+    route.params?.highlights
+  );
+  const [loading, setLoading] = useState(false);
+  const [nextToken, setNextToken] = useState<undefined | string>(
+    route?.params?.nextToken
+  );
   const [videoIndex, setVideoIndex] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(1);
 
-  const getMoreHighlights = async () => {
-    loadSomeAsync(
-      SermonsService.loadHighlightsList,
-      highlights,
-      setHighlights,
-      5
-    );
+  const loadMoreHighlights = async () => {
+    try {
+      const result = await SermonsService.loadHighlightsList(5, nextToken);
+      const items = (result.items as Video[]) ?? [];
+      setHighlights((prev) => [...prev, ...items]);
+      setNextToken(result.nextToken ?? undefined);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -108,22 +116,39 @@ export default function HighlightScreen({
 
   function handleStateChange(event: string) {
     if (event === 'ended') {
-      setHighlight(highlights?.items?.[videoIndex + 1]);
-      setVideoIndex(videoIndex + 1);
-      setElapsed(0);
+      if (highlights?.[videoIndex + 1]) {
+        setHighlight(highlights?.[videoIndex + 1]);
+        setHighlights((prev) => prev.slice(1, prev.length));
+        setVideoIndex(videoIndex + 1);
+        setElapsed(0);
+      } else {
+        console.log(
+          'NOT FOUND???',
+          highlights?.[videoIndex + 1],
+          { videoIndex },
+          { length: highlights?.length },
+          { highlights }
+        );
+      }
     }
   }
 
-  function getTeachingImage(teaching: any) {
-    const { thumbnails } = teaching?.Youtube?.snippet;
-    if (thumbnails?.standard) return thumbnails?.standard?.url;
-    return thumbnails?.maxres?.url;
+  function getTeachingImage(teaching: Video) {
+    const thumbnails = teaching?.Youtube?.snippet?.thumbnails;
+    return (
+      thumbnails?.standard?.url ??
+      thumbnails?.maxres?.url ??
+      thumbnails?.high?.url
+    );
   }
-
+  const seriesImageURI = highlight?.seriesTitle
+    ? `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`
+    : null;
+  console.log({ highlights });
   return (
     <NoMedia>
       <View style={{ backgroundColor: 'black', flex: 1 }}>
-        <Header>
+        <Header style={{}}>
           <View
             style={{
               flexDirection: 'row',
@@ -148,24 +173,32 @@ export default function HighlightScreen({
               />
             </TouchableOpacity>
 
-            <Image
-              source={{
-                uri: `https://themeetinghouse.com/static/photos/series/adult-sunday-${highlight.seriesTitle}.jpg`,
-              }}
-              style={{ width: 56, height: 68, marginRight: 16 }}
-            />
+            {seriesImageURI ? (
+              <Image
+                source={{
+                  uri: seriesImageURI,
+                }}
+                style={{ width: 56, height: 68, marginRight: 16 }}
+              />
+            ) : null}
             <View style={{ flex: 1 }}>
-              <Text numberOfLines={1} ellipsizeMode="tail" style={style.series}>
-                {highlight.seriesTitle}
-              </Text>
+              {highlight?.seriesTitle ? (
+                <Text
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                  style={style.series}
+                >
+                  {highlight.seriesTitle}
+                </Text>
+              ) : null}
               <Text
                 numberOfLines={1}
                 ellipsizeMode="tail"
                 style={style.episode}
               >
-                {highlight.episodeTitle
-                  ? highlight.episodeTitle
-                  : highlight.Youtube?.snippet?.title}
+                {highlight?.episodeTitle
+                  ? highlight?.episodeTitle
+                  : highlight?.Youtube?.snippet?.title}
               </Text>
             </View>
           </View>
@@ -180,7 +213,7 @@ export default function HighlightScreen({
             onChangeState={(e) => handleStateChange(e as string)}
             height={(9 / 16) * screenWidth}
             width={screenWidth}
-            videoId={highlight.id}
+            videoId={highlight?.id}
             play
             initialPlayerParams={{ controls: false, modestbranding: true }}
           />
@@ -202,26 +235,32 @@ export default function HighlightScreen({
           <Text style={style.categoryTitle}>Up Next</Text>
           <FlatList
             horizontal
-            data={highlights?.items}
+            data={highlights}
             onEndReachedThreshold={0.8}
-            onEndReached={route?.params?.fromSeries ? null : getMoreHighlights}
-            ListFooterComponent={() =>
-              highlights.loading ? <ActivityIndicator /> : null
-            }
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setHighlight(highlights?.items?.[index]);
-                  setVideoIndex(index);
-                  setElapsed(0);
-                }}
-              >
-                <Image
-                  style={style.highlightsThumbnail}
-                  source={{ uri: getTeachingImage(item) }}
-                />
-              </TouchableOpacity>
-            )}
+            onEndReached={route?.params?.fromSeries ? null : loadMoreHighlights}
+            ListFooterComponent={<ActivityIndicator animating={loading} />}
+            renderItem={({ item, index }) => {
+              const imageURI = getTeachingImage(item) ?? '';
+              if (!imageURI) {
+                console.log({ missing: item });
+                return null;
+              }
+
+              return (
+                <TouchableOpacity
+                  onPress={() => {
+                    setHighlight(highlights?.[index]);
+                    setVideoIndex(index);
+                    setElapsed(0);
+                  }}
+                >
+                  <Image
+                    style={style.highlightsThumbnail}
+                    source={{ uri: imageURI }}
+                  />
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
       </View>

@@ -20,7 +20,7 @@ import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 import HighlightScreen from '../screens/teaching/HighlightScreen';
 import DateRangeSelectScreen from '../screens/teaching/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
-import { CommentDataType, FBEvent } from '../services/API';
+import { CommentDataType, FBEvent, Video } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import LiveStreamsScreen from '../screens/home/LiveStreamsScreen';
 import TeacherList from '../screens/staff/TeacherList';
@@ -60,7 +60,7 @@ export type MainStackParamList = {
   ChangePasswordScreen: undefined;
   LocationSelectionScreen: { persist: boolean };
   HighlightScreen: {
-    highlights: any[];
+    highlights: Video[];
     nextToken: string | undefined;
     fromSeries?: boolean;
   };

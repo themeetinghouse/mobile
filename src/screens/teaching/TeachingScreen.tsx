@@ -26,12 +26,9 @@ import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import SeriesService, {
   CustomPlaylist,
-  LoadPlaylistData,
-  LoadSeriesListData,
   SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
-import loadSomeAsync from '../../utils/loading';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -200,9 +197,6 @@ interface Params {
   >;
 }
 
-interface PlaylistData extends LoadPlaylistData {
-  loading: boolean;
-}
 export type SuggestedVideos = NonNullable<
   NonNullable<CustomPlaylist>['videos']
 >['items'];
@@ -216,20 +210,28 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const { pageConfig } = useTeachingConfig();
   const user = useContext(UserContext);
   const { debounce } = useDebounce();
-  const [customPlaylists, setCustomPlaylists] = useState<PlaylistData>({
+  const [customPlaylists, setCustomPlaylists] = useState<{
+    loading: boolean;
+    items: CustomPlaylist[];
+    nextToken: string | undefined;
+  }>({
     loading: true,
     items: [],
-    nextToken: null,
+    nextToken: undefined,
   });
   const [popularSeries, setPopularSeries] = useState<PopularSeriesData>({
     loading: true,
     items: [],
   });
 
-  const [speakers, setSpeakers] = useState({
+  const [speakers, setSpeakers] = useState<{
+    loading: boolean;
+    items: Speaker[];
+    nextToken?: string | undefined;
+  }>({
     loading: true,
     items: [],
-    nextToken: null,
+    nextToken: undefined,
   });
   const [bounce, setBounce] = useState(false);
   const [popularTeachings, setPopularTeachings] = useState<PopularVideoData>({
@@ -283,20 +285,49 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   }, [navigation, emailVerified]);
 
   const loadSpeakers = async () => {
-    loadSomeAsync(
-      StaffDirectoryService.loadSpeakersList,
-      speakers,
-      setSpeakers
-    );
+    // need to test this!
+    try {
+      const response = await StaffDirectoryService.loadSpeakersList(
+        100,
+        speakers.nextToken
+      );
+      console.log({ response });
+
+      setSpeakers({
+        items: response.items as Speaker[],
+        loading: false,
+        nextToken: response.nextToken ?? undefined,
+      });
+    } catch (error) {
+      console.error({ error });
+      setSpeakers({
+        items: [],
+        loading: false,
+        nextToken: undefined,
+      });
+    }
   };
 
   const loadCustomPlaylists = async () => {
-    loadSomeAsync(
-      SeriesService.loadCustomPlaylists,
-      customPlaylists,
-      setCustomPlaylists,
-      10
-    );
+    try {
+      const response = await SeriesService.loadCustomPlaylists(
+        4,
+        customPlaylists.nextToken
+      );
+      console.log({ response });
+      setCustomPlaylists({
+        items: response.items as CustomPlaylist[],
+        loading: false,
+        nextToken: response.nextToken ?? undefined,
+      });
+    } catch (error) {
+      console.error({ error });
+      setCustomPlaylists({
+        items: [],
+        loading: false,
+        nextToken: undefined,
+      });
+    }
   };
 
   const fetchPopularVideoParams = async () => {

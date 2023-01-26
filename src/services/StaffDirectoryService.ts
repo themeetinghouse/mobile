@@ -23,7 +23,7 @@ export type loadSpeakersListData = {
 export default class StaffDirectoryService {
   static loadSpeakersList = async (
     limit = 9999,
-    nextToken = null
+    nextToken: string | undefined | null = null
   ): Promise<loadSpeakersListData> => {
     const speakersResult = (await API.graphql({
       query: listSpeakersQuery,

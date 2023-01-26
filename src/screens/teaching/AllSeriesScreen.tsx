@@ -16,7 +16,6 @@ import { RouteProp } from '@react-navigation/native';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import SeriesService from '../../services/SeriesService';
-import loadSomeAsync from '../../utils/loading';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import AllButton from '../../components/buttons/AllButton';
@@ -92,10 +91,14 @@ export default function AllSeriesScreen({
   const [selectedYear, setSelectedYear] = useState('All');
   const [seriesYears, setSeriesYears] = useState(['All']);
   const [showCount, setShowCount] = useState(20);
-  const [allSeries, setAllSeries] = useState({
+  const [allSeries, setAllSeries] = useState<{
+    loading: boolean;
+    items: any[];
+    nextToken: string | undefined;
+  }>({
     loading: true,
     items: [],
-    nextToken: null,
+    nextToken: undefined,
   });
 
   useEffect(() => {
@@ -111,20 +114,49 @@ export default function AllSeriesScreen({
     };
 
     const loadAllSeriesAsync = async () => {
-      loadSomeAsync(SeriesService.loadSeriesList, allSeries, setAllSeries);
+      try {
+        const response = await SeriesService.loadSeriesList(
+          100,
+          allSeries.nextToken
+        );
+        setAllSeries({
+          items: response.items ?? [],
+          loading: false,
+          nextToken: response.nextToken ?? undefined,
+        });
+      } catch (error) {
+        console.error({ error });
+        setAllSeries({
+          items: [],
+          loading: false,
+          nextToken: undefined,
+        });
+      }
     };
 
     const loadCustomPlaylists = async () => {
-      loadSomeAsync(
-        SeriesService.loadCustomPlaylists,
-        allSeries,
-        setAllSeries,
-        100
-      );
+      try {
+        const response = await SeriesService.loadCustomPlaylists(
+          100,
+          allSeries.nextToken
+        );
+        setAllSeries({
+          items: response.items,
+          loading: false,
+          nextToken: undefined,
+        });
+      } catch (error) {
+        console.error(error);
+        setAllSeries({
+          items: [],
+          loading: false,
+          nextToken: undefined,
+        });
+      }
     };
     const loadPopularSeries = async () => {
       const data: any = await SeriesService.fetchPopularSeries();
-      setAllSeries({ items: data, loading: false, nextToken: null });
+      setAllSeries({ items: data, loading: false, nextToken: undefined });
     };
 
     generateYears();
