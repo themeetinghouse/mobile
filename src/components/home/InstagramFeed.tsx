@@ -3,6 +3,7 @@ import { Image, View, StyleSheet, Dimensions } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import * as Linking from 'expo-linking';
 import { InstagramData } from '../../services/Instagram';
+import CachedImage from '../CachedImage';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -26,7 +27,6 @@ function InstagramImage({
   image: NonNullable<InstagramData>[0];
 }): JSX.Element | null {
   const [validImage, setValidImage] = useState(true);
-
   if (validImage && image) {
     return (
       <TouchableHighlight
@@ -36,10 +36,13 @@ function InstagramImage({
         style={style.imageContainer}
         onPress={() => Linking.openURL(image.permalink ?? '')}
       >
-        <Image
-          onError={() => setValidImage(false)}
+        <CachedImage
+          onError={() => {
+            setValidImage(false);
+          }}
           style={style.image}
-          source={{ uri: image.media_url ?? '' }}
+          cacheKey={image?.id ?? encodeURI(image.media_url ?? '')}
+          url={encodeURI(image.media_url ?? '')}
         />
       </TouchableHighlight>
     );

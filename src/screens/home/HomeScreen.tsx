@@ -30,6 +30,7 @@ import useEvents from '../../hooks/useEvents';
 import useAnnouncements from '../../hooks/useAnnouncements';
 import useInstagram from '../../hooks/useInstagram';
 import useTeaching from '../../hooks/useTeaching';
+import CacheService from '../../services/CacheService';
 
 const style = StyleSheet.create({
   container: {
@@ -96,6 +97,8 @@ export default function HomeScreen({ navigation, route }: Params): JSX.Element {
   };
 
   useEffect(() => {
+    const { clearCache } = CacheService();
+    clearCache();
     if (route.params?.questionResult) {
       setShowQuestionModal(route.params?.questionResult);
       navigation.setParams({ questionResult: false });

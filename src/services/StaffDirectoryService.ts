@@ -10,8 +10,8 @@ import {
   TMHPersonByIsCoordinatorQuery,
   TMHPersonByIsStaffQuery,
   TMHPersonByIsTeacherQuery,
+  ListSpeakersQuery,
 } from './API';
-import { ListSpeakersQuery } from './API';
 import LocationsService from './LocationsService';
 import { listSpeakersQuery } from './queries';
 
@@ -21,17 +21,20 @@ export type loadSpeakersListData = {
 };
 
 export default class StaffDirectoryService {
-  static loadSpeakersList = async (
+  static loadSpeakersList = async ({
     limit = 9999,
-    nextToken: string | undefined | null = null
-  ): Promise<loadSpeakersListData> => {
+    nextToken = null,
+  }: {
+    limit: number;
+    nextToken: string | null | undefined;
+  }): Promise<loadSpeakersListData> => {
     const speakersResult = (await API.graphql({
       query: listSpeakersQuery,
       variables: { limit, nextToken },
       authMode: GRAPHQL_AUTH_MODE.API_KEY,
     })) as GraphQLResult<ListSpeakersQuery>;
 
-    //const staff = await StaffDirectoryService.loadStaffList();
+    // const staff = await StaffDirectoryService.loadStaffList();
     const speakersNext = speakersResult.data?.listSpeakers?.nextToken ?? '';
     const speakersItems = speakersResult?.data?.listSpeakers?.items ?? [];
     // speakersItems.map((speaker, index: number) => {
@@ -46,6 +49,7 @@ export default class StaffDirectoryService {
       nextToken: speakersNext,
     };
   };
+
   static loadStaffTeachersList = async (): Promise<TMHPerson[]> => {
     const staffData = (await API.graphql({
       query: tMHPersonByIsStaff,
@@ -54,6 +58,7 @@ export default class StaffDirectoryService {
     })) as GraphQLResult<TMHPersonByIsTeacherQuery>;
     return staffData?.data?.TMHPersonByIsTeacher?.items as TMHPerson[];
   };
+
   static loadStaffListByLocation = async (
     locationID: string
   ): Promise<TMHPerson[]> => {
@@ -73,6 +78,7 @@ export default class StaffDirectoryService {
       return [];
     }
   };
+
   static loadStaffList = async (): Promise<TMHPerson[]> => {
     try {
       const staffData = (await API.graphql({

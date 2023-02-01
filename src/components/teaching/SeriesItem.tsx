@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Theme } from '../../Theme.style';
-import FallbackImage from '../FallbackImage';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import useDebounce from '../../../src/hooks/useDebounce';
+import CachedImage from '../CachedImage';
 
 const { width } = Dimensions.get('screen');
 
@@ -61,10 +61,11 @@ export default function SeriesItem({
       }
       style={style.seriesItem}
     >
-      <FallbackImage
+      <CachedImage
+        cacheKey={encodeURI(seriesData.image)}
         style={style.seriesThumbnail}
-        uri={seriesData.image}
-        catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+        url={encodeURI(seriesData.image)}
+        fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
       />
       {year && !customPlaylist ? (
         <Text style={style.seriesDetail}>

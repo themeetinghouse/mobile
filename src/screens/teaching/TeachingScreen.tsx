@@ -38,7 +38,6 @@ import {
   Series,
   Speaker,
 } from '../../services/API';
-import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
 import { popularTeachingQuery } from '../../graphql/queries';
 import TeacherListPicture from '../../components/teaching/TeacherListPicture';
@@ -47,6 +46,7 @@ import SuggestedCarousel from '../../components/SuggestedCarousel';
 import { useTeachingConfig } from './useTeachingConfig';
 import useSermons from '../../../src/hooks/useSermons';
 import useRecentSeries from '../../../src/hooks/useRecentSeries';
+import CachedImage from '../../components/CachedImage';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -253,6 +253,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         shadowOpacity: 0,
         elevation: 0,
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <View
@@ -263,6 +264,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           />
         );
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <TouchableOpacity
@@ -285,13 +287,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   }, [navigation, emailVerified]);
 
   const loadSpeakers = async () => {
-    // need to test this!
     try {
-      const response = await StaffDirectoryService.loadSpeakersList(
-        100,
-        speakers.nextToken
-      );
-      console.log({ response });
+      const response = await StaffDirectoryService.loadSpeakersList({
+        limit: 10,
+        nextToken: speakers.nextToken,
+      });
 
       setSpeakers({
         items: response.items as Speaker[],
@@ -314,7 +314,6 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         4,
         customPlaylists.nextToken
       );
-      console.log({ response });
       setCustomPlaylists({
         items: response.items as CustomPlaylist[],
         loading: false,
@@ -429,7 +428,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         }
       >
         <View style={style.seriesThumbnailContainer}>
-          <AnimatedFallbackImage
+          <CachedImage
+            animated
             style={{
               ...style.seriesThumbnail,
               ...{
@@ -444,8 +444,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 ],
               },
             }}
-            uri={item.image640px}
-            catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+            url={encodeURI(item.image640px)}
+            cacheKey={encodeURI(item.image640px)}
+            fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
           />
 
           <View style={style.seriesDetailContainer}>
@@ -705,7 +706,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               ]}
               horizontal
               data={speakers.items}
-              renderItem={({ item }: any) => {
+              renderItem={({ item }) => {
                 return !item.hidden ? (
                   <TouchableOpacity
                     onPress={() =>

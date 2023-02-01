@@ -1,14 +1,14 @@
 import React, { useState, memo } from 'react';
-import { View, StyleSheet, Text, Image, Platform } from 'react-native';
+import { View, StyleSheet, Text, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Linking from 'expo-linking';
-import CachedImage from 'react-native-expo-cached-image';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
 import { TMHPerson } from '../../../src/services/API';
+import CachedImage from '../CachedImage';
 
 const style = StyleSheet.create({
   container: {
@@ -98,30 +98,16 @@ function StaffItem({ staff }: Props): JSX.Element {
 
   const renderStaffImage = () => {
     if (uri && uri !== Theme.icons.white.user) {
-      if (Platform.OS === 'android') {
-        return (
-          <CachedImage
-            testID="android-image"
-            onLoadEnd={() => setIsLoading(false)}
-            style={style.picture}
-            onError={() => {
-              setIsLoading(false);
-              uriError();
-            }}
-            source={{ uri }}
-          />
-        );
-      }
       return (
-        <Image
-          testID="ios-image"
+        <CachedImage
+          cacheKey={staff.id}
           onLoadEnd={() => setIsLoading(false)}
           style={style.picture}
           onError={() => {
             setIsLoading(false);
             uriError();
           }}
-          source={{ uri, cache: 'default' }}
+          url={uri}
         />
       );
     }
@@ -129,6 +115,7 @@ function StaffItem({ staff }: Props): JSX.Element {
     return (
       <View style={style.fallbackPictureContainer}>
         <Image
+          onLoadEnd={() => setIsLoading(false)}
           style={style.fallBackPicture}
           source={Theme.icons.white.user}
           testID="fallback-image"

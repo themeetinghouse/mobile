@@ -49,7 +49,6 @@ export default class EventsService {
       return events as FBEvent[];
     }
     const events = await getEvents(location?.facebookEvents ?? []);
-    console.log({ events });
     return events as FBEvent[];
   };
 }

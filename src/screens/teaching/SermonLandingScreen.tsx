@@ -17,7 +17,12 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import {
+  Audio,
+  AVPlaybackStatus,
+  InterruptionModeIOS,
+  InterruptionModeAndroid,
+} from 'expo-av';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
@@ -36,6 +41,7 @@ import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
 import NotesService from '../../services/NotesService';
 import { getSeries, getCustomPlaylist } from '../../graphql/queries';
 import useDebounce from '../../../src/hooks/useDebounce';
+import CachedImage from '../../components/CachedImage';
 
 const style = StyleSheet.create({
   content: {
@@ -339,13 +345,14 @@ export default function SermonLandingScreen({
           series: sermon.seriesTitle,
         });
         try {
+          Audio.AndroidAudioEncoder;
           await Audio.setAudioModeAsync({
             playsInSilentModeIOS: true,
             allowsRecordingIOS: false,
             staysActiveInBackground: true,
-            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+            interruptionModeIOS: InterruptionModeIOS.DoNotMix,
             shouldDuckAndroid: false,
-            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+            interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
           });
         } catch (e) {
           console.debug(e);
@@ -461,6 +468,7 @@ export default function SermonLandingScreen({
         elevation: 0,
       },
       safeAreaInsets: { top: safeArea.top },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity style={{ padding: 12 }} onPress={handleMinimize}>
@@ -477,6 +485,7 @@ export default function SermonLandingScreen({
           </TouchableOpacity>
         );
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <TouchableOpacity
@@ -569,7 +578,14 @@ export default function SermonLandingScreen({
 
     return null;
   };
-
+  const thumbnails = sermon?.Youtube?.snippet?.thumbnails;
+  const thumbnail: string =
+    thumbnails?.maxres?.url ??
+    thumbnails?.high?.url ??
+    thumbnails.standard?.url ??
+    thumbnails?.medium?.url ??
+    thumbnails?.default?.url ??
+    '';
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
@@ -577,10 +593,10 @@ export default function SermonLandingScreen({
         mediaContext.media.playerType !== 'video' &&
         mediaContext.media.playerType !== 'audio' ? (
           <TouchableWithoutFeedback onPress={loadVideo}>
-            <Image
-              source={{
-                uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
-              }}
+            <CachedImage
+              url={thumbnail}
+              cacheKey={thumbnail}
+              fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
               style={{
                 height: Math.round(deviceWidth * (9 / 16)),
                 width: Math.round(deviceWidth),

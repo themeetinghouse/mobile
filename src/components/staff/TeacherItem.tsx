@@ -1,20 +1,19 @@
 import React, { useState, memo } from 'react';
 import {
-  TouchableOpacity,
   View,
   StyleSheet,
-  Text,
   Image,
-  Platform,
+  TouchableOpacity,
+  Linking,
+  Text,
+  ActivityIndicator,
 } from 'react-native';
 
-import * as Linking from 'expo-linking';
-import CachedImage from 'react-native-expo-cached-image';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { useNavigation } from '@react-navigation/native';
 import { Theme, Style } from '../../Theme.style';
-import ActivityIndicator from '../ActivityIndicator';
+import CachedImage from '../CachedImage';
 
 const style = StyleSheet.create({
   container: {
@@ -100,30 +99,16 @@ function TeacherItem({ teacher }: Props): JSX.Element {
 
   const renderTeacherImage = () => {
     if (uri && uri !== Theme.icons.white.user) {
-      if (Platform.OS === 'android') {
-        return (
-          <CachedImage
-            testID="android-image"
-            onLoadEnd={() => setIsLoading(false)}
-            style={style.picture}
-            onError={() => {
-              setIsLoading(false);
-              uriError();
-            }}
-            source={{ uri }}
-          />
-        );
-      }
       return (
-        <Image
-          testID="ios-image"
+        <CachedImage
+          cacheKey={teacher.id}
           onLoadEnd={() => setIsLoading(false)}
           style={style.picture}
           onError={() => {
             setIsLoading(false);
             uriError();
           }}
-          source={{ uri, cache: 'default' }}
+          url={uri}
         />
       );
     }
