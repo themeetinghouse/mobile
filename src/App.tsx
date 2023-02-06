@@ -9,26 +9,18 @@ import {
 import { Subscription } from 'expo-modules-core';
 import { Analytics } from 'aws-amplify';
 import Application from 'expo-application';
-import * as Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
 import { DevicePushToken } from 'expo-notifications';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
-import React, {
-  createRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { createRef, useEffect, useMemo, useRef, useState } from 'react';
 import { LogBox, Platform, StatusBar, ViewStyle } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { init as initSentry } from 'sentry-expo';
 import AnimatedSplashScreen from './AnimatedSplashScreen';
 import ActivityIndicator from './components/ActivityIndicator';
-import MiniPlayer from './components/teaching/MiniPlayer';
 import CommentContext, { CommentContextType } from './contexts/CommentContext';
 import { ContentScreenProvider } from './contexts/ContentScreenContext/ContentScreenContext';
 import LocationContext, { LocationData } from './contexts/LocationContext';
@@ -38,6 +30,7 @@ import UserContext, { TMHCognitoUser, UserData } from './contexts/UserContext';
 import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 import { ModalContextProvider } from './contexts/ModalContext/ModalContext';
+import GenericModal from './components/modals/GenericModal';
 
 LogBox.ignoreAllLogs(true);
 
@@ -155,7 +148,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
 
   async function registerForPushNotificationsAsync(): Promise<DevicePushToken | null> {
     let token;
-    if (Constants.default.isDevice) {
+    if (Device.isDevice) {
       const { status: existingStatus } =
         await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -325,16 +318,6 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
       setPlayerTypeNone,
     };
   }, [media]);
-  const onLayoutRootView = useCallback(async () => {
-    if (isLoadingComplete || skipLoadingScreen) {
-      // This tells the splash screen to hide immediately! If we call this after
-      // `setAppIsReady`, then we may see a blank screen while the app is
-      // loading its initial state and rendering its first pixels. So instead,
-      // we hide the splash screen once we know the root view has already
-      // performed layout.
-      await SplashScreen.hideAsync();
-    }
-  }, [skipLoadingScreen, isLoadingComplete]);
 
   if (!isLoadingComplete && !skipLoadingScreen) {
     return <ActivityIndicator />;
@@ -358,6 +341,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
                   >
                     <ContentScreenProvider>
                       <ModalContextProvider>
+                        <GenericModal />
                         <AppNavigator />
                       </ModalContextProvider>
                     </ContentScreenProvider>

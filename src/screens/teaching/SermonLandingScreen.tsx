@@ -17,7 +17,12 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, CompositeNavigationProp } from '@react-navigation/native';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import {
+  Audio,
+  AVPlaybackStatus,
+  InterruptionModeIOS,
+  InterruptionModeAndroid,
+} from 'expo-av';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
@@ -36,6 +41,7 @@ import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
 import NotesService from '../../services/NotesService';
 import { getSeries, getCustomPlaylist } from '../../graphql/queries';
 import useDebounce from '../../../src/hooks/useDebounce';
+import CachedImage from '../../components/CachedImage';
 
 const style = StyleSheet.create({
   content: {
@@ -140,7 +146,8 @@ export default function SermonLandingScreen({
   const { debounce } = useDebounce();
   const sermon = route.params?.item;
   const [isLoading, setIsLoading] = useState(true);
-  const mediaContext = useContext(MediaContext);
+  const { setMedia, media, setAudioNull, closeAudio, closeVideo } =
+    useContext(MediaContext);
   const [sermonsInSeries, setSermonsInSeries] = useState<VideoData>();
   const [videosInPlaylist, setVideosInPlaylist] = useState<any>();
   const [time, setTime] = useState({ elapsed: '', remaining: '' });
@@ -155,26 +162,26 @@ export default function SermonLandingScreen({
   console.log({ sermon });
   const deviceWidth = Dimensions.get('window').width;
 
-  const closeAudio = async () => {
+  const closeAudioFn = async () => {
     try {
-      await mediaContext.media.audio?.sound.unloadAsync();
-      mediaContext.closeAudio();
+      await media.audio?.sound.unloadAsync();
+      closeAudio();
     } catch (e) {
       console.debug(e);
     }
   };
 
   const setPlaybackSpeed = async () => {
-    if (mediaContext?.media.audio?.status.isLoaded) {
+    if (media.audio?.status.isLoaded) {
       if (audioSpeed !== 2) {
-        mediaContext?.media.audio.sound.setRateAsync(
+        media.audio.sound.setRateAsync(
           audioSpeed + 0.5,
           true,
           Audio.PitchCorrectionQuality.Medium
         );
         setAudioSpeed(audioSpeed + 0.5);
       } else {
-        mediaContext?.media.audio.sound.setRateAsync(
+        media.audio.sound.setRateAsync(
           0.5,
           true,
           Audio.PitchCorrectionQuality.Medium
@@ -186,16 +193,16 @@ export default function SermonLandingScreen({
 
   const pauseAudio = async () => {
     try {
-      const status = await mediaContext?.media.audio?.sound.getStatusAsync();
+      const status = await media.audio?.sound.getStatusAsync();
       if (status?.isLoaded) {
-        mediaContext.setMedia({
-          ...mediaContext.media,
-          playing: !mediaContext.media.playing,
+        setMedia({
+          ...media,
+          playing: !media.playing,
         });
         if (status.isPlaying) {
-          await mediaContext?.media.audio?.sound.pauseAsync();
+          await media.audio?.sound.pauseAsync();
         } else {
-          await mediaContext?.media.audio?.sound.playAsync();
+          await media.audio?.sound.playAsync();
         }
       }
     } catch (e) {
@@ -204,15 +211,13 @@ export default function SermonLandingScreen({
   };
 
   const skipForward = async (timeForward: number) => {
-    if (mediaContext?.media.audio?.status.isLoaded) {
+    if (media.audio?.status.isLoaded) {
       try {
-        await mediaContext?.media.audio.sound.setPositionAsync(
-          audioPosition + timeForward
-        );
+        await media.audio.sound.setPositionAsync(audioPosition + timeForward);
         setAudioPosition(audioPosition + timeForward);
         try {
-          await mediaContext?.media.audio.sound.playAsync();
-          mediaContext.setMedia({ ...mediaContext.media, playing: true });
+          await media.audio.sound.playAsync();
+          setMedia({ ...media, playing: true });
         } catch (e) {
           console.debug(e);
         }
@@ -223,11 +228,11 @@ export default function SermonLandingScreen({
   };
 
   const seekTo = async (t: number) => {
-    if (mediaContext?.media.audio?.status.isLoaded) {
+    if (media.audio?.status.isLoaded) {
       try {
-        await mediaContext?.media.audio.sound.setPositionAsync(t);
-        await mediaContext?.media.audio.sound.playAsync();
-        mediaContext.setMedia({ ...mediaContext.media, playing: true });
+        await media.audio.sound.setPositionAsync(t);
+        await media.audio.sound.playAsync();
+        setMedia({ ...media, playing: true });
         setAudioPosition(t);
       } catch (e) {
         console.debug(e);
@@ -273,27 +278,27 @@ export default function SermonLandingScreen({
   };
 
   const handleVideoReady = () => {
-    playerRef?.current?.seekTo(mediaContext.media.videoTime, true);
+    playerRef?.current?.seekTo(media.videoTime, true);
   };
 
   const loadVideo = async () => {
     setJustOpened(false);
 
     try {
-      await mediaContext.media.audio?.sound.unloadAsync();
-      mediaContext.setAudioNull();
+      await media.audio?.sound.unloadAsync();
+      setAudioNull();
     } catch (e) {
       console.debug(e);
     }
 
     if (
-      mediaContext.media.playerType === 'mini video' &&
-      sermon.seriesTitle === mediaContext.media.series &&
-      sermon.episodeTitle === mediaContext.media.episode
+      media.playerType === 'mini video' &&
+      sermon.seriesTitle === media.series &&
+      sermon.episodeTitle === media.episode
     ) {
-      mediaContext.setMedia({ ...mediaContext.media, playerType: 'video' });
+      setMedia({ ...media, playerType: 'video' });
     } else {
-      mediaContext.setMedia({
+      setMedia({
         playerType: 'video',
         playing: true,
         video: sermon.id,
@@ -309,17 +314,17 @@ export default function SermonLandingScreen({
     setJustOpened(false);
 
     if (
-      mediaContext.media.playerType === 'mini audio' &&
-      sermon.seriesTitle === mediaContext.media.series &&
-      sermon.episodeTitle === mediaContext.media.episode
+      media.playerType === 'mini audio' &&
+      sermon.seriesTitle === media.series &&
+      sermon.episodeTitle === media.episode
     ) {
-      mediaContext.setMedia({ ...mediaContext.media, playerType: 'audio' });
-      mediaContext.media.audio?.sound.setOnPlaybackStatusUpdate((e) =>
+      setMedia({ ...media, playerType: 'audio' });
+      media.audio?.sound.setOnPlaybackStatusUpdate((e) =>
         updateAudioPosition(e)
       );
     } else {
       try {
-        await mediaContext?.media?.audio?.sound?.unloadAsync();
+        await media?.audio?.sound?.unloadAsync();
       } catch (e) {
         console.debug(e);
       }
@@ -330,7 +335,7 @@ export default function SermonLandingScreen({
           { shouldPlay: true, progressUpdateIntervalMillis: 1000 },
           (e) => updateAudioPosition(e)
         );
-        mediaContext.setMedia({
+        setMedia({
           playerType: 'audio',
           playing: true,
           audio: sound,
@@ -340,13 +345,14 @@ export default function SermonLandingScreen({
           series: sermon.seriesTitle,
         });
         try {
+          Audio.AndroidAudioEncoder;
           await Audio.setAudioModeAsync({
             playsInSilentModeIOS: true,
             allowsRecordingIOS: false,
             staysActiveInBackground: true,
-            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+            interruptionModeIOS: InterruptionModeIOS.DoNotMix,
             shouldDuckAndroid: false,
-            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+            interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
           });
         } catch (e) {
           console.debug(e);
@@ -358,22 +364,22 @@ export default function SermonLandingScreen({
   };
 
   const minimizeAudio = () => {
-    mediaContext.setMedia({ ...mediaContext.media, playerType: 'mini audio' });
+    setMedia({ ...media, playerType: 'mini audio' });
   };
 
   const minimizeVideo = async () => {
     const videoTime = await playerRef?.current?.getCurrentTime();
     if (videoTime)
-      mediaContext.setMedia({
-        ...mediaContext.media,
+      setMedia({
+        ...media,
         playerType: 'mini video',
         videoTime,
       });
   };
 
   const navigateToNotes = async () => {
-    if (mediaContext.media.playerType === 'audio') minimizeAudio();
-    else if (mediaContext.media.playerType === 'video') await minimizeVideo();
+    if (media.playerType === 'audio') minimizeAudio();
+    else if (media.playerType === 'video') await minimizeVideo();
 
     navigation.push('NotesScreen', {
       date: moment(sermon.publishedDate).format('YYYY-MM-DD'),
@@ -422,18 +428,18 @@ export default function SermonLandingScreen({
   useEffect(() => {
     const closeAudioPlayer = async () => {
       try {
-        await mediaContext.media.audio?.sound.unloadAsync();
-        mediaContext.closeAudio();
+        await media.audio?.sound.unloadAsync();
+        closeAudio();
       } catch (e) {
         console.debug(e);
       }
     };
 
     const unsub = navigation.addListener('blur', async () => {
-      if (mediaContext.media.playerType === 'audio') {
+      if (media.playerType === 'audio') {
         await closeAudioPlayer();
-      } else if (mediaContext.media.playerType === 'video') {
-        mediaContext.closeVideo();
+      } else if (media.playerType === 'video') {
+        closeVideo();
       }
     });
     return unsub;
@@ -441,7 +447,7 @@ export default function SermonLandingScreen({
   }, []);
 
   const handleMinimize = () => {
-    switch (mediaContext.media.playerType) {
+    switch (media.playerType) {
       case 'audio':
         minimizeAudio();
         break;
@@ -466,14 +472,14 @@ export default function SermonLandingScreen({
         elevation: 0,
       },
       safeAreaInsets: { top: safeArea.top },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity style={{ padding: 12 }} onPress={handleMinimize}>
             <Image
               accessibilityLabel="Close Mini-player"
               source={
-                mediaContext.media.playerType === 'audio' ||
-                mediaContext.media.playerType === 'video'
+                media.playerType === 'audio' || media.playerType === 'video'
                   ? Theme.icons.white.mini
                   : Theme.icons.white.closeCancel
               }
@@ -482,6 +488,7 @@ export default function SermonLandingScreen({
           </TouchableOpacity>
         );
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <TouchableOpacity
@@ -574,18 +581,25 @@ export default function SermonLandingScreen({
 
     return null;
   };
-
+  const thumbnails = sermon?.Youtube?.snippet?.thumbnails;
+  const thumbnail: string =
+    thumbnails?.maxres?.url ??
+    thumbnails?.high?.url ??
+    thumbnails.standard?.url ??
+    thumbnails?.medium?.url ??
+    thumbnails?.default?.url ??
+    '';
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
         {justOpened &&
-        mediaContext.media.playerType !== 'video' &&
-        mediaContext.media.playerType !== 'audio' ? (
+        media.playerType !== 'video' &&
+        media.playerType !== 'audio' ? (
           <TouchableWithoutFeedback onPress={loadVideo}>
-            <Image
-              source={{
-                uri: sermon?.Youtube?.snippet?.thumbnails?.maxres?.url,
-              }}
+            <CachedImage
+              url={thumbnail}
+              cacheKey={thumbnail}
+              fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
               style={{
                 height: Math.round(deviceWidth * (9 / 16)),
                 width: Math.round(deviceWidth),
@@ -594,7 +608,7 @@ export default function SermonLandingScreen({
           </TouchableWithoutFeedback>
         ) : null}
 
-        {mediaContext.media.playerType === 'video' ? (
+        {media.playerType === 'video' ? (
           <View
             style={{
               height: Math.round(deviceWidth * (9 / 16)),
@@ -608,16 +622,14 @@ export default function SermonLandingScreen({
               forceAndroidAutoplay
               height={Math.round(deviceWidth * (9 / 16))}
               width={Math.round(deviceWidth)}
-              videoId={mediaContext.media.video as string}
-              play={
-                mediaContext.media.playing && Boolean(mediaContext.media.video)
-              }
+              videoId={media.video as string}
+              play={media.playing && Boolean(media.video)}
               initialPlayerParams={{ modestbranding: true }}
             />
           </View>
         ) : null}
 
-        {audioDuration && mediaContext.media.playerType === 'audio' ? (
+        {audioDuration && media.playerType === 'audio' ? (
           <View
             style={{
               paddingTop: 30,
@@ -689,14 +701,12 @@ export default function SermonLandingScreen({
                   style={{
                     padding: 12,
                   }}
-                  accessibilityLabel={
-                    mediaContext.media.playing ? 'Pause' : 'Play'
-                  }
+                  accessibilityLabel={media.playing ? 'Pause' : 'Play'}
                 >
                   <Image
                     style={{ width: 40, height: 40 }}
                     source={
-                      mediaContext.media.playing
+                      media.playing
                         ? Theme.icons.white.pauseAudio
                         : Theme.icons.white.playAudio
                     }
@@ -746,28 +756,24 @@ export default function SermonLandingScreen({
                   flex: 1,
                   marginRight: sermon.audioURL ? 16 : 0,
                 }}
-                active={mediaContext.media.playerType === 'video'}
+                active={media.playerType === 'video'}
                 label="Watch"
                 iconActive={Theme.icons.black.watch}
                 iconInactive={Theme.icons.white.watch}
                 onPress={
-                  mediaContext.media.playerType === 'video'
-                    ? () => mediaContext.closeVideo()
-                    : loadVideo
+                  media.playerType === 'video' ? () => closeVideo() : loadVideo
                 }
               />
             ) : null}
             {sermon.audioURL ? (
               <TeachingButton
                 wrapperStyle={{ flex: 1 }}
-                active={mediaContext.media.playerType === 'audio'}
+                active={media.playerType === 'audio'}
                 label="Listen"
                 iconActive={Theme.icons.black.audio}
                 iconInactive={Theme.icons.white.audio}
                 onPress={
-                  mediaContext.media.playerType === 'audio'
-                    ? closeAudio
-                    : loadAudio
+                  media.playerType === 'audio' ? closeAudioFn : loadAudio
                 }
               />
             ) : null}

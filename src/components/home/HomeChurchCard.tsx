@@ -5,6 +5,7 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import Theme, { Style } from '../../Theme.style';
 import AllButton from '../buttons/AllButton';
+import CachedImage from '../CachedImage';
 
 const style = StyleSheet.create({
   homeChurchContainer: {
@@ -49,13 +50,11 @@ export default function HomeChurchCard(): JSX.Element {
     <View style={style.homeChurchContainer}>
       <Text style={style.categoryTitle}>Home Church</Text>
       <View style={style.imageContainer}>
-        <Image
+        <CachedImage
+          cacheKey="https://www.themeetinghouse.com/static/images/homechurch-2-1.jpg"
           resizeMode="contain"
           style={style.picture}
-          source={{
-            uri: 'https://www.themeetinghouse.com/static/images/homechurch-2-1.jpg',
-            cache: 'default',
-          }}
+          url="https://www.themeetinghouse.com/static/images/homechurch-2-1.jpg"
         />
       </View>
       <Text style={style.title}>Get connected to community near you.</Text>

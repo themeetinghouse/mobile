@@ -18,7 +18,7 @@ import { GetNotesQuery } from '../../services/API';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import ActivityIndicator from '../ActivityIndicator';
 import { VideoData } from '../../utils/types';
-import FallbackImage from '../FallbackImage';
+import CachedImage from '../CachedImage';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -114,20 +114,22 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
                 source={{ uri: teachingImage.url }}
               />
             </TouchableWithoutFeedback>
-            <FallbackImage
+            <CachedImage
+              cacheKey={encodeURI(seriesImageUri)}
               style={{
                 ...style.seriesImage,
                 ...style.seriesImageWithTeachingImage,
               }}
-              uri={seriesImageUri}
-              catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+              fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+              url={encodeURI(seriesImageUri)}
             />
           </View>
         ) : (
-          <FallbackImage
+          <CachedImage
+            fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+            cacheKey={encodeURI(seriesImageUri)}
             style={style.seriesImage}
-            uri={seriesImageUri}
-            catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+            url={encodeURI(seriesImageUri)}
           />
         )}
         <View style={{ marginHorizontal: 16, alignItems: 'center' }}>
@@ -208,10 +210,11 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
     };
     return (
       <View style={style.container} testID="teaching-notes">
-        <FallbackImage
+        <CachedImage
+          cacheKey={encodeURI(seriesImageUri)}
           style={style.seriesImage}
-          uri={seriesImageUri}
-          catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+          url={encodeURI(seriesImageUri)}
+          fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
         />
         <View style={{ alignItems: 'center' }}>
           <Text style={style.title}>{note.title}</Text>

@@ -42,7 +42,6 @@ export default class HomeChurchService {
       }
     };
     await fetchNext();
-    console.log(data[0]);
     return data;
   }
 

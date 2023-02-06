@@ -1,21 +1,10 @@
 import React, { createContext, Dispatch, useContext, useReducer } from 'react';
-import GenericModal from '../../components/modals/GenericModal';
-import ModalContextReducer from './ModalContextReducer';
+import ModalContextReducer, { initialState } from './ModalContextReducer';
 import {
   ModalAction,
   ModalActionType,
   ModalContextState,
 } from './ModalContextTypes';
-
-export const initialState: ModalContextState = {
-  isVisible: false,
-  action: () => null,
-  actionLabel: '',
-  dismiss: () => null,
-  dismissActionLabel: '',
-  title: '',
-  body: '',
-};
 
 const ModalContext = createContext<{
   state: ModalContextState;
@@ -56,7 +45,6 @@ export const ModalContextProvider = ({
   );
   return (
     <ModalContext.Provider value={memoizedValue}>
-      <GenericModal />
       {children}
     </ModalContext.Provider>
   );

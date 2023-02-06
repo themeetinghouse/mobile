@@ -13,7 +13,6 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
-import FallbackImage from '../../../src/components/FallbackImage';
 import ToggleButton from '../../components/buttons/ToggleButton';
 import SearchBar from '../../components/SearchBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
@@ -23,7 +22,8 @@ import NotesService from '../../services/NotesService';
 import { GetCommentsByOwnerQuery } from '../../services/API';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import SeriesService from '../../../src/services/SeriesService';
-import AllButton from '../../../src/components/buttons/AllButton';
+import AllButton from '../../components/buttons/AllButton';
+import CachedImage from '../../components/CachedImage';
 
 const style = StyleSheet.create({
   content: {
@@ -150,6 +150,54 @@ interface Params {
   navigation: StackNavigationProp<MainStackParamList>;
 }
 
+const CommentListByDate = ({
+  comments,
+  searchText,
+  renderComment,
+}: {
+  comments: RecentComments;
+  searchText: string;
+  renderComment: any;
+}) => {
+  const [showCount, setShowCount] = useState(20);
+  return (
+    <View style={style.listWrapper}>
+      <FlatList
+        ListEmptyComponent={
+          <View>
+            <Text style={style.emptyListText}>No comments found</Text>
+          </View>
+        }
+        ListFooterComponent={
+          comments.length > showCount ? (
+            <View style={{ marginBottom: 10 }}>
+              <AllButton onPress={() => setShowCount(showCount + 20)}>
+                Load More
+              </AllButton>
+            </View>
+          ) : null
+        }
+        data={comments?.filter(
+          ({ comment }) =>
+            comment?.comment
+              ?.toLowerCase()
+              ?.includes(searchText.toLowerCase()) ||
+            comment?.tags?.find((tag) =>
+              tag?.toLowerCase()?.includes(searchText.toLowerCase())
+            )
+        )}
+        renderItem={({ item, index }) => {
+          if (index < showCount) return renderComment(item, item?.seriesInfo);
+          return null;
+        }}
+        keyExtractor={(item) => {
+          return item.comment?.id as string;
+        }}
+      />
+    </View>
+  );
+};
+
 export default function MyComments({ navigation }: Params): JSX.Element {
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -157,6 +205,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       title: 'My Comments',
       headerTitleStyle: style.headerTitle,
       headerStyle: { backgroundColor: Theme.colors.background },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -186,6 +235,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
         );
       },
       headerLeftContainerStyle: { left: 16 },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return <View style={{ flex: 1 }} />;
       },
@@ -363,46 +413,7 @@ export default function MyComments({ navigation }: Params): JSX.Element {
     );
   };
 
-  const CommentListByDate = () => {
-    const [showCount, setShowCount] = useState(20);
-    return (
-      <View style={style.listWrapper}>
-        <FlatList
-          ListEmptyComponent={
-            <View>
-              <Text style={style.emptyListText}>No comments found</Text>
-            </View>
-          }
-          ListFooterComponent={
-            comments.length > showCount ? (
-              <View style={{ marginBottom: 10 }}>
-                <AllButton onPress={() => setShowCount(showCount + 20)}>
-                  Load More
-                </AllButton>
-              </View>
-            ) : null
-          }
-          data={comments?.filter(
-            ({ comment }) =>
-              comment?.comment
-                ?.toLowerCase()
-                ?.includes(searchText.toLowerCase()) ||
-              comment?.tags?.find((tag) =>
-                tag?.toLowerCase()?.includes(searchText.toLowerCase())
-              )
-          )}
-          renderItem={({ item, index }) => {
-            if (index < showCount) return renderComment(item, item?.seriesInfo);
-            return null;
-          }}
-          keyExtractor={(item) => {
-            return item.comment?.id as string;
-          }}
-        />
-      </View>
-    );
-  };
-
+  // eslint-disable-next-line react/no-unstable-nested-components
   const CommentListBySeries = () => {
     const [showCount, setShowCount] = useState(3);
     return (
@@ -479,10 +490,11 @@ export default function MyComments({ navigation }: Params): JSX.Element {
                       })
                     }
                   >
-                    <FallbackImage
+                    <CachedImage
                       style={style.seriesImage}
-                      uri={getSeriesImage(title)}
-                      catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+                      url={getSeriesImage(title)}
+                      cacheKey={getSeriesImage(title)}
+                      fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
                     />
                   </TouchableHighlight>
                 </View>
@@ -516,7 +528,11 @@ export default function MyComments({ navigation }: Params): JSX.Element {
       {isLoading ? (
         <ActivityIndicator animating={isLoading} style={style.spinnerStyle} />
       ) : !filterToggle ? (
-        <CommentListByDate />
+        <CommentListByDate
+          comments={comments}
+          renderComment={renderComment}
+          searchText={searchText}
+        />
       ) : (
         <CommentListBySeries />
       )}

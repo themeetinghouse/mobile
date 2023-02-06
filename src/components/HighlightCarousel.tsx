@@ -2,9 +2,9 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { Video } from 'src/services/API';
 import useDebounce from '../../src/hooks/useDebounce';
 import SermonsService from '../services/SermonsService';
-import loadSomeAsync from '../utils/loading';
 import GenericCarousel from './GenericCarousel';
 
 type HighlightCarouselProps = {
@@ -16,25 +16,27 @@ export default function HighlightCarousel(
 ): JSX.Element {
   const { setLoaded } = props;
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-  const [highlights, setHighlights] = useState({
-    items: [],
-    loading: true,
-    nextToken: undefined,
-  });
+  const [highlights, setHighlights] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [nextToken, setNextToken] = useState<undefined | string>(undefined);
   const { debounce } = useDebounce();
   const loadHighlights = async () => {
-    loadSomeAsync(
-      SermonsService.loadHighlightsList,
-      highlights,
-      setHighlights,
-      5
-    );
+    try {
+      const result = await SermonsService.loadHighlightsList(5, nextToken);
+      const items = (result.items as Video[]) ?? [];
+      setHighlights((prev) => [...prev, ...items]);
+      setNextToken(result.nextToken ?? undefined);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleNavigation = (item: any, index: number) => {
     navigation.push('HighlightScreen', {
-      highlights: highlights.items.slice(index),
-      nextToken: highlights.nextToken,
+      highlights: highlights.slice(index),
+      nextToken,
       fromSeries: false,
     });
   };
@@ -45,8 +47,8 @@ export default function HighlightCarousel(
   }, []);
 
   useEffect(() => {
-    setLoaded(!highlights.loading);
-  }, [highlights.loading, setLoaded]);
+    setLoaded(!loading);
+  }, [loading, setLoaded]);
   return (
     <GenericCarousel
       handleNavigation={(item, index) =>
@@ -54,9 +56,9 @@ export default function HighlightCarousel(
       }
       loadMore={loadHighlights}
       data={{
-        items: highlights.items,
-        nextToken: highlights?.nextToken ?? '',
-        loading: highlights.loading,
+        items: highlights,
+        nextToken: nextToken ?? '',
+        loading,
       }}
       header="Highlights"
       subHeader="Short snippets of teaching"

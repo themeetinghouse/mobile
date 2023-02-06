@@ -17,7 +17,7 @@ export default function useModal(finishedLoading: boolean) {
     const checkUser = async () => {
       let daysSinceLastNotification = 0;
       const lastNotification = await AsyncStorage.getItem('lastNotification');
-      console.log({ lastNotification });
+      // console.log({ lastNotification });
       if (lastNotification) {
         const lastNotificationDate = moment(lastNotification);
         const now = moment();
