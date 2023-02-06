@@ -1,3 +1,38 @@
+export const searchSeries = /* GraphQL */ `
+  query SearchSeries(
+    $filter: SearchableSeriesFilterInput
+    $sort: [SearchableSeriesSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableSeriesAggregationInput]
+  ) {
+    searchSeries(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        seriesType
+        title
+        description
+        videos {
+          items {
+            id
+          }
+        }
+        image
+      }
+      nextToken
+      total
+    }
+  }
+`;
+
 export const getSpeaker = /* GraphQL */ `
   query GetSpeaker($id: ID!) {
     getSpeaker(id: $id) {

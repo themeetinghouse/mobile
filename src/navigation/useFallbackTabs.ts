@@ -16,6 +16,11 @@ function useFallbackItems(): Array<TabItem> {
       groups: ['default'],
     },
     {
+      name: 'Search',
+      visible: true,
+      groups: ['default'],
+    },
+    {
       name: 'Featured',
       visible: true,
       groups: ['default'],

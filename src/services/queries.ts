@@ -1,3 +1,120 @@
+export const searchComments = /* GraphQL */ `
+  query SearchComments(
+    $filter: SearchableCommentFilterInput
+    $sort: [SearchableCommentSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableCommentAggregationInput]
+  ) {
+    searchComments(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        comment
+        tags
+        noteType
+        commentType
+        noteId
+        textSnippet
+        imageUri
+        key
+        date
+        time
+        owner
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const searchNotes = /* GraphQL */ `
+  query SearchNotes(
+    $filter: SearchableNotesFilterInput
+    $sort: [SearchableNotesSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableNotesAggregationInput]
+  ) {
+    searchNotes(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        title
+        content
+        questions
+        jsonContent
+        jsonQuestions
+        episodeDescription
+        episodeNumber
+        seriesId
+        series {
+          id
+          seriesType
+          title
+          description
+          thumbnailDescription
+          image
+          startDate
+          endDate
+          createdAt
+          updatedAt
+        }
+        pdf
+        topics
+        tags
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const listAnnouncements = /* GraphQL */ `
   query ListAnnouncements(
     $filter: ModelAnnouncementFilterInput
@@ -374,6 +491,183 @@ export const getInstagramByLocation = /* GraphQL */ `
         updatedAt
       }
       nextToken
+    }
+  }
+`;
+export const listNotes = /* GraphQL */ `
+  query ListNotes(
+    $filter: ModelNotesFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        title
+        content
+        questions
+        pdf
+        jsonContent
+        jsonQuestions
+        episodeDescription
+        episodeNumber
+        seriesId
+      }
+      nextToken
+    }
+  }
+`;
+
+export const searchVideos = /* GraphQL */ `
+  query SearchVideos(
+    $filter: SearchableVideoFilterInput
+    $sort: [SearchableVideoSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableVideoAggregationInput]
+  ) {
+    searchVideos(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        createdBy
+        createdDate
+        episodeTitle
+        originalEpisodeTitle
+        episodeNumber
+        seriesTitle
+        publishedDate
+        recordedDate
+        description
+        closedCaptioning
+        referencedMedia
+        campaigns
+        bibleVerses
+        topics
+        qandeh
+        length
+        YoutubeIdent
+        Youtube {
+          id
+          kind
+          etag
+          snippet {
+            publishedAt
+            channelId
+            title
+            description
+            thumbnails {
+              default {
+                url
+                width
+                height
+              }
+              medium {
+                url
+                width
+                height
+              }
+              high {
+                url
+                width
+                height
+              }
+              standard {
+                url
+                width
+                height
+              }
+              maxres {
+                url
+                width
+                height
+              }
+            }
+            channelTitle
+            localized {
+              title
+              description
+            }
+          }
+          contentDetails {
+            videoId
+            videoPublishedAt
+            duration
+            dimension
+            definition
+            caption
+            licensedContent
+            projection
+          }
+          status {
+            uploadStatus
+            privacyStatus
+            license
+            embeddable
+            publicStatsViewable
+          }
+        }
+        videoTypes
+        notesURL
+        videoURL
+        audioURL
+        thumbnailDescription
+        move
+        createdAt
+        updatedAt
+      }
+      nextToken
+      total
+      aggregateItems {
+        name
+        result {
+          ... on SearchableAggregateScalarResult {
+            value
+          }
+          ... on SearchableAggregateBucketResult {
+            buckets {
+              key
+              doc_count
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+export const searchSeries = /* GraphQL */ `
+  query SearchSeries(
+    $filter: SearchableSeriesFilterInput
+    $sort: [SearchableSeriesSortInput]
+    $limit: Int
+    $nextToken: String
+    $from: Int
+    $aggregates: [SearchableSeriesAggregationInput]
+  ) {
+    searchSeries(
+      filter: $filter
+      sort: $sort
+      limit: $limit
+      nextToken: $nextToken
+      from: $from
+      aggregates: $aggregates
+    ) {
+      items {
+        id
+        seriesType
+        title
+        description
+        image
+      }
+      nextToken
+      total
     }
   }
 `;

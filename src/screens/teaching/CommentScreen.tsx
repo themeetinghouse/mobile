@@ -29,6 +29,7 @@ import {
   GetCommentsByOwnerQueryVariables,
   UpdateCommentMutation,
   CreateCommentMutation,
+  Comment,
 } from '../../services/API';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import Theme, { Style, HeaderStyle } from '../../Theme.style';
@@ -139,7 +140,9 @@ export default function CommentScreen({
             temp[index] = json.data.updateComment;
             commentContext.setComments(temp);
           }
-
+          if (route?.params?.callback) {
+            route.params.callback(json.data?.updateComment as Comment);
+          }
           navigation.goBack();
         } catch (e) {
           console.debug(e);

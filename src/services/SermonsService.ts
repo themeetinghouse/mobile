@@ -1,7 +1,11 @@
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import API, {
+  graphqlOperation,
+  GraphQLResult,
+  GRAPHQL_AUTH_MODE,
+} from '@aws-amplify/api';
 import { runGraphQLQuery } from './ApiService';
-import { GetVideoByVideoTypeQuery } from './API';
-import { getVideoByVideoType } from './queries';
+import { GetVideoByVideoTypeQuery, SearchVideosQuery, Video } from './API';
+import { getVideoByVideoType, searchVideos } from './queries';
 
 export interface LoadSermonResult {
   items: NonNullable<GetVideoByVideoTypeQuery['getVideoByVideoType']>['items'];
@@ -11,6 +15,42 @@ export interface LoadSermonResult {
 }
 
 export default class SermonsService {
+  static searchForSermons = async (searchTerm: string) => {
+    const query = {
+      query: searchVideos,
+      variables: {
+        sortDirection: 'DESC',
+        limit: 100,
+        videoTypes: 'adult-sunday',
+        filter: {
+          and: [
+            {
+              publishedDate: { gte: '2021-12-01' },
+            },
+            {
+              or: [
+                { episodeTitle: { match: searchTerm } },
+                { seriesTitle: { match: searchTerm } },
+              ],
+            },
+          ],
+        },
+      },
+      authMode: GRAPHQL_AUTH_MODE.API_KEY,
+    };
+    try {
+      const queryResult = (await API.graphql(
+        query
+      )) as GraphQLResult<SearchVideosQuery>;
+      const items = queryResult?.data?.searchVideos?.items ?? [];
+      // console.log({ successSermons: items });
+      return items as Video[];
+    } catch (error) {
+      console.error({ error });
+      return [];
+    }
+  };
+
   static loadSermonsList = async (
     count = 20,
     nextToken?: string
