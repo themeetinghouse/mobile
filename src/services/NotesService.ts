@@ -1,10 +1,16 @@
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { GetNotesQuery } from './API';
+import API, {
+  graphqlOperation,
+  GraphQLResult,
+  GRAPHQL_AUTH_MODE,
+} from '@aws-amplify/api';
+import { GetNotesQuery, ListNotesQuery, Notes, SearchNotesQuery } from './API';
 import {
   checkIfNotesExistQuery,
   getNotes,
   getNotesNoContent,
   getNotesNoContentCustom,
+  listNotes,
+  searchNotes,
 } from './queries';
 
 export default class NotesService {
@@ -24,6 +30,37 @@ export default class NotesService {
       graphqlOperation(getNotesNoContent, { id: date })
     )) as GraphQLResult<GetNotesQuery>;
     return notes.data?.getNotes ?? null;
+  };
+
+  static searchForNotes = async (searchTerm: string): Promise<Notes[]> => {
+    try {
+      const notes = (await API.graphql({
+        query: searchNotes,
+        variables: {
+          limit: 200,
+          filter: {
+            and: [
+              {
+                id: { gte: '2021-12-01' },
+              },
+              {
+                or: [
+                  { title: { match: searchTerm } },
+                  { content: { match: searchTerm } },
+                ],
+              },
+            ],
+          },
+        },
+        authMode: GRAPHQL_AUTH_MODE.API_KEY,
+      })) as GraphQLResult<SearchNotesQuery>;
+      const items = notes.data?.searchNotes?.items ?? [];
+      // console.log({ searchForNotes: items });
+      return items as Notes[];
+    } catch (error) {
+      console.error({ searchForNotes: error });
+      return [];
+    }
   };
 
   static loadNotesNoContentCustom = async (

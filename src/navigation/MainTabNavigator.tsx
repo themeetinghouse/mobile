@@ -11,6 +11,7 @@ import { Announcement } from '../../src/services/AnnouncementService';
 import LocationContext from '../../src/contexts/LocationContext';
 import UserContext from '../../src/contexts/UserContext';
 import HomeScreen from '../screens/home/HomeScreen';
+import SearchScreen from '../screens/search/SearchScreen';
 import TeachingScreen from '../screens/teaching/TeachingScreen';
 import AllSeriesScreen from '../screens/teaching/AllSeriesScreen';
 import AllSermonsScreen from '../screens/teaching/AllSermonsScreen';
@@ -208,6 +209,20 @@ function TeachingStack() {
   );
 }
 
+export type SearchStackParamList = {
+  SearchScreen: undefined;
+};
+
+const Search = createStackNavigator<SearchStackParamList>();
+
+function SearchStack() {
+  return (
+    <Search.Navigator screenOptions={{ headerShown: false }}>
+      <Search.Screen name="SearchScreen" component={SearchScreen} />
+    </Search.Navigator>
+  );
+}
+
 export type MoreStackParamList = {
   MoreScreen: undefined;
 };
@@ -303,7 +318,14 @@ export default function MainTabNavigator(): JSX.Element {
             };
           });
 
-        setTabItems(transformedItems);
+        setTabItems([
+          ...transformedItems,
+          {
+            name: 'Search',
+            visible: true,
+            groups: ['default'],
+          },
+        ]);
       }
     } catch (err) {
       console.log('Error occurred, falls back to default items');
@@ -333,6 +355,8 @@ export default function MainTabNavigator(): JSX.Element {
         return HomeStack;
       case 'Teaching':
         return TeachingStack;
+      case 'Search':
+        return SearchStack;
       case 'Featured':
         return FeaturedStack;
       case 'More':
@@ -362,6 +386,8 @@ export default function MainTabNavigator(): JSX.Element {
             icon = focused ? TabHomeActiveImage : TabHomeImage;
           } else if (route.name === 'Teaching') {
             icon = focused ? TabTeachingActiveImage : TabTeachingImage;
+          } else if (route.name === 'Search') {
+            icon = focused ? TabSearchActiveImage : TabSearchImage;
           } else if (route.name === 'More') {
             icon = focused ? TabMoreActiveImage : TabMoreImage;
           } else if (route.name === 'Featured') {

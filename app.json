@@ -10,7 +10,7 @@
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.23",
+    "version": "6.0.25",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {

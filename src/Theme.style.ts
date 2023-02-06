@@ -61,6 +61,9 @@ import Contact from '../assets/images/white/Contact.png';
 import TMHLogoWhite from '../assets/images/white/TMH-Logo.png';
 import TMHLogoBlack from '../assets/images/black/TMH-Logo.png';
 import Clock from '../assets/icons/clock.png';
+import TeachingGrey from '../assets/images/grey/Teaching.png';
+import NotesGrey from '../assets/images/grey/Notes.png';
+import CommentsGrey from '../assets/images/grey/Comments.png';
 
 export const Theme = {
   colors: {
@@ -151,6 +154,9 @@ export const Theme = {
       skipForward: SkipBackward,
       skipBack: SkipForward,
       comment: CommentSmall,
+      comments: CommentsGrey,
+      teaching: TeachingGrey,
+      notes: NotesGrey,
     },
     black: {
       tmhlogo: TMHLogoBlack,

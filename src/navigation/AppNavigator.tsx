@@ -20,7 +20,7 @@ import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 import HighlightScreen from '../screens/teaching/HighlightScreen';
 import DateRangeSelectScreen from '../screens/teaching/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
-import { CommentDataType, FBEvent, Video } from '../services/API';
+import { Comment, CommentDataType, FBEvent, Video } from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import LiveStreamsScreen from '../screens/home/LiveStreamsScreen';
 import TeacherList from '../screens/staff/TeacherList';
@@ -78,6 +78,7 @@ export type MainStackParamList = {
   HomeChurchScreen: { location?: LocationData };
   CommentScreen:
     | {
+        callback?: (updatedComment: Comment) => void;
         key: string;
         noteId: string;
         commentType: CommentDataType;
@@ -86,6 +87,7 @@ export type MainStackParamList = {
         imageUri?: string;
       }
     | {
+        callback?: (updatedComment: Comment) => void;
         commentId: string;
         comment: string;
         tags: Array<string | null>;

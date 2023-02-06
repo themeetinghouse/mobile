@@ -145,6 +145,7 @@ export default function SermonLandingScreen({
 }: Params): JSX.Element {
   const { debounce } = useDebounce();
   const sermon = route.params?.item;
+  const [isLoading, setIsLoading] = useState(true);
   const mediaContext = useContext(MediaContext);
   const [sermonsInSeries, setSermonsInSeries] = useState<VideoData>();
   const [videosInPlaylist, setVideosInPlaylist] = useState<any>();
@@ -157,7 +158,7 @@ export default function SermonLandingScreen({
   const safeArea = useSafeAreaInsets();
   const [justOpened, setJustOpened] = useState(true);
   const [notesExist, setNotesExist] = useState(false);
-
+  console.log({ sermon });
   const deviceWidth = Dimensions.get('window').width;
 
   const closeAudio = async () => {
@@ -412,12 +413,16 @@ export default function SermonLandingScreen({
           graphqlOperation(getSeries, { id: sermon.seriesTitle })
         )) as GraphQLResult<GetSeriesQuery>;
         setSermonsInSeries(json.data?.getSeries?.videos?.items);
-      } else setSermonsInSeries([]);
+      } else {
+        setSermonsInSeries([]);
+      }
     };
     try {
       loadSermonsInSeriesAsync();
     } catch (error) {
       console.error({ loadSermonsInSeriesAsync: error });
+    } finally {
+      setIsLoading(false);
     }
   }, [route, sermon.seriesTitle]);
 
@@ -508,7 +513,7 @@ export default function SermonLandingScreen({
   });
 
   const renderMoreVideos = () => {
-    if (!sermonsInSeries && !videosInPlaylist) {
+    if (!sermonsInSeries && !videosInPlaylist && isLoading) {
       return <ActivityIndicator />;
     }
 
