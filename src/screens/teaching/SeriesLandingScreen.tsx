@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  Fragment,
-  useLayoutEffect,
-} from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import moment from 'moment';
 import {
   Dimensions,
@@ -29,9 +23,13 @@ import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import ShareModal from '../../components/modals/Share';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
-import { GetCustomPlaylistQuery, GetSeriesQuery } from '../../services/API';
-import { FallbackImageBackground } from '../../components/FallbackImage';
+import {
+  GetCustomPlaylistQuery,
+  GetSeriesQuery,
+  Video,
+} from '../../services/API';
 import { getSeries, getCustomPlaylist } from '../../graphql/queries';
+import CachedImage from '../../components/CachedImage';
 
 const isTablet = Dimensions.get('screen').width >= 768;
 
@@ -207,6 +205,7 @@ export default function SeriesLandingScreen({
     navigation.setOptions({
       headerShown: true,
       headerTransparent: true,
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerBackground: function render() {
         return (
           <Animated.View
@@ -222,6 +221,7 @@ export default function SeriesLandingScreen({
       },
       title: '',
       safeAreaInsets: { top: safeArea.top },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -250,6 +250,7 @@ export default function SeriesLandingScreen({
           </TouchableOpacity>
         );
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <TouchableOpacity
@@ -291,7 +292,11 @@ export default function SeriesLandingScreen({
         const json = (await API.graphql(
           graphqlOperation(getSeries, { id: seriesId ?? series.id })
         )) as GraphQLResult<GetSeriesQuery>;
-        setSeries({ ...json?.data?.getSeries });
+        if (!json?.data?.getSeries) return;
+        const seriesWithImage = await SeriesService.updateSeriesImage(
+          json?.data?.getSeries
+        );
+        setSeries(seriesWithImage);
         setVideos(json.data?.getSeries?.videos?.items);
       } else {
         const json = (await API.graphql(
@@ -315,13 +320,14 @@ export default function SeriesLandingScreen({
     }
   }
   const getTeachingImage = (teaching: any) => {
-    const { thumbnails } = teaching?.Youtube?.snippet;
+    const thumbnails = teaching?.Youtube?.snippet?.thumbnails;
     return (
       thumbnails?.standard?.url ??
       thumbnails?.maxres?.url ??
       thumbnails?.high?.url
     );
   };
+  const seriesIMG = isTablet ? series?.heroImage : series?.image640px;
   return (
     <>
       <Animated.ScrollView
@@ -342,10 +348,12 @@ export default function SeriesLandingScreen({
       >
         {series ? (
           <View onLayout={(e) => handleOnLayout(e.nativeEvent.layout.height)}>
-            <FallbackImageBackground
+            <CachedImage
+              background
+              fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback.jpg"
               style={style.seriesImage}
-              uri={isTablet ? series.heroImage : series.image640px}
-              catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback.jpg"
+              url={encodeURI(seriesIMG)}
+              cacheKey={encodeURI(seriesIMG)}
             >
               <LinearGradient
                 colors={[
@@ -363,7 +371,7 @@ export default function SeriesLandingScreen({
                   width: '100%',
                 }}
               />
-            </FallbackImageBackground>
+            </CachedImage>
             <View style={style.detailsContainer}>
               <Text style={style.detailsTitle}>{series?.title}</Text>
               <View>
@@ -448,7 +456,9 @@ export default function SeriesLandingScreen({
                 <TouchableOpacity
                   onPress={() => {
                     navigation.navigate('HighlightScreen', {
-                      highlights: seriesHighlights.items.slice(index),
+                      highlights: seriesHighlights.items.slice(
+                        index
+                      ) as Video[],
                       nextToken: seriesHighlights.nextToken,
                       fromSeries: true,
                     });

@@ -5,24 +5,22 @@ import {
   Text,
   Image,
   Linking,
-  Platform,
   Dimensions,
 } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import CachedImage from 'react-native-expo-cached-image';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
+import { API } from 'aws-amplify';
+import { GraphQLResult } from '@aws-amplify/api';
+import { GetSpeakerQuery } from 'src/services/API';
+import CachedImage from '../../components/CachedImage';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import { MainStackParamList } from '../../navigation/AppNavigator';
-import { runGraphQLQuery } from '../../services/ApiService';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import AllButton from '../../components/buttons/AllButton';
-import { getSpeaker, listSpeakersQuery } from '../../graphql/queries';
-import { API } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
-import { GetSpeakerQuery, ListSpeakersQuery } from 'src/services/API';
+import { getSpeaker } from '../../graphql/queries';
 
 const style = StyleSheet.create({
   container: {
@@ -106,7 +104,7 @@ export default function TeacherProfile({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showCount, setShowCount] = useState(20);
-  const [uri, setUri] = useState(route.params?.staff?.uri);
+  const [uri, setUri] = useState(route.params?.staff?.image);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -119,6 +117,7 @@ export default function TeacherProfile({
         shadowOpacity: 0,
         backgroundColor: 'black',
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <TouchableOpacity
@@ -146,6 +145,7 @@ export default function TeacherProfile({
         );
       },
       headerLeftContainerStyle: { left: 16 },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <View
@@ -226,35 +226,26 @@ export default function TeacherProfile({
 
   const renderImage = () => {
     if (uri && uri !== Theme.icons.white.user) {
-      if (Platform.OS === 'android') {
-        return (
-          <CachedImage
-            onLoadEnd={() => setIsLoading(false)}
-            style={style.picture}
-            onError={() => {
-              uriError();
-            }}
-            source={{ uri }}
-          />
-        );
-      }
-
       return (
-        <Image
+        <CachedImage
+          cacheKey={uri}
+          url={uri}
           onLoadEnd={() => setIsLoading(false)}
           style={style.picture}
           onError={() => {
-            setIsLoading(false);
             uriError();
           }}
-          source={{ uri, cache: 'default' }}
         />
       );
     }
 
     return (
       <View style={style.fallbackPictureContainer}>
-        <Image style={style.fallBackPicture} source={Theme.icons.white.user} />
+        <Image
+          onLoadEnd={() => setIsLoading(false)}
+          style={style.fallBackPicture}
+          source={Theme.icons.white.user}
+        />
       </View>
     );
   };

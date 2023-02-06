@@ -18,6 +18,7 @@ import {
 import Theme from '../../Theme.style';
 import { TMHCognitoUser } from '../../contexts/UserContext';
 import { commentExistsQuery } from '../../graphql/queries';
+import CachedImage from '../CachedImage';
 
 const imageWidth = 0.42 * Dimensions.get('screen').width;
 
@@ -104,14 +105,15 @@ export default function TeachingListItem({
   return (
     <TouchableOpacity accessibilityRole="button" onPress={handlePress}>
       <View style={style.container}>
-        <Image
+        <CachedImage
+          cacheKey={teaching?.id ?? ''}
+          fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+          url={
+            teaching?.Youtube?.snippet?.thumbnails?.standard?.url ??
+            teaching?.Youtube?.snippet?.thumbnails?.high?.url ??
+            'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg'
+          }
           style={style.thumbnail}
-          source={{
-            uri:
-              teaching?.Youtube?.snippet?.thumbnails?.standard?.url ??
-              teaching?.Youtube?.snippet?.thumbnails?.high?.url ??
-              'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg',
-          }}
         />
         <View style={style.detailsContainer}>
           <Text style={style.title}>{teaching?.episodeTitle}</Text>

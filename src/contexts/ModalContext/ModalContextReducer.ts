@@ -1,9 +1,18 @@
-import { initialState as ModalInitialState } from './ModalContext';
 import {
   ModalAction,
   ModalActionType,
   ModalContextState,
 } from './ModalContextTypes';
+
+export const initialState: ModalContextState = {
+  isVisible: false,
+  action: () => null,
+  actionLabel: '',
+  dismiss: () => null,
+  dismissActionLabel: '',
+  title: '',
+  body: '',
+};
 
 export default function ModalReducer(
   state: ModalContextState,
@@ -16,7 +25,7 @@ export default function ModalReducer(
         ...action.payload,
       };
     case ModalActionType.DISMISS_MODAL:
-      return { ...ModalInitialState };
+      return { ...initialState };
     case ModalActionType.SHOW_MODAL:
       return {
         ...state,

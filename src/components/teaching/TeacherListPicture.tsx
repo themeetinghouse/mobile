@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import { Image } from 'react-native';
+import { Speaker } from '../../services/API';
 import { Theme } from '../../Theme.style';
+import CachedImage from '../CachedImage';
 
-export default function TeacherListPicture(item: any): JSX.Element {
+type TeacherListPictureProps = {
+  item: Speaker;
+};
+
+export default function TeacherListPicture(
+  props: TeacherListPictureProps
+): JSX.Element {
+  const { item } = props;
   const [unhide, setUnhide] = useState(true);
   return (
     <>
@@ -12,7 +21,7 @@ export default function TeacherListPicture(item: any): JSX.Element {
           source={Theme.icons.white.user}
         />
       ) : null}
-      <Image
+      <CachedImage
         style={{
           position: 'absolute',
           top: -1,
@@ -22,9 +31,10 @@ export default function TeacherListPicture(item: any): JSX.Element {
           borderRadius: 96,
           overflow: 'hidden',
         }}
-        source={{ uri: item.item.image }}
+        url={item.image ?? ''}
         onError={() => setUnhide(true)}
         onLoadEnd={() => setUnhide(false)}
+        cacheKey={item?.id}
       />
     </>
   );

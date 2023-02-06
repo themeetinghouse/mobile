@@ -26,12 +26,9 @@ import TeachingListItem from '../../components/teaching/TeachingListItem';
 import ActivityIndicator from '../../components/ActivityIndicator';
 import SeriesService, {
   CustomPlaylist,
-  LoadPlaylistData,
-  LoadSeriesListData,
   SeriesDataWithHeroImage,
 } from '../../services/SeriesService';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
-import loadSomeAsync from '../../utils/loading';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import UserContext from '../../contexts/UserContext';
 import { MainStackParamList } from '../../navigation/AppNavigator';
@@ -41,7 +38,6 @@ import {
   Series,
   Speaker,
 } from '../../services/API';
-import { AnimatedFallbackImage } from '../../components/FallbackImage';
 import SeriesItem from '../../components/teaching/SeriesItem';
 import { popularTeachingQuery } from '../../graphql/queries';
 import TeacherListPicture from '../../components/teaching/TeacherListPicture';
@@ -50,6 +46,7 @@ import SuggestedCarousel from '../../components/SuggestedCarousel';
 import { useTeachingConfig } from './useTeachingConfig';
 import useSermons from '../../../src/hooks/useSermons';
 import useRecentSeries from '../../../src/hooks/useRecentSeries';
+import CachedImage from '../../components/CachedImage';
 
 const screenWidth = Dimensions.get('screen').width;
 const isTablet = screenWidth >= 768;
@@ -200,9 +197,6 @@ interface Params {
   >;
 }
 
-interface PlaylistData extends LoadPlaylistData {
-  loading: boolean;
-}
 export type SuggestedVideos = NonNullable<
   NonNullable<CustomPlaylist>['videos']
 >['items'];
@@ -216,20 +210,28 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const { pageConfig } = useTeachingConfig();
   const user = useContext(UserContext);
   const { debounce } = useDebounce();
-  const [customPlaylists, setCustomPlaylists] = useState<PlaylistData>({
+  const [customPlaylists, setCustomPlaylists] = useState<{
+    loading: boolean;
+    items: CustomPlaylist[];
+    nextToken: string | undefined;
+  }>({
     loading: true,
     items: [],
-    nextToken: null,
+    nextToken: undefined,
   });
   const [popularSeries, setPopularSeries] = useState<PopularSeriesData>({
     loading: true,
     items: [],
   });
 
-  const [speakers, setSpeakers] = useState({
+  const [speakers, setSpeakers] = useState<{
+    loading: boolean;
+    items: Speaker[];
+    nextToken?: string | undefined;
+  }>({
     loading: true,
     items: [],
-    nextToken: null,
+    nextToken: undefined,
   });
   const [bounce, setBounce] = useState(false);
   const [popularTeachings, setPopularTeachings] = useState<PopularVideoData>({
@@ -251,6 +253,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         shadowOpacity: 0,
         elevation: 0,
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerLeft: function render() {
         return (
           <View
@@ -261,6 +264,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
           />
         );
       },
+      // eslint-disable-next-line react/no-unstable-nested-components
       headerRight: function render() {
         return (
           <TouchableOpacity
@@ -283,20 +287,46 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   }, [navigation, emailVerified]);
 
   const loadSpeakers = async () => {
-    loadSomeAsync(
-      StaffDirectoryService.loadSpeakersList,
-      speakers,
-      setSpeakers
-    );
+    try {
+      const response = await StaffDirectoryService.loadSpeakersList({
+        limit: 10,
+        nextToken: speakers.nextToken,
+      });
+
+      setSpeakers({
+        items: response.items as Speaker[],
+        loading: false,
+        nextToken: response.nextToken ?? undefined,
+      });
+    } catch (error) {
+      console.error({ error });
+      setSpeakers({
+        items: [],
+        loading: false,
+        nextToken: undefined,
+      });
+    }
   };
 
   const loadCustomPlaylists = async () => {
-    loadSomeAsync(
-      SeriesService.loadCustomPlaylists,
-      customPlaylists,
-      setCustomPlaylists,
-      10
-    );
+    try {
+      const response = await SeriesService.loadCustomPlaylists(
+        4,
+        customPlaylists.nextToken
+      );
+      setCustomPlaylists({
+        items: response.items as CustomPlaylist[],
+        loading: false,
+        nextToken: response.nextToken ?? undefined,
+      });
+    } catch (error) {
+      console.error({ error });
+      setCustomPlaylists({
+        items: [],
+        loading: false,
+        nextToken: undefined,
+      });
+    }
   };
 
   const fetchPopularVideoParams = async () => {
@@ -398,7 +428,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         }
       >
         <View style={style.seriesThumbnailContainer}>
-          <AnimatedFallbackImage
+          <CachedImage
+            animated
             style={{
               ...style.seriesThumbnail,
               ...{
@@ -413,8 +444,9 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 ],
               },
             }}
-            uri={item.image640px}
-            catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+            url={encodeURI(item.image640px)}
+            cacheKey={encodeURI(item.image640px)}
+            fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
           />
 
           <View style={style.seriesDetailContainer}>
@@ -674,7 +706,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               ]}
               horizontal
               data={speakers.items}
-              renderItem={({ item }: any) => {
+              renderItem={({ item }) => {
                 return !item.hidden ? (
                   <TouchableOpacity
                     onPress={() =>

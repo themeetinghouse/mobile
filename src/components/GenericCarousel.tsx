@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import ActivityIndicator from './ActivityIndicator';
 import { Theme, Style } from '../Theme.style';
-import FallbackImage from './FallbackImage';
+import CachedImage from './CachedImage';
 
 const style = StyleSheet.create({
   categoryTitle: {
@@ -61,10 +61,13 @@ export default function GenericCarousel({
   handleNavigation,
 }: Props): JSX.Element {
   const getImage = (item: any) => {
-    const { thumbnails } =
-      item?.video?.Youtube?.snippet ?? item?.Youtube?.snippet;
-    const { url } =
-      thumbnails?.standard ?? thumbnails?.high ?? thumbnails?.maxres;
+    const thumbnails =
+      item?.video?.Youtube?.snippet?.thumbnails ??
+      item?.Youtube?.snippet?.thumbnails;
+    const url =
+      thumbnails?.standard?.url ??
+      thumbnails?.high?.url ??
+      thumbnails?.maxres?.url;
     return url;
   };
   return (
@@ -84,19 +87,18 @@ export default function GenericCarousel({
               }`}
               onPress={() => handleNavigation(item, index)}
             >
-              <FallbackImage
+              <CachedImage
                 style={style.highlightsThumbnail}
-                uri={getImage(item)}
-                catchUri="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+                url={getImage(item)}
+                fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
+                cacheKey={getImage(item)}
               />
             </TouchableOpacity>
           );
         }}
         onEndReached={loadMore ?? null}
         onEndReachedThreshold={0.1}
-        ListFooterComponent={() =>
-          data.loading ? <ActivityIndicator /> : null
-        }
+        ListFooterComponent={<ActivityIndicator animating={data.loading} />}
       />
     </View>
   );

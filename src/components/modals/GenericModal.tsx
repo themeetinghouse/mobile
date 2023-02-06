@@ -44,7 +44,7 @@ const Styles = StyleSheet.create({
 });
 
 export default function GenericModal(): JSX.Element {
-  const { state, dismissModal } = useModalContext();
+  const { state } = useModalContext();
   return (
     <Modal
       testID="modal"
