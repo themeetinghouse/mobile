@@ -86,7 +86,7 @@ export default function LiveStreamScreen({
   }, [liveStreamData]);
   if (!liveStreamData?.liveYoutubeId) return null;
   return (
-    <View style={{ backgroundColor: 'black' }}>
+    <View style={{ flex: 1, backgroundColor: 'black' }}>
       <View style={style.player}>
         <YoutubePlayer
           volume={100}
