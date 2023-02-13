@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import Auth from '@aws-amplify/auth';
@@ -146,18 +146,17 @@ type VerseType = NonNullable<
 >['items'];
 
 interface Params {
-  navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>;
-  route: RouteProp<MainStackParamList, 'NotesScreen'>;
   today: string;
   fromLiveStream: boolean | undefined;
 }
 
 export default function NotesScreen({
-  route,
-  navigation,
   today,
   fromLiveStream,
 }: Params): JSX.Element {
+  const navigation =
+    useNavigation<StackNavigationProp<MainStackParamList, 'NotesScreen'>>();
+  const route = useRoute<RouteProp<MainStackParamList, 'NotesScreen'>>();
   const date = route?.params?.date || today;
   const [notes, setNotes] = useState({ blocks: [], entityMap: {} });
   const [isLoading, setIsLoading] = useState(true);

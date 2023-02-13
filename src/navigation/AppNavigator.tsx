@@ -20,7 +20,13 @@ import LocationSelectionScreen from '../screens/LocationSelectionScreen';
 import HighlightScreen from '../screens/teaching/HighlightScreen';
 import DateRangeSelectScreen from '../screens/teaching/DateRangeSelectScreen';
 import SermonLandingScreen from '../screens/teaching/SermonLandingScreen';
-import { Comment, CommentDataType, FBEvent, Video } from '../services/API';
+import {
+  Comment,
+  CommentDataType,
+  FBEvent,
+  Livestream,
+  Video,
+} from '../services/API';
 import LiveStreamScreen from '../screens/LiveStreamScreen';
 import LiveStreamsScreen from '../screens/home/LiveStreamsScreen';
 import TeacherList from '../screens/staff/TeacherList';
@@ -72,7 +78,9 @@ export type MainStackParamList = {
     seriesId?: string;
   };
   AllEvents: { events: FBEvent[] };
-  LiveStreamScreen: undefined;
+  LiveStreamScreen: {
+    livestream: Livestream;
+  };
   LiveStreamsScreen: undefined;
   TeacherList: undefined;
   HomeChurchScreen: { location?: LocationData };

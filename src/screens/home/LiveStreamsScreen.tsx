@@ -12,7 +12,7 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useNavigation, RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { TouchableHighlight } from 'react-native-gesture-handler';
@@ -192,7 +192,8 @@ function LiveStreamItem(livestreamData: Livestream) {
   const navigateToEvent = () => {
     if (isCustomEvent) {
       Linking.openURL(externalEventUrl);
-    } else navigation.navigate('LiveStreamScreen', { livestreamData });
+    } else
+      navigation.navigate('LiveStreamScreen', { livestream: livestreamData });
   };
   return (
     <TouchableOpacity

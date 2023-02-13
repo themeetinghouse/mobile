@@ -6,7 +6,6 @@ import {
 } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { locale, locales } from 'moment';
 import { Announcement } from '../../src/services/AnnouncementService';
 import LocationContext from '../../src/contexts/LocationContext';
 import UserContext from '../../src/contexts/UserContext';
@@ -33,7 +32,6 @@ import PopularTeachingScreen from '../screens/teaching/PopularTeachingScreen';
 import { HeaderStyle, Style, Theme } from '../Theme.style';
 import MediaContext from '../contexts/MediaContext';
 import { FBEvent, GetVideoByVideoTypeQuery } from '../services/API';
-import LiveStreamScreen from '../screens/LiveStreamScreen';
 import ContentScreen from '../screens/content/ContentScreen';
 import useFallbackTabs, { TabItem } from './useFallbackTabs';
 
@@ -81,7 +79,6 @@ export type HomeStackParamList = {
   ContentScreen: undefined;
   EventDetailsScreen: { item: FBEvent };
   AnnouncementDetailsScreen: { item: Announcement };
-  LiveStreamScreen: undefined;
 };
 
 const Home = createStackNavigator<HomeStackParamList>();
@@ -166,7 +163,6 @@ function HomeStack() {
         name="AnnouncementDetailsScreen"
         component={AnnouncementDetailsScreen}
       />
-      <Home.Screen name="LiveStreamScreen" component={LiveStreamScreen} />
     </Home.Navigator>
   );
 }
