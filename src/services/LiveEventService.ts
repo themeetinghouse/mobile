@@ -18,6 +18,7 @@ export default class LiveEventService {
         liveStreamsResult?.data?.listLivestreams?.items.sort(
           sortBystartTime
         ) as Livestream[];
+      console.log({ filteredLiveEvents });
       return filteredLiveEvents;
     } catch (error) {
       console.log(error);

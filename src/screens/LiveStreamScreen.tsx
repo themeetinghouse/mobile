@@ -1,13 +1,13 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Dimensions, View } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import { Livestream } from '../services/API';
 import { Style, HeaderStyle } from '../Theme.style';
 import NotesScreen from './teaching/NotesScreen';
 import { MainStackParamList } from '../navigation/AppNavigator';
 import useTeaching from '../hooks/useTeaching';
+import { useModalContext } from '../contexts/ModalContext/ModalContext';
 
 const style = StyleSheet.create({
   content: {
@@ -54,22 +54,37 @@ const style = StyleSheet.create({
 });
 
 interface Props {
-  livestream: Livestream;
-  navigation: StackNavigationProp<MainStackParamList, 'NotesScreen'>;
-  route: RouteProp<MainStackParamList, 'NotesScreen'>;
+  navigation: StackNavigationProp<MainStackParamList, 'LiveStreamScreen'>;
+  route: RouteProp<MainStackParamList, 'LiveStreamScreen'>;
 }
 
 export default function LiveStreamScreen({
-  livestream,
   navigation,
   route,
-}: Props): JSX.Element {
+}: Props): JSX.Element | null {
+  const liveStreamData = route?.params?.livestream;
+  const { newModal, dismissModal } = useModalContext();
   const playerRef = useRef<YoutubeIframeRef>(null);
   const deviceWidth = Dimensions.get('window').width;
   const handleVideoReady = () => {
     playerRef?.current?.seekTo(0, true);
   };
   const { teaching } = useTeaching(false);
+  useEffect(() => {
+    if (!liveStreamData?.liveYoutubeId)
+      newModal({
+        title: 'Live Stream Not Found',
+        body: 'The live stream you are looking for is not available.',
+        actionLabel: 'OK',
+        isVisible: true,
+        action: () => {
+          dismissModal?.();
+          navigation.goBack();
+        },
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveStreamData]);
+  if (!liveStreamData?.liveYoutubeId) return null;
   return (
     <View style={{ backgroundColor: 'black' }}>
       <View style={style.player}>
@@ -80,17 +95,12 @@ export default function LiveStreamScreen({
           forceAndroidAutoplay
           height={Math.round(deviceWidth * (9 / 16))}
           width={Math.round(deviceWidth)}
-          videoId={livestream?.liveYoutubeId ?? ''}
+          videoId={liveStreamData?.liveYoutubeId}
           play
           initialPlayerParams={{ modestbranding: true }}
         />
       </View>
-      <NotesScreen
-        fromLiveStream
-        today={teaching?.publishedDate ?? ''}
-        navigation={navigation}
-        route={route}
-      />
+      <NotesScreen fromLiveStream today={teaching?.publishedDate ?? ''} />
     </View>
   );
 }
