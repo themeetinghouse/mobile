@@ -31,6 +31,7 @@ import AppNavigator from './navigation/AppNavigator';
 import LocationsService from './services/LocationsService';
 import { ModalContextProvider } from './contexts/ModalContext/ModalContext';
 import GenericModal from './components/modals/GenericModal';
+import MiniPlayer from './components/teaching/MiniPlayer';
 
 LogBox.ignoreAllLogs(true);
 
@@ -343,6 +344,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
                       <ModalContextProvider>
                         <GenericModal />
                         <AppNavigator />
+                        <MiniPlayer currentScreen={currentScreen} />
                       </ModalContextProvider>
                     </ContentScreenProvider>
                   </NavigationContainer>
