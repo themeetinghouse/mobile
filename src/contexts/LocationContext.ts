@@ -1,7 +1,7 @@
 import { createContext } from 'react';
-import { Location } from 'src/services/LocationsService';
+import { TMHLocation } from 'src/services/API';
 
-export type LocationData = Location | null;
+export type LocationData = TMHLocation | null | undefined;
 
 type LocationContext = {
   locationData: LocationData;
