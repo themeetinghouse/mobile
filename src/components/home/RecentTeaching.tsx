@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Image,
   StyleSheet,
@@ -12,6 +12,7 @@ import moment from 'moment';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import SeriesService from '../../services/SeriesService';
 import { Theme, Style } from '../../Theme.style';
 import IconButton from '../buttons/IconButton';
 import { GetNotesQuery } from '../../services/API';
@@ -77,15 +78,27 @@ interface Props {
 export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
   const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
   const [fullDescription, setFullDescription] = useState(false);
-
+  const [seriesImageUri, setSeriesImageUri] = useState('');
+  useEffect(() => {
+    (async () => {
+      try {
+        const seriesID = teaching?.series?.id ?? note?.seriesId ?? '';
+        console.log({ seriesID });
+        if (!seriesID) return;
+        const loadSeries = await SeriesService.loadSeriesById(seriesID);
+        console.log({ loadSeriesForRecentTeaching: loadSeries });
+        if (loadSeries) {
+          setSeriesImageUri(loadSeries.bannerImage?.src ?? '');
+        }
+      } catch (error) {
+        console.error({ error });
+      }
+    })();
+  }, [note?.seriesId, teaching?.series?.id]);
   if (
     teaching &&
     moment(teaching.publishedDate).isSameOrAfter(moment(note?.id))
   ) {
-    const seriesImageUri = `https://themeetinghouse.com/static/photos/series/adult-sunday-${teaching?.series?.title?.replace(
-      '?',
-      ''
-    )}.jpg`;
     const teachingImage =
       teaching?.Youtube?.snippet?.thumbnails?.standard ??
       teaching?.Youtube?.snippet?.thumbnails?.high ??
@@ -201,10 +214,6 @@ export default function RecentTeaching({ note, teaching }: Props): JSX.Element {
     );
   }
   if (note) {
-    const seriesImageUri = `https://themeetinghouse.com/static/photos/series/adult-sunday-${note?.seriesId.replace(
-      '?',
-      ''
-    )}.jpg`;
     const openNotes = () => {
       navigation.navigate('NotesScreen', { date: note.id });
     };

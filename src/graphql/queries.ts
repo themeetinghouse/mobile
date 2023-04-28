@@ -358,6 +358,14 @@ export const getSeries = `
     getSeries(id: $id) {
       id
       seriesType
+      bannerImage {
+        src
+        alt
+      }
+      babyHeroImage { 
+        src
+        alt
+      }
       title
       description
       image

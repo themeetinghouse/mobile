@@ -202,7 +202,7 @@ export type SuggestedVideos = NonNullable<
 >['items'];
 
 interface PopularSeriesData {
-  items: Array<SeriesDataWithHeroImage>;
+  items: Array<Series>;
   loading: boolean;
 }
 
@@ -212,7 +212,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   const { debounce } = useDebounce();
   const [customPlaylists, setCustomPlaylists] = useState<{
     loading: boolean;
-    items: CustomPlaylist[];
+    items: SeriesDataWithHeroImage[];
     nextToken: string | undefined;
   }>({
     loading: true,
@@ -315,7 +315,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
         customPlaylists.nextToken
       );
       setCustomPlaylists({
-        items: response.items as CustomPlaylist[],
+        items: response.items as SeriesDataWithHeroImage[],
         loading: false,
         nextToken: response.nextToken ?? undefined,
       });
@@ -334,10 +334,14 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
       'https://www.themeetinghouse.com/static/content/teaching.json'
     );
     const data = await res.json();
-    // TODO: does this need typing?
-    const params = data?.page?.content
-      ?.filter((a: any) => a?.minViews)
-      .find((b: any) => b.header1 === 'Popular Teaching');
+    const content = data?.page?.content as {
+      minViews: number;
+      numberOfDays: number;
+      header1: string;
+    }[];
+    const params = content
+      ?.filter((a) => a?.minViews)
+      .find((b) => b.header1 === 'Popular Teaching');
     return params;
   };
 
@@ -412,13 +416,11 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
   }
 
   const renderSeriesSwipeItem = (
-    item: any,
+    item: Series,
     index: number,
     animatedValue: Animated.Value
   ) => {
-    if (item?.loading) {
-      return <ActivityIndicator />;
-    }
+    console.log({ itemInSeriesSwipe: item });
     return (
       <TouchableWithoutFeedback
         accessibilityRole="button"
@@ -444,15 +446,15 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
                 ],
               },
             }}
-            url={encodeURI(item.image640px)}
-            cacheKey={encodeURI(item.image640px)}
+            url={encodeURI(item.bannerImage?.src ?? '')}
+            cacheKey={encodeURI(item.bannerImage?.src ?? '')}
             fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
           />
 
           <View style={style.seriesDetailContainer}>
             <Text style={style.seriesDetail1}>{item.title}</Text>
             <Text style={style.seriesDetail2}>
-              {getSeriesDate(item)} &bull; {item.videos.items.length} episodes
+              {getSeriesDate(item)} &bull; {item.videos?.items.length} episodes
             </Text>
           </View>
         </View>
@@ -542,7 +544,7 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
             <AllButton
               accessibilityLabel="View all series"
               onPress={() => {
-                debounce(() => navigation.push('AllSeriesScreen'));
+                navigation.push('AllSeriesScreen');
               }}
             >
               All series
@@ -625,15 +627,8 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               A collection of our favourite and most popular series
             </Text>
             <View style={style.seriesListContainer}>
-              {popularSeries?.items?.map((s: any, key: any) => {
-                if (key < 4)
-                  return (
-                    <SeriesItem
-                      key={s.id}
-                      navigation={navigation as any}
-                      seriesData={s}
-                    />
-                  );
+              {popularSeries?.items?.map((s, key) => {
+                if (key < 4) return <SeriesItem key={s.id} series={s} />;
                 return null;
               })}
             </View>
@@ -666,14 +661,13 @@ export default function TeachingScreen({ navigation }: Params): JSX.Element {
               </View>
             )}
             <View style={style.seriesListContainer}>
-              {customPlaylists?.items?.map((s: any, key: any) => {
+              {customPlaylists?.items?.map((s, key) => {
                 if (key < 4)
                   return (
                     <SeriesItem
-                      key={s.id}
+                      key={s?.id}
                       customPlaylist
-                      navigation={navigation as any}
-                      seriesData={s}
+                      series={s as SeriesDataWithHeroImage}
                     />
                   );
                 return null;

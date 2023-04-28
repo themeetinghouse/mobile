@@ -1,14 +1,17 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
+import { SeriesDataWithHeroImage } from 'src/services/SeriesService';
 import { Theme } from '../../Theme.style';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import useDebounce from '../../../src/hooks/useDebounce';
 import CachedImage from '../CachedImage';
+import { Series } from '../../services/API';
 
 const { width } = Dimensions.get('screen');
 
-const style = StyleSheet.create({
+export const SeriesStyle = StyleSheet.create({
   container: {
     marginTop: 6,
     padding: 15,
@@ -34,46 +37,46 @@ const style = StyleSheet.create({
   },
 });
 interface Params {
-  navigation: StackNavigationProp<TeachingStackParamList, 'AllSeriesScreen'>;
-  seriesData: any;
+  series: Series | SeriesDataWithHeroImage;
   year?: string;
   customPlaylist?: boolean;
 }
 export default function SeriesItem({
-  navigation,
-  seriesData,
+  series,
   year,
   customPlaylist,
 }: Params): JSX.Element {
   const { debounce } = useDebounce();
+  const navigation =
+    useNavigation<StackNavigationProp<TeachingStackParamList>>();
   return (
     <TouchableOpacity
       accessibilityRole="button"
-      accessibilityLabel={`Navigate to ${seriesData.title} series screen ${seriesData.videos.items.length} episodes`}
+      accessibilityLabel={`Navigate to ${series.title} series screen ${series.videos?.items.length} episodes`}
       onPress={() =>
         debounce(() =>
           navigation.push('SeriesLandingScreen', {
-            item: seriesData,
-            seriesId: seriesData.id,
+            item: series,
+            seriesId: series.id,
             customPlaylist,
           })
         )
       }
-      style={style.seriesItem}
+      style={SeriesStyle.seriesItem}
     >
       <CachedImage
-        cacheKey={encodeURI(seriesData.image)}
-        style={style.seriesThumbnail}
-        url={encodeURI(seriesData.image)}
+        cacheKey={encodeURI(series.bannerImage?.src ?? '')}
+        style={SeriesStyle.seriesThumbnail}
+        url={encodeURI(series.bannerImage?.src ?? '')}
         fallbackUrl="https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg"
       />
       {year && !customPlaylist ? (
-        <Text style={style.seriesDetail}>
-          {year} &bull; {seriesData.videos.items.length} episodes
+        <Text style={SeriesStyle.seriesDetail}>
+          {year} &bull; {series.videos?.items.length} episodes
         </Text>
       ) : (
-        <Text style={style.seriesDetail}>
-          {seriesData.videos.items.length} episodes
+        <Text style={SeriesStyle.seriesDetail}>
+          {series.videos?.items.length} episodes
         </Text>
       )}
     </TouchableOpacity>

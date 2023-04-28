@@ -1,4 +1,9 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from 'react';
 import moment from 'moment';
 import {
   StyleSheet,
@@ -13,6 +18,7 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { RouteProp } from '@react-navigation/native';
+import { Series } from '../../services/API';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import SeriesService from '../../services/SeriesService';
@@ -93,7 +99,7 @@ export default function AllSeriesScreen({
   const [showCount, setShowCount] = useState(20);
   const [allSeries, setAllSeries] = useState<{
     loading: boolean;
-    items: any[];
+    items: Series[];
     nextToken: string | undefined;
   }>({
     loading: true,
@@ -120,7 +126,7 @@ export default function AllSeriesScreen({
           allSeries.nextToken
         );
         setAllSeries({
-          items: response.items ?? [],
+          items: (response.items as Series[]) ?? [],
           loading: false,
           nextToken: response.nextToken ?? undefined,
         });
@@ -155,7 +161,7 @@ export default function AllSeriesScreen({
       }
     };
     const loadPopularSeries = async () => {
-      const data: any = await SeriesService.fetchPopularSeries();
+      const data = await SeriesService.fetchPopularSeries();
       setAllSeries({ items: data, loading: false, nextToken: undefined });
     };
 
@@ -169,13 +175,13 @@ export default function AllSeriesScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route?.params?.customPlaylists]);
 
-  const getSeriesDate = (series: any) => {
+  const getSeriesDate = (series: Series) => {
     return moment(series.startDate || moment()).format('YYYY');
   };
   const series = allSeries.items
-    .filter((s: any) =>
+    .filter((s) =>
       searchText
-        ? s.title.toLowerCase().includes(searchText.toLowerCase())
+        ? s.title?.toLowerCase().includes(searchText.toLowerCase())
         : true
     )
     .filter((a) => {
@@ -184,38 +190,33 @@ export default function AllSeriesScreen({
     .filter((a) => {
       return selectedYear === 'All' || getSeriesDate(a) === selectedYear;
     });
-
-  useLayoutEffect(() => {
-    const headerRight = () => {
-      return <View style={{ flex: 1 }} />;
-    };
-    const headerLeft = () => {
-      return (
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
+  const renderHeader = useCallback(() => {
+    return (
+      <TouchableOpacity
+        onPress={() => navigation.goBack()}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        <Image
+          source={Theme.icons.white.back}
+          style={{ width: 24, height: 24 }}
+        />
+        <Text
           style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
+            color: 'white',
+            fontSize: 16,
+            transform: [{ translateX: -4 }],
           }}
         >
-          <Image
-            accessibilityLabel="Go back"
-            source={Theme.icons.white.back}
-            style={{ width: 24, height: 24 }}
-          />
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 16,
-              transform: [{ translateX: -8 }],
-            }}
-          >
-            Teaching
-          </Text>
-        </TouchableOpacity>
-      );
-    };
+          Teaching
+        </Text>
+      </TouchableOpacity>
+    );
+  }, [navigation]);
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
       title: route?.params?.customPlaylists
@@ -231,12 +232,11 @@ export default function AllSeriesScreen({
         shadowOpacity: 0,
         elevation: 0,
       },
-      headerLeft: headerLeft(),
       headerLeftContainerStyle: { left: 16 },
-      headerRight: headerRight(),
+      headerLeft: renderHeader,
     });
-  }, [navigation, route]);
-
+  }, [navigation, route, renderHeader]);
+  console.log('AllSeriesScreen -> series');
   return (
     <ScrollView style={style.content}>
       {!route?.params?.popularSeries ? (
@@ -295,25 +295,23 @@ export default function AllSeriesScreen({
             <ActivityIndicator />
           </View>
         )}
-        {series.map((s: any, key: any) => {
+        {series.map((serie, key) => {
           if (key < showCount) {
             if (route?.params?.customPlaylists) {
               return (
                 <SeriesItem
-                  key={s.id}
+                  key={serie.id}
                   customPlaylist
-                  navigation={navigation}
-                  seriesData={s}
-                  year={getSeriesDate(s)}
+                  series={serie}
+                  year={getSeriesDate(serie)}
                 />
               );
             }
             return (
               <SeriesItem
-                key={s.id}
-                navigation={navigation}
-                seriesData={s}
-                year={getSeriesDate(s)}
+                key={serie.id}
+                series={serie}
+                year={getSeriesDate(serie)}
               />
             );
           }
