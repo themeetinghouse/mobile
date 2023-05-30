@@ -51,6 +51,145 @@ export const searchComments = /* GraphQL */ `
   }
 `;
 
+export const listTMHLocations = /* GraphQL */ `
+  query ListTMHLocations(
+    $filter: ModelTMHLocationFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listTMHLocations(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        name
+        regionShortName
+        homeChurchGroupID
+        abbreviation
+        region
+        contact {
+          name
+          email
+          phone
+          extension
+        }
+        meetings {
+          date
+          startTime
+          endTime
+          name
+          description
+          frequency
+          location {
+            name
+            latitude
+            longitude
+            address1
+            address2
+            city
+            state
+            zip
+            country
+            url
+          }
+        }
+        youth {
+          name
+          description
+          age
+          location {
+            name
+            latitude
+            longitude
+            address1
+            address2
+            city
+            state
+            zip
+            country
+            url
+          }
+          time
+          facebookLink
+          instagramLink
+          contact {
+            name
+            email
+            phone
+            extension
+          }
+        }
+        socials {
+          facebook {
+            name
+            pageId
+            link
+          }
+          instagram {
+            name
+            username
+            pageId
+            link
+          }
+          discord
+          twitter
+        }
+        location {
+          name
+          latitude
+          longitude
+          address1
+          address2
+          city
+          state
+          zip
+          country
+          url
+        }
+        pastors {
+          id
+          email
+          firstName
+          lastName
+          image
+          phone
+          extension
+          sites
+          position
+          isTeacher
+          isStaff
+          isCoordinator
+          isOverseer
+          createdAt
+          updatedAt
+        }
+        pastorEmail
+        staff {
+          id
+          email
+          firstName
+          lastName
+          image
+          phone
+          extension
+          sites
+          position
+          isTeacher
+          isStaff
+          isCoordinator
+          isOverseer
+          createdAt
+          updatedAt
+        }
+        showInLocationMap
+        showInLocationList
+        locationType
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
 export const searchNotes = /* GraphQL */ `
   query SearchNotes(
     $filter: SearchableNotesFilterInput

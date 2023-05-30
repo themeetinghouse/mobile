@@ -11,8 +11,9 @@ export default function useInstagram(reload: boolean) {
     const loadInstagramImages = async () => {
       try {
         setIsLoaded(false);
+        console.log({ instagramByLocation: location });
         const data = await InstagramService.getInstagramByLocation(
-          location?.locationData?.id ?? ''
+          location?.locationData
         );
         setImages(data.images);
         setInstaUsername(data.username);
@@ -23,6 +24,7 @@ export default function useInstagram(reload: boolean) {
       }
     };
     loadInstagramImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location?.locationData?.id, reload]);
   return { images, instaUsername, instaLoaded: isLoaded };
 }

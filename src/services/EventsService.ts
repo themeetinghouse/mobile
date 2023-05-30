@@ -1,5 +1,6 @@
 import API, { GraphQLResult } from '@aws-amplify/api';
-import LocationService, { Location } from './LocationsService';
+import { LocationData } from 'src/contexts/LocationContext';
+import LocationService from './LocationsService';
 import { FBEvent, GetFBEventsQuery } from './API';
 import { getFbEvents } from './queries';
 
@@ -20,7 +21,7 @@ export default class EventsService {
   };
 
   static loadEventsList = async (
-    location: Location | undefined | null
+    location: LocationData
   ): Promise<Array<FBEvent>> => {
     const getEvents = async (ids: string[]) => {
       const eventPromises: Array<GraphQLResult<GetFBEventsQuery>> = [];
@@ -41,14 +42,21 @@ export default class EventsService {
     if (!location?.id || location?.id === 'unknown') {
       // get oakville events
       const locations = await LocationService.loadLocations();
-      const defaultLocation = locations?.filter((loc) => {
+      const defaultLocation = locations?.find((loc) => {
         return loc.id === 'oakville';
       });
-      const idsToFetch: string[] = defaultLocation?.[0]?.facebookEvents ?? [];
+      const idsToFetch =
+        (defaultLocation?.socials?.facebook
+          ?.map((fb) => fb?.pageId)
+          .filter((pageId) => pageId) as string[]) ?? [];
       const events = await getEvents(idsToFetch);
       return events as FBEvent[];
     }
-    const events = await getEvents(location?.facebookEvents ?? []);
+    const idsToFetch =
+      (location?.socials?.facebook
+        ?.map((fb) => fb?.pageId)
+        .filter((pageId) => pageId) as string[]) ?? [];
+    const events = await getEvents(idsToFetch);
     return events as FBEvent[];
   };
 }
