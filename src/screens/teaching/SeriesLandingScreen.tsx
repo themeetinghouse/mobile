@@ -293,10 +293,7 @@ export default function SeriesLandingScreen({
           graphqlOperation(getSeries, { id: seriesId ?? series.id })
         )) as GraphQLResult<GetSeriesQuery>;
         if (!json?.data?.getSeries) return;
-        const seriesWithImage = await SeriesService.updateSeriesImage(
-          json?.data?.getSeries
-        );
-        setSeries(seriesWithImage);
+        setSeries(json?.data?.getSeries);
         setVideos(json.data?.getSeries?.videos?.items);
       } else {
         const json = (await API.graphql(
@@ -319,15 +316,17 @@ export default function SeriesLandingScreen({
       setContentFills(true);
     }
   }
-  const getTeachingImage = (teaching: any) => {
+  const getTeachingImage = (teaching: Video) => {
     const thumbnails = teaching?.Youtube?.snippet?.thumbnails;
     return (
       thumbnails?.standard?.url ??
       thumbnails?.maxres?.url ??
-      thumbnails?.high?.url
+      thumbnails?.high?.url ??
+      ''
     );
   };
-  const seriesIMG = isTablet ? series?.heroImage : series?.image640px;
+  console.log({ series });
+  const seriesIMG = series?.bannerImage?.src;
   return (
     <>
       <Animated.ScrollView
@@ -413,7 +412,7 @@ export default function SeriesLandingScreen({
                       return (
                         <TeachingListItem
                           key={seriesSermon?.id}
-                          teaching={seriesSermon as any}
+                          teaching={seriesSermon as Video}
                           handlePress={() =>
                             debounce(() =>
                               navigation.push(
@@ -466,7 +465,7 @@ export default function SeriesLandingScreen({
                 >
                   <Image
                     style={style.highlightsThumbnail}
-                    source={{ uri: getTeachingImage(item) }}
+                    source={{ uri: getTeachingImage(item as Video) }}
                   />
                 </TouchableOpacity>
               )}

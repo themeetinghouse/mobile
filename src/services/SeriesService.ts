@@ -132,13 +132,6 @@ export default class SeriesService {
       })
     )) as GraphQLResult<ListCustomPlaylistsQuery>;
     const items = queryResult?.data?.listCustomPlaylists?.items;
-    if (items) {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i]) {
-          items[i] = SeriesService.updateSeriesImageFromPlaylist(items[i]);
-        }
-      }
-    }
     return {
       items:
         items?.filter(
@@ -148,9 +141,7 @@ export default class SeriesService {
     };
   };
 
-  static fetchPopularSeries = async (): Promise<
-    Array<SeriesDataWithHeroImage>
-  > => {
+  static fetchPopularSeries = async (): Promise<Series[]> => {
     const res = await fetch(
       'https://www.themeetinghouse.com/static/content/teaching.json'
     );
@@ -159,7 +150,7 @@ export default class SeriesService {
     const findSeries =
       data?.page?.content?.filter((a) => a?.collection)[0]?.collection ?? [];
 
-    const arr: Array<Promise<SeriesDataWithHeroImage>> = [];
+    const arr: Array<Promise<Series>> = [];
     findSeries.forEach(async (seriesName: string) => {
       arr.push(SeriesService.loadSeriesById(seriesName));
     });
@@ -183,11 +174,6 @@ export default class SeriesService {
 
     const items = queryResult?.data?.getSeriesBySeriesType?.items ?? [];
     console.log({ series: items });
-    if (items) {
-      for (let i = 0; i < items.length; i++) {
-        items[i] = SeriesService.updateSeriesImage(items[i] as SeriesData);
-      }
-    }
     return {
       items: items?.filter(
         (item) => item?.videos?.items && item?.videos?.items?.length > 0
@@ -196,15 +182,12 @@ export default class SeriesService {
     };
   };
 
-  static loadSeriesById = async (
-    seriesId: string
-  ): Promise<SeriesDataWithHeroImage> => {
-    const queryResult = await runGraphQLQuery({
+  static loadSeriesById = async (seriesId: string): Promise<Series> => {
+    const queryResult = (await API.graphql({
       query: getSeries,
       variables: { id: seriesId },
-    });
-    let series = queryResult.getSeries;
-    series = SeriesService.updateSeriesImage(series as SeriesData);
+    })) as GraphQLResult<GetSeriesQuery>;
+    const series = queryResult.data?.getSeries as Series;
     return series;
   };
 
@@ -215,32 +198,6 @@ export default class SeriesService {
     });
     const episodeCount = queryResult.getSeries?.videos?.items?.length ?? 0;
     return episodeCount;
-  };
-
-  static updateSeriesImage = (
-    series: SeriesDataWithHeroImage
-  ): SeriesDataWithHeroImage => {
-    const series2 = series;
-    if (series2?.title) {
-      series2.image = `https://themeetinghouse.com/cache/320/static/photos/series/adult-sunday-${series.title?.replace(
-        '?',
-        ''
-      )}.jpg`;
-      series2.image640px = `https://themeetinghouse.com/cache/640/static/photos/series/adult-sunday-${series.title?.replace(
-        '?',
-        ''
-      )}.jpg`;
-      series2.heroImage = `https://www.themeetinghouse.com/static/photos/series/baby-hero/adult-sunday-${series.title?.replace(
-        / /g,
-        '%20'
-      )}.jpg`;
-    } else {
-      series2.image =
-        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
-      series2.heroImage =
-        'https://www.themeetinghouse.com/static/photos/series/series-fallback-app.jpg';
-    }
-    return series2;
   };
 
   static searchForSeries = async (searchTerm: string): Promise<Series[]> => {
@@ -257,11 +214,7 @@ export default class SeriesService {
         },
       })) as GraphQLResult<SearchSeriesQuery>;
       const series = response?.data?.searchSeries?.items ?? [];
-      const seriesWithImages = series.map((serie) => {
-        return SeriesService.updateSeriesImage(serie as SeriesData);
-      });
-      // console.log({ searchForSeries: seriesWithImages });
-      return seriesWithImages as Series[];
+      return series as Series[];
     } catch (error) {
       console.error({ searchForSeries: error });
       return [];

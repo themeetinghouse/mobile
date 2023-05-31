@@ -295,6 +295,14 @@ export const getSeriesBySeriesType = `
         seriesType
         title
         description
+        babyHeroImage { 
+          src
+          alt
+        }
+        bannerImage { 
+          src
+          alt
+        }
         image
         startDate
         endDate
@@ -332,6 +340,14 @@ export const getSeries = `
       title
       description
       image
+      babyHeroImage { 
+        src
+        alt
+      }
+      bannerImage { 
+        src
+        alt
+      }
       startDate
       endDate
       videos {
