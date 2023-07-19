@@ -92,11 +92,13 @@ export default class SermonsService {
         nextToken,
       },
     };
-    const queryResult = await runGraphQLQuery(query);
+    const queryResult = (await API.graphql(
+      query
+    )) as GraphQLResult<GetVideoByVideoTypeQuery>;
 
     return {
-      items: queryResult?.getVideoByVideoType?.items,
-      nextToken: queryResult?.getVideoByVideoType?.nextToken,
+      items: queryResult?.data?.getVideoByVideoType?.items ?? [],
+      nextToken: queryResult?.data?.getVideoByVideoType?.nextToken,
     };
   };
 }
