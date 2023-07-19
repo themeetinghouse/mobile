@@ -85,8 +85,8 @@ export default function EventCard({
   return (
     <TouchableOpacity
       accessibilityRole="button"
-      accessibilityLabel={`Learn more about ${event.name}`}
-      accessibilityHint={`Navigate to the ${event.name} details screen`}
+      accessibilityLabel={`Learn more about ${event?.name}`}
+      accessibilityHint={`Navigate to the ${event?.name} details screen`}
       activeOpacity={0.45}
       onPress={handlePress}
     >

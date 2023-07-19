@@ -57,6 +57,6 @@ export default class EventsService {
         ?.map((fb) => fb?.pageId)
         .filter((pageId) => pageId) as string[]) ?? [];
     const events = await getEvents(idsToFetch);
-    return events as FBEvent[];
+    return events.filter((event) => Boolean(event)) as FBEvent[];
   };
 }
