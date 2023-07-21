@@ -21,12 +21,14 @@ export default function useCachedImage(url: string, cacheKey: string) {
         const path = `${FileSystem.cacheDirectory}${name}`;
         const image = await FileSystem.getInfoAsync(path);
         if (image.exists) {
+          console.log({ success: image.uri });
           setUri(image.uri);
           return;
         }
         // console.warn('Image doesnt exist!', { memoizedURL }, { name });
-        const newImage = await FileSystem.downloadAsync(memoizedURI, path);
-        setUri(newImage.uri);
+        console.warn({ path });
+        // const newImage = await FileSystem.downloadAsync(memoizedURI, path);
+        setUri(url);
       } catch (error) {
         console.error({ error });
         setUri(memoizedURL);
@@ -34,6 +36,6 @@ export default function useCachedImage(url: string, cacheKey: string) {
         setIsLoading(false);
       }
     })();
-  }, [memoizedKey, memoizedURI, memoizedURL]);
+  }, [url, memoizedKey, memoizedURI, memoizedURL]);
   return { isLoading, uri, setUri };
 }
