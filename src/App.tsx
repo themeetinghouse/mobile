@@ -133,18 +133,23 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
   const navRef = createRef<NavigationContainerRef>();
 
   async function loadResourcesAsync() {
-    await SplashScreen.preventAutoHideAsync();
-    await Promise.all([
-      Font.loadAsync({
-        'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
-        'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
-        'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
-        'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
-        'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
-      }),
-    ]);
-    setLoadingComplete(true);
-    await SplashScreen.hideAsync();
+    try {
+      await SplashScreen.preventAutoHideAsync();
+      await Promise.all([
+        Font.loadAsync({
+          'Graphik-Regular-App': require('../assets/fonts/Graphik-Regular-App.ttf'),
+          'Graphik-Medium-App': require('../assets/fonts/Graphik-Medium-App.ttf'),
+          'Graphik-Bold-App': require('../assets/fonts/Graphik-Bold-App.ttf'),
+          'Graphik-Semibold-App': require('../assets/fonts/Graphik-Semibold-App.ttf'),
+          'Graphik-RegularItalic': require('../assets/fonts/Graphik-RegularItalic.otf'),
+        }),
+      ]);
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setLoadingComplete(true);
+      await SplashScreen.hideAsync();
+    }
   }
 
   async function registerForPushNotificationsAsync(): Promise<DevicePushToken | null> {
@@ -262,7 +267,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
         await trackUserId(user);
       } catch (e) {
         console.debug(e);
-        setLocationData({ id: 'unknown', name: 'unknown' });
+        setLocationData({ id: 'unknown', name: 'unknown' } as LocationData);
         try {
           const location = await SecureStore.getItemAsync('location');
           if (location) {
