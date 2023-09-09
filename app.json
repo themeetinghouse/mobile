@@ -3,14 +3,14 @@
     "name": "The Meeting House",
     "description": "When’s the last time someone asked you what you believe? You know—about the big things in life. We’re a church that loves to ask questions, and loves people with questions. We don’t have all the answers, but exploring together is pretty much our favourite thing.",
     "slug": "tmh-mobile",
-    "owner": "georgevicbell",
+    "owner": "itbel",
     "privacy": "public",
     "platforms": ["ios", "android", "web"],
     "androidStatusBar": {
       "barStyle": "light-content",
       "backgroundColor": "#000000"
     },
-    "version": "6.0.25",
+    "version": "6.0.29",
     "orientation": "portrait",
     "icon": "./assets/icons/icon.png",
     "splash": {
@@ -52,7 +52,6 @@
           "apiKey": "AIzaSyAYPqUYMe4VKqZ3fhhS-vOF5gEcjnnuzIk"
         }
       },
-      "useNextNotificationsApi": true,
       "package": "org.tmh.takenote",
       "intentFilters": [
         {
@@ -70,8 +69,21 @@
     },
     "extra": {
       "eas": {
-        "projectId": "c5a45526-fcf8-45c5-8082-96da013dfa70"
+        "projectId": "3ddfe55c-e4da-48e7-8ee3-dedad814136e"
       }
-    }
+    },
+    "plugins": [
+      "sentry-expo",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.0"
+          }
+        }
+      ]
+    ]
   }
 }

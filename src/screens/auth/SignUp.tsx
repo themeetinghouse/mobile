@@ -20,7 +20,7 @@ import {
   CompositeNavigationProp,
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LocationData } from 'src/contexts/LocationContext';
+import { LocationData } from '../contexts/LocationContext';
 import PasswordRequirements from '../../components/auth/PasswordRequirements';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { AuthStackParamList } from '../../navigation/AuthNavigator';

@@ -16,8 +16,9 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { ScrollView } from 'react-native-gesture-handler';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { RouteProp } from '@react-navigation/native';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+
 import { ListF1ListGroup2sQuery } from '../../services/API';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import LocationContext, { LocationData } from '../../contexts/LocationContext';

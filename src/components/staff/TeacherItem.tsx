@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 
 import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { useNavigation } from '@react-navigation/native';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+
 import { Theme, Style } from '../../Theme.style';
 import CachedImage from '../CachedImage';
 

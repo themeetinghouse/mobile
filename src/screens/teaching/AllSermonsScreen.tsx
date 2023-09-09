@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { graphqlOperation, GraphQLResult, API } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';
 import TeachingListItem from '../../components/teaching/TeachingListItem';

@@ -3,8 +3,8 @@
 exports[`Active indicator 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "padding": 15,
       },
       undefined,
@@ -14,7 +14,6 @@ exports[`Active indicator 1`] = `
   <ActivityIndicator
     animating={true}
     color="#ffffff"
-    hidesWhenStopped={true}
     size="large"
   />
 </View>
@@ -23,8 +22,8 @@ exports[`Active indicator 1`] = `
 exports[`Inactive indicator 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "padding": 15,
       },
       undefined,
@@ -34,7 +33,6 @@ exports[`Inactive indicator 1`] = `
   <ActivityIndicator
     animating={false}
     color="#ffffff"
-    hidesWhenStopped={true}
     size="large"
   />
 </View>

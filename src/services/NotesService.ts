@@ -1,4 +1,5 @@
-import API, {
+import {
+  API,
   graphqlOperation,
   GraphQLResult,
   GRAPHQL_AUTH_MODE,

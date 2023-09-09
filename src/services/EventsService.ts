@@ -1,5 +1,5 @@
-import API, { GraphQLResult } from '@aws-amplify/api';
-import { LocationData } from 'src/contexts/LocationContext';
+import { API, GraphQLResult } from '@aws-amplify/api';
+import { LocationData } from '../contexts/LocationContext';
 import LocationService from './LocationsService';
 import { FBEvent, GetFBEventsQuery } from './API';
 import { getFbEvents } from './queries';

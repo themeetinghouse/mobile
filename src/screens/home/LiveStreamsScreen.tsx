@@ -14,8 +14,9 @@ import {
 } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { MainStackParamList } from '../../navigation/AppNavigator';
+
 import { Livestream } from '../../../src/services/API';
 import useLiveStreams, { getInLocalTime } from '../../hooks/useLiveStreams';
 import Theme from '../../../src/Theme.style';

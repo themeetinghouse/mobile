@@ -8,7 +8,7 @@ import {
   Text,
 } from 'react-native';
 import moment from 'moment';
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE, API } from '@aws-amplify/api';
 import Auth from '@aws-amplify/auth';
 import { LoadSermonResult } from '../../services/SermonsService';
 import {

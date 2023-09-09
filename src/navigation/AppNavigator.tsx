@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LocationData } from 'src/contexts/LocationContext';
-import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
+import { LocationData } from '../contexts/LocationContext';
+import { F1HomeChurchInfoWithLocation } from '../services/HomeChurchService';
 import MainTabNavigator, {
   TabNavigatorParamList,
   HomeStackParamList,

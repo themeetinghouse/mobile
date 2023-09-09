@@ -54,7 +54,8 @@ export default function AnimatedSplashScreen({
       accessibilityLabel="Splash Screen"
       style={{
         flex: 1,
-        backgroundColor: Constants.manifest?.splash?.backgroundColor as string,
+        backgroundColor: Constants.expoConfig?.splash
+          ?.backgroundColor as string,
         justifyContent: 'center',
         paddingTop: 300,
         flexDirection: 'row',

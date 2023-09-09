@@ -1,5 +1,4 @@
-import { GraphQLResult } from '@aws-amplify/api';
-import { API } from 'aws-amplify';
+import { GraphQLResult, API } from '@aws-amplify/api';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
 import {

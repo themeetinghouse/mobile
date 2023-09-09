@@ -36,9 +36,8 @@ describe('share modal', () => {
   const message = 'this is a message';
   const link = 'https://themeetinghouse.com';
 
-  test('clipboard', () => {
-    Clipboard.setString = jest.fn();
-
+  test('clipboard', async () => {
+    jest.spyOn(Clipboard, 'setStringAsync').mockReturnValue();
     const { queryByText } = render(
       <ShareModal link={link} message={message} closeCallback={cb} />
     );
@@ -50,11 +49,12 @@ describe('share modal', () => {
     fireEvent.press(copyButton);
 
     expect(queryByText('Copied')).toBeTruthy();
-    expect(Clipboard.setString).toHaveBeenCalledWith(link);
+    expect(Clipboard.setStringAsync).toHaveBeenCalledWith(link);
   });
 
   test('twitter', () => {
-    Linking.openURL = jest.fn();
+    const openURLMock = jest.fn();
+    jest.spyOn(Linking, 'openURL').mockImplementation(openURLMock);
 
     const { queryByTestId } = render(
       <ShareModal link={link} message={message} closeCallback={cb} />
@@ -64,9 +64,10 @@ describe('share modal', () => {
 
     fireEvent.press(btn);
 
-    expect(Linking.openURL).toHaveBeenCalledWith(
+    expect(openURLMock).toHaveBeenCalledWith(
       `https://twitter.com/intent/tweet?text=${message}&url=${link}&via=themeetinghouse`
     );
+    jest.spyOn(Linking, 'openURL').mockRestore();
   });
 
   test('share, ios', () => {

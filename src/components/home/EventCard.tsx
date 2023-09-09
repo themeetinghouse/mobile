@@ -2,7 +2,7 @@
 import React from 'react';
 import moment from 'moment';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
-import { FBEvent } from 'src/services/API';
+import { FBEvent } from '../../services/API';
 import { Style, Theme } from '../../Theme.style';
 
 const style = StyleSheet.create({

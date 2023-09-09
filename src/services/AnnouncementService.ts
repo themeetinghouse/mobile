@@ -1,5 +1,5 @@
 import moment from 'moment';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import LocationService, { Location } from './LocationsService';
 import { ListAnnouncementsQuery } from './API';
 import { listAnnouncements } from './queries';

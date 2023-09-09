@@ -12,8 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { API, graphqlOperation } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
+import { GraphQLResult, API, graphqlOperation } from '@aws-amplify/api';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import { askQuestion } from '../../graphql/queries';

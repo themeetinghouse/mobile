@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { Image, Linking, StyleSheet, TouchableOpacity } from 'react-native';
-import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
+import { FeaturedStackParamList } from '../../../navigation/MainTabNavigator';
 import { ImageType } from '../ContentTypes';
 
 const styles = StyleSheet.create({

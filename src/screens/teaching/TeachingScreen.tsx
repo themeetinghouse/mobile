@@ -18,7 +18,7 @@ import {
 import SideSwipe from 'react-native-sideswipe';
 import { StackNavigationProp, useHeaderHeight } from '@react-navigation/stack';
 import { CompositeNavigationProp } from '@react-navigation/native';
-import API, { GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
+import { API, GRAPHQL_AUTH_MODE, GraphQLResult } from '@aws-amplify/api';
 import useDebounce from '../../../src/hooks/useDebounce';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import AllButton from '../../components/buttons/AllButton';

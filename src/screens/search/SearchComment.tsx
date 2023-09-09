@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { Comment } from 'src/services/API';
+import { Comment } from '../../services/API';
 import Theme from '../../Theme.style';
 import { useSearchContext } from './SearchContext';
 import {

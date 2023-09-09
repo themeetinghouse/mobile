@@ -10,9 +10,10 @@ import {
   Platform,
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
+
 import { RouteProp, useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { FeaturedStackParamList } from '../../navigation/MainTabNavigator';
 import RenderRouter from '../../../src/components/RenderRouter/RenderRouter';
 import { ContentScreenActionType } from '../../../src/contexts/ContentScreenContext/ContentScreenTypes';
 import { useContentContext } from '../../../src/contexts/ContentScreenContext/ContentScreenContext';

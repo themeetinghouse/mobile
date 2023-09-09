@@ -1,4 +1,4 @@
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import {
   GetInstaPhotosQuery,
   GetInstaPhotosQueryVariables,
