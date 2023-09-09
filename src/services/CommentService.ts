@@ -1,5 +1,4 @@
-import { API } from 'aws-amplify';
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE, API } from '@aws-amplify/api';
 import { Comment, SearchCommentsQuery } from './API';
 import { searchComments } from './queries';
 

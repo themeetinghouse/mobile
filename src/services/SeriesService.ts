@@ -1,5 +1,5 @@
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
-import { SuggestedVideos } from 'src/screens/teaching/TeachingScreen';
+import { graphqlOperation, GraphQLResult, API } from '@aws-amplify/api';
+import { SuggestedVideos } from '../screens/teaching/TeachingScreen';
 import { runGraphQLQuery } from './ApiService';
 import {
   GetCustomPlaylistQuery,

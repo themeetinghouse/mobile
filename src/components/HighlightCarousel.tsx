@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
-import { Video } from 'src/services/API';
+import { MainStackParamList } from '../navigation/AppNavigator';
+import { Video } from '../services/API';
 import useDebounce from '../../src/hooks/useDebounce';
 import SermonsService from '../services/SermonsService';
 import GenericCarousel from './GenericCarousel';

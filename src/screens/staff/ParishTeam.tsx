@@ -10,7 +10,7 @@ import {
 
 import { StackNavigationProp } from '@react-navigation/stack';
 
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import StaffItem from '../../components/staff/StaffItem';
 import StaffDirectoryService from '../../services/StaffDirectoryService';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { FBEvent } from 'src/services/API';
+import { FBEvent } from '../services/API';
 import LocationContext from '../../src/contexts/LocationContext';
 import EventsService from '../../src/services/EventsService';
 

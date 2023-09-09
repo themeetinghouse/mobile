@@ -1,5 +1,4 @@
-import { API } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
+import { API, GraphQLResult } from '@aws-amplify/api';
 import { listTMHLocations } from './queries';
 import { ListTMHLocationsQuery, TMHLocation } from './API';
 

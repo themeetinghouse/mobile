@@ -1,6 +1,5 @@
 import moment from 'moment';
-import { API } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
+import { API, GraphQLResult } from '@aws-amplify/api';
 import { listLivestreams } from './queries';
 import { ListLivestreamsQuery, Livestream } from './API';
 

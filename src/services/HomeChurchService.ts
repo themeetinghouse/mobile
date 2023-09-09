@@ -1,6 +1,4 @@
-/* eslint-disable eqeqeq */
-import { API } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
+import { API, GraphQLResult } from '@aws-amplify/api';
 import LocationsService from './LocationsService';
 import {
   HomeChurchInfo,

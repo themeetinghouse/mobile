@@ -1,13 +1,12 @@
-import { API } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
-import { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
-import { GetVideoByVideoTypeQuery } from 'src/services/API';
+import { GraphQLResult, GRAPHQL_AUTH_MODE, API } from '@aws-amplify/api';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../../navigation/AppNavigator';
 import { popularTeachingQuery } from '../../../graphql/queries';
 import GenericCarousel from '../../GenericCarousel';
 import { CustomPlaylistType } from '../ContentTypes';
+import { GetVideoByVideoTypeQuery } from '../../../services/API';
 
 export default function CustomPlaylistCarousel({
   item,

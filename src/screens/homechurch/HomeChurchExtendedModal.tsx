@@ -4,7 +4,7 @@ import {
   PanGestureHandler,
   PanGestureHandlerStateChangeEvent,
 } from 'react-native-gesture-handler';
-import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
+import { F1HomeChurchInfoWithLocation } from '../../services/HomeChurchService';
 import HomeChurchItem from './HomeChurchItem';
 
 const { height } = Dimensions.get('window');

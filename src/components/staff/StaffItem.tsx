@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import * as Linking from 'expo-linking';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import { Theme, Style } from '../../Theme.style';
 import ActivityIndicator from '../ActivityIndicator';
 import { TMHPerson } from '../../../src/services/API';

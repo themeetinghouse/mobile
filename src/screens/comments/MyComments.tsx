@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { Auth } from 'aws-amplify';
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { GraphQLResult, GRAPHQL_AUTH_MODE, API } from '@aws-amplify/api';
 import {
   StyleSheet,
   View,
@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import ToggleButton from '../../components/buttons/ToggleButton';
 import SearchBar from '../../components/SearchBar';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';

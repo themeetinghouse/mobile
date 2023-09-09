@@ -2,7 +2,26 @@
 
 exports[`Snapshot and functional tests for button components All button, default props 1`] = `
 <View
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
+  collapsable={false}
   focusable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}
@@ -12,7 +31,7 @@ exports[`Snapshot and functional tests for button components All button, default
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
       "backgroundColor": "#000000",
       "borderBottomWidth": 1,
       "borderColor": "#1a1a1a",
@@ -29,14 +48,14 @@ exports[`Snapshot and functional tests for button components All button, default
 >
   <Text
     style={
-      Array [
-        Object {
+      [
+        {
           "color": "#ffffff",
           "flex": 1,
           "fontFamily": "Graphik-Regular-App",
           "fontSize": 16,
         },
-        Object {},
+        {},
       ]
     }
   >
@@ -45,7 +64,7 @@ exports[`Snapshot and functional tests for button components All button, default
   <Image
     source={1}
     style={
-      Object {
+      {
         "height": 24,
         "width": 24,
       }
@@ -57,7 +76,26 @@ exports[`Snapshot and functional tests for button components All button, default
 exports[`Snapshot and functional tests for button components Async white button, outlined, loading 1`] = `
 <View>
   <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": true,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
     accessible={true}
+    collapsable={false}
     focusable={true}
     onClick={[Function]}
     onResponderGrant={[Function]}
@@ -67,7 +105,7 @@ exports[`Snapshot and functional tests for button components Async white button,
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "alignItems": "center",
         "backgroundColor": "transparent",
         "borderColor": "white",
@@ -80,10 +118,7 @@ exports[`Snapshot and functional tests for button components Async white button,
     }
   >
     <ActivityIndicator
-      animating={true}
       color="black"
-      hidesWhenStopped={true}
-      size="small"
     />
   </View>
 </View>
@@ -92,7 +127,26 @@ exports[`Snapshot and functional tests for button components Async white button,
 exports[`Snapshot and functional tests for button components Async white button, solidBlack, not loading 1`] = `
 <View>
   <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
     accessible={true}
+    collapsable={false}
     focusable={false}
     onClick={[Function]}
     onResponderGrant={[Function]}
@@ -102,7 +156,7 @@ exports[`Snapshot and functional tests for button components Async white button,
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "alignItems": "center",
         "backgroundColor": "black",
         "borderRadius": 0,
@@ -114,7 +168,7 @@ exports[`Snapshot and functional tests for button components Async white button,
   >
     <Text
       style={
-        Object {
+        {
           "color": "white",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,
@@ -129,138 +183,27 @@ exports[`Snapshot and functional tests for button components Async white button,
 
 exports[`Snapshot and functional tests for button components Icon button, default props 1`] = `
 <View
-  style={
-    Array [
-      Object {
-        "paddingBottom": 10,
-        "paddingTop": 10,
-      },
-      undefined,
-    ]
-  }
->
-  <View
-    accessible={true}
-    focusable={true}
-    onClick={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "alignItems": "center",
-        "backgroundColor": "transparent",
-        "flexDirection": "row",
-        "opacity": 1,
-      }
+  accessibilityLabel="Testing"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
     }
-  >
-    <Text
-      style={
-        Array [
-          Object {
-            "borderBottomColor": "#ffffff",
-            "borderBottomWidth": 1,
-            "color": "#ffffff",
-            "marginLeft": 15,
-            "marginRight": 15,
-            "paddingBottom": 3,
-            "paddingTop": 3,
-          },
-          Object {},
-          Object {},
-        ]
-      }
-    >
-      Testing
-    </Text>
-    <View
-      style={
-        Object {
-          "flex": 1,
-        }
-      }
-    />
-  </View>
-</View>
-`;
-
-exports[`Snapshot and functional tests for button components Icon button, test rightArrow prop 1`] = `
-<View
-  style={
-    Array [
-      Object {
-        "paddingBottom": 10,
-        "paddingTop": 10,
-      },
-      undefined,
-    ]
   }
->
-  <View
-    accessible={true}
-    focusable={true}
-    onClick={[Function]}
-    onResponderGrant={[Function]}
-    onResponderMove={[Function]}
-    onResponderRelease={[Function]}
-    onResponderTerminate={[Function]}
-    onResponderTerminationRequest={[Function]}
-    onStartShouldSetResponder={[Function]}
-    style={
-      Object {
-        "alignItems": "center",
-        "backgroundColor": "transparent",
-        "flexDirection": "row",
-        "opacity": 1,
-      }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
     }
-  >
-    <Text
-      style={
-        Array [
-          Object {
-            "borderBottomColor": "#ffffff",
-            "borderBottomWidth": 1,
-            "color": "#ffffff",
-            "marginLeft": 15,
-            "marginRight": 15,
-            "paddingBottom": 3,
-            "paddingTop": 3,
-          },
-          Object {},
-          Object {},
-        ]
-      }
-    />
-    <View
-      style={
-        Object {
-          "flex": 1,
-        }
-      }
-    />
-    <Image
-      accessibilityLabel="Right Arrow"
-      source={1}
-      style={
-        Object {
-          "height": 24,
-          "marginRight": 15,
-          "width": 24,
-        }
-      }
-    />
-  </View>
-</View>
-`;
-
-exports[`Snapshot and functional tests for button components Teaching button, active 1`] = `
-<View
+  }
   accessible={true}
+  collapsable={false}
   focusable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}
@@ -270,7 +213,151 @@ exports[`Snapshot and functional tests for button components Teaching button, ac
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
+      "alignItems": "center",
+      "backgroundColor": "transparent",
+      "flexDirection": "row",
+      "opacity": 1,
+    }
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "borderBottomColor": "#ffffff",
+          "borderBottomWidth": 1,
+          "color": "#ffffff",
+          "marginLeft": 15,
+          "marginRight": 15,
+          "paddingBottom": 3,
+          "paddingTop": 3,
+        },
+        {},
+        {},
+      ]
+    }
+  >
+    Testing
+  </Text>
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Icon button, test rightArrow prop 1`] = `
+<View
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": false,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "alignItems": "center",
+      "backgroundColor": "transparent",
+      "flexDirection": "row",
+      "opacity": 1,
+    }
+  }
+>
+  <Text
+    style={
+      [
+        {
+          "borderBottomColor": "#ffffff",
+          "borderBottomWidth": 1,
+          "color": "#ffffff",
+          "marginLeft": 15,
+          "marginRight": 15,
+          "paddingBottom": 3,
+          "paddingTop": 3,
+        },
+        {},
+        {},
+      ]
+    }
+  />
+  <View
+    style={
+      {
+        "flex": 1,
+      }
+    }
+  />
+  <Image
+    accessibilityLabel="Right Arrow"
+    source={1}
+    style={
+      {
+        "height": 24,
+        "marginRight": 15,
+        "width": 24,
+      }
+    }
+  />
+</View>
+`;
+
+exports[`Snapshot and functional tests for button components Teaching button, active 1`] = `
+<View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
       "alignItems": "center",
       "backgroundColor": "#ffffff",
       "flex": 1,
@@ -283,7 +370,7 @@ exports[`Snapshot and functional tests for button components Teaching button, ac
   <Image
     accessibilityLabel="icon"
     style={
-      Object {
+      {
         "height": 24,
         "marginRight": 18,
         "width": 24,
@@ -292,13 +379,13 @@ exports[`Snapshot and functional tests for button components Teaching button, ac
   />
   <Text
     style={
-      Array [
-        Object {
+      [
+        {
           "color": "white",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,
         },
-        Object {
+        {
           "color": "#000000",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,
@@ -313,7 +400,25 @@ exports[`Snapshot and functional tests for button components Teaching button, ac
 
 exports[`Snapshot and functional tests for button components Teaching button, inactive 1`] = `
 <View
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
   accessible={true}
+  collapsable={false}
   focusable={true}
   onClick={[Function]}
   onResponderGrant={[Function]}
@@ -323,7 +428,7 @@ exports[`Snapshot and functional tests for button components Teaching button, in
   onResponderTerminationRequest={[Function]}
   onStartShouldSetResponder={[Function]}
   style={
-    Object {
+    {
       "alignItems": "center",
       "backgroundColor": "#1a1a1a",
       "flex": 1,
@@ -336,7 +441,7 @@ exports[`Snapshot and functional tests for button components Teaching button, in
   <Image
     accessibilityLabel="icon"
     style={
-      Object {
+      {
         "height": 24,
         "marginRight": 18,
         "width": 24,
@@ -345,13 +450,13 @@ exports[`Snapshot and functional tests for button components Teaching button, in
   />
   <Text
     style={
-      Array [
-        Object {
+      [
+        {
           "color": "white",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,
         },
-        Object {},
+        {},
       ]
     }
   >
@@ -363,7 +468,26 @@ exports[`Snapshot and functional tests for button components Teaching button, in
 exports[`Snapshot and functional tests for button components White button, outlined 1`] = `
 <View>
   <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
     accessible={true}
+    collapsable={false}
     focusable={true}
     onClick={[Function]}
     onResponderGrant={[Function]}
@@ -373,7 +497,7 @@ exports[`Snapshot and functional tests for button components White button, outli
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "alignItems": "center",
         "backgroundColor": "transparent",
         "borderColor": "white",
@@ -387,7 +511,7 @@ exports[`Snapshot and functional tests for button components White button, outli
   >
     <Text
       style={
-        Object {
+        {
           "color": "white",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,
@@ -403,7 +527,26 @@ exports[`Snapshot and functional tests for button components White button, outli
 exports[`Snapshot and functional tests for button components White button, solidBlack 1`] = `
 <View>
   <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
     accessible={true}
+    collapsable={false}
     focusable={false}
     onClick={[Function]}
     onResponderGrant={[Function]}
@@ -413,7 +556,7 @@ exports[`Snapshot and functional tests for button components White button, solid
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
     style={
-      Object {
+      {
         "alignItems": "center",
         "backgroundColor": "black",
         "borderRadius": 0,
@@ -425,7 +568,7 @@ exports[`Snapshot and functional tests for button components White button, solid
   >
     <Text
       style={
-        Object {
+        {
           "color": "white",
           "fontFamily": "Graphik-Bold-App",
           "fontSize": 16,

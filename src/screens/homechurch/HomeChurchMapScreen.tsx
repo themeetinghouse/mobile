@@ -12,11 +12,12 @@ import {
   Image,
   Platform,
 } from 'react-native';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+
 import { RouteProp } from '@react-navigation/native';
 import * as Location from 'expo-location';
 
 import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import { Theme } from '../../Theme.style';
 import HomeChurchItem from './HomeChurchItem';
 import HomeChurchExtendedModal from './HomeChurchExtendedModal';

@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import Theme, { Style } from '../../Theme.style';
 import AllButton from '../buttons/AllButton';
 import CachedImage from '../CachedImage';

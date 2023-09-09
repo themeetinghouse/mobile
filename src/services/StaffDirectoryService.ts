@@ -1,6 +1,5 @@
-import { GraphQLResult } from '@aws-amplify/api';
+import { API, GraphQLResult } from '@aws-amplify/api';
 import { GRAPHQL_AUTH_MODE } from '@aws-amplify/auth';
-import { API } from 'aws-amplify';
 import {
   tMHPersonByIsCoordinator,
   tMHPersonByIsStaff,

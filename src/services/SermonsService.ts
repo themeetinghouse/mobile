@@ -1,9 +1,9 @@
-import API, {
+import {
   graphqlOperation,
   GraphQLResult,
   GRAPHQL_AUTH_MODE,
+  API,
 } from '@aws-amplify/api';
-import { runGraphQLQuery } from './ApiService';
 import { GetVideoByVideoTypeQuery, SearchVideosQuery, Video } from './API';
 import { getVideoByVideoType, searchVideos } from './queries';
 

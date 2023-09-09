@@ -14,7 +14,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp, useTheme } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import useDebounce from '../../../src/hooks/useDebounce';
 import TeachingListItem from '../../components/teaching/TeachingListItem';
 import SeriesService, { SeriesHighlights } from '../../services/SeriesService';

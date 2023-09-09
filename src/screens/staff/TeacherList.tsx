@@ -2,7 +2,7 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FlatList, StyleSheet, View, Text, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { MainStackParamList } from 'src/navigation/AppNavigator';
+import { MainStackParamList } from '../../navigation/AppNavigator';
 import TeacherItem from '../../components/staff/TeacherItem';
 import StaffDirectoryService, {
   loadSpeakersListData,

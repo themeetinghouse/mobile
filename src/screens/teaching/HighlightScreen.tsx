@@ -11,7 +11,7 @@ import {
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { Video } from 'src/services/API';
+import { Video } from '../../services/API';
 import Header from '../../components/Header';
 import { Theme, Style } from '../../Theme.style';
 import { MainStackParamList } from '../../navigation/AppNavigator';

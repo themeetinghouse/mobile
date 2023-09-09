@@ -26,7 +26,7 @@ import {
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import YoutubePlayer, { YoutubeIframeRef } from 'react-native-youtube-iframe';
-import API, { graphqlOperation, GraphQLResult } from '@aws-amplify/api';
+import { API, graphqlOperation, GraphQLResult } from '@aws-amplify/api';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import TeachingListItem from '../../components/teaching/TeachingListItem';

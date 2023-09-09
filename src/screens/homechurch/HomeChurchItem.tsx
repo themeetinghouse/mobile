@@ -9,7 +9,7 @@ import {
   Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { F1HomeChurchInfoWithLocation } from 'src/services/HomeChurchService';
+import { F1HomeChurchInfoWithLocation } from '../../services/HomeChurchService';
 import { Theme, Style } from '../../Theme.style';
 import HomeChurchConfirmationModal from './HomeChurchConfirmationModal';
 import { getTimeStamp, getDayOfWeek } from './HomeChurchUtils';

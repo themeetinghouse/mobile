@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, Dimensions, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/native';
-import { SeriesDataWithHeroImage } from 'src/services/SeriesService';
+import { SeriesDataWithHeroImage } from '../../services/SeriesService';
 import { Theme } from '../../Theme.style';
 import { TeachingStackParamList } from '../../navigation/MainTabNavigator';
 import useDebounce from '../../../src/hooks/useDebounce';

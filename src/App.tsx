@@ -6,13 +6,12 @@ import {
   NavigationContainer,
   NavigationContainerRef,
 } from '@react-navigation/native';
-import { Subscription } from 'expo-modules-core';
 import { Analytics } from 'aws-amplify';
 import Application from 'expo-application';
 import * as Device from 'expo-device';
 import * as Font from 'expo-font';
 import * as Notifications from 'expo-notifications';
-import { DevicePushToken } from 'expo-notifications';
+import { DevicePushToken, Subscription } from 'expo-notifications';
 import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { createRef, useEffect, useMemo, useRef, useState } from 'react';
@@ -167,7 +166,7 @@ export function App({ skipLoadingScreen }: Props): JSX.Element {
         return null;
       }
       token = (await Notifications.getDevicePushTokenAsync()).data;
-      console.log(token);
+      console.log({ token });
     } else {
       console.log('Must use physical device for Push Notifications');
     }

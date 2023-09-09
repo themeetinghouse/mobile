@@ -10,9 +10,8 @@ import {
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
-import { API } from 'aws-amplify';
-import { GraphQLResult } from '@aws-amplify/api';
-import { GetSpeakerQuery } from 'src/services/API';
+import { GraphQLResult, API } from '@aws-amplify/api';
+import { GetSpeakerQuery } from '../../services/API';
 import CachedImage from '../../components/CachedImage';
 import { Theme, Style, HeaderStyle } from '../../Theme.style';
 import SearchBar from '../../components/SearchBar';

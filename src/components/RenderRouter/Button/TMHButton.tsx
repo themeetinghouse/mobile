@@ -1,8 +1,9 @@
 import React from 'react';
 import { Linking, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { FeaturedStackParamList } from 'src/navigation/MainTabNavigator';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { FeaturedStackParamList } from '../../../navigation/MainTabNavigator';
+
 import useDebounce from '../../../../src/hooks/useDebounce';
 import IconButton from '../../buttons/IconButton';
 import AllButton from '../../buttons/AllButton';

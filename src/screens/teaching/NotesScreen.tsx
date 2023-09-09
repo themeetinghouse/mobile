@@ -15,7 +15,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import * as SecureStore from 'expo-secure-store';
 import Auth from '@aws-amplify/auth';
-import API, { GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
+import { API, GraphQLResult, GRAPHQL_AUTH_MODE } from '@aws-amplify/api';
 import TextOptions from '../../components/modals/TextOptions';
 import { MainStackParamList } from '../../navigation/AppNavigator';
 import ActivityIndicator from '../../components/ActivityIndicator';
