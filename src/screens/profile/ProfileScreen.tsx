@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Text,
+  Linking,
 } from 'react-native';
 import { Auth } from '@aws-amplify/auth';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -158,6 +159,14 @@ export default function Profile({ navigation }: Params): JSX.Element {
       icon: Theme.icons.white.account,
       action: () => navigation.navigate('AccountScreen'),
     },
+    {
+      id: 'privacypolicy',
+      text: 'Privacy Policy',
+      subtext: 'Find out more about our privacy policy',
+      icon: Theme.icons.white.account,
+      action: () =>
+        Linking.openURL('https://themeetinghouse.com/privacy-policy'),
+    },
   ];
   const signedOutItems = [
     {
@@ -173,6 +182,14 @@ export default function Profile({ navigation }: Params): JSX.Element {
       subtext: 'Back to login',
       icon: Theme.icons.white.account,
       action: () => navigation.navigate('Auth', { screen: 'LoginScreen' }),
+    },
+    {
+      id: 'privacypolicy',
+      text: 'Privacy Policy',
+      subtext: 'Find out more about our privacy policy',
+      icon: Theme.icons.white.account,
+      action: () =>
+        Linking.openURL('https://themeetinghouse.com/privacy-policy'),
     },
   ];
   const items = isLoggedIn ? signedInItems : signedOutItems;
