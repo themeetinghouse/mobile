@@ -20,7 +20,9 @@
     },
     "scheme": "tmh",
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "enabled": false,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/3ddfe55c-e4da-48e7-8ee3-dedad814136e"
     },
     "assetBundlePatterns": ["**/*"],
     "notification": {
@@ -84,6 +86,9 @@
           }
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
